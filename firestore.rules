@@ -1,0 +1,223 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Fonction helper pour vérifier si l'utilisateur est connecté
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Fonction helper pour vérifier si l'utilisateur est propriétaire
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Règles pour la collection 'users'
+    match /users/{userId} {
+      // Permettre la lecture si: propriétaire OU utilisateur est un coach
+      allow read: if isOwner(userId) || 
+        (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isOwner(userId);
+      // Mise à jour seulement par le propriétaire (le coach ne modifie pas le profil de l'athlète)
+      allow update: if isOwner(userId);
+      allow delete: if false; // Pas de suppression
+    }
+    
+    // Règles pour la collection 'repas'
+    match /repas/{repasId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'entrainements'
+    match /entrainements/{entrainementId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'mesures'
+    match /mesures/{mesureId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'journal'
+    match /journal/{entryId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'favoris_aliments'
+    match /favoris_aliments/{favoriId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'photos_progression'
+    match /photos_progression/{photoId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'menus_type'
+    match /menus_type/{menuId} {
+      // Lecture autorisée (les templates peuvent être publics entre coach et athlète)
+      allow read: if isAuthenticated();
+      // Écriture limitée au coach propriétaire du template
+      allow create: if isAuthenticated() && request.resource.data.coach_id == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.coach_id == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.coach_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'photos_libres'
+    match /photos_libres/{photoId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+    
+    // Règles pour la collection 'badges'
+    match /badges/{badgeId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+
+    // Règles pour la collection 'objectifs'
+    match /objectifs/{objectifId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+
+    // Règles pour la collection 'coach_comments'
+    match /coach_comments/{commentId} {
+      // Les coachs peuvent créer des commentaires
+      allow create: if isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach';
+      
+      // Les coachs peuvent lire leurs propres commentaires, les athlètes peuvent lire les commentaires qui leur sont destinés
+      allow read: if isAuthenticated() && 
+        (resource.data.coach_id == request.auth.uid || 
+         resource.data.athlete_id == request.auth.uid);
+      
+      // Mise à jour:
+      // - Coach: peut tout modifier sur ses commentaires
+      // - Athlète: peut uniquement marquer comme lu (read_by_athlete = true)
+      allow update: if isAuthenticated() && (
+        resource.data.coach_id == request.auth.uid ||
+        (
+          resource.data.athlete_id == request.auth.uid &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['read_by_athlete']) &&
+          request.resource.data.read_by_athlete == true
+        )
+      );
+      
+      allow delete: if false; // Pas de suppression
+    }
+
+    // Règles pour la collection 'coach_diet_plans'
+    match /coach_diet_plans/{planId} {
+      // Les coachs peuvent créer des plans diète
+      allow create: if isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
+        request.resource.data.coach_id == request.auth.uid;
+      
+      // Les coachs peuvent lire leurs propres plans, les athlètes peuvent lire les plans qui leur sont destinés
+      allow read: if isAuthenticated() && 
+        (resource.data.coach_id == request.auth.uid || 
+         resource.data.athlete_id == request.auth.uid);
+      
+      // Permettre de lister les plans (nécessaire pour les requêtes where)
+      allow list: if isAuthenticated();
+      
+      // Seul le coach créateur peut modifier
+      allow update: if isAuthenticated() && 
+        resource.data.coach_id == request.auth.uid;
+      
+      // Seul le coach créateur peut supprimer
+      allow delete: if isAuthenticated() && 
+        resource.data.coach_id == request.auth.uid;
+    }
+  }
+}

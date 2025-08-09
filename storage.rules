@@ -1,0 +1,84 @@
+rules_version = '2';
+
+// Règles de sécurité Firebase Storage pour SuperNovaFit
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Fonction helper pour vérifier si l'utilisateur est connecté
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Fonction helper pour vérifier si l'utilisateur est propriétaire du fichier
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Fonction helper pour valider les types de fichiers images
+    function isValidImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    // Fonction helper pour valider la taille des fichiers (max 5MB)
+    function isValidFileSize() {
+      return request.resource.size <= 5 * 1024 * 1024; // 5MB
+    }
+    
+    // Règles pour les photos de progression
+    // Chemin : photos_progression/{userId}_{timestamp}_{fileName}
+    match /photos_progression/{fileName} {
+      // Lecture : Autorisée si connecté et propriétaire du fichier
+      allow read: if isAuthenticated() && 
+        fileName.matches('.*' + request.auth.uid + '.*');
+      
+      // Écriture : Autorisée si connecté, propriétaire, type image valide et taille correcte
+      allow write: if isAuthenticated() && 
+        fileName.matches('.*' + request.auth.uid + '.*') &&
+        isValidImageFile() && 
+        isValidFileSize();
+      
+      // Suppression : Autorisée si connecté et propriétaire du fichier
+      allow delete: if isAuthenticated() && 
+        fileName.matches('.*' + request.auth.uid + '.*');
+    }
+    
+    // Règles pour les photos libres du journal
+    // Chemin : photos_libres/{userId}_{timestamp}_{fileName}
+    match /photos_libres/{fileName} {
+      // Lecture : Autorisée si connecté et propriétaire du fichier
+      allow read: if isAuthenticated() && 
+        fileName.matches('.*' + request.auth.uid + '.*');
+      
+      // Écriture : Autorisée si connecté, propriétaire, type image valide et taille correcte
+      allow write: if isAuthenticated() && 
+        fileName.matches('.*' + request.auth.uid + '.*') &&
+        isValidImageFile() && 
+        isValidFileSize();
+      
+      // Suppression : Autorisée si connecté et propriétaire du fichier
+      allow delete: if isAuthenticated() && 
+        fileName.matches('.*' + request.auth.uid + '.*');
+    }
+    
+    // Règles pour les avatars utilisateurs (futur)
+    match /avatars/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && 
+        isValidImageFile() && 
+        isValidFileSize();
+      allow delete: if isOwner(userId);
+    }
+    
+    // Règles pour les exports (PDF, CSV) - temporaires
+    match /exports/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+    
+    // Interdire tout autre accès
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
