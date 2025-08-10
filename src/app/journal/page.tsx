@@ -262,6 +262,66 @@ export default function JournalPage() {
         nouvelleProg = 0
       }
 
+function PaginatedEntries({ entries, onEdit, onDelete }: { entries: JournalEntry[]; onEdit: (e: JournalEntry) => void; onDelete: (e: JournalEntry) => void }) {
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const totalPages = Math.max(1, Math.ceil(entries.length / pageSize))
+  const start = (page - 1) * pageSize
+  const pageItems = entries
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(start, start + pageSize)
+
+  useEffect(() => { setPage(1) }, [entries.length])
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-muted-foreground">{entries.length} entrées • Page {page}/{totalPages}</div>
+        <label className="text-xs text-muted-foreground flex items-center gap-2">
+          Par page
+          <select
+            aria-label="Taille de page"
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
+            className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white"
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
+      </div>
+      <div className="grid gap-4">
+        {pageItems.map((entry) => (
+          <EntryCardMemo key={entry.id} entry={entry} onEdit={onEdit} onDelete={onDelete} />
+        ))}
+      </div>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+            >
+              Précédent
+            </button>
+            <span className="text-xs text-muted-foreground">{start + 1}–{Math.min(entries.length, start + pageSize)}</span>
+          </div>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+          >
+            Suivant
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
       // Mettre à jour seulement si la progression a changé
       if (Math.round(nouvelleProg) !== Math.round(objectif.progression)) {
         const result = await updateProgression(objectif.id, nouvelleProg)
@@ -671,16 +731,7 @@ export default function JournalPage() {
               </div>
             ) : (
               <CollapsibleCard title="Historique" defaultOpen={false}>
-                <div className="grid gap-4">
-                  {entries.filter(e => e.date === selectedDate).map((entry) => (
-                    <EntryCardMemo
-                      key={entry.id}
-                      entry={entry}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  ))}
-                </div>
+                <PaginatedEntries entries={entries.filter(e => e.date === selectedDate)} onEdit={handleEdit} onDelete={handleDelete} />
               </CollapsibleCard>
             )}
           </>

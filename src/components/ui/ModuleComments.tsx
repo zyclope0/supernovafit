@@ -72,7 +72,7 @@ export default function ModuleComments({ comments, loading, compact = false }: M
                 </p>
                 {!comment.read_by_athlete && (
                   <div className="mt-2">
-                    <button onClick={() => markAsRead(comment.id)} className="text-[11px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10">Marquer comme lu</button>
+                    <button aria-label="Marquer le commentaire du coach comme lu" onClick={() => markAsRead(comment.id)} className="text-[11px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10">Marquer comme lu</button>
                   </div>
                 )}
               </div>
@@ -110,7 +110,7 @@ export default function ModuleComments({ comments, loading, compact = false }: M
                 </p>
                 {!comment.read_by_athlete && (
                   <div className="mt-2">
-                    <button onClick={() => markAsRead(comment.id)} className="text-[11px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10">Marquer comme lu</button>
+                    <button aria-label="Marquer le commentaire du coach comme lu" onClick={() => markAsRead(comment.id)} className="text-[11px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10">Marquer comme lu</button>
                   </div>
                 )}
               </div>

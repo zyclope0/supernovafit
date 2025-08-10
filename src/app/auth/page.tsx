@@ -52,7 +52,7 @@ export default function AuthPage() {
     return (
       <MainLayout>
         <div className="max-w-md mx-auto">
-          <div className="glass-effect p-8 rounded-xl border border-white/10">
+          <div id="comptes-de-test" className="glass-effect p-8 rounded-xl border border-white/10">
             <div className="text-center mb-6">
               <div className="text-4xl mb-3">✅</div>
               <h1 className="text-2xl font-bold neon-text mb-2">Connecté !</h1>

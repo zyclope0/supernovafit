@@ -195,7 +195,15 @@ export default function Sidebar() {
           <div className="p-4 border-t border-white/10">
             <div className="text-xs text-muted-foreground text-center">
               <p>Version {APP_VERSION} <span className="text-white/30">({APP_RELEASE_DATE})</span></p>
-              <p className="mt-1">Thème Espace 🚀 · <Link href="/nouveautes" className="underline decoration-dotted hover:text-white">Nouveautés</Link></p>
+              <p className="mt-1">
+                Thème Espace 🚀 · <Link href="/nouveautes" className="underline decoration-dotted hover:text-white">Nouveautés</Link>
+                <span className="mx-2">·</span>
+                <Link href="/legal/privacy" className="underline decoration-dotted hover:text-white">Confidentialité</Link>
+                <span className="mx-1">/</span>
+                <Link href="/legal/cookies" className="underline decoration-dotted hover:text-white">Cookies</Link>
+                <span className="mx-1">/</span>
+                <Link href="/legal/terms" className="underline decoration-dotted hover:text-white">CGU</Link>
+              </p>
             </div>
           </div>
         </div>

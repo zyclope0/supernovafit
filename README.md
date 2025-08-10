@@ -5,6 +5,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.31-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore%20|%20Auth%20|%20Storage-orange)
+![CI](https://github.com/<owner>/<repo>/actions/workflows/quality.yml/badge.svg)
 
 ## ✨ Modules livrés
 
@@ -18,7 +19,7 @@
 
 ## 🧱 Stack technique
 
-- Frontend: Next.js (App Router), TypeScript, Tailwind CSS, Radix UI, Zustand
+- Frontend: Next.js (App Router), TypeScript, Tailwind CSS
 - Firebase: Auth (Email/Password), Firestore, Storage, Analytics
 - Charts: Recharts; Form/Validation: React Hook Form + Zod; Dates: date-fns
 - Optimisations: next/dynamic pour charts/modales, next/image (WebP), preconnect images
@@ -125,17 +126,24 @@ firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force
 
 Indexes: voir `firestore.indexes.json` (coach_comments, coach_diet_plans, menus_type).
 
+## 📘 Guide développeur (conventions & scripts)
+
+- Scripts: `npm run dev`, `npm run build`, `npm run lint`, `npm run typecheck`
+- Conventions: Components PascalCase, hooks `use*`, types via interfaces, pas d’inline comments, validation Zod pour formulaires
+- Structure: `src/app` (pages), `src/components` (UI/layout), `src/hooks`, `src/lib`, `src/types`, `src/styles`
+- Branches: `feature/*`, commits conventionnels (`feat:`, `fix:`, `docs:`)
+
 ## 🧭 Runbook Prod
 - Déploiement: via GitHub Actions (merge → prod). En cas d’échec, consulter Actions logs.
 - Actifs GCP: Cloud Functions v2, Cloud Run images (Artifact Registry). Nettoyage: `firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force`.
 - Rotation secrets: régénérer la clé du compte de service dans GCP, mettre à jour le secret GitHub.
 - Restauration: re-run d’un workflow réussi précédent ou rollback du commit.
 
-## 🧑‍⚖️ Légal (à compléter)
-- Privacy Policy, Terms, Cookies: pages à créer (placeholders) et lier depuis le footer/guide.
+## 🧑‍⚖️ Légal
+- Privacy Policy, Terms, Cookies: pages `/legal/*` (placeholders) et liens depuis le Guide.
 
 ## 🧪 CI Qualité
-- Jobs recommandés: lint, typecheck, build sur PR. Ajouter un badge status Actions dans ce README.
+- Jobs recommandés: lint, typecheck, build sur PR. Badge Actions ajouté en tête.
 
 ## 📁 Structure
 

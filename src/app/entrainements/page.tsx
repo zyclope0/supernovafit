@@ -334,7 +334,7 @@ export default function EntrainementsPage() {
 function SimpleAllTrainingsList({ trainings, onShowDetail }: { trainings: Entrainement[]; onShowDetail: (t: Entrainement) => void }) {
   const sorted = [...trainings].sort((a, b) => b.date.localeCompare(a.date))
   const [page, setPage] = useState(1)
-  const pageSize = 20
+  const [pageSize, setPageSize] = useState(20)
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
   const start = (page - 1) * pageSize
   const pageItems = sorted.slice(start, start + pageSize)
@@ -346,7 +346,22 @@ function SimpleAllTrainingsList({ trainings, onShowDetail }: { trainings: Entrai
 
   return (
     <div className="space-y-2">
-      <div className="text-xs text-muted-foreground">{sorted.length} séances • Page {page}/{totalPages}</div>
+      <div className="flex items-center justify-between">
+        <div className="text-xs text-muted-foreground">{sorted.length} séances • Page {page}/{totalPages}</div>
+        <label className="text-xs text-muted-foreground flex items-center gap-2">
+          Par page
+          <select
+            aria-label="Taille de page"
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
+            className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white"
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
+      </div>
       <div className="divide-y divide-white/10">
         {pageItems.map((t) => (
           <button

@@ -35,7 +35,7 @@ export default function GuidePage() {
             </div>
             <p className="text-sm text-muted-foreground">Tout ce qu’il faut pour bien démarrer et maîtriser l’application (1 sportif + 1 coach).</p>
           </div>
-          <Link href="/auth" className="px-3 py-2 rounded-lg bg-neon-purple/20 text-neon-purple hover:bg-neon-purple/30 text-sm">Retour Auth</Link>
+          <Link href="/auth#comptes-de-test" className="px-3 py-2 rounded-lg bg-neon-purple/20 text-neon-purple hover:bg-neon-purple/30 text-sm">Comptes de test</Link>
         </div>
 
         {/* Démarrage rapide */}
@@ -50,6 +50,25 @@ export default function GuidePage() {
             <Pill href="/entrainements" label="Aller à Entraînements" />
             <Pill href="/mesures" label="Aller à Mesures" />
             <Pill href="/journal" label="Aller à Journal" />
+          </div>
+        </Section>
+
+        {/* Comptes de test */}
+        <div id="comptes-de-test" className="-mt-4" />
+        <Section title="Comptes de test" icon={BookOpen}>
+          <div className="text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                <div className="text-white font-medium">Coach</div>
+                <div className="text-white/80 text-xs">Email: coach@supernovafit.com</div>
+                <div className="text-white/80 text-xs">Mot de passe: Test123!</div>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                <div className="text-white font-medium">Athlète</div>
+                <div className="text-white/80 text-xs">Email: test@supernovafit.com</div>
+                <div className="text-white/80 text-xs">Mot de passe: Test123!</div>
+              </div>
+            </div>
           </div>
         </Section>
 
