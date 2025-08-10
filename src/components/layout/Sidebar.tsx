@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { APP_VERSION, APP_RELEASE_DATE } from '@/lib/constants'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
 import {
   HomeIcon,
@@ -27,6 +28,7 @@ const userNavigation = [
   { name: 'Entraînements', href: '/entrainements', icon: CalendarDaysIcon },
   { name: 'Mesures', href: '/mesures', icon: ScaleIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
+  { name: 'Guide', href: '/guide', icon: BookOpenIcon },
   { name: 'Mon Profil', href: '/profil', icon: UserIcon },
 ]
 
@@ -79,6 +81,7 @@ export default function Sidebar() {
           type="button"
           className="glass-effect p-2 rounded-lg glow-purple"
           onClick={() => setSidebarOpen(true)}
+          aria-label="Ouvrir le menu latéral"
         >
           <Bars3Icon className="h-6 w-6 text-white" />
         </button>
@@ -109,6 +112,7 @@ export default function Sidebar() {
               type="button"
               className="lg:hidden p-1 rounded-md text-white hover:bg-white/10"
               onClick={() => setSidebarOpen(false)}
+              aria-label="Fermer le menu latéral"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -141,6 +145,7 @@ export default function Sidebar() {
                     }
                   `}
                   onClick={() => setSidebarOpen(false)}
+                  aria-current={isActive ? 'page' : undefined}
                 >
                   <item.icon className={`
                     mr-3 h-5 w-5 transition-colors duration-200
@@ -189,8 +194,8 @@ export default function Sidebar() {
           {/* Footer */}
           <div className="p-4 border-t border-white/10">
             <div className="text-xs text-muted-foreground text-center">
-              <p>Version 1.0.0</p>
-              <p className="mt-1">Thème Espace 🚀</p>
+              <p>Version {APP_VERSION} <span className="text-white/30">({APP_RELEASE_DATE})</span></p>
+              <p className="mt-1">Thème Espace 🚀 · <Link href="/nouveautes" className="underline decoration-dotted hover:text-white">Nouveautés</Link></p>
             </div>
           </div>
         </div>

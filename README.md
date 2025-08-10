@@ -43,6 +43,19 @@ npm run dev
 npm run build && npm run start
 ```
 
+## 🔧 Exemple .env.local
+
+```bash
+# Firebase (Public keys)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+```
+
 ## 🔐 Firebase (prod)
 
 - Règles & Indexes
@@ -54,10 +67,75 @@ firebase deploy --only firestore:rules,firestore:indexes --project supernovafit-
 firebase deploy --only storage --project supernovafit-a6fe7
 ```
 
-## 🚀 Hébergement
+## 🚀 Hébergement (Firebase Hosting SSR + GitHub Actions)
 
-- Vercel (recommandé): importer le repo, définir les `NEXT_PUBLIC_*` Firebase, déployer
-- Firebase Hosting (SSR Next.js): `firebase experiments:enable webframeworks`, `firebase init hosting`, puis `firebase deploy`
+### Prérequis GCP/Firebase
+- Activer APIs: Cloud Functions, Cloud Run, Cloud Build, Artifact Registry, Firebase Extensions, Compute Engine
+- Lier la facturation (plan Blaze)
+- IAM (compte de service GitHub Actions):
+  - roles/firebasehosting.admin
+  - roles/cloudfunctions.admin
+  - roles/run.admin
+  - roles/artifactregistry.writer
+  - roles/iam.serviceAccountUser
+  - roles/firebasemods.admin
+  - (optionnel) roles/serviceusage.serviceUsageAdmin
+
+### Secrets GitHub (Settings → Actions → Secrets)
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`
+- `FIREBASE_SERVICE_ACCOUNT_SUPERNOVAFIT_A6FE7` (JSON clé compte de service)
+
+### Workflows fournis
+- `.github/workflows/firebase-hosting-merge.yml` (déploiement live sur main)
+- `.github/workflows/firebase-hosting-pull-request.yml` (préviews PR)
+
+Les workflows construisent l’app (Node 20), injectent les variables, appliquent une policy de cleanup Artifact Registry, puis déploient Hosting avec l’intégration frameworks.
+
+### Commandes locales utiles
+```
+# Déployer Hosting (si besoin local)
+firebase deploy --only hosting --project supernovafit-a6fe7
+
+# Déployer règles & indexes
+firebase deploy --only firestore:rules,firestore:indexes --project supernovafit-a6fe7
+
+# Politique cleanup Artifact Registry (images Cloud Functions)
+firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force --project supernovafit-a6fe7
+```
+
+### Domaines
+- Canonique: `https://supernovafit-a6fe7.web.app`
+- Alias legacy: `https://supernovafit-a6fe7.firebaseapp.com`
+
+## 🗄️ Modèle de données (Firestore)
+- `users/{userId}`: { id, role: 'coach'|'sportif', nom, email, ... }
+- `repas/{id}`: { user_id, date, repas: 'petit_dej'|'collation_matin'|'dejeuner'|'collation_apres_midi'|'diner'|'collation_soir', aliments[], macros }
+- `entrainements/{id}`: { user_id, date, type, duree, calories, ... }
+- `mesures/{id}`: { user_id, date, poids, imc, masse_grasse, ... }
+- `photos/{id}`: { user_id, date, url, type, mesure_id?, commentaire }
+- `journal/{id}`: { user_id, date, note, humeur, energie, ... }
+- `coach_comments/{id}`: { coach_id, athlete_id, module, date?, training_id?, entry_id?, mesure_id?, comment, read_by_athlete? }
+- `coach_diet_plans/{id}`: { coach_id, athlete_id, date_creation, 6 champs repas, notes_generales }
+
+Indexes: voir `firestore.indexes.json` (coach_comments, coach_diet_plans, menus_type).
+
+## 🧭 Runbook Prod
+- Déploiement: via GitHub Actions (merge → prod). En cas d’échec, consulter Actions logs.
+- Actifs GCP: Cloud Functions v2, Cloud Run images (Artifact Registry). Nettoyage: `firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force`.
+- Rotation secrets: régénérer la clé du compte de service dans GCP, mettre à jour le secret GitHub.
+- Restauration: re-run d’un workflow réussi précédent ou rollback du commit.
+
+## 🧑‍⚖️ Légal (à compléter)
+- Privacy Policy, Terms, Cookies: pages à créer (placeholders) et lier depuis le footer/guide.
+
+## 🧪 CI Qualité
+- Jobs recommandés: lint, typecheck, build sur PR. Ajouter un badge status Actions dans ce README.
 
 ## 📁 Structure
 
@@ -81,9 +159,12 @@ src/
 - “Marquer comme lu” (athlète) + règles Firestore dédiées
 - Badges “nouveaux commentaires” en sidebar (<24h, non lus)
 
-## ✅ Qualité & Perf
+## ✅ Qualité & Perf (Lighthouse home)
 
-- ESLint/Typecheck OK; imports dynamiques pour charts/modales lourdes; next/image optimisé; preconnect images; pagination sur grandes listes
+- FCP≈0.44s, LCP≈1.31s, TBT≈0.72s, CLS≈0.08
+- Imports dynamiques (charts, modales, import Garmin, PhotoUpload)
+- next/image + sizes + preconnect images
+- Sections historiques fermées par défaut (moins de JS au mount)
 
 ## 🛣️ Roadmap courte (post‑RC)
 

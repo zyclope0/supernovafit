@@ -670,7 +670,7 @@ export default function JournalPage() {
                 </div>
               </div>
             ) : (
-              <CollapsibleCard title="Historique" defaultOpen>
+              <CollapsibleCard title="Historique" defaultOpen={false}>
                 <div className="grid gap-4">
                   {entries.filter(e => e.date === selectedDate).map((entry) => (
                     <EntryCardMemo

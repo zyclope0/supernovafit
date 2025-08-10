@@ -10,7 +10,7 @@
 - **Design** : Thème espace futuriste avec effets néon (purple, cyan, pink, green)
 - **Tech** : Next.js 14, TypeScript, Firebase, Tailwind CSS
 
-## 🎯 État Actuel (17 Janvier 2025 - Post-Revue Complète)
+## 🎯 État Actuel (10 Août 2025 - Post-déploiement Hosting + Optimisations)
 
 ### ✅ Phase 1 TERMINÉE
 1. **Structure Next.js** : App Router, TypeScript, configuration complète
@@ -117,7 +117,7 @@ password: "Test123!"
 
 ## 🚀 État Actuel - 6 MODULES PRODUCTION-READY (mis à jour)
 
-### ✅ **MODULES 100% FONCTIONNELS** 
+### ✅ **MODULES 100% FONCTIONNELS** (mis à jour)
 #### 📊 **DASHBOARD** - Tableau de bord temps réel
 - **Statistiques live** : Calories/protéines jour, entraînements semaine, poids récent
 - **Actions rapides** : Liens directs vers tous les 6 modules
@@ -168,13 +168,16 @@ password: "Test123!"
 - **Préférences** : Unités (métrique/impérial), langue, paramètres
 - **Indicateur complétude** : Suivi du remplissage profil
 
-### ✅ **QUALITÉ PRODUCTION ATTEINTE**
-- **🔔 Toast notifications** : UX moderne, plus d'alert() ✅
+### ✅ **QUALITÉ PRODUCTION ATTEINTE** (hébergement Firebase SSR)
+- **🔔 Toast notifications** : UX moderne ✅
 - **⏳ Loading states** : Feedback visuel sur toutes actions ✅  
 - **🧹 Code propre** : Suppression logs debug ✅
 - **✅ Validation Zod** : Formulaires sécurisés ✅
 - **⭐ Système favoris** : Usage optimisé ✅
-- **🔧 Config Next.js** : Erreurs undici corrigées ✅
+- **🔧 Config Next.js** : undici/fallbacks ✅
+- **🧭 Imports dynamiques** généralisés (charts, modales, import Garmin, PhotoUpload) ✅
+- **📷 next/image** + preconnect images ✅
+- **📉 Lighthouse (home)**: FCP≈0.44s, LCP≈1.31s, TBT≈0.72s, CLS≈0.08 ✅
 
 ## 🎯 **PROCHAINES ÉTAPES - ROADMAP AJUSTÉE (post‑consolidation)**
 
@@ -194,14 +197,15 @@ Important: Les modules Mesures & Journal sont déjà réalisés et en production
 - Sauvegarde/export Firestore: procédure manuelle (script ultérieur)
 
 3) Performance & UX
-- Pagination listes 30j+ (journal/entraînements/diète)
-- Optimisation images (WebP, tailles responsives via `next/image`)
-- Bundle analysis + split (`next/dynamic`) pour charts/sections lourdes
-- Audit Lighthouse
+- Pagination listes 30j+ (journal/entraînements/diète) — partiel (sections historiques fermées par défaut)
+- Optimisation images (`next/image`, sizes) — OK
+- Split bundles (`next/dynamic`) — OK (charts, modales, Garmin, PhotoUpload)
+- Audit Lighthouse — en vert hors TBT résiduel (<1s)
 
 4) Déploiement
-- Vercel: variables prod Firebase + CORS
-- Domaine, HTTPS, Analytics prod
+- Firebase Hosting (SSR Next.js): workflows GitHub Actions, service account, APIs GCP activées
+- Domaine par défaut: `web.app` (canonique), alias `firebaseapp.com`
+- Analytics prod activé
 
 Livrable: RC prête à déployer, doc à jour, checklists au vert.
 
@@ -246,7 +250,7 @@ Livrable: RC prête à déployer, doc à jour, checklists au vert.
 4. **Planification** : Meal prep semaine
 5. **Social** : Partage achievements (optionnel)
 
-## 🚩 Fonctionnalités visibles (UI/UX) non implémentées ou partielles
+## 🚩 Fonctionnalités visibles (UI/UX) non implémentées ou partielles (actualisé)
 
 - Mode Coach (parties non livrées)
   - Invitations coach → athlète (token/email; collection prête, envoi non branché)
@@ -274,10 +278,9 @@ Livrable: RC prête à déployer, doc à jour, checklists au vert.
   - Ajustements macros prédictifs (profilage MET/BMR)
   - Détection d’anomalies (surmenage, déficit)
 - Perf & Qualité
-  - Pagination listes 30j+ (Journal/Entraînements/Diète historiques)
-  - Optimisation images (WebP, compression)
-  - Bundle analysis/splitting
-  - Tests automatisés (Jest/RTL, e2e éventuel)
+  - Pagination avancée (pages > 30j)
+  - Bundle analysis complémentaire (réduire JS partagé)
+  - Tests automatisés (Jest/RTL, e2e)
   - CORS/vars prod documentées et appliquées côté déploiement
 
 ## ⚠️ Points d'Attention Post-Revue (17 Janvier 2025)
@@ -344,12 +347,9 @@ Livrable: RC prête à déployer, doc à jour, checklists au vert.
 - `ModuleComments` compact (scroll fin, clamp)
 - Focus visible global; skeletons compacts; memo cartes; useMemo ciblé
 
-## 📊 Métriques Cibles
-
-- **Performance** : Lighthouse > 90
-- **Bundle** : < 200kb First Load JS
-- **UX** : Temps réponse < 200ms
-- **Mobile** : 100% responsive
+## 📊 Métriques (home — dernière mesure)
+- FCP ≈ 0.44s, LCP ≈ 1.31s, TBT ≈ 0.72s, CLS ≈ 0.08
+- Cible TBT < 0.5s — doable avec split supplémentaire
 
 ---
 

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Sitemap: https://supernovafit-a6fe7.web.app/sitemap.xml
+
+

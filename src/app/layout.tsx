@@ -8,6 +8,13 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'SuperNovaFit - Plateforme Diète & Entraînement',
   description: 'Suivez votre diète, vos entraînements et votre progression physique',
+  icons: [{ rel: 'icon', url: '/favicon.ico' }],
+  openGraph: {
+    title: 'SuperNovaFit',
+    description: 'Suivez votre diète, vos entraînements et votre progression physique',
+    siteName: 'SuperNovaFit',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({

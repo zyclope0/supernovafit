@@ -399,6 +399,7 @@ export default function DietePage() {
         {/* Résumé du jour */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <DailySummary todayMeals={todayMeals} />
+          {todayMeals.length > 0 && (
           <MacrosChart 
             macros={todayMeals.reduce((total, meal) => ({
               kcal: total.kcal + (meal.macros?.kcal || 0),
@@ -408,6 +409,7 @@ export default function DietePage() {
             }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })}
             title="Répartition du jour"
           />
+          )}
         </div>
 
         {/* Formulaire d'ajout/édition de repas */}

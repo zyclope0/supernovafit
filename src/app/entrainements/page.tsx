@@ -10,7 +10,7 @@ const TrainingVolumeChart = dynamic(() => import('@/components/ui/TrainingVolume
 const HeartRateChart = dynamic(() => import('@/components/ui/HeartRateChart'), { ssr: false })
 const TrainingTypeChart = dynamic(() => import('@/components/ui/TrainingTypeChart'), { ssr: false })
 const PerformanceChart = dynamic(() => import('@/components/ui/PerformanceChart'), { ssr: false })
-import GarminImport from '@/components/ui/GarminImport'
+const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), { ssr: false })
 import { useAuth } from '@/hooks/useAuth'
 import { useEntrainements, useCoachCommentsByModule } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
@@ -281,7 +281,7 @@ export default function EntrainementsPage() {
 
         {/* Liste des entraînements (filtrée par date) */}
         {!showForm && user && (
-          <CollapsibleCard title="Historique des entraînements" defaultOpen>
+          <CollapsibleCard title="Historique des entraînements" defaultOpen={false}>
             {loading ? (
               <div className="glass-effect p-6 rounded-xl border border-white/10">
                 <div className="animate-pulse">

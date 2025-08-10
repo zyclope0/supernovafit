@@ -22,6 +22,7 @@ export default function CollapsibleCard({ title, defaultOpen = true, right, coun
           onClick={() => setOpen(!open)}
           aria-expanded={open}
           aria-controls={panelId}
+          aria-label={`${open ? 'Replier' : 'Déplier'} la section ${title}`}
           className="flex items-center gap-2"
         >
           {open ? <ChevronDown className="w-4 h-4 text-white" /> : <ChevronRight className="w-4 h-4 text-white" />}
