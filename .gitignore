@@ -16,6 +16,12 @@
 # production
 /build
 
+# firebase local build artifacts (do not commit)
+.firebase/
+
+# project archives (kept locally only)
+__archive__/
+
 # misc
 .DS_Store
 *.pem
