@@ -187,7 +187,10 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
         ignoreLocation: true,
         minMatchCharLength: 2,
         shouldSort: false,
-        getFn: (obj: any, path: string) => normalizeText(String((obj as any)[path] || '')),
+        getFn: (obj: OpenFoodFactsProduct, path: string | string[]) => {
+          const key = Array.isArray(path) ? path[0] : path
+          return normalizeText(String((obj as any)[key] ?? ''))
+        },
       })
 
       const fuseQuery = normalizedQuery
