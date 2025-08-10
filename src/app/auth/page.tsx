@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import MainLayout from '@/components/layout/MainLayout'
+import { LogIn, Mail, KeyRound, Info } from 'lucide-react'
 
 export default function AuthPage() {
   const [email, setEmail] = useState('')
@@ -81,14 +82,14 @@ export default function AuthPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-md mx-auto">
-        <div className="glass-effect p-8 rounded-xl border border-white/10">
+      <div className="max-w-3xl mx-auto">
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Connexion */}
+          <div className="glass-effect p-8 rounded-xl border border-white/10">
           <div className="text-center mb-6">
-            <div className="text-4xl mb-3">🔐</div>
-            <h1 className="text-2xl font-bold neon-text mb-2">Authentification</h1>
-            <p className="text-muted-foreground">
-              Testez la connexion Firebase
-            </p>
+              <LogIn className="h-8 w-8 mx-auto mb-3 text-neon-purple" />
+              <h1 className="text-2xl font-bold neon-text mb-2">Connexion</h1>
+              <p className="text-muted-foreground">Accédez à votre espace</p>
           </div>
 
           {message && (
@@ -118,7 +119,7 @@ export default function AuthPage() {
 
             <div>
               <label className="block text-sm font-medium text-white mb-2">
-                Mot de passe (pour test)
+                Mot de passe (test)
               </label>
               <input
                 type="password"
@@ -149,9 +150,54 @@ export default function AuthPage() {
               </button>
             </div>
           </form>
+          </div>
 
-          <div className="mt-6 text-center text-xs text-muted-foreground">
-            <p>Test Firebase - Créez un compte dans Firebase Console</p>
+          {/* Comptes de test + Guide */}
+          <div className="glass-effect p-8 rounded-xl border border-white/10">
+            <div className="mb-4">
+              <Mail className="h-6 w-6 text-neon-cyan" />
+              <h2 className="mt-2 text-lg font-semibold text-white">Comptes de test</h2>
+              <p className="text-xs text-muted-foreground">Utilisez ces identifiants pour explorer l'app</p>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-white font-medium">Coach</div>
+                    <div className="text-muted-foreground">coach@supernovafit.com</div>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <KeyRound className="h-4 w-4" /> <span>Test123!</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-white font-medium">Sportif</div>
+                    <div className="text-muted-foreground">test@supernovafit.com</div>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <KeyRound className="h-4 w-4" /> <span>Test123!</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <div className="flex items-center gap-2">
+                <Info className="h-5 w-5 text-neon-purple" />
+                <h3 className="text-white font-semibold">Guide rapide</h3>
+              </div>
+              <ul className="mt-3 space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                <li><span className="text-white">Diète</span>: ajoutez des repas, utilisez les <em>menu‑types</em>, voyez les recommandations coach et messages du jour.</li>
+                <li><span className="text-white">Entraînements</span>: créez/éditez vos séances, import Garmin, graphiques (volume, FC, perf).</li>
+                <li><span className="text-white">Mesures & Photos</span>: enregistrez vos mesures, comparez vos photos avant/après.</li>
+                <li><span className="text-white">Journal</span>: notez humeur/énergie, ajoutez des photos libres, suivez les objectifs et badges.</li>
+                <li><span className="text-white">Commentaires coach</span>: visibles dans chaque module à la date ou l’élément concerné; marquez comme lus.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
