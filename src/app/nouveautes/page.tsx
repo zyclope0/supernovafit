@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 import { APP_VERSION, APP_RELEASE_DATE } from '@/lib/constants'
+import MainLayout from '@/components/layout/MainLayout'
 
 export default function NouveautesPage() {
   return (
-    <div className="p-4 md:p-6 space-y-4">
+    <MainLayout>
       <div className="max-w-3xl mx-auto space-y-4">
         <div className="flex items-baseline justify-between">
           <h1 className="text-xl md:text-2xl font-bold neon-text">Nouveautés</h1>
@@ -15,13 +16,21 @@ export default function NouveautesPage() {
 
         <CollapsibleCard title={`v${APP_VERSION} — Améliorations récentes`} defaultOpen>
           <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li>SEO: favicon + Open Graph dans <code>layout.tsx</code></li>
-            <li>Robots/Sitemap: ajout de <code>/robots.txt</code> et <code>/sitemap.xml</code></li>
-            <li>Navigation: lien discret vers le Guide depuis la Sidebar</li>
-            <li>Accessibilité: <code>aria-label</code> sur boutons (menu mobile, sections repliables)</li>
-            <li>Commentaires Coach: affichage contextuel par module et badge 24h dans la Sidebar</li>
-            <li>Diète: sections repliables et rendu conditionnel des graphiques pour réduire le JS initial</li>
-            <li>Perf: imports dynamiques (charts, modales), images via <code>next/image</code></li>
+            <li>Recherche aliments plus intelligente (fuzzy matching, synonymes FR, meilleure pertinence)</li>
+            <li>Résultats de recherche plus lisibles (fond moins transparent)</li>
+            <li>Historique paginé (Journal et Entraînements) avec taille de page (10/20/50)</li>
+            <li>Accès rapide “Comptes de test” depuis le Guide</li>
+          </ul>
+        </CollapsibleCard>
+
+        <CollapsibleCard title="v1.1.0 — Améliorations précédentes" defaultOpen={false}>
+          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+            <li>SEO: favicon + Open Graph</li>
+            <li>Robots/Sitemap</li>
+            <li>Navigation: lien Guide dans la Sidebar</li>
+            <li>Accessibilité: aria-label sur boutons</li>
+            <li>Commentaires Coach: affichage contextuel + badge 24h</li>
+            <li>Diète: sections rétractables, charts conditionnels</li>
           </ul>
         </CollapsibleCard>
 
@@ -31,7 +40,7 @@ export default function NouveautesPage() {
           </p>
         </CollapsibleCard>
       </div>
-    </div>
+    </MainLayout>
   )
 }
 

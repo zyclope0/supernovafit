@@ -48,7 +48,7 @@ function normalizeText(input: string): string {
   return input
     .toLowerCase()
     .normalize('NFD')
-    .replace(/\p{Diacritic}+/gu, '') // retire accents
+    .replace(/[\u0300-\u036f]+/g, '') // retire accents (combining marks)
     .replace(/[^a-z0-9\s]/g, ' ') // retire ponctuation
     .replace(/\s+/g, ' ') // espaces multiples
     .trim()
