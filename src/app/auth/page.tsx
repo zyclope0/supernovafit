@@ -74,6 +74,11 @@ export default function AuthPage() {
                 Se déconnecter
               </button>
             </div>
+            <div className="mt-6 text-center text-xs">
+              <Link href="/guide" className="inline-flex items-center gap-1 text-neon-cyan hover:underline">
+                <Info className="h-4 w-4" /> Guide complet de l’application
+              </Link>
+            </div>
           </div>
         </div>
       </MainLayout>

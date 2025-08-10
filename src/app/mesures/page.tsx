@@ -12,7 +12,7 @@ import { formatDate } from '@/lib/utils'
 import { Plus, TrendingUp, Scale, Target, Edit3, Trash2, Calculator, BarChart3, Camera } from 'lucide-react'
 import dynamic from 'next/dynamic'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
-import PhotoUpload from '@/components/ui/PhotoUpload'
+const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
 function StatsCard({ 
   title, 
