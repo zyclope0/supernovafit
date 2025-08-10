@@ -119,7 +119,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
 
       {/* Résultats */}
       {isOpen && results.length > 0 && (
-        <div className="absolute z-[100] w-full mt-2 glass-effect border border-white/10 rounded-lg overflow-hidden max-h-96 overflow-y-auto shadow-2xl">
+        <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden max-h-96 overflow-y-auto shadow-2xl">
           {results.map((product, index) => {
             const isComplete = hasCompleteNutritionalData(product)
             const isSelected = index === selectedIndex
@@ -165,13 +165,21 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
                     )}
                   </div>
                   {product.image_url && (
-                    <div className="relative w-12 h-12 ml-3">
+                    <div className="relative w-12 h-12 ml-3 overflow-hidden rounded">
                       <Image
                         src={product.image_url}
                         alt={product.product_name}
                         fill
                         sizes="48px"
-                        className="object-cover rounded"
+                        className="object-cover"
+                        unoptimized
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          // Masquer le conteneur si l'image échoue
+                          if (target && target.parentElement) {
+                            target.parentElement.classList.add('hidden')
+                          }
+                        }}
                       />
                     </div>
                   )}
@@ -184,7 +192,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
 
       {/* Message si pas de résultats */}
       {isOpen && query.length >= 2 && !isLoading && results.length === 0 && (
-        <div className="absolute z-[100] w-full mt-2 glass-effect border border-white/10 rounded-lg p-4 text-center text-muted-foreground shadow-2xl">
+        <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg p-4 text-center text-muted-foreground shadow-2xl">
           Aucun aliment trouvé pour "{query}"
         </div>
       )}

@@ -4,6 +4,7 @@
  */
 
 import { OpenFoodFactsProduct } from '@/types';
+import Fuse from 'fuse.js'
 
 const API_BASE_URL = 'https://world.openfoodfacts.org';
 
@@ -43,8 +44,23 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 /**
  * Améliorer la requête de recherche
  */
+function normalizeText(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}+/gu, '') // retire accents
+    .replace(/[^a-z0-9\s]/g, ' ') // retire ponctuation
+    .replace(/\s+/g, ' ') // espaces multiples
+    .trim()
+}
+
+function singularize(input: string): string {
+  // simplification FR basique: pommes -> pomme, fraises -> fraise, oeufs -> oeuf
+  return input.replace(/(es|s)\b/g, '')
+}
+
 function enhanceSearchQuery(query: string): string {
-  const normalizedQuery = query.toLowerCase().trim();
+  const normalizedQuery = singularize(normalizeText(query));
   
   // Chercher des synonymes pour chaque mot
   const words = normalizedQuery.split(' ');
@@ -101,7 +117,7 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
     return [];
   }
 
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = singularize(normalizeText(query));
   const cacheKey = `${normalizedQuery}-${limit}`;
   
   // Vérifier le cache
@@ -156,52 +172,54 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
        index === self.findIndex(p => p.code === product.code)
      );
      
-     // Traitement rapide et efficace
-     const products: OpenFoodFactsProduct[] = uniqueProducts
-       .filter((product: any) => {
-         return product.product_name && 
-                product.nutriments &&
-                (product.nutriments['energy-kcal_100g'] > 0 || product.nutriments.energy_100g > 0);
-       })
-       .map(transformProduct)
-       .filter((product: OpenFoodFactsProduct) => {
-         const productName = product.product_name.toLowerCase();
-         
-         // Filtrage strict : le terme de recherche DOIT être dans le nom
-         const searchWords = normalizedQuery.split(' ').filter(word => word.length >= 2);
-         
-         // Pour "pomme", on veut des produits qui contiennent "pomme" ou "apple"
-         const relevantTerms = [...searchWords];
-         searchWords.forEach(word => {
-           const synonym = FRENCH_SYNONYMS[word];
-           if (synonym) relevantTerms.push(synonym);
-         });
-         
-         // Au moins un terme pertinent doit être dans le nom du produit
-         return relevantTerms.some(term => {
-           // Recherche en tant que mot complet pour éviter "pomme" dans "pommes de terre"
-           const regex = new RegExp(`\\b${term}\\b`, 'i');
-           return regex.test(productName);
-         });
-       })
-             .sort((a: OpenFoodFactsProduct, b: OpenFoodFactsProduct) => {
-        const aName = a.product_name.toLowerCase();
-        const bName = b.product_name.toLowerCase();
-        
-        // 1. Correspondance exacte
-        const aExact = aName.includes(normalizedQuery) ? 1 : 0;
-        const bExact = bName.includes(normalizedQuery) ? 1 : 0;
-        if (aExact !== bExact) return bExact - aExact;
-        
-        // 2. Score de fraîcheur
-        const aFresh = calculateFreshnessScore(aName);
-        const bFresh = calculateFreshnessScore(bName);
-        if (aFresh !== bFresh) return bFresh - aFresh;
-        
-        // 3. Longueur du nom
-        return aName.length - bName.length;
+      // Pré-filtre produits valides
+      const candidates: OpenFoodFactsProduct[] = uniqueProducts
+        .filter((product: any) => product.product_name && product.nutriments)
+        .map(transformProduct)
+
+      // Fuzzy matching avec Fuse.js (normalisation accents + pluriels)
+      const fuse = new Fuse(candidates, {
+        keys: [
+          { name: 'product_name', weight: 0.7 },
+          { name: 'brands', weight: 0.2 },
+        ],
+        threshold: 0.38, // assez strict pour pertinence
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        shouldSort: false,
+        getFn: (obj: any, path: string) => normalizeText(String((obj as any)[path] || '')),
       })
-      .slice(0, limit);
+
+      const fuseQuery = normalizedQuery
+      const fuseResults = fuse.search(fuseQuery).slice(0, limit * 3)
+      const fuzzyMatched = fuseResults.map(r => r.item)
+
+      // Scoring final: fuzzy score (implicite via ordre), + fraîcheur, + catégorie
+      const CATEGORY_BOOSTS: Array<{ tag: string; boost: number }> = [
+        { tag: 'en:fruits', boost: 6 },
+        { tag: 'en:meats', boost: 5 },
+        { tag: 'en:vegetables', boost: 5 },
+        { tag: 'en:fish-and-seafood', boost: 5 },
+        { tag: 'en:dairies', boost: 2 },
+      ]
+
+      const products = fuzzyMatched
+        .map((p) => {
+          const name = normalizeText(p.product_name)
+          const freshScore = calculateFreshnessScore(name)
+          let categoryBoost = 0
+          const tags = (p as any).categories_tags || []
+          CATEGORY_BOOSTS.forEach(({ tag, boost }) => {
+            if (tags.includes(tag)) categoryBoost += boost
+          })
+          const nutritionBoost = hasCompleteNutritionalData(p) ? 3 : 0
+          const lengthPenalty = Math.max(0, Math.floor((name.length - 30) / 10))
+          const finalScore = freshScore + categoryBoost + nutritionBoost - lengthPenalty
+          return { p, finalScore }
+        })
+        .sort((a, b) => b.finalScore - a.finalScore)
+        .slice(0, limit)
+        .map(x => x.p)
 
          // Mettre en cache
      searchCache.set(cacheKey, products);
