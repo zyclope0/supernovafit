@@ -7,6 +7,7 @@ import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { formatNumber } from '@/lib/utils'
 import dynamic from 'next/dynamic'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
+const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
 
 // Composants du dashboard
 function WelcomeCard({ username }: { username?: string }) {
@@ -126,6 +127,10 @@ export default function Dashboard() {
     .filter(m => m.poids)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
 
+  // Estimation TDEE simple si profil minimal (poids) disponible
+  // Hypothèse: TDEE ~ 30 kcal/kg/jour (approx maint.) si pas d'autres infos
+  const estimatedTDEE = latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0
+
   // Loading state
   if (repasLoading && trainingsLoading && measuresLoading) {
     return (
@@ -193,6 +198,17 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <QuickActions />
           <ProgressChart repas={repas} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE} />
+          {/* Placeholder pour futur: humeur/énergie 7j ou objectifs */}
+          <div className="glass-effect p-6 rounded-xl border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">Conseil du jour</h3>
+            <p className="text-sm text-muted-foreground">
+              Hydratez-vous et visez des protéines à chaque repas pour optimiser la récupération.
+            </p>
+          </div>
         </div>
       </div>
     </MainLayout>

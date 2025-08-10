@@ -482,14 +482,75 @@ export default function DietePage() {
           onApplyTemplate={handleApplyTemplate}
         />
 
-        <HistoriqueModal
-          isOpen={showHistorique}
-          onClose={() => setShowHistorique(false)}
-          allRepas={repas}
-          currentDate={selectedDate}
-          onDateChange={setSelectedDate}
-        />
+        <HistoriqueSection allRepas={repas} />
       </div>
     </MainLayout>
   )
 } 
+
+function HistoriqueSection({ allRepas }: { allRepas: any[] }) {
+  const sorted = [...allRepas].sort((a, b) => b.date.localeCompare(a.date))
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
+  const start = (page - 1) * pageSize
+  const pageItems = sorted.slice(start, start + pageSize)
+
+  if (sorted.length === 0) return null
+
+  return (
+    <CollapsibleCard title="Historique des repas" defaultOpen={false}>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="text-xs text-muted-foreground">{sorted.length} jours • Page {page}/{totalPages}</div>
+          <label className="text-xs text-muted-foreground flex items-center gap-2">
+            Par page
+            <select
+              aria-label="Taille de page"
+              value={pageSize}
+              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
+              className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </label>
+        </div>
+        <div className="divide-y divide-white/10">
+          {pageItems.map((r) => (
+            <div key={r.id} className="py-2 flex items-center justify-between">
+              <div className="text-sm text-white">
+                {new Date(r.date).toLocaleDateString('fr-FR')}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {r.aliments?.length || 0} aliments • {r.macros?.kcal || 0} kcal
+              </div>
+            </div>
+          ))}
+        </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+              >
+                Précédent
+              </button>
+              <span className="text-xs text-muted-foreground">{start + 1}–{Math.min(sorted.length, start + pageSize)}</span>
+            </div>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+            >
+              Suivant
+            </button>
+          </div>
+        )}
+      </div>
+    </CollapsibleCard>
+  )
+}

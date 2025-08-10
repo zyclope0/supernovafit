@@ -82,6 +82,19 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     }
   }
 
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const highlight = (text: string) => {
+    const tokens = query.trim().split(/\s+/).filter(t => t.length >= 2)
+    if (tokens.length === 0) return text
+    const regex = new RegExp(`(${tokens.map(escapeRegExp).join('|')})`, 'gi')
+    const parts = text.split(regex)
+    return parts.map((part, i) =>
+      regex.test(part)
+        ? (<mark key={i} className="bg-yellow-400/30 text-white rounded px-0.5">{part}</mark>)
+        : (<span key={i}>{part}</span>)
+    )
+  }
+
   return (
     <div className="relative w-full">
       {/* Champ de recherche */}
@@ -142,7 +155,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h4 className="font-medium text-white">
-                        {product.product_name}
+                        {highlight(product.product_name)}
                       </h4>
                       {!isComplete && (
                         <span title="Données nutritionnelles incomplètes">
@@ -152,7 +165,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
                     </div>
                     {product.brands && (
                       <p className="text-sm text-muted-foreground mt-0.5">
-                        {product.brands}
+                        {highlight(product.brands)}
                       </p>
                     )}
                     {isComplete && (
