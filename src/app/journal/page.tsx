@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic'
 const PhotosLibresGallery = dynamic(() => import('@/components/ui/PhotosLibresGallery'), { ssr: false })
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
-import HistoriqueJournalModal from '@/components/ui/HistoriqueJournalModal'
+const HistoriqueJournalModal = dynamic(() => import('@/components/ui/HistoriqueJournalModal'), { ssr: false })
 import { calculateUserData, checkNewBadges } from '@/lib/badges'
 
 // Émojis pour les différents niveaux

@@ -5,7 +5,8 @@ import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { formatNumber } from '@/lib/utils'
-import CaloriesChart from '@/components/ui/CaloriesChart'
+import dynamic from 'next/dynamic'
+const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 
 // Composants du dashboard
 function WelcomeCard({ username }: { username?: string }) {

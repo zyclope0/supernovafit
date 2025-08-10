@@ -17,7 +17,7 @@ import { Entrainement } from '@/types'
 import { Plus, TrendingUp, Timer, Target, BarChart3, Upload } from 'lucide-react'
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
-import HistoriqueEntrainementsModal from '@/components/ui/HistoriqueEntrainementsModal'
+const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { ssr: false })
 
 function StatsCard({ title, value, unit, icon, color = "neon-green" }: {
   title: string

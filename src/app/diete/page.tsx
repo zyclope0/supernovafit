@@ -12,7 +12,7 @@ import { Plus, ChevronDown, ChevronRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
 import MenuTypesModal from '@/components/ui/MenuTypesModal'
-import HistoriqueModal from '@/components/ui/HistoriqueModal'
+const HistoriqueModal = dynamic(() => import('@/components/ui/HistoriqueModal'), { ssr: false })
 import CoachRecommendations from '@/components/ui/CoachRecommendations'
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
