@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import MainLayout from '@/components/layout/MainLayout'
 import { LogIn, Mail, KeyRound, Info } from 'lucide-react'
+import Link from 'next/link'
 
 export default function AuthPage() {
   const [email, setEmail] = useState('')

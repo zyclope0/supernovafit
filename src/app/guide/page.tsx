@@ -2,7 +2,7 @@
 
 import MainLayout from '@/components/layout/MainLayout'
 import Link from 'next/link'
-import { BookOpen, Rocket, ChefHat, Dumbbell, Ruler, NotebookPen, MessageCircle, Shield, Link as LinkIcon } from 'lucide-react'
+import { BookOpen, Rocket, ChefHat, Dumbbell, Ruler, MessageCircle, Shield, Link as LinkIcon } from 'lucide-react'
 
 export default function GuidePage() {
   const Section = ({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) => (
@@ -86,7 +86,7 @@ export default function GuidePage() {
         </Section>
 
         {/* Journal */}
-        <Section title="Journal & Motivation" icon={NotebookPen}>
+        <Section title="Journal & Motivation" icon={BookOpen}>
           <ul className="list-disc list-inside">
             <li>Notes quotidiennes: humeur, énergie, sommeil, stress, motivation.</li>
             <li>Photos libres (galerie), objectifs simples, badges automatiques.</li>
