@@ -44,6 +44,7 @@ function MealCard({
 }) {
   const hasFood = aliments.length > 0
   const [open, setOpen] = useState(!collapsible ? true : hasFood)
+  const detailsId = `meal-details-${mealId || mealType}`
 
   return (
     <div className="glass-effect p-4 rounded-lg border border-white/10 hover:glow-cyan transition-all">
@@ -56,12 +57,24 @@ function MealCard({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {macros && (
+            <span className="px-2 py-1 bg-white/10 text-white/80 rounded text-xs">
+              {Math.round(macros.kcal)} kcal
+            </span>
+          )}
+          {hasFood && (
+            <span className="px-2 py-1 bg-white/5 text-white/70 rounded text-xs">
+              {aliments.length} aliments
+            </span>
+          )}
           {collapsible && (
             <button
               type="button"
               onClick={() => setOpen(!open)}
               className="p-2 rounded-lg hover:bg-white/10 transition-colors"
               title={open ? 'Réduire' : 'Développer'}
+              aria-expanded={open}
+              aria-controls={detailsId}
             >
               {open ? (
                 <ChevronDown className="w-4 h-4 text-white" />
@@ -89,17 +102,17 @@ function MealCard({
       
       {/* Résumé compact toujours visible */}
       {macros && (
-        <div className="flex space-x-4 text-xs text-muted-foreground py-2 border-t border-white/5">
-          <span className="text-neon-green">{macros.kcal} kcal</span>
-          <span>P: {macros.prot}g</span>
-          <span>G: {macros.glucides}g</span>
-          <span>L: {macros.lipides}g</span>
+        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground py-2 border-t border-white/5">
+          <span className="text-neon-green">{Math.round(macros.kcal)} kcal</span>
+          <span>P: {macros.prot.toFixed(1)}g</span>
+          <span>G: {macros.glucides.toFixed(1)}g</span>
+          <span>L: {macros.lipides.toFixed(1)}g</span>
         </div>
       )}
 
       {/* Détails repliables */}
       {open && (
-        <div className="space-y-2 mt-2">
+        <div id={detailsId} className="space-y-2 mt-2">
           {hasFood ? (
             <>
               <div className="space-y-1">
@@ -151,6 +164,13 @@ function DailySummary({ todayMeals }: { todayMeals: any[] }) {
   const getPercentage = (value: number, objective: number) => 
     Math.min(Math.round((value / objective) * 100), 100)
 
+  const remaining = {
+    kcal: Math.max(0, objectives.kcal - Math.round(totals.kcal)),
+    prot: Math.max(0, objectives.prot - totals.prot),
+    glucides: Math.max(0, objectives.glucides - totals.glucides),
+    lipides: Math.max(0, objectives.lipides - totals.lipides),
+  }
+
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10">
       <h2 className="text-lg font-semibold text-white mb-4">Résumé du jour</h2>
@@ -183,7 +203,7 @@ function DailySummary({ todayMeals }: { todayMeals: any[] }) {
         <div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-muted-foreground">Calories</span>
-            <span className="text-neon-green">{getPercentage(totals.kcal, objectives.kcal)}%</span>
+            <span className="text-neon-green">{getPercentage(totals.kcal, objectives.kcal)}% • reste {remaining.kcal} kcal</span>
           </div>
           <div className="w-full bg-white/10 rounded-full h-2">
             <div 
@@ -195,12 +215,36 @@ function DailySummary({ todayMeals }: { todayMeals: any[] }) {
         <div>
           <div className="flex justify-between text-sm mb-1">
             <span className="text-muted-foreground">Protéines</span>
-            <span className="text-neon-cyan">{getPercentage(totals.prot, objectives.prot)}%</span>
+            <span className="text-neon-cyan">{getPercentage(totals.prot, objectives.prot)}% • reste {Math.max(0, (objectives.prot - totals.prot)).toFixed(1)}g</span>
           </div>
           <div className="w-full bg-white/10 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-neon-cyan to-neon-purple h-2 rounded-full transition-all duration-500" 
               style={{width: `${getPercentage(totals.prot, objectives.prot)}%`}}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-muted-foreground">Glucides</span>
+            <span className="text-neon-pink">{getPercentage(totals.glucides, objectives.glucides)}% • reste {Math.max(0, (objectives.glucides - totals.glucides)).toFixed(1)}g</span>
+          </div>
+          <div className="w-full bg-white/10 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-neon-pink to-neon-purple h-2 rounded-full transition-all duration-500" 
+              style={{width: `${getPercentage(totals.glucides, objectives.glucides)}%`}}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-muted-foreground">Lipides</span>
+            <span className="text-neon-purple">{getPercentage(totals.lipides, objectives.lipides)}% • reste {Math.max(0, (objectives.lipides - totals.lipides)).toFixed(1)}g</span>
+          </div>
+          <div className="w-full bg-white/10 rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-neon-purple to-neon-cyan h-2 rounded-full transition-all duration-500" 
+              style={{width: `${getPercentage(totals.lipides, objectives.lipides)}%`}}
             />
           </div>
         </div>
@@ -451,7 +495,7 @@ export default function DietePage() {
                 }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
                 
                 return (
-                  <CollapsibleCard key={meal.type} title={`${meal.icon} ${meal.name}`} defaultOpen={false}>
+                  <CollapsibleCard key={meal.type} title={`${meal.icon} ${meal.name}`} defaultOpen={true}>
                     <MealCardMemo 
                       mealName={meal.name}
                       mealIcon={meal.icon}
@@ -480,6 +524,14 @@ export default function DietePage() {
           onClose={() => setShowMenuTypes(false)}
           todayMeals={todayMeals}
           onApplyTemplate={handleApplyTemplate}
+        />
+
+        <HistoriqueModal
+          isOpen={showHistorique}
+          onClose={() => setShowHistorique(false)}
+          allRepas={repas}
+          currentDate={selectedDate}
+          onDateChange={(d) => setSelectedDate(d)}
         />
 
         <HistoriqueSection allRepas={repas} />
@@ -526,6 +578,13 @@ function HistoriqueSection({ allRepas }: { allRepas: any[] }) {
               <div className="text-xs text-muted-foreground">
                 {r.aliments?.length || 0} aliments • {r.macros?.kcal || 0} kcal
               </div>
+              <a
+                href={`?date=${r.date}`}
+                className="ml-3 px-2 py-1 text-xs bg-white/10 text-white rounded hover:bg-white/15"
+                aria-label={`Voir le jour ${new Date(r.date).toLocaleDateString('fr-FR')}`}
+              >
+                Voir
+              </a>
             </div>
           ))}
         </div>

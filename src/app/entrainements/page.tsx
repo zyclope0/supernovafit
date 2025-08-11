@@ -49,6 +49,7 @@ export default function EntrainementsPage() {
   const [showGarminImport, setShowGarminImport] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0])
+  const [dateFilterActive, setDateFilterActive] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Calculer les statistiques
@@ -264,7 +265,7 @@ export default function EntrainementsPage() {
             onClose={() => setShowHistory(false)}
             allTrainings={entrainements}
             currentDate={selectedDate}
-            onDateChange={(date) => setSelectedDate(date)}
+            onDateChange={(date) => { setSelectedDate(date); setDateFilterActive(true) }}
           />
         )}
 
@@ -279,9 +280,9 @@ export default function EntrainementsPage() {
           />
         )}
 
-        {/* Liste des entraînements (filtrée par date) */}
+        {/* Liste des entraînements (par date sélectionnée ou derniers par défaut) */}
         {!showForm && user && (
-          <CollapsibleCard title="Historique des entraînements" defaultOpen={false}>
+          <CollapsibleCard title="Historique des entraînements" defaultOpen={true}>
             {loading ? (
               <div className="glass-effect p-6 rounded-xl border border-white/10">
                 <div className="animate-pulse">
@@ -289,34 +290,78 @@ export default function EntrainementsPage() {
                   <div className="h-4 bg-white/20 rounded w-1/2"></div>
                 </div>
               </div>
-            ) : entrainements.filter(e => e.date === selectedDate).length > 0 ? (
-              <div className="space-y-4">
-                {entrainements
-                  .filter(training => training.date === selectedDate)
-                  .map((training) => (
-                  <TrainingCard
-                    key={training.id}
-                    training={training}
-                    onEdit={() => handleEdit(training)}
-                    onDelete={() => handleDelete(training)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
-                <div className="text-4xl mb-4">💪</div>
-                <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement ce jour</h3>
-                <p className="text-muted-foreground mb-4">
-                  Sélectionnez une autre date dans l'historique ou ajoutez un entraînement pour cette date.
-                </p>
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg font-medium hover:bg-neon-green/30 transition-colors"
-                >
-                  Ajouter un entraînement
-                </button>
-              </div>
-            )}
+            ) : (() => {
+              const trainingsForDate = entrainements.filter(e => e.date === selectedDate)
+              if (dateFilterActive) {
+                return trainingsForDate.length > 0 ? (
+                  <div className="space-y-4">
+                    {trainingsForDate.map((training) => (
+                      <TrainingCard
+                        key={training.id}
+                        training={training}
+                        onEdit={() => handleEdit(training)}
+                        onDelete={() => handleDelete(training)}
+                      />
+                    ))}
+                    <div className="flex justify-end pt-2">
+                      <button
+                        onClick={() => setDateFilterActive(false)}
+                        className="text-xs text-muted-foreground hover:text-white"
+                        aria-label="Effacer le filtre de date"
+                      >
+                        Effacer le filtre
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
+                    <div className="text-4xl mb-4">💪</div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement ce jour</h3>
+                    <p className="text-muted-foreground mb-4">Sélectionnez une autre date ou effacez le filtre pour voir les dernières séances.</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => setShowForm(true)}
+                        className="px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg font-medium hover:bg-neon-green/30 transition-colors"
+                      >
+                        Ajouter un entraînement
+                      </button>
+                      <button
+                        onClick={() => setDateFilterActive(false)}
+                        className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+                      >
+                        Effacer le filtre
+                      </button>
+                    </div>
+                  </div>
+                )
+              }
+              // Pas de filtre actif: afficher les 3 dernières séances
+              const latest = [...entrainements].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
+              return latest.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="text-xs text-muted-foreground">Dernières séances</div>
+                  {latest.map((training) => (
+                    <TrainingCard
+                      key={training.id}
+                      training={training}
+                      onEdit={() => handleEdit(training)}
+                      onDelete={() => handleDelete(training)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
+                  <div className="text-4xl mb-4">💪</div>
+                  <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement pour l'instant</h3>
+                  <button
+                    onClick={() => setShowForm(true)}
+                    className="px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg font-medium hover:bg-neon-green/30 transition-colors"
+                  >
+                    Ajouter un entraînement
+                  </button>
+                </div>
+              )
+            })()}
           </CollapsibleCard>
         )}
 

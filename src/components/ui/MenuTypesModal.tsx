@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Repas, MealType } from '@/types'
 import { X, Save, Copy, Trash2, Clock, Star, ChefHat, Edit3, Eye } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface MenuTypesModalProps {
   isOpen: boolean
@@ -220,17 +221,31 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
   const [newTemplateDescription, setNewTemplateDescription] = useState('')
   const [editingTemplate, setEditingTemplate] = useState<MenuTemplate | null>(null)
   const [viewingTemplate, setViewingTemplate] = useState<MenuTemplate | null>(null)
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null)
 
   const todayTotalCalories = todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0)
 
+  // Accessibilité: focus initial + fermeture Esc
+  useEffect(() => {
+    if (!isOpen) return
+    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
+  }, [isOpen, onClose])
+
   const handleSaveCurrentDay = () => {
     if (!newTemplateName.trim()) {
-      alert('Veuillez entrer un nom pour le template')
+      toast.error('Veuillez entrer un nom pour le template')
       return
     }
 
     if (todayMeals.length === 0) {
-      alert('Aucun repas à sauvegarder pour aujourd\'hui')
+      toast.error('Aucun repas à sauvegarder pour aujourd\'hui')
       return
     }
 
@@ -251,34 +266,59 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
     setTemplates([newTemplate, ...templates])
     setNewTemplateName('')
     setNewTemplateDescription('')
-    alert(`Template "${newTemplate.name}" créé avec succès !`)
+    toast.success(`Template "${newTemplate.name}" créé avec succès !`)
   }
 
   const handleApplyTemplate = (template: MenuTemplate) => {
     if (template.meals.length === 0) {
-      alert('Ce template ne contient aucun repas')
+      toast.error('Ce template ne contient aucun repas')
       return
     }
 
-    const confirmApply = confirm(
-      `Appliquer le template "${template.name}" ?\n\n` +
-      `Cela ajoutera ${template.meals.length} repas pour aujourd'hui.\n` +
-      `Total estimé: ${template.totalCalories} kcal`
-    )
-
-    if (confirmApply) {
-      onApplyTemplate(template.meals)
-      onClose()
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <div className="text-white font-medium">Appliquer le template "{template.name}" ?</div>
+        <div className="text-sm text-gray-300">
+          {template.meals.length} repas • {template.totalCalories} kcal
+        </div>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded transition-colors"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={() => { toast.dismiss(t.id); onApplyTemplate(template.meals); onClose(); toast.success('Template appliqué !') }}
+            className="px-3 py-1 text-sm bg-neon-cyan/30 hover:bg-neon-cyan/40 text-white rounded transition-colors"
+          >
+            Appliquer
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 10000,
+      style: { background: 'rgba(15, 23, 42, 0.98)', border: '1px solid rgba(34,211,238,0.3)', minWidth: '320px' }
+    })
   }
 
   const handleDeleteTemplate = (templateId: string) => {
     const template = templates.find(t => t.id === templateId)
     if (!template) return
 
-    if (confirm(`Supprimer le template "${template.name}" ?`)) {
-      setTemplates(templates.filter(t => t.id !== templateId))
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <div className="text-white font-medium">Supprimer le template "{template.name}" ?</div>
+        <div className="text-sm text-gray-300">Cette action est irréversible.</div>
+        <div className="flex gap-2 justify-end">
+          <button onClick={() => toast.dismiss(t.id)} className="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded">Annuler</button>
+          <button onClick={() => { setTemplates(templates.filter(tp => tp.id !== templateId)); toast.dismiss(t.id); toast.success('Template supprimé'); }} className="px-3 py-1 text-sm bg-red-600 hover:bg-red-500 text-white rounded">Supprimer</button>
+        </div>
+      </div>
+    ), {
+      duration: 10000,
+      style: { background: 'rgba(15, 23, 42, 0.98)', border: '1px solid rgba(239,68,68,0.3)', minWidth: '320px' }
+    })
   }
 
   const handleEditTemplate = (template: MenuTemplate) => {
@@ -319,7 +359,7 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -329,6 +369,7 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
           <button
             onClick={onClose}
             className="p-2 text-muted-foreground hover:text-white transition-colors"
+            ref={closeBtnRef}
           >
             <X className="h-5 w-5" />
           </button>
@@ -432,13 +473,26 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
                       <span>{template.meals.length} repas</span>
                       <span>{template.totalCalories} kcal</span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {template.createdAt}
                       </span>
+                    </div>
+                    {/* Aperçu macros rapide */}
+                    <div className="text-xs text-muted-foreground mb-3">
+                      {(() => {
+                        const totals = template.meals.reduce((acc, m) => ({
+                          prot: acc.prot + (m.macros?.prot || 0),
+                          glucides: acc.glucides + (m.macros?.glucides || 0),
+                          lipides: acc.lipides + (m.macros?.lipides || 0),
+                        }), { prot: 0, glucides: 0, lipides: 0 })
+                        return (
+                          <span>P {totals.prot.toFixed(0)}g • G {totals.glucides.toFixed(0)}g • L {totals.lipides.toFixed(0)}g</span>
+                        )
+                      })()}
                     </div>
 
                     <button

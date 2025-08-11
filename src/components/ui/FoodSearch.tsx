@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { searchProducts, hasCompleteNutritionalData } from '@/lib/openfoodfacts'
 import { OpenFoodFactsProduct } from '@/types'
 import { Search, X, AlertCircle } from 'lucide-react'
@@ -9,14 +9,23 @@ import Image from 'next/image'
 interface FoodSearchProps {
   onSelectProduct: (product: OpenFoodFactsProduct) => void
   placeholder?: string
+  autoFocus?: boolean
 }
 
-export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher un aliment..." }: FoodSearchProps) {
+export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher un aliment...", autoFocus = false }: FoodSearchProps) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<OpenFoodFactsProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    if (autoFocus) {
+      const t = setTimeout(() => inputRef.current?.focus(), 0)
+      return () => clearTimeout(t)
+    }
+  }, [autoFocus])
 
   // Debounce optimisé de la recherche
   useEffect(() => {
@@ -107,6 +116,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
           onKeyDown={handleKeyDown}
           onFocus={() => query.length >= 2 && results.length > 0 && setIsOpen(true)}
           placeholder={placeholder}
+          ref={inputRef}
           className="w-full pl-10 pr-10 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none focus:glow-purple transition-all"
         />
         {query && (
@@ -205,7 +215,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
 
       {/* Message si pas de résultats */}
       {isOpen && query.length >= 2 && !isLoading && results.length === 0 && (
-        <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg p-4 text-center text-muted-foreground shadow-2xl">
+        <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg p-4 text-center text-muted-foreground shadow-2xl" aria-live="polite">
           Aucun aliment trouvé pour "{query}"
         </div>
       )}

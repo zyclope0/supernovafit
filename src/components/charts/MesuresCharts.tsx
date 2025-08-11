@@ -221,13 +221,17 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               yAxisId="poids"
               stroke="#06b6d4"
               tick={{ fill: '#06b6d4', fontSize: 12 }}
-              label={{ value: 'Poids (kg)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#06b6d4' } }}
+              width={50}
+              tickFormatter={(v: number) => Math.round(v as number)}
+              label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#06b6d4' } }}
             />
             <YAxis 
               yAxisId="imc"
               orientation="right"
               stroke="#10b981"
               tick={{ fill: '#10b981', fontSize: 12 }}
+              width={36}
+              tickFormatter={(v: number) => Math.round((v as number) * 10) / 10}
               label={{ value: 'IMC', angle: 90, position: 'insideRight', style: { textAnchor: 'middle', fill: '#10b981' } }}
             />
             <Tooltip content={<CustomTooltip />} />

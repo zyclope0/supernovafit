@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { Repas } from '@/types'
 import { X, Calendar, TrendingUp, BarChart3, ChevronLeft, ChevronRight, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
@@ -17,6 +17,8 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: dieteComments } = useCoachCommentsByModule('diete')
   const commentedDates = useMemo(() => new Set((dieteComments || []).map((c: any) => c.date).filter(Boolean)), [dieteComments])
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null)
+  const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
   
   // Générer les 30 derniers jours
   const getLast30Days = () => {
@@ -84,11 +86,32 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
     return date === currentDate
   }
 
+  // Accessibilité: focus initial + Esc pour fermer
+  useEffect(() => {
+    if (!isOpen) return
+    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
+  }, [isOpen, onClose])
+
+  const handleGridKey = (e: React.KeyboardEvent, idx: number) => {
+    const cols = 7
+    let next = idx
+    if (e.key === 'ArrowRight') next = Math.min(last30Days.length - 1, idx + 1)
+    else if (e.key === 'ArrowLeft') next = Math.max(0, idx - 1)
+    else if (e.key === 'ArrowDown') next = Math.min(last30Days.length - 1, idx + cols)
+    else if (e.key === 'ArrowUp') next = Math.max(0, idx - cols)
+    else return
+    e.preventDefault()
+    dayRefs.current[next]?.focus()
+  }
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
@@ -122,6 +145,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
             <button
               onClick={onClose}
               className="p-2 text-muted-foreground hover:text-white transition-colors"
+              ref={closeBtnRef}
             >
               <X className="h-5 w-5" />
             </button>
@@ -134,8 +158,8 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
               {/* Vue Calendrier */}
               <div className="mb-6">
                 <h3 className="text-lg font-medium text-white mb-4">30 derniers jours</h3>
-                <div className="grid grid-cols-7 gap-2">
-                  {last30Days.map((date) => {
+                <div className="grid grid-cols-7 gap-2" role="grid" aria-label="Calendrier des 30 derniers jours">
+                  {last30Days.map((date, idx) => {
                     const stats = getStatsForDate(date)
                     const hasData = stats.mealsCount > 0
                     const hasCoachComments = commentedDates.has(date)
@@ -144,6 +168,8 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                       <button
                         key={date}
                         onClick={() => handleDateClick(date)}
+                        onKeyDown={(e) => handleGridKey(e, idx)}
+                        ref={(el) => dayRefs.current[idx] = el}
                         className={`
                           relative aspect-square p-2 rounded-lg text-center transition-all hover:scale-105
                           ${isCurrentDate(date) 
@@ -154,6 +180,10 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                           }
                           ${isToday(date) ? 'ring-2 ring-yellow-400/50' : ''}
                         `}
+                        role="gridcell"
+                        aria-selected={isCurrentDate(date)}
+                        aria-label={`${formatFullDate(date)}${hasData ? `, ${stats.totalCalories} kilocalories, ${stats.mealsCount} repas` : ', aucune donnée'}`}
+                        title={hasData ? `${stats.totalCalories} kcal • ${stats.mealsCount} repas` : 'Aucune donnée'}
                       >
                         <div className="text-xs font-medium">{formatDate(date)}</div>
                         {hasData && (

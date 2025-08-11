@@ -80,7 +80,9 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
             tickLine={false}
             axisLine={false}
             domain={['dataMin - 10', 'dataMax + 10']}
-            tickFormatter={(value) => `${value} bpm`}
+            width={44}
+            tickFormatter={(value) => `${Math.round(value as number)}`}
+            label={{ value: 'bpm', angle: -90, position: 'insideLeft', style: { fill: 'rgba(255,255,255,0.6)' } }}
           />
           <Tooltip content={<CustomTooltip />} />
           

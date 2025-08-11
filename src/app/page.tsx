@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
+import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { formatNumber } from '@/lib/utils'
@@ -71,16 +72,17 @@ function QuickActions() {
       <h2 className="text-lg font-semibold text-white mb-4">Actions rapides</h2>
       <div className="grid grid-cols-2 gap-3">
         {actions.map((action) => (
-          <a
+          <Link
             key={action.name}
             href={action.href}
+            aria-label={action.name}
             className="flex items-center p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group"
           >
             <span className="text-xl mr-3">{action.icon}</span>
             <span className="text-sm font-medium text-white group-hover:text-neon-cyan transition-colors">
               {action.name}
             </span>
-          </a>
+          </Link>
         ))}
       </div>
     </div>

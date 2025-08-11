@@ -333,7 +333,7 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
           {/* Mode recherche */}
           {addMode === 'search' && (
             <div>
-              <FoodSearch onSelectProduct={handleAddProduct} />
+              <FoodSearch onSelectProduct={handleAddProduct} autoFocus />
               <button
                 onClick={() => {
                   setAddMode(null)

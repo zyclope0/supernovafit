@@ -1,7 +1,7 @@
 'use client'
 
 import { JournalEntry } from '@/types'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { X, Calendar, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
 
@@ -17,6 +17,8 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: journalComments } = useCoachCommentsByModule('journal')
   const commentedEntryDates = useMemo(() => new Set((journalComments || []).map((c: any) => c.date).filter(Boolean)), [journalComments])
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null)
+  const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
 
   const getLast30Days = () => {
     const days: string[] = []
@@ -54,11 +56,31 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
   const isToday = (d: string) => d === new Date().toISOString().split('T')[0]
   const isCurrent = (d: string) => d === currentDate
 
+  useEffect(() => {
+    if (!isOpen) return
+    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
+  }, [isOpen, onClose])
+
+  const handleGridKey = (e: React.KeyboardEvent, idx: number) => {
+    const cols = 7
+    let next = idx
+    if (e.key === 'ArrowRight') next = Math.min(last30Days.length - 1, idx + 1)
+    else if (e.key === 'ArrowLeft') next = Math.max(0, idx - 1)
+    else if (e.key === 'ArrowDown') next = Math.min(last30Days.length - 1, idx + cols)
+    else if (e.key === 'ArrowUp') next = Math.max(0, idx - cols)
+    else return
+    e.preventDefault()
+    dayRefs.current[next]?.focus()
+  }
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <Calendar className="h-6 w-6 text-neon-green" />
@@ -73,7 +95,7 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
                 <BarChart3 className="h-4 w-4" />
               </button>
             </div>
-            <button onClick={onClose} className="p-2 text-muted-foreground hover:text-white transition-colors">
+            <button onClick={onClose} className="p-2 text-muted-foreground hover:text-white transition-colors" ref={closeBtnRef}>
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -83,14 +105,18 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
           {viewMode === 'calendar' ? (
             <>
               <h3 className="text-lg font-medium text-white mb-4">30 derniers jours</h3>
-              <div className="grid grid-cols-7 gap-2 mb-6">
-                {last30Days.map(date => {
+              <div className="grid grid-cols-7 gap-2 mb-6" role="grid" aria-label="Calendrier des 30 derniers jours">
+                {last30Days.map((date, idx) => {
                   const s = getStatsForDate(date)
                   const hasData = s.count > 0
                   const hasCoachComments = commentedEntryDates.has(date)
                   return (
                     <button key={date} onClick={() => { onDateChange(date); onClose() }}
-                      className={`relative aspect-square p-2 rounded-lg text-center transition-all hover:scale-105 ${isCurrent(date) ? 'bg-neon-green/30 border-2 border-neon-green text-neon-green' : hasData ? 'bg-neon-green/20 border border-neon-green/30 text-white hover:bg-neon-green/30' : 'bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10'} ${isToday(date) ? 'ring-2 ring-yellow-400/50' : ''}`}>
+                      onKeyDown={(e) => handleGridKey(e, idx)}
+                      ref={(el) => dayRefs.current[idx] = el}
+                      className={`relative aspect-square p-2 rounded-lg text-center transition-all hover:scale-105 ${isCurrent(date) ? 'bg-neon-green/30 border-2 border-neon-green text-neon-green' : hasData ? 'bg-neon-green/20 border border-neon-green/30 text-white hover:bg-neon-green/30' : 'bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10'} ${isToday(date) ? 'ring-2 ring-yellow-400/50' : ''}`}
+                      role="gridcell" aria-selected={isCurrent(date)} aria-label={`${formatFullDate(date)}${hasData ? `, ${s.count} entrées, humeur ${s.avgHumeur}` : ', aucune donnée'}`}
+                    >
                       <div className="text-xs font-medium">{formatDate(date)}</div>
                       {hasData && (
                         <div className="text-[10px] mt-1">

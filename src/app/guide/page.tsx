@@ -61,7 +61,7 @@ export default function GuidePage() {
               <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                 <div className="text-white font-medium">Coach</div>
                 <div className="text-white/80 text-xs">Email: coach@supernovafit.com</div>
-                <div className="text-white/80 text-xs">Mot de passe: Test123!</div>
+                <div className="text-white/80 text-xs">Mot de passe: Coach123!</div>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                 <div className="text-white font-medium">Athlète</div>

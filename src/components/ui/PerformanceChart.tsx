@@ -131,7 +131,9 @@ export default function PerformanceChart({ entrainements, metric, title }: Perfo
             stroke="#ffffff80"
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `${value} ${getUnit()}`}
+            width={56}
+            tickFormatter={(value) => `${Math.round(Number(value) * 10) / 10}`}
+            label={{ value: getUnit(), angle: -90, position: 'insideLeft', style: { fill: 'rgba(255,255,255,0.6)' } }}
           />
           <Tooltip content={<CustomTooltip />} />
           
