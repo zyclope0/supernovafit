@@ -120,7 +120,7 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
                   return (
                     <button key={date} onClick={() => handleDateClick(date)}
                       onKeyDown={(e) => handleGridKey(e, idx)}
-                      ref={(el) => dayRefs.current[idx] = el}
+                      ref={(el) => { dayRefs.current[idx] = el }}
                       className={`relative aspect-square p-2 rounded-lg text-center transition-all hover:scale-105 ${isCurrentDate(date) ? 'bg-neon-cyan/30 border-2 border-neon-cyan text-neon-cyan' : hasData ? 'bg-neon-green/20 border border-neon-green/30 text-white hover:bg-neon-green/30' : 'bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10'} ${isToday(date) ? 'ring-2 ring-yellow-400/50' : ''}`}
                       role="gridcell" aria-selected={isCurrentDate(date)} aria-label={`${formatFullDate(date)}${hasData ? `, ${stats.count} séances, ${stats.totalMinutes} minutes` : ', aucune donnée'}`}
                     >

@@ -38,6 +38,19 @@ export default function GuidePage() {
           <Link href="/auth#comptes-de-test" className="px-3 py-2 rounded-lg bg-neon-purple/20 text-neon-purple hover:bg-neon-purple/30 text-sm">Comptes de test</Link>
         </div>
 
+        {/* Présentation générale */}
+        <Section title="Présentation" icon={Rocket}>
+          <p>
+            SuperNovaFit est une application de suivi 1:1 pensée pour un <strong className="text-white">sportif</strong> et son <strong className="text-white">coach</strong>.
+            Le sportif enregistre son alimentation, ses entraînements, ses mesures et son journal; le coach dépose des
+            <strong className="text-white"> recommandations</strong> et des <strong className="text-white">commentaires contextuels</strong> sur les éléments clés.
+          </p>
+          <ul className="list-disc list-inside">
+            <li><span className="text-white">Sportif</span>: ajoute des données (repas, séances, mesures, entrées de journal), suit sa progression et ses objectifs.</li>
+            <li><span className="text-white">Coach</span>: commente par date/élément, propose des plans et suit l’adhérence (historique, graphiques).</li>
+          </ul>
+        </Section>
+
         {/* Démarrage rapide */}
         <Section title="Démarrage rapide" icon={Rocket}>
           <ul className="list-disc list-inside">
@@ -79,6 +92,7 @@ export default function GuidePage() {
             <li>Utilisez les <em>menu‑types</em> pour appliquer des modèles en un clic.</li>
             <li>Visualisez les <strong className="text-white">macros</strong> et le <strong className="text-white">résumé du jour</strong> (barres de progression).</li>
             <li>Consultez les <strong className="text-white">recommandations du coach</strong> (texte) et ses <strong className="text-white">messages datés</strong>.</li>
+            <li>Historique 30 jours avec pagination; recherche aliments fuzzy; favoris et portions rapides.</li>
           </ul>
           <div className="pt-2 text-xs">Raccourcis: <Pill href="/diete" label="Diète" /></div>
         </Section>
@@ -89,7 +103,7 @@ export default function GuidePage() {
             <li>Créez/éditez vos séances (type, durée, calories estimées automatiques).</li>
             <li>Importez des activités Garmin (TCX/GPX), dédoublonnage automatique.</li>
             <li>Analysez vos données: volume, répartition, fréquence cardiaque, intensité.</li>
-            <li>Historique 30 jours ergonomique avec indicateurs de commentaires coach.</li>
+            <li>Historique 30 jours ergonomique avec indicateurs de commentaires coach, filtre par date, “3 dernières séances”.</li>
           </ul>
           <div className="pt-2 text-xs">Raccourcis: <Pill href="/entrainements" label="Entraînements" /></div>
         </Section>
@@ -100,6 +114,7 @@ export default function GuidePage() {
             <li>Enregistrez poids, IMC, %MG, mensurations. Visualisez l’évolution (graphiques).</li>
             <li>Ajoutez des photos de progression, comparez Avant/Après par catégorie.</li>
             <li>Le coach peut commenter des mesures; les messages apparaissent ici.</li>
+            <li>Graphiques: Poids/IMC (double axe), composition corporelle, mensurations multi‑lignes.</li>
           </ul>
           <div className="pt-2 text-xs">Raccourcis: <Pill href="/mesures" label="Mesures" /></div>
         </Section>
@@ -109,7 +124,7 @@ export default function GuidePage() {
           <ul className="list-disc list-inside">
             <li>Notes quotidiennes: humeur, énergie, sommeil, stress, motivation.</li>
             <li>Photos libres (galerie), objectifs simples, badges automatiques.</li>
-            <li>Corrélations 7 jours (tendance), historique pratique avec commentaires coach.</li>
+            <li>Corrélations 7 jours (tendance), historique pratique avec commentaires coach et pagination.</li>
           </ul>
           <div className="pt-2 text-xs">Raccourcis: <Pill href="/journal" label="Journal" /></div>
         </Section>

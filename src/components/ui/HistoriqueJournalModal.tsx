@@ -113,7 +113,7 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
                   return (
                     <button key={date} onClick={() => { onDateChange(date); onClose() }}
                       onKeyDown={(e) => handleGridKey(e, idx)}
-                      ref={(el) => dayRefs.current[idx] = el}
+                      ref={(el) => { dayRefs.current[idx] = el }}
                       className={`relative aspect-square p-2 rounded-lg text-center transition-all hover:scale-105 ${isCurrent(date) ? 'bg-neon-green/30 border-2 border-neon-green text-neon-green' : hasData ? 'bg-neon-green/20 border border-neon-green/30 text-white hover:bg-neon-green/30' : 'bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10'} ${isToday(date) ? 'ring-2 ring-yellow-400/50' : ''}`}
                       role="gridcell" aria-selected={isCurrent(date)} aria-label={`${formatFullDate(date)}${hasData ? `, ${s.count} entrées, humeur ${s.avgHumeur}` : ', aucune donnée'}`}
                     >

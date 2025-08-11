@@ -169,7 +169,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                         key={date}
                         onClick={() => handleDateClick(date)}
                         onKeyDown={(e) => handleGridKey(e, idx)}
-                        ref={(el) => dayRefs.current[idx] = el}
+                        ref={(el) => { dayRefs.current[idx] = el }}
                         className={`
                           relative aspect-square p-2 rounded-lg text-center transition-all hover:scale-105
                           ${isCurrentDate(date) 
