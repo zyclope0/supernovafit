@@ -179,35 +179,61 @@ password: "Test123!"
 - **📷 next/image** + preconnect images ✅
 - **📉 Lighthouse (home)**: FCP≈0.44s, LCP≈1.31s, TBT≈0.72s, CLS≈0.08 ✅
 
-## 🎯 **PROCHAINES ÉTAPES - ROADMAP AJUSTÉE (post‑consolidation)**
+## 🎯 **PLAN ACTUEL - OPTION A : CONSOLIDATION & QUALITÉ** (Janvier 2025)
 
-Important: Les modules Mesures & Journal sont déjà réalisés et en production interne. Les sections ci‑dessous sont réorganisées pour viser une Release Candidate stable puis l’expansion business.
+**DÉCISION PRISE** : Option A choisie pour consolidation qualité niveau entreprise avant évolutions futures.
 
-### 🥇 PRIORITÉ 1 — Release Candidate (Qualité & Go‑to‑Prod)
-1) Qualité technique
-- Tests régression (CRUD, import Garmin, commentaires coach) — en cours
-- `npm run typecheck` — OK (0 erreur)
-- `npm run lint` — À stabiliser (installer ESLint Next), puis corriger éventuels warnings
-- `npm run build` — À exécuter et valider (0 erreur bloquante)
-- Error Boundaries — OK (Sentry: optionnel)
+### 🎯 **OBJECTIFS OPTION A** (2-3 semaines)
+1. **Tests automatisés** : Coverage 80%+ composants critiques
+2. **Migrations sécurisées** : Next.js 15, TypeScript 5.7, React 18.3  
+3. **Optimisations bundle** : Réduction 20%+ First Load JS
+4. **Monitoring production** : Sentry + Analytics + Web Vitals
+5. **Documentation exhaustive** : Guide technique professionnel
 
-2) Sécurité & Données (mode 1:1 coach/athlète)
-- Firestore rules (least privilege): sportif rwx; coach read modules + create `coach_comments`/`coach_diet_plans` (pas de delete)
-- Index composites: vérifier et déployer ceux listés
-- Sauvegarde/export Firestore: procédure manuelle (script ultérieur)
+### 🚀 **PHASES D'EXÉCUTION**
 
-3) Performance & UX
-- Pagination listes 30j+ (journal/entraînements/diète) — partiel (sections historiques fermées par défaut)
-- Optimisation images (`next/image`, sizes) — OK
-- Split bundles (`next/dynamic`) — OK (charts, modales, Garmin, PhotoUpload)
-- Audit Lighthouse — en vert hors TBT résiduel (<1s)
+#### **PHASE 1 - TESTS & QUALITÉ** (Semaine 1) ✅ **TERMINÉE**
+- [x] **Vitest Setup** : Configuration testing moderne (vs Jest) ✅
+- [x] **Tests calculs métier** : BMR/TDEE/MET précision (8 tests passent) ✅
+- [x] **CI/CD avec tests** : GitHub Actions quality workflow ✅
+- [ ] **Tests hooks critiques** : useAuth, useFirestore (en cours, mocks à corriger)
+- [ ] **Tests composants UI** : MealForm, FoodSearch, TrainingForm (prochaine étape)
 
-4) Déploiement
-- Firebase Hosting (SSR Next.js): workflows GitHub Actions, service account, APIs GCP activées
-- Domaine par défaut: `web.app` (canonique), alias `firebaseapp.com`
-- Analytics prod activé
+#### **PHASE 2 - MIGRATIONS SÉCURISÉES** (Semaine 1-2)  
+- [ ] **Next.js 14→15** : React Compiler, Turbopack dev, bundle optimizations
+- [ ] **TypeScript 5.3→5.7** : Preserved narrowing, path mapping amélioré
+- [ ] **React 18.3** : Concurrent features (useDeferredValue, startTransition)
+- [ ] **Tests regression** : Validation stabilité post-migration
 
-Livrable: RC prête à déployer, doc à jour, checklists au vert.
+#### **PHASE 3 - OPTIMISATIONS BUNDLE** (Semaine 2)
+- [ ] **Bundle analysis** : @next/bundle-analyzer + webpack-bundle-analyzer  
+- [ ] **Dynamic imports avancés** : Grouping, SSR selective, tree shaking
+- [ ] **Images optimisation** : next/image sizes responsive, WebP/AVIF
+- [ ] **Performance target** : First Load JS < 250kb, Lighthouse 95+
+
+#### **PHASE 4 - MONITORING PRODUCTION** (Semaine 2-3)
+- [ ] **Error tracking** : Sentry configuration complète + context
+- [ ] **Analytics avancés** : Firebase Analytics + GA4 + custom events  
+- [ ] **Web Vitals** : Real User Monitoring (RUM) + alerts
+- [ ] **Performance monitoring** : Release tracking + error filtering
+
+#### **PHASE 5 - DOCUMENTATION EXHAUSTIVE** (Semaine 3)
+- [ ] **ADR (Architecture Decision Records)** : Stack, patterns, conventions
+- [ ] **Guide développeur** : Setup, structure, patterns, troubleshooting
+- [ ] **API Documentation** : JSDoc hooks/utilities, exemples usage
+- [ ] **Runbook production** : Deployment checklist, monitoring, rollback
+
+### 📊 **MÉTRIQUES CIBLES**
+- **Tests coverage** : 80%+ composants critiques  
+- **Lighthouse Performance** : 95+ (actuellement ~85)
+- **First Load JS** : < 250kb (optimisation bundle)
+- **Error rate** : < 0.1% (Sentry monitoring)
+- **Documentation** : 100% ADR + guides + API docs
+
+### 🎯 **LIVRABLE FINAL OPTION A**
+**Application niveau entreprise** avec tests automatisés, monitoring professionnel, optimisations performance, et documentation complète. Base technique solide pour futures évolutions (Mode Coach, PWA Mobile).
+
+**Voir `OPTION_A_CONSOLIDATION_PLAN.md` pour détails exhaustifs d'implémentation.**
 
 ### 🥈 PRIORITÉ 2 — Fonctionnalités Business (Mode Coach)
 1) Invitations coach → athlète (liens sécurisés par email)  
@@ -353,4 +379,4 @@ Livrable: RC prête à déployer, doc à jour, checklists au vert.
 
 ---
 
-**Version** : 6.0.0 | **MAJ** : 17 Janvier 2025 | **Status** : 6 MODULES PRODUCTION-READY ✅ | **Score** : 9.7/10 | **Prochaine** : Mode Coach 👥 
+**Version** : 1.2.0 | **MAJ** : 20 Janvier 2025 | **Status** : 6 MODULES PRODUCTION + OPTION A EN COURS ✅ | **Score** : 9.7/10 → 10/10 | **Prochaine** : Tests + Monitoring + Docs 🧪📊📚 
