@@ -2,7 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Repas } from '@/types'
-import { format, subDays, parseISO } from 'date-fns'
+import { format, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
 interface CaloriesChartProps {

@@ -299,7 +299,7 @@ export default function JournalPage() {
         // Calculer le streak actuel pour les objectifs de journal
         const sortedEntries = entries.sort((a, b) => b.date.localeCompare(a.date))
         let streak = 0
-        let currentDate = new Date()
+        const currentDate = new Date()
 
         for (const entry of sortedEntries) {
           const entryDate = new Date(entry.date + 'T00:00:00')

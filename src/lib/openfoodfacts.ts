@@ -134,7 +134,7 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
        enhanceSearchQuery(normalizedQuery) // Requête élargie
      ].filter((q, index, arr) => arr.indexOf(q) === index); // Supprimer doublons
      
-     let allProducts: any[] = [];
+     const allProducts: any[] = [];
      
      for (const queryTerm of queries) {
        const url = new URL('https://world.openfoodfacts.org/cgi/search.pl');

@@ -379,6 +379,18 @@ password: "Test123!"
 - FCP ≈ 0.44s, LCP ≈ 1.31s, TBT ≈ 0.72s, CLS ≈ 0.08
 - Cible TBT < 0.5s — doable avec split supplémentaire
 
+## 🚀 DÉPLOIEMENT & PRODUCTION
+- **URL Production** : https://supernovafit-a6fe7.web.app
+- **Status** : ✅ Déployé avec SSR (Next.js 15 + Firebase Functions)
+- **Build** : ✅ Fonctionne parfaitement
+- **ESLint** : ~300 erreurs (non-bloquantes, plan de nettoyage créé)
+- **Plan cleanup** : `docs/guides/LINTING_CLEANUP_PLAN.md`
+
+## 🎯 ACTIONS IMMÉDIATES
+1. **Nettoyage ESLint Phase 1** : Variables non utilisées (~45 fichiers)
+2. **Caractères échappés** : Fixes automatisables
+3. **Types any progressifs** : Améliorer sécurité TypeScript
+
 ---
 
-**Version** : 1.2.0 | **MAJ** : 20 Janvier 2025 | **Status** : 6 MODULES PRODUCTION + OPTION A TERMINÉE ✅ + SENTRY OPÉRATIONNEL 🚨 | **Score** : 10/10 | **Prochaine** : Base technique complète pour évolutions futures 🚀 
+**Version** : 1.3.0 | **MAJ** : 13 Janvier 2025 | **Status** : 6 MODULES PRODUCTION + OPTION A TERMINÉE ✅ + SENTRY OPÉRATIONNEL 🚨 + DÉPLOIEMENT RÉUSSI 🌐 | **Score** : 10/10 | **Prochaine** : Nettoyage ESLint progressif 🧹 

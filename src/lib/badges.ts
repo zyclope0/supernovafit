@@ -80,7 +80,7 @@ export function calculateUserData(journalEntries: any[], photos: any[]) {
     .sort((a, b) => b.date.localeCompare(a.date))
   
   let streakJournal = 0
-  let currentDate = new Date()
+  const currentDate = new Date()
   
   for (const entry of sortedEntries) {
     const entryDate = new Date(entry.date + 'T00:00:00')
