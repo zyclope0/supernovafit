@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -11,7 +15,7 @@ const nextConfig = {
       { protocol: 'https', hostname: 'world.openfoodfacts.org' },
     ],
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // Nettoyage: limiter les fallbacks au strict nécessaire
     config.resolve.fallback = {
       ...config.resolve.fallback,
@@ -19,10 +23,29 @@ const nextConfig = {
       net: false,
       tls: false,
     }
+    
+    // Supprimer warnings Prisma/OpenTelemetry spécifiques
+    config.module = {
+      ...config.module,
+      exprContextCritical: false, // Désactive "Critical dependency" warnings
+    }
+    
+    // Ignorer warnings spécifiques Sentry/Prisma
+    config.ignoreWarnings = [
+      /Critical dependency: the request of a dependency is an expression/,
+      /node_modules\/@prisma\/instrumentation/,
+      /node_modules\/@opentelemetry/
+    ]
+    
     return config
   },
+  // Next.js 15: Nouvelles optimisations
+  bundlePagesRouterDependencies: true,
+  transpilePackages: ['recharts'],
+  
+  // Tree shaking optimisé
   experimental: {
-    esmExternals: 'loose',
+    optimizePackageImports: ['recharts', 'lucide-react', '@heroicons/react'],
   },
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -35,4 +58,4 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig 
+module.exports = withBundleAnalyzer(nextConfig)

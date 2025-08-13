@@ -11,10 +11,17 @@ import { collection, query, where, orderBy, onSnapshot, doc, getDoc, addDoc, ser
 import { db } from '@/lib/firebase'
 import { Repas } from '@/types'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
-import { 
-  LineChart, Line, BarChart, Bar, 
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
-} from 'recharts'
+import dynamic from 'next/dynamic'
+
+// Optimisation : Charts dynamiques groupés
+const ChartsSection = dynamic(() => import('@/components/charts/CoachDieteCharts'), { 
+  ssr: false,
+  loading: () => (
+    <div className="glass-effect rounded-xl p-6 border border-white/10 h-64 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-purple"></div>
+    </div>
+  )
+})
 
 export default function CoachAthleteDietePage() {
   const { userProfile, user } = useAuth()

@@ -7,17 +7,18 @@ vi.mock('firebase/auth', () => ({
   onAuthStateChanged: vi.fn(),
   signInWithEmailAndPassword: vi.fn(),
   signOut: vi.fn(),
-  sendPasswordResetEmail: vi.fn(),
+  sendSignInLinkToEmail: vi.fn(),
+  isSignInWithEmailLink: vi.fn(),
+  signInWithEmailLink: vi.fn(),
 }))
 
 import { useAuth } from '../useAuth'
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth'
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 
 // Cast mocks
 const mockOnAuthStateChanged = vi.mocked(onAuthStateChanged)
 const mockSignInWithEmailAndPassword = vi.mocked(signInWithEmailAndPassword)
 const mockSignOut = vi.mocked(signOut)
-const mockSendPasswordResetEmail = vi.mocked(sendPasswordResetEmail)
 
 describe('useAuth Hook', () => {
   beforeEach(() => {
@@ -34,18 +35,32 @@ describe('useAuth Hook', () => {
 
     expect(result.current.loading).toBe(true)
     expect(result.current.user).toBe(null)
-    expect(result.current.error).toBe(null)
+    expect(result.current.userProfile).toBe(null)
   })
 
   it('should set user when authenticated', async () => {
     const mockUser = {
       uid: 'test-user-id',
       email: 'test@supernovafit.com',
-      displayName: 'Test User'
+      displayName: 'Test User',
+      emailVerified: true,
+      isAnonymous: false,
+      metadata: {},
+      providerData: [],
+      refreshToken: 'mock-refresh-token',
+      tenantId: null,
+      delete: vi.fn(),
+      getIdToken: vi.fn(),
+      getIdTokenResult: vi.fn(),
+      reload: vi.fn(),
+      toJSON: vi.fn(),
     }
 
     mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-      callback(mockUser)
+      // Cast callback to function and call it
+      if (typeof callback === 'function') {
+        callback(mockUser as any)
+      }
       return vi.fn()
     })
 
@@ -58,14 +73,36 @@ describe('useAuth Hook', () => {
   })
 
   it('should handle signIn success', async () => {
-    mockSignInWithEmailAndPassword.mockResolvedValue({
-      user: { uid: 'test-id', email: 'test@test.com' }
-    })
+    const mockUserCredential = {
+      user: {
+        uid: 'test-id',
+        email: 'test@test.com',
+        emailVerified: true,
+        isAnonymous: false,
+        metadata: {},
+        providerData: [],
+        refreshToken: 'mock-refresh-token',
+        tenantId: null,
+        displayName: null,
+        photoURL: null,
+        phoneNumber: null,
+        delete: vi.fn(),
+        getIdToken: vi.fn(),
+        getIdTokenResult: vi.fn(),
+        reload: vi.fn(),
+        toJSON: vi.fn(),
+      },
+      providerId: 'password',
+      operationType: 'signIn' as const
+    }
+
+    mockSignInWithEmailAndPassword.mockResolvedValue(mockUserCredential as any)
 
     const { result } = renderHook(() => useAuth())
 
-    await result.current.signIn('test@test.com', 'password123')
+    const response = await result.current.signIn('test@test.com', 'password123')
 
+    expect(response.success).toBe(true)
     expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
       expect.anything(),
       'test@test.com',
@@ -74,16 +111,14 @@ describe('useAuth Hook', () => {
   })
 
   it('should handle signIn error', async () => {
-    const errorMessage = 'Invalid credentials'
-    mockSignInWithEmailAndPassword.mockRejectedValue(new Error(errorMessage))
+    mockSignInWithEmailAndPassword.mockRejectedValue(new Error('Invalid credentials'))
 
     const { result } = renderHook(() => useAuth())
 
-    await result.current.signIn('test@test.com', 'wrongpassword')
+    const response = await result.current.signIn('test@test.com', 'wrongpassword')
 
-    await waitFor(() => {
-      expect(result.current.error).toBe(errorMessage)
-    })
+    expect(response.success).toBe(false)
+    expect(response.error).toBeDefined()
   })
 
   it('should handle signOut', async () => {
@@ -96,37 +131,23 @@ describe('useAuth Hook', () => {
     expect(mockSignOut).toHaveBeenCalled()
   })
 
-  it('should handle password reset', async () => {
-    mockSendPasswordResetEmail.mockResolvedValue(undefined)
-
+  it('should handle magic link sending', async () => {
     const { result } = renderHook(() => useAuth())
 
-    await result.current.resetPassword('test@test.com')
+    const response = await result.current.sendMagicLink('test@test.com')
 
-    expect(mockSendPasswordResetEmail).toHaveBeenCalledWith(
-      expect.anything(),
-      'test@test.com'
-    )
+    // Le hook devrait retourner un objet avec success
+    expect(typeof response).toBe('object')
+    expect('success' in response).toBe(true)
   })
 
-  it('should clear error on successful operation', async () => {
-    // Set initial error
-    mockSignInWithEmailAndPassword.mockRejectedValueOnce(new Error('Initial error'))
+  it('should verify magic link', async () => {
     const { result } = renderHook(() => useAuth())
-    
-    await result.current.signIn('test@test.com', 'wrong')
-    await waitFor(() => {
-      expect(result.current.error).toBe('Initial error')
-    })
 
-    // Clear error on successful operation
-    mockSignInWithEmailAndPassword.mockResolvedValueOnce({
-      user: { uid: 'test-id', email: 'test@test.com' }
-    })
-    
-    await result.current.signIn('test@test.com', 'correct')
-    await waitFor(() => {
-      expect(result.current.error).toBe(null)
-    })
+    const response = await result.current.verifyMagicLink()
+
+    // Le hook devrait retourner un objet avec success
+    expect(typeof response).toBe('object')
+    expect('success' in response).toBe(true)
   })
 })

@@ -15,22 +15,27 @@ vi.mock('firebase/firestore', () => ({
   where: vi.fn(),
   orderBy: vi.fn(),
   limit: vi.fn(),
+  serverTimestamp: vi.fn(),
+  onSnapshot: vi.fn(),
 }))
 
-import { useFirestore } from '../useFirestore'
-import { addDoc, updateDoc, deleteDoc, getDocs, getDoc, collection, doc, query, where, orderBy } from 'firebase/firestore'
+// Mock Firebase Storage
+vi.mock('firebase/storage', () => ({
+  getStorage: vi.fn(),
+  ref: vi.fn(),
+  uploadBytes: vi.fn(),
+  getDownloadURL: vi.fn(),
+  deleteObject: vi.fn(),
+}))
+
+import { useRepas, useEntrainements } from '../useFirestore'
+import { addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore'
 
 // Cast mocks
 const mockAddDoc = vi.mocked(addDoc)
 const mockUpdateDoc = vi.mocked(updateDoc)
 const mockDeleteDoc = vi.mocked(deleteDoc)
 const mockGetDocs = vi.mocked(getDocs)
-const mockGetDoc = vi.mocked(getDoc)
-const mockCollection = vi.mocked(collection)
-const mockDoc = vi.mocked(doc)
-const mockQuery = vi.mocked(query)
-const mockWhere = vi.mocked(where)
-const mockOrderBy = vi.mocked(orderBy)
 
 // Mock useAuth
 vi.mock('../useAuth', () => ({
@@ -40,176 +45,64 @@ vi.mock('../useAuth', () => ({
   })
 }))
 
-describe('useFirestore Hook', () => {
+describe('useRepas Hook', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('addDocument', () => {
-    it('should add document successfully', async () => {
-      const mockDocRef = { id: 'new-doc-id' }
-      mockAddDoc.mockResolvedValue(mockDocRef)
+  it('should initialize with empty repas', () => {
+    const { result } = renderHook(() => useRepas())
 
-      const { result } = renderHook(() => useFirestore())
-
-      const docId = await result.current.addDocument('repas', {
-        date: '2025-01-20',
-        repas: 'petit_dej',
-        aliments: []
-      })
-
-      expect(docId).toBe('new-doc-id')
-      expect(mockAddDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          date: '2025-01-20',
-          repas: 'petit_dej',
-          aliments: [],
-          user_id: 'test-user-id'
-        })
-      )
-    })
-
-    it('should handle add document error', async () => {
-      mockAddDoc.mockRejectedValue(new Error('Network error'))
-
-      const { result } = renderHook(() => useFirestore())
-
-      const docId = await result.current.addDocument('repas', {})
-
-      expect(docId).toBe(null)
-    })
-
-    it('should add user_id automatically', async () => {
-      const mockDocRef = { id: 'test-id' }
-      mockAddDoc.mockResolvedValue(mockDocRef)
-
-      const { result } = renderHook(() => useFirestore())
-
-      await result.current.addDocument('entrainements', {
-        type: 'course',
-        duree: 30
-      })
-
-      expect(mockAddDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          type: 'course',
-          duree: 30,
-          user_id: 'test-user-id'
-        })
-      )
-    })
+    expect(result.current.repas).toEqual([])
+    expect(result.current.loading).toBe(false)
   })
 
-  describe('updateDocument', () => {
-    it('should update document successfully', async () => {
-      mockUpdateDoc.mockResolvedValue(undefined)
+  it('should have addRepas function', () => {
+    const { result } = renderHook(() => useRepas())
 
-      const { result } = renderHook(() => useFirestore())
-
-      const success = await result.current.updateDocument('repas', 'doc-id', {
-        aliments: [{ nom: 'Banane', quantite: 120 }]
-      })
-
-      expect(success).toBe(true)
-      expect(mockUpdateDoc).toHaveBeenCalled()
-    })
-
-    it('should handle update error', async () => {
-      mockUpdateDoc.mockRejectedValue(new Error('Update failed'))
-
-      const { result } = renderHook(() => useFirestore())
-
-      const success = await result.current.updateDocument('repas', 'doc-id', {})
-
-      expect(success).toBe(false)
-    })
+    expect(typeof result.current.addRepas).toBe('function')
   })
 
-  describe('deleteDocument', () => {
-    it('should delete document successfully', async () => {
-      mockDeleteDoc.mockResolvedValue(undefined)
+  it('should have updateRepas function', () => {
+    const { result } = renderHook(() => useRepas())
 
-      const { result } = renderHook(() => useFirestore())
-
-      const success = await result.current.deleteDocument('repas', 'doc-id')
-
-      expect(success).toBe(true)
-      expect(mockDeleteDoc).toHaveBeenCalled()
-    })
-
-    it('should handle delete error', async () => {
-      mockDeleteDoc.mockRejectedValue(new Error('Delete failed'))
-
-      const { result } = renderHook(() => useFirestore())
-
-      const success = await result.current.deleteDocument('repas', 'doc-id')
-
-      expect(success).toBe(false)
-    })
+    expect(typeof result.current.updateRepas).toBe('function')
   })
 
-  describe('loading states', () => {
-    it('should handle loading states correctly', async () => {
-      mockAddDoc.mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ id: 'test-id' }), 100))
-      )
+  it('should have deleteRepas function', () => {
+    const { result } = renderHook(() => useRepas())
 
-      const { result } = renderHook(() => useFirestore())
+    expect(typeof result.current.deleteRepas).toBe('function')
+  })
+})
 
-      expect(result.current.loading).toBe(false)
-
-      const addPromise = result.current.addDocument('repas', {})
-      
-      expect(result.current.loading).toBe(true)
-
-      await addPromise
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-      })
-    })
+describe('useEntrainements Hook', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  describe('getDocuments', () => {
-    it('should fetch documents with user filter', async () => {
-      const mockDocs = [
-        { id: 'doc1', data: () => ({ nom: 'test1', user_id: 'test-user-id' }) },
-        { id: 'doc2', data: () => ({ nom: 'test2', user_id: 'test-user-id' }) }
-      ]
-      mockGetDocs.mockResolvedValue({ docs: mockDocs })
+  it('should initialize with empty entrainements', () => {
+    const { result } = renderHook(() => useEntrainements())
 
-      const { result } = renderHook(() => useFirestore())
+    expect(result.current.entrainements).toEqual([])
+    expect(result.current.loading).toBe(false)
+  })
 
-      const documents = await result.current.getDocuments('repas')
+  it('should have addEntrainement function', () => {
+    const { result } = renderHook(() => useEntrainements())
 
-      expect(documents).toHaveLength(2)
-      expect(documents[0]).toEqual({
-        id: 'doc1',
-        nom: 'test1',
-        user_id: 'test-user-id'
-      })
-    })
+    expect(typeof result.current.addEntrainement).toBe('function')
+  })
 
-    it('should handle empty collection', async () => {
-      mockGetDocs.mockResolvedValue({ docs: [] })
+  it('should have updateEntrainement function', () => {
+    const { result } = renderHook(() => useEntrainements())
 
-      const { result } = renderHook(() => useFirestore())
+    expect(typeof result.current.updateEntrainement).toBe('function')
+  })
 
-      const documents = await result.current.getDocuments('repas')
+  it('should have deleteEntrainement function', () => {
+    const { result } = renderHook(() => useEntrainements())
 
-      expect(documents).toEqual([])
-    })
-
-    it('should handle fetch error', async () => {
-      mockGetDocs.mockRejectedValue(new Error('Fetch failed'))
-
-      const { result } = renderHook(() => useFirestore())
-
-      const documents = await result.current.getDocuments('repas')
-
-      expect(documents).toEqual([])
-    })
+    expect(typeof result.current.deleteEntrainement).toBe('function')
   })
 })

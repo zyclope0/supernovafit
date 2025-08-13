@@ -13,6 +13,7 @@ import {
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { User as UserType } from '@/types'
+import * as Sentry from '@sentry/nextjs'
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -28,12 +29,23 @@ export function useAuth() {
       setLoading(false)
 
       if (firebaseUser) {
+        // Configurer contexte Sentry utilisateur
+        Sentry.setUser({
+          id: firebaseUser.uid,
+          email: firebaseUser.email || undefined,
+        })
+        
         setProfileLoading(true)
         ;(async () => {
           try {
             const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
             if (userDoc.exists()) {
-              setUserProfile(userDoc.data() as UserType)
+              const profile = userDoc.data() as UserType
+              setUserProfile(profile)
+              
+              // Enrichir contexte Sentry avec profil
+              Sentry.setTag('user_role', profile.role || 'unknown')
+              Sentry.setTag('user_type', profile.role === 'coach' ? 'coach' : 'athlete')
             } else {
               const defaultProfile: UserType = {
                 id: firebaseUser.uid,
@@ -49,9 +61,14 @@ export function useAuth() {
                 dernier_acces: serverTimestamp()
               })
               setUserProfile(defaultProfile)
+              
+              // Tags Sentry pour nouvel utilisateur
+              Sentry.setTag('user_role', 'sportif')
+              Sentry.setTag('user_type', 'athlete')
             }
           } catch (error) {
             console.error('Erreur lors de la récupération du profil:', error)
+            Sentry.captureException(error)
           } finally {
             setProfileLoading(false)
           }
@@ -59,6 +76,9 @@ export function useAuth() {
       } else {
         setUserProfile(null)
         setProfileLoading(false)
+        
+        // Clear contexte Sentry
+        Sentry.setUser(null)
       }
     })
 

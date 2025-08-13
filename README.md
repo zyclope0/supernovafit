@@ -68,6 +68,8 @@ firebase deploy --only firestore:rules,firestore:indexes --project supernovafit-
 firebase deploy --only storage --project supernovafit-a6fe7
 ```
 
+**Note** : Les fichiers de configuration sont maintenant dans `config/`
+
 ## 🚀 Hébergement (Firebase Hosting SSR + GitHub Actions)
 
 ### Prérequis GCP/Firebase
@@ -90,6 +92,7 @@ firebase deploy --only storage --project supernovafit-a6fe7
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
 - `NEXT_PUBLIC_FIREBASE_APP_ID`
 - `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`
+- `NEXT_PUBLIC_SENTRY_DSN` (DSN de ton projet Sentry)
 - `FIREBASE_SERVICE_ACCOUNT_SUPERNOVAFIT_A6FE7` (JSON clé compte de service)
 
 ### Workflows fournis
@@ -124,7 +127,7 @@ firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force
 - `coach_comments/{id}`: { coach_id, athlete_id, module, date?, training_id?, entry_id?, mesure_id?, comment, read_by_athlete? }
 - `coach_diet_plans/{id}`: { coach_id, athlete_id, date_creation, 6 champs repas, notes_generales }
 
-Indexes: voir `firestore.indexes.json` (coach_comments, coach_diet_plans, menus_type).
+Indexes: voir `config/firestore.indexes.json` (coach_comments, coach_diet_plans, menus_type).
 
 ## 📘 Guide développeur (conventions & scripts)
 
@@ -148,13 +151,23 @@ Indexes: voir `firestore.indexes.json` (coach_comments, coach_diet_plans, menus_
 ## 📁 Structure
 
 ```
-src/
-  app/              # Pages Next.js (App Router)
-  components/       # UI et layout
-  hooks/            # Hooks Firebase (useAuth, useFirestore...)
-  lib/              # firebase.ts, utils, calculs (BMR/TDEE/MET)
-  types/            # Types TypeScript
-  styles/           # Tailwind + thèmes
+SuperNovaFit/
+├── src/                    # Code source
+│   ├── app/               # Pages Next.js (App Router)
+│   ├── components/        # UI et layout
+│   ├── hooks/             # Hooks Firebase (useAuth, useFirestore...)
+│   ├── lib/               # firebase.ts, utils, calculs (BMR/TDEE/MET)
+│   ├── types/             # Types TypeScript
+│   └── styles/            # Tailwind + thèmes
+├── docs/                   # 📚 Documentation complète
+│   ├── phases/            # Plans Option A (PHASE_1, PHASE_3, etc.)
+│   ├── guides/            # Guides pratiques (Testing, Monitoring)
+│   ├── context/           # Contexte IA et Recovery
+│   ├── legal/             # PRIVACY.md, SECURITY.md
+│   └── archive/           # Fichiers historiques
+├── config/                 # Configuration Firebase
+├── examples/               # Fichiers d'exemple (TCX, GPX)
+└── README.md              # Ce fichier
 ```
 
 ## 🧩 Mode Coach — détails

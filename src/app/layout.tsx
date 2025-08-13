@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import VitalsReporter from '@/components/analytics/VitalsReporter'
+import SentryProvider from '@/components/analytics/SentryProvider'
 import '../styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -29,6 +31,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://images.openfoodfacts.org" />
       </head>
       <body className={`${inter.className} bg-gradient-space min-h-screen`}>
+        <SentryProvider />
+        <VitalsReporter />
         {children}
         <Toaster
           position="top-right"

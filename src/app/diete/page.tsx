@@ -257,13 +257,20 @@ export default function DietePage() {
   const { user } = useAuth()
   const { repas, loading, addRepas, updateRepas, deleteRepas } = useRepas()
   const { currentPlan, loading: planLoading } = useAthleteDietPlan()
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
+  const [selectedDate, setSelectedDate] = useState('')
   const { comments: dieteComments, loading: commentsLoading } = useCoachCommentsByModule('diete', selectedDate)
   const [showMealForm, setShowMealForm] = useState<MealType | null>(null)
   const [editingMeal, setEditingMeal] = useState<string | null>(null) // ID du repas en édition
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showMenuTypes, setShowMenuTypes] = useState(false)
   const [showHistorique, setShowHistorique] = useState(false)
+
+  // Initialiser selectedDate côté client pour éviter hydration mismatch
+  useEffect(() => {
+    if (!selectedDate) {
+      setSelectedDate(new Date().toISOString().split('T')[0])
+    }
+  }, [selectedDate])
 
   const today = new Date().toLocaleDateString('fr-FR', { 
     weekday: 'long',
@@ -390,6 +397,17 @@ export default function DietePage() {
     } catch (error) {
       toast.error('Erreur lors de l\'application du template')
     }
+  }
+
+  // Loading state pendant initialisation selectedDate
+  if (!selectedDate) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-purple"></div>
+        </div>
+      </MainLayout>
+    )
   }
 
   return (
