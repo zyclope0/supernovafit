@@ -7,7 +7,7 @@ import MealForm from '@/components/ui/MealForm'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useAthleteDietPlan, useCoachCommentsByModule } from '@/hooks/useFirestore'
 import { MealType, Aliment, Macros } from '@/types'
-import { formatNumber } from '@/lib/utils'
+import { getMealName, formatDate, formatNumber } from '@/lib/utils'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
