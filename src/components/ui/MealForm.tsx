@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { OpenFoodFactsProduct, MealType, Aliment, Macros } from '@/types'
-import { calculateMacros } from '@/lib/openfoodfacts'
+// calculateMacros import removed - not used
 import { getMealName, generateId } from '@/lib/utils'
 import { repasSchema, validateData } from '@/lib/validation'
 import { useFavoris } from '@/hooks/useFirestore'
 import FoodSearch from './FoodSearch'
 import ManualFoodForm from './ManualFoodForm'
 import FavoritesFoodList from './FavoritesFoodList'
-import { Plus, Trash2, X, Edit3, Search, AlertCircle, Star, Heart } from 'lucide-react'
+import { Plus, Trash2, X, Edit3, Search, AlertCircle, Star } from 'lucide-react'
 
 interface MealFormProps {
   mealType: MealType

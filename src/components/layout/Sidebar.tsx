@@ -16,7 +16,6 @@ import {
   Bars3Icon,
   XMarkIcon,
   RocketLaunchIcon,
-  BugAntIcon,
   UserIcon,
   UsersIcon
 } from '@heroicons/react/24/outline'

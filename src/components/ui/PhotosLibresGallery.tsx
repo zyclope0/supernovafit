@@ -13,9 +13,7 @@ import {
   Trash2, 
   Tag, 
   Calendar,
-  Image as ImageIcon,
-  Star,
-  Filter
+  Image as ImageIcon
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Image from 'next/image'

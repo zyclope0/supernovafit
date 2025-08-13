@@ -1,6 +1,6 @@
 'use client'
 
-import { MessageCircle, Clock, ChefHat } from 'lucide-react'
+import { MessageCircle, ChefHat } from 'lucide-react'
 import type { CoachComment } from '@/types'
 import { useState, useEffect } from 'react'
 import { updateCoachCommentRead } from '@/lib/coachComments'

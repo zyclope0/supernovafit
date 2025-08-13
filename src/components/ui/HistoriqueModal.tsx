@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { Repas } from '@/types'
-import { X, Calendar, TrendingUp, BarChart3, ChevronLeft, ChevronRight, Eye } from 'lucide-react'
+import { X, Calendar, TrendingUp, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
 
 interface HistoriqueModalProps {

@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock Firestore avant import
@@ -31,11 +31,7 @@ vi.mock('firebase/storage', () => ({
 import { useRepas, useEntrainements } from '../useFirestore'
 import { addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore'
 
-// Cast mocks
-const mockAddDoc = vi.mocked(addDoc)
-const mockUpdateDoc = vi.mocked(updateDoc)
-const mockDeleteDoc = vi.mocked(deleteDoc)
-const mockGetDocs = vi.mocked(getDocs)
+// Cast mocks - removed unused variables
 
 // Mock useAuth
 vi.mock('../useAuth', () => ({

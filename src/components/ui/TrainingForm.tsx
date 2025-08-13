@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { Entrainement } from '@/types'
-import { generateId } from '@/lib/utils'
-import { calculateCalories, getQuickCalorieEstimate, smartCalorieCalculation } from '@/lib/caloriesCalculator'
+// generateId removed - not used
+import { getQuickCalorieEstimate, smartCalorieCalculation } from '@/lib/caloriesCalculator'
 import { entrainementSchema, validateData } from '@/lib/validation'
 import { X, Plus, Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'

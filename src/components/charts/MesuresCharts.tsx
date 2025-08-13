@@ -11,11 +11,7 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell
+  // BarChart, Bar, PieChart, Pie, Cell - removed (not used)
 } from 'recharts'
 import { Mesure } from '@/types'
 import { formatDate } from '@/lib/utils'
