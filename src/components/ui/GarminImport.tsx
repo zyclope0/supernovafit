@@ -236,7 +236,7 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
         {results.length > 0 && !isProcessing && (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">
-              Résultats de l'import ({results.length} fichiers)
+              Résultats de l&apos;import ({results.length} fichiers)
             </h3>
 
             {results.map((result, index) => (

@@ -6,7 +6,7 @@ import { Entrainement } from '@/types'
 // generateId removed - not used
 import { getQuickCalorieEstimate, smartCalorieCalculation } from '@/lib/caloriesCalculator'
 import { entrainementSchema, validateData } from '@/lib/validation'
-import { X, Plus, Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
+import { X, Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserProfile } from '@/hooks/useFirestore'
 
@@ -227,7 +227,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
         {/* Date */}
         <div>
           <label className="block text-sm font-medium text-white mb-2">
-            Date de l'entraînement
+            Date de l&apos;entraînement
           </label>
           <input
             type="date"
@@ -240,7 +240,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
         {/* Type d'entraînement */}
         <div>
           <label className="block text-sm font-medium text-white mb-3">
-            Type d'activité
+            Type d&apos;activité
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {TRAINING_TYPES.map((trainingType) => (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Camera, Upload, X, Eye, Trash2, Edit3, MessageSquare, ArrowLeftRight } from 'lucide-react'
+import { Camera, Upload, X, Eye, Trash2, Edit3, ArrowLeftRight } from 'lucide-react'
 import { usePhotos } from '@/hooks/useFirestore'
 import { Mesure } from '@/types'
 import toast from 'react-hot-toast'

@@ -23,7 +23,7 @@ export const macrosSchema = z.object({
 export const alimentSchema = z.object({
   id: z.string().min(1, "L'ID est requis"),
   nom: z.string()
-    .min(1, "Le nom de l'aliment est requis")
+    .min(1, "Le nom de l&apos;aliment est requis")
     .max(100, "Le nom est trop long (max 100 caractères)"),
   quantite: z.number()
     .min(0.1, "La quantité doit être d'au moins 0.1")

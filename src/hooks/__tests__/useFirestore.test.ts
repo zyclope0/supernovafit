@@ -29,7 +29,8 @@ vi.mock('firebase/storage', () => ({
 }))
 
 import { useRepas, useEntrainements } from '../useFirestore'
-import { addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore'
+// Firebase functions imported for mocking but not used in tests
+// import { addDoc, updateDoc, deleteDoc, getDocs } from 'firebase/firestore'
 
 // Cast mocks - removed unused variables
 

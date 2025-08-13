@@ -168,7 +168,7 @@ export default function CreateCoachPage() {
                 <li>• Taille : <span className="text-white">180 cm</span></li>
                 <li>• Poids : <span className="text-white">75 kg</span></li>
                 <li>• Objectif : <span className="text-white">Performance</span></li>
-                <li>• Niveau d'activité : <span className="text-white">Intense</span></li>
+                <li>• Niveau d&apos;activité : <span className="text-white">Intense</span></li>
               </ul>
             </div>
 

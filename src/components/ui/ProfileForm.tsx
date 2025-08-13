@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { User } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
 import { doc, updateDoc } from 'firebase/firestore'
@@ -205,7 +205,7 @@ export default function ProfileForm({ userProfile, onUpdate }: ProfileFormProps)
             </div>
             
             <div>
-              <label className="block text-sm text-muted-foreground mb-2">Niveau d'activité</label>
+              <label className="block text-sm text-muted-foreground mb-2">Niveau d&apos;activité</label>
               <select
                 value={formData.niveau_activite}
                 onChange={(e) => handleChange('niveau_activite', e.target.value)}

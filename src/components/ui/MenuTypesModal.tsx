@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Repas, MealType } from '@/types'
+import { Repas } from '@/types'
 import { X, Save, Copy, Trash2, Clock, Star, ChefHat, Edit3, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 

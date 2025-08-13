@@ -99,7 +99,7 @@ export default function Dashboard() {
   const { entrainements, loading: trainingsLoading } = useEntrainements()
   const { mesures, loading: measuresLoading } = useMesures()
   
-  // Date d'aujourd'hui (ou dernière date avec des repas)
+  // Date d'aujourd&apos;hui (ou dernière date avec des repas)
   const today = new Date().toISOString().split('T')[0]
   const latestMealDate = repas.length > 0 
     ? repas.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].date
@@ -167,7 +167,7 @@ export default function Dashboard() {
         {/* Statistiques du jour */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
-            title="Calories aujourd'hui" 
+            title="Calories aujourd&apos;hui" 
             value={formatNumber(todayStats.kcal)} 
             unit="kcal" 
             icon="🔥" 

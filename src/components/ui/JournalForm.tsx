@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { JournalEntry } from '@/types'
 import { X, Save, Sun, Cloud, CloudRain, Zap, Snowflake } from 'lucide-react'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast' // Not used
 
 interface JournalFormProps {
   onSubmit: (entryData: Omit<JournalEntry, 'id'>) => Promise<{ success: boolean; error?: string }>

@@ -32,7 +32,7 @@ describe('Basic Calculations', () => {
     it('should calculate TDEE with different activity levels', () => {
       const bmr = 1650
 
-      // Facteurs d'activité
+      // Facteurs d&apos;activité
       const sedentaire = bmr * 1.2
       const leger = bmr * 1.375
       const modere = bmr * 1.55

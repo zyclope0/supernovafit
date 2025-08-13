@@ -220,7 +220,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 bg-yellow-400/20 border border-yellow-400 rounded"></div>
-                  <span className="text-muted-foreground">Aujourd'hui</span>
+                  <span className="text-muted-foreground">Aujourd&apos;hui</span>
                 </div>
               </div>
             </>
@@ -273,7 +273,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                           <div className="flex items-center gap-3">
                             <div>
                               <div className="font-medium text-white">{formatFullDate(date)}</div>
-                              {isToday(date) && <div className="text-xs text-yellow-400">Aujourd'hui</div>}
+                              {isToday(date) && <div className="text-xs text-yellow-400">Aujourd&apos;hui</div>}
                               {isCurrentDate(date) && !isToday(date) && <div className="text-xs text-neon-cyan">Sélectionné</div>}
                             </div>
                           </div>

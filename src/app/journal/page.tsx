@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { useJournal, useBadges, usePhotosLibres, useObjectifs, useCoachCommentsByModule } from '@/hooks/useFirestore'
-import { Plus, Edit3, Trash2, TrendingUp, Calendar, Heart, Battery, Zap, Moon, Award, Target } from 'lucide-react'
+import { Plus, Edit3, Trash2, TrendingUp, Calendar, Heart, Zap, Award, Target } from 'lucide-react'
 import { JournalEntry } from '@/types'
 import toast from 'react-hot-toast'
 import JournalForm from '@/components/ui/JournalForm'
@@ -123,7 +123,7 @@ function EntryCard({ entry, onEdit, onDelete }: {
     const today = new Date().toDateString()
     const yesterday = new Date(Date.now() - 86400000).toDateString()
     
-    if (date.toDateString() === today) return "Aujourd'hui"
+    if (date.toDateString() === today) return "Aujourd&apos;hui"
     if (date.toDateString() === yesterday) return "Hier"
     
     return date.toLocaleDateString('fr-FR', { 
@@ -247,7 +247,7 @@ export default function JournalPage() {
     { titre: "💪 Actif", description: "3 entraînements cette semaine", cible: 3, type: "entrainement" as const }
   ]
 
-  // Date d'aujourd'hui
+  // Date d'aujourd&apos;hui
   const today = new Date().toISOString().split('T')[0]
   const todayEntry = entries.find(e => e.date === today)
 

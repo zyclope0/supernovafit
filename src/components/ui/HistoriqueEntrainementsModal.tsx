@@ -143,7 +143,7 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
                 <div className="flex items-center gap-2"><div className="w-4 h-4 bg-neon-green/20 border border-neon-green/30 rounded"></div><span className="text-muted-foreground">Données disponibles</span></div>
                 <div className="flex items-center gap-2"><div className="w-4 h-4 bg-neon-cyan/30 border-2 border-neon-cyan rounded"></div><span className="text-muted-foreground">Date sélectionnée</span></div>
                 <div className="flex items-center gap-2"><div className="w-4 h-4 bg-neon-pink/30 border border-neon-pink/50 rounded"></div><span className="text-muted-foreground">Commentaires coach</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-400/20 border border-yellow-400 rounded"></div><span className="text-muted-foreground">Aujourd'hui</span></div>
+                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-400/20 border border-yellow-400 rounded"></div><span className="text-muted-foreground">Aujourd&apos;hui</span></div>
               </div>
             </>
           ) : (
@@ -174,7 +174,7 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
                     <div key={date} className={`glass-effect p-3 rounded-lg flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors ${isCurrentDate(date) ? 'border border-neon-cyan/30' : ''}`} onClick={() => handleDateClick(date)}>
                       <div>
                         <div className="font-medium text-white">{formatFullDate(date)}</div>
-                        {isToday(date) && <div className="text-xs text-yellow-400">Aujourd'hui</div>}
+                        {isToday(date) && <div className="text-xs text-yellow-400">Aujourd&apos;hui</div>}
                       </div>
                       <div className="flex items-center gap-4 text-sm">
                         <div className="text-right">

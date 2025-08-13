@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCoachAthletes } from '@/hooks/useFirestore'
 import { useRouter } from 'next/navigation'
 import MainLayout from '@/components/layout/MainLayout'
-import { Users, TrendingUp, Calendar, FileText, Award, Plus, Search, Filter, Activity, BarChart3, BookOpen, Scale } from 'lucide-react'
+import { Users, TrendingUp, Calendar, FileText, Award, Plus, Search, Activity, BarChart3, BookOpen, Scale } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 

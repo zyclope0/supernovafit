@@ -93,7 +93,7 @@ export function calculateCalorieNeeds(user: User): {
  * Calcule la répartition macros recommandée selon l'objectif
  * Basé sur ISSN Position Stand 2024, ACSM Guidelines 2024
  */
-export function calculateMacroSplit(calorieTarget: number, objectif: string, poids?: number): {
+export function calculateMacroSplit(calorieTarget: number, objectif: string, _poids?: number): {
   proteines: { g: number; kcal: number; percentage: number }
   glucides: { g: number; kcal: number; percentage: number }
   lipides: { g: number; kcal: number; percentage: number }
@@ -177,7 +177,7 @@ export function generateRecommendations(user: User): string[] {
   if (user.niveau_activite === 'sedentaire') {
     recommendations.push("🚶 Augmentez progressivement votre activité physique pour améliorer votre santé.")
   } else if (user.niveau_activite === 'tres_intense') {
-    recommendations.push("⚡ Votre niveau d'activité est très élevé. Assurez-vous de récupérer suffisamment.")
+    recommendations.push("⚡ Votre niveau d&apos;activité est très élevé. Assurez-vous de récupérer suffisamment.")
   }
 
   // Recommandations basées sur l'objectif

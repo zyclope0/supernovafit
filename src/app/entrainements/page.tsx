@@ -12,10 +12,10 @@ const TrainingTypeChart = dynamic(() => import('@/components/ui/TrainingTypeChar
 const PerformanceChart = dynamic(() => import('@/components/ui/PerformanceChart'), { ssr: false })
 const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), { ssr: false })
 import { useAuth } from '@/hooks/useAuth'
-import { useEntrainements, useCoachCommentsByModule } from '@/hooks/useFirestore'
+import { useEntrainements } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
 import { Plus, TrendingUp, Timer, Target, BarChart3, Upload } from 'lucide-react'
-import ModuleComments from '@/components/ui/ModuleComments'
+// import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { ssr: false })
 

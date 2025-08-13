@@ -60,10 +60,10 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Nom de l'aliment */}
+        {/* Nom de l&apos;aliment */}
         <div>
           <label className="block text-xs text-muted-foreground mb-1">
-            Nom de l'aliment
+            Nom de l&apos;aliment
           </label>
           <input
             type="text"

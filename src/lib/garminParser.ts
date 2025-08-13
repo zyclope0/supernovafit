@@ -114,7 +114,7 @@ export class GarminParser {
         }
       }
 
-      // Détection intelligente du type d'activité
+      // Détection intelligente du type d&apos;activité
       let detectedSport = SPORT_MAPPING[activity.$.Sport] || 'cardio'
       
       // Si "Other", essayer de deviner selon les caractéristiques

@@ -67,7 +67,7 @@ export default function CaloriesChart({ repas, days = 7 }: CaloriesChartProps) {
         </div>
         <div className="text-right">
           <div className="text-2xl font-bold text-neon-green">{data[data.length - 1]?.calories || 0}</div>
-          <div className="text-xs text-muted-foreground">Aujourd'hui</div>
+          <div className="text-xs text-muted-foreground">Aujourd&apos;hui</div>
         </div>
       </div>
       

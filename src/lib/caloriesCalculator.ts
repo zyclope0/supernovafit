@@ -31,7 +31,7 @@ export interface CalorieCalculationData {
 }
 
 /**
- * MET (Metabolic Equivalent of Task) par type d'activité
+ * MET (Metabolic Equivalent of Task) par type d&apos;activité
  * Source: Compendium of Physical Activities 2024 Update
  * Valeurs validées pour adultes 19-59 ans
  * 82% des valeurs sont maintenant mesurées (vs estimées)

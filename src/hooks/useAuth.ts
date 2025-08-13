@@ -94,7 +94,7 @@ export function useAuth() {
 
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings)
-      // Sauvegarder l'email pour la vérification
+      // Sauvegarder l&apos;email pour la vérification
       window.localStorage.setItem('emailForSignIn', email)
       return { success: true }
     } catch (error: any) {

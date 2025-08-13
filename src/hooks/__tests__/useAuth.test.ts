@@ -26,7 +26,7 @@ describe('useAuth Hook', () => {
   })
 
   it('should initialize with loading true and no user', () => {
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       // Simule état initial (loading)
       return vi.fn()
     })
@@ -56,7 +56,7 @@ describe('useAuth Hook', () => {
       toJSON: vi.fn(),
     }
 
-    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+    mockOnAuthStateChanged.mockImplementation((_auth, callback) => {
       // Cast callback to function and call it
       if (typeof callback === 'function') {
         callback(mockUser as any)
