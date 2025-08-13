@@ -24,8 +24,8 @@ export interface User {
   
   // Métadonnées
   profil_complete?: boolean;
-  created_at?: any;
-  updated_at?: any;
+  created_at?: Date | string;
+  updated_at?: Date | string;
 }
 
 // Types pour les repas
@@ -123,7 +123,7 @@ export interface Mesure {
   imc?: number; // calculé automatiquement
   commentaire?: string;
   photos?: string[]; // URLs multiples
-  created_at?: any; // Timestamp Firebase
+  created_at?: Date | string; // Timestamp Firebase
 }
 
 // Type pour les statistiques calculées
@@ -146,7 +146,7 @@ export interface PhotoProgression {
   url: string;
   mesure_id?: string; // lié à une mesure spécifique
   commentaire?: string;
-  created_at?: any;
+  created_at?: Date | string;
 }
 
 // Types pour le journal - Badge défini plus bas
@@ -168,8 +168,8 @@ export interface JournalEntry {
   badges_obtenus?: string[]; // IDs des badges obtenus
   meteo?: 'soleil' | 'nuage' | 'pluie' | 'orage' | 'neige';
   activites_annexes?: string[]; // Activités hors sport (marche, jardinage, etc.)
-  created_at?: any; // Timestamp Firebase
-  updated_at?: any; // Timestamp Firebase
+  created_at?: Date | string; // Timestamp Firebase
+  updated_at?: Date | string; // Timestamp Firebase
 }
 
 export interface Badge {
@@ -181,7 +181,7 @@ export interface Badge {
   icone: string;
   condition: string; // Description de la condition
   date_obtenu: string;
-  created_at?: any;
+  created_at?: Date | string;
 }
 
 export interface Objectif {
@@ -197,8 +197,8 @@ export interface Objectif {
   date_limite?: string;
   statut: 'actif' | 'accompli' | 'abandonne' | 'pause';
   progression: number; // 0-100
-  created_at?: any;
-  completed_at?: any;
+  created_at?: Date | string;
+  completed_at?: Date | string;
 }
 
 export interface PhotoLibre {
@@ -211,7 +211,7 @@ export interface PhotoLibre {
   description?: string;
   tags?: string[]; // Tags libres pour catégoriser
   favoris: boolean;
-  created_at?: any;
+  created_at?: Date | string;
 }
 
 // Types pour les menus-type (coach)
@@ -239,8 +239,8 @@ export interface CoachDietPlan {
   diner: string;
   collation_soir: string;
   notes_generales?: string;
-  created_at?: any;
-  updated_at?: any;
+  created_at?: Date | string;
+  updated_at?: Date | string;
 }
 
 // Types pour l'API Open Food Facts
@@ -287,6 +287,6 @@ export interface CoachComment {
   entry_id?: string // pour journal
   mesure_id?: string // réservé pour évolutions futures
   comment: string
-  created_at?: any
+  created_at?: Date | string
   read_by_athlete?: boolean
 }

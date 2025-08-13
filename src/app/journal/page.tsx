@@ -363,7 +363,7 @@ export default function JournalPage() {
       let result
       if (editingEntry) {
         // Pour l'update, ne pas inclure user_id (il existe déjà). Inclure updated_at côté hook.
-        const { user_id, created_at, updated_at, ...updateData } = entryData as any
+        const { user_id: _user_id, created_at: _created_at, updated_at: _updated_at, ...updateData } = entryData as any
         result = await updateEntry(editingEntry.id, updateData)
       } else {
         result = await addEntry({ ...entryData, user_id: user.uid })

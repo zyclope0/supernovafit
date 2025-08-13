@@ -7,7 +7,7 @@ import MealForm from '@/components/ui/MealForm'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useAthleteDietPlan, useCoachCommentsByModule } from '@/hooks/useFirestore'
 import { MealType, Aliment, Macros } from '@/types'
-import { formatNumber } from '@/lib/utils'
+// formatNumber removed - not used
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import dynamic from 'next/dynamic'
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
@@ -255,7 +255,7 @@ function DailySummary({ todayMeals }: { todayMeals: any[] }) {
 
 export default function DietePage() {
   const { user } = useAuth()
-  const { repas, loading, addRepas, updateRepas, deleteRepas } = useRepas()
+  const { repas, addRepas, updateRepas, deleteRepas } = useRepas()
   const { currentPlan, loading: planLoading } = useAthleteDietPlan()
   const [selectedDate, setSelectedDate] = useState('')
   const { comments: dieteComments, loading: commentsLoading } = useCoachCommentsByModule('diete', selectedDate)

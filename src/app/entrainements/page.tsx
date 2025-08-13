@@ -352,7 +352,7 @@ export default function EntrainementsPage() {
               ) : (
                 <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
                   <div className="text-4xl mb-4">💪</div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement pour l'instant</h3>
+                  <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement pour l&apos;instant</h3>
                   <button
                     onClick={() => setShowForm(true)}
                     className="px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg font-medium hover:bg-neon-green/30 transition-colors"

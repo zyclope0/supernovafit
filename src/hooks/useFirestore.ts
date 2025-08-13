@@ -14,7 +14,8 @@ import {
   orderBy,
   limit,
   serverTimestamp,
-  onSnapshot
+  onSnapshot,
+  QueryConstraint
 } from 'firebase/firestore'
 import { 
   ref, 
@@ -76,9 +77,9 @@ export function useRepas() {
       const docRef = await addDoc(collection(db, 'repas'), docData)
       
       return { success: true, id: docRef.id }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Erreur lors de l\'enregistrement:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -93,9 +94,9 @@ export function useRepas() {
       
       await updateDoc(doc(db, 'repas', id), updateData)
       return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Erreur lors de la mise à jour:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -103,8 +104,8 @@ export function useRepas() {
     try {
       await deleteDoc(doc(db, 'repas', id))
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -174,9 +175,9 @@ export function useEntrainements() {
       })
       
       return { success: true, id: docRef.id }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ ERREUR AJOUT ENTRAÎNEMENT:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -190,8 +191,8 @@ export function useEntrainements() {
         updated_at: serverTimestamp()
       })
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -201,8 +202,8 @@ export function useEntrainements() {
     try {
       await deleteDoc(doc(db, 'entrainements', id))
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -265,8 +266,8 @@ export function useFavoris() {
         nom_lower: aliment.nom.toLowerCase()
       })
       return { success: true, id: docRef.id }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -276,8 +277,8 @@ export function useFavoris() {
     try {
       await deleteDoc(doc(db, 'favoris_aliments', id))
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -333,7 +334,7 @@ export function useMesures() {
       }
 
       // Préparer les données en filtrant les valeurs undefined
-      const dataToSave: any = {
+      const dataToSave: Record<string, unknown> = {
         user_id: user.uid,
         date: mesureData.date,
         created_at: serverTimestamp()
@@ -355,8 +356,8 @@ export function useMesures() {
 
       const docRef = await addDoc(collection(db, 'mesures'), dataToSave)
       return { success: true, id: docRef.id }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -375,7 +376,7 @@ export function useMesures() {
       }
 
       // Filtrer les valeurs undefined pour Firestore
-      const dataToUpdate: any = {}
+      const dataToUpdate: Record<string, unknown> = {}
       Object.keys(mesureData).forEach(key => {
         const value = mesureData[key as keyof Partial<Mesure>]
         if (value !== undefined) {
@@ -383,10 +384,10 @@ export function useMesures() {
         }
       })
 
-      await updateDoc(doc(db, 'mesures', id), dataToUpdate)
+      await updateDoc(doc(db, 'mesures', id), dataToUpdate as any)
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -396,8 +397,8 @@ export function useMesures() {
     try {
       await deleteDoc(doc(db, 'mesures', id))
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -508,9 +509,9 @@ export function usePhotos() {
 
       setUploading(false)
       return { success: true, id: docRef.id, url: downloadURL }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setUploading(false)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -526,8 +527,8 @@ export function usePhotos() {
       await deleteDoc(doc(db, 'photos_progression', photoId))
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -552,8 +553,8 @@ export function usePhotos() {
 
       await updateDoc(doc(db, 'photos_progression', photoId), filteredUpdates)
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -619,9 +620,9 @@ export function useJournal() {
       
       const docRef = await addDoc(collection(db, 'journal'), filteredData)
       return { success: true, id: docRef.id }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Erreur ajout entrée journal:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -643,9 +644,9 @@ export function useJournal() {
 
       await updateDoc(doc(db, 'journal', id), filteredData)
       return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Erreur mise à jour entrée journal:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -655,9 +656,9 @@ export function useJournal() {
     try {
       await deleteDoc(doc(db, 'journal', id))
       return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Erreur suppression entrée journal:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -750,12 +751,12 @@ export function usePhotosLibres() {
 
       setUploading(false)
       return { success: true, id: docRef.id, url: downloadURL }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ UPLOAD - Erreur upload photo:', error)
-      console.error('❌ UPLOAD - Code erreur:', error.code)
-      console.error('❌ UPLOAD - Message:', error.message)
+      console.error('❌ UPLOAD - Code erreur:', (error as any)?.code)
+      console.error('❌ UPLOAD - Message:', (error as any)?.message)
       setUploading(false)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -778,8 +779,8 @@ export function usePhotosLibres() {
         updated_at: serverTimestamp()
       })
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -795,8 +796,8 @@ export function usePhotosLibres() {
       await deleteDoc(doc(db, 'photos_libres', photoId))
 
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -871,9 +872,9 @@ export function useBadges() {
       })
 
       return { success: true, id: docRef.id }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ BADGES - Erreur ajout badge:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -936,9 +937,9 @@ export function useObjectifs() {
       })
 
       return { success: true, id: docRef.id }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ OBJECTIFS - Erreur ajout objectif:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -955,9 +956,9 @@ export function useObjectifs() {
       })
 
       return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ OBJECTIFS - Erreur update progression:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -1074,9 +1075,9 @@ export function useCoachAthletes() {
       // Envoi d'email d'invitation (optionnel, à implémenter côté service email)
       
       return { success: true, token: invitationToken }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ COACH - Erreur envoi invitation:', error)
-      return { success: false, error: error.message }
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -1292,7 +1293,7 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
     ;(async () => {
       try {
         // Construire dynamiquement les contraintes
-        const constraints: any[] = [
+        const constraints: QueryConstraint[] = [
           where('athlete_id', '==', user.uid),
           where('module', '==', module),
         ]
@@ -1338,8 +1339,8 @@ export async function updateCoachCommentRead(commentId: string, read: boolean) {
   try {
     await updateDoc(doc(db, 'coach_comments', commentId), { read_by_athlete: read })
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur update read_by_athlete:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
   }
 }

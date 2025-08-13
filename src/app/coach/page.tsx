@@ -9,23 +9,23 @@ import { Users, TrendingUp, Calendar, FileText, Award, Plus, Search, Activity, B
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
-interface AthleteWithStats {
-  id: string
-  nom: string
-  email: string
-  objectif?: string
-  derniere_activite?: Date
-  stats?: {
-    entrainements_semaine: number
-    calories_jour_moyen: number
-    progression_poids?: number
-  }
-}
+// interface AthleteWithStats {
+//   id: string
+//   nom: string
+//   email: string
+//   objectif?: string
+//   derniere_activite?: Date
+//   stats?: {
+//     entrainements_semaine: number
+//     calories_jour_moyen: number
+//     progression_poids?: number
+//   }
+// }
 
 export default function CoachDashboard() {
-  const { user, userProfile } = useAuth()
+  const { userProfile } = useAuth()
   const router = useRouter()
-  const { athletes: coachAthletes, loading: loadingAthletes } = useCoachAthletes()
+  const { athletes: coachAthletes } = useCoachAthletes()
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
 

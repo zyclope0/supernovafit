@@ -163,7 +163,7 @@ export default function AuthPage() {
             <div className="mb-4">
               <Mail className="h-6 w-6 text-neon-cyan" />
               <h2 className="mt-2 text-lg font-semibold text-white">Comptes de test</h2>
-              <p className="text-xs text-muted-foreground">Utilisez ces identifiants pour explorer l'app</p>
+              <p className="text-xs text-muted-foreground">Utilisez ces identifiants pour explorer l&apos;app</p>
             </div>
 
             <div className="space-y-3 text-sm">

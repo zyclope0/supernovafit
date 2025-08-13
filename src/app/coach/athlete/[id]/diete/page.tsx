@@ -1,27 +1,18 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import MainLayout from '@/components/layout/MainLayout'
-import { ArrowLeft, Calendar, Plus, Edit2, MessageCircle, ClipboardList } from 'lucide-react'
+import { ArrowLeft, Calendar, MessageCircle, ClipboardList } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { collection, query, where, orderBy, onSnapshot, doc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, doc, getDoc, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { Repas } from '@/types'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
-import dynamic from 'next/dynamic'
 
-// Optimisation : Charts dynamiques groupés
-const ChartsSection = dynamic(() => import('@/components/charts/CoachDieteCharts'), { 
-  ssr: false,
-  loading: () => (
-    <div className="glass-effect rounded-xl p-6 border border-white/10 h-64 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-purple"></div>
-    </div>
-  )
-})
+// Charts section removed - not used in this component
 
 export default function CoachAthleteDietePage() {
   const { userProfile, user } = useAuth()

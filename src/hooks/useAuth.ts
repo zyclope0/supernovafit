@@ -97,8 +97,8 @@ export function useAuth() {
       // Sauvegarder l&apos;email pour la vérification
       window.localStorage.setItem('emailForSignIn', email)
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -115,8 +115,8 @@ export function useAuth() {
           await signInWithEmailLink(auth, email, window.location.href)
           window.localStorage.removeItem('emailForSignIn')
           return { success: true }
-        } catch (error: any) {
-          return { success: false, error: error.message }
+        } catch (error: unknown) {
+          return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
         }
       }
     }
@@ -128,8 +128,8 @@ export function useAuth() {
     try {
       await signInWithEmailAndPassword(auth, email, password)
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 
@@ -138,8 +138,8 @@ export function useAuth() {
     try {
       await firebaseSignOut(auth)
       return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
+    } catch (error: unknown) {
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
 

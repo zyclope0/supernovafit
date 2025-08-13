@@ -25,7 +25,7 @@ export const db = isBrowser ? getFirestore(app) : (undefined as any);
 export const storage = isBrowser ? getStorage(app) : (undefined as any);
 
 // Analytics - Chargement dynamique côté client uniquement
-export let analytics: any = null;
+export let analytics: unknown = null;
 
 if (isBrowser) {
   import('firebase/analytics')

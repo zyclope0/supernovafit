@@ -132,23 +132,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
     }
   }, [mesures])
 
-  // Données pour le graphique en secteurs IMC
-  const imcData = useMemo(() => {
-    if (!mesures[0]?.imc) return []
-    
-    const imc = mesures[0].imc
-    let categorie = ''
-    let couleur = ''
-    
-    if (imc < 18.5) { categorie = 'Sous-poids'; couleur = '#06b6d4' }
-    else if (imc < 25) { categorie = 'Normal'; couleur = '#10b981' }
-    else if (imc < 30) { categorie = 'Surpoids'; couleur = '#f59e0b' }
-    else { categorie = 'Obésité'; couleur = '#ef4444' }
-
-    return [
-      { name: categorie, value: imc, fill: couleur }
-    ]
-  }, [mesures])
+  // IMC data removed - was unused
 
   if (mesures.length === 0) {
     return (

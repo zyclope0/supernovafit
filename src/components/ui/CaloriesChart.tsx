@@ -41,7 +41,7 @@ export default function CaloriesChart({ repas, days = 7 }: CaloriesChartProps) {
   const avgCalories = Math.round(data.reduce((sum, d) => sum + d.calories, 0) / data.length)
 
   // Tooltip personnalisé
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label: _label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

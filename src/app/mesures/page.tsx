@@ -123,7 +123,7 @@ function MesureCard({
 
       {mesure.commentaire && (
         <div className="mt-3 pt-3 border-t border-white/10">
-          <p className="text-sm text-muted-foreground italic">"{mesure.commentaire}"</p>
+          <p className="text-sm text-muted-foreground italic">&quot;{mesure.commentaire}&quot;</p>
         </div>
       )}
     </div>

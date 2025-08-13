@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import MainLayout from '@/components/layout/MainLayout'
-import { ArrowLeft, Calendar, MessageCircle, Activity, Clock, Zap } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Activity } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { collection, query, where, orderBy, onSnapshot, doc, getDoc, addDoc, serverTimestamp, limit } from 'firebase/firestore'
@@ -13,8 +13,7 @@ import { Entrainement } from '@/types'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 
 export default function CoachAthleteTrainingsPage() {
-  const { userProfile, user } = useAuth()
-  const router = useRouter()
+  const { user } = useAuth()
   const params = useParams()
   const athleteId = params.id as string
   
@@ -209,7 +208,7 @@ export default function CoachAthleteTrainingsPage() {
 
                     {training.commentaire && (
                       <p className="mt-3 text-sm text-gray-300 italic">
-                        "{training.commentaire}"
+                        &quot;{training.commentaire}&quot;
                       </p>
                     )}
                   </div>

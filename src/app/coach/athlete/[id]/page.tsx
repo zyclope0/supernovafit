@@ -8,7 +8,7 @@ import { ArrowLeft, TrendingUp, TrendingDown, Calendar, Activity, Scale, Camera 
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { 
-  LineChart, Line, AreaChart, Area, BarChart, Bar,
+  LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
 } from 'recharts'
 

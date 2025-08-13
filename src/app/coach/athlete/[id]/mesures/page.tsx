@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
@@ -13,8 +13,7 @@ import type { Mesure } from '@/types'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 
 export default function CoachAthleteMesuresPage() {
-  const { userProfile, user } = useAuth()
-  const router = useRouter()
+  const { user } = useAuth()
   const params = useParams()
   const athleteId = params.id as string
 
@@ -205,7 +204,7 @@ export default function CoachAthleteMesuresPage() {
 
                   {m.commentaire && (
                     <div className="mt-3 pt-3 border-t border-white/10">
-                      <p className="text-sm text-muted-foreground italic">"{m.commentaire}"</p>
+                      <p className="text-sm text-muted-foreground italic">&quot;{m.commentaire}&quot;</p>
                     </div>
                   )}
                 </div>

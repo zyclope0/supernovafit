@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Helper pour track events avec fallback Sentry
-export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
+export const trackEvent = (eventName: string, parameters?: Record<string, unknown>) => {
   try {
     if (analytics) {
       logEvent(analytics, eventName, parameters)

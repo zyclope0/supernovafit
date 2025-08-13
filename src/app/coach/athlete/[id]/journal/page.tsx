@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import MainLayout from '@/components/layout/MainLayout'
-import { ArrowLeft, Calendar, MessageCircle, BookOpen, Smile, Battery, Brain } from 'lucide-react'
+import { ArrowLeft, MessageCircle, BookOpen, Smile, Battery, Brain } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { collection, query, where, orderBy, onSnapshot, doc, getDoc, addDoc, serverTimestamp, limit } from 'firebase/firestore'
@@ -13,8 +13,7 @@ import { JournalEntry } from '@/types'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 
 export default function CoachAthleteJournalPage() {
-  const { userProfile, user } = useAuth()
-  const router = useRouter()
+  const { user } = useAuth()
   const params = useParams()
   const athleteId = params.id as string
   
@@ -228,7 +227,7 @@ export default function CoachAthleteJournalPage() {
 
                     {entry.note && (
                       <p className="text-sm text-gray-300 italic mb-3">
-                        "{entry.note}"
+                        &quot;{entry.note}&quot;
                       </p>
                     )}
 
@@ -268,7 +267,7 @@ export default function CoachAthleteJournalPage() {
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Vos observations sur l'état de votre athlète..."
+                placeholder="Vos observations sur l&apos;état de votre athlète..."
                 className="w-full h-32 px-4 py-3 bg-white/5 border border-white/10 rounded-lg
                          text-white placeholder-gray-400 focus:outline-none focus:border-neon-purple
                          resize-none"
