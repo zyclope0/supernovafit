@@ -111,7 +111,7 @@ export default function CaloriesChart({ repas, days = 7 }: CaloriesChartProps) {
         <div className="absolute inset-0 flex items-center justify-center">
           <p className="text-muted-foreground text-center">
             Aucune donnée nutritionnelle<br />
-            <span className="text-sm">Ajoutez des repas pour voir l'évolution</span>
+            <span className="text-sm">Ajoutez des repas pour voir l&apos;évolution</span>
           </p>
         </div>
       )}

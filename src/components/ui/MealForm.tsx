@@ -93,7 +93,7 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
 
   // Ajouter aux favoris
   const handleAddToFavoris = async (aliment: Aliment) => {
-    const { id, ...alimentData } = aliment
+    const { id: _id, ...alimentData } = aliment
     const result = await addToFavoris(alimentData)
     
     if (result.success) {

@@ -186,7 +186,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
     setValidationErrors([])
     
     // Retirer le user_id temporaire pour l'envoi final
-    const { user_id, ...finalTrainingData } = trainingDataForValidation
+    const { user_id: _user_id, ...finalTrainingData } = trainingDataForValidation
     onSubmit(finalTrainingData)
   }
 

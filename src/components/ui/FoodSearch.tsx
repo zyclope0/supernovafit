@@ -216,7 +216,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
       {/* Message si pas de résultats */}
       {isOpen && query.length >= 2 && !isLoading && results.length === 0 && (
         <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg p-4 text-center text-muted-foreground shadow-2xl" aria-live="polite">
-          Aucun aliment trouvé pour "{query}"
+          Aucun aliment trouvé pour &quot;{query}&quot;
         </div>
       )}
     </div>

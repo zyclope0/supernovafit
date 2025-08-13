@@ -21,7 +21,7 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
 
   const handleSelectAliment = (aliment: Aliment) => {
     // Créer un nouvel aliment basé sur le favori
-    const { id, ...alimentData } = aliment as any
+    const { id: _id, ...alimentData } = aliment as any
     onSelectFood({
       ...alimentData,
       quantite: 100, // Quantité par défaut
@@ -80,7 +80,7 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
             ) : (
               <div className="text-muted-foreground">
                 <Search className="h-6 w-6 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Aucun résultat pour "{searchQuery}"</p>
+                <p className="text-sm">Aucun résultat pour &quot;{searchQuery}&quot;</p>
               </div>
             )}
           </div>
@@ -115,7 +115,7 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
       {favoris.length > 0 && (
         <div className="mt-4 pt-4 border-t border-white/10">
           <div className="text-xs text-muted-foreground text-center">
-            💡 Astuce : Cliquez sur un favori pour l'ajouter rapidement
+            💡 Astuce : Cliquez sur un favori pour l&apos;ajouter rapidement
           </div>
         </div>
       )}

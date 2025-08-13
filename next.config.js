@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const { withSentryConfig } = require('@sentry/nextjs')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
@@ -58,4 +59,26 @@ const nextConfig = {
   }
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+// Export with Sentry + Bundle Analyzer
+module.exports = withSentryConfig(
+  withBundleAnalyzer(nextConfig),
+  {
+    // For all available options, see:
+    // https://github.com/getsentry/sentry-webpack-plugin#options
+
+    // Suppresses source map uploading logs during build
+    silent: true,
+    
+    // Upload source maps during build
+    widenClientFileUpload: true,
+    
+    // Hides source maps from generated client bundles
+    hideSourceMaps: true,
+    
+    // Automatically tree-shake Sentry logger statements
+    disableLogger: true,
+    
+    // Enables automatic instrumentation of Vercel Cron Monitors.
+    automaticVercelMonitors: true,
+  }
+)

@@ -98,7 +98,7 @@ export default function CoachRecommendations({ plan, loading }: CoachRecommendat
           {/* Aucune recommandation si toutes vides */}
           {!mealTypes.some(({ key }) => plan[key as keyof typeof plan] as string) && (
             <p className="text-gray-400 text-center py-4">
-              Le plan existe mais aucune recommandation spécifique n'a été ajoutée.
+              Le plan existe mais aucune recommandation spécifique n&apos;a été ajoutée.
             </p>
           )}
         </div>
