@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock Firestore avant import
@@ -11,12 +11,19 @@ vi.mock('firebase/firestore', () => ({
   deleteDoc: vi.fn(),
   getDocs: vi.fn(),
   getDoc: vi.fn(),
-  query: vi.fn(),
-  where: vi.fn(),
-  orderBy: vi.fn(),
+  query: vi.fn(() => ({ __isFirestoreQuery: true })), // Retourner un mock query
+  where: vi.fn(() => ({ __isFirestoreWhere: true })), // Chain
+  orderBy: vi.fn(() => ({ __isFirestoreOrderBy: true })), // Chain
   limit: vi.fn(),
   serverTimestamp: vi.fn(),
-  onSnapshot: vi.fn(),
+  onSnapshot: vi.fn((query, callback) => {
+    // Simuler des données vides en async pour éviter les boucles
+    setTimeout(() => {
+      callback({ docs: [] })
+    }, 0)
+    // Retourner fonction unsubscribe
+    return vi.fn()
+  }),
 }))
 
 // Mock Firebase Storage
@@ -47,11 +54,20 @@ describe('useRepas Hook', () => {
     vi.clearAllMocks()
   })
 
-  it('should initialize with empty repas', () => {
+  it('should initialize with empty repas', async () => {
     const { result } = renderHook(() => useRepas())
 
     expect(result.current.repas).toEqual([])
-    expect(result.current.loading).toBe(false)
+    // Loading initialement true
+    expect(result.current.loading).toBe(true)
+    
+    // Attendre que le mock onSnapshot se déclenche
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+    
+    // Vérifier le state final
+    expect(result.current.repas).toEqual([])
   })
 
   it('should have addRepas function', () => {
@@ -78,11 +94,20 @@ describe('useEntrainements Hook', () => {
     vi.clearAllMocks()
   })
 
-  it('should initialize with empty entrainements', () => {
+  it('should initialize with empty entrainements', async () => {
     const { result } = renderHook(() => useEntrainements())
 
     expect(result.current.entrainements).toEqual([])
-    expect(result.current.loading).toBe(false)
+    // Loading initialement true
+    expect(result.current.loading).toBe(true)
+    
+    // Attendre que le mock onSnapshot se déclenche
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+    
+    // Vérifier le state final
+    expect(result.current.entrainements).toEqual([])
   })
 
   it('should have addEntrainement function', () => {

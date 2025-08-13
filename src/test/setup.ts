@@ -32,12 +32,21 @@ vi.mock('firebase/firestore', () => ({
   getDocs: vi.fn(() => Promise.resolve({ docs: [] })),
   getDoc: vi.fn(() => Promise.resolve({ exists: () => false })),
   setDoc: vi.fn(() => Promise.resolve()),
-  query: vi.fn(),
-  where: vi.fn(),
-  orderBy: vi.fn(),
+  query: vi.fn(() => ({ __isFirestoreQuery: true })), // Retourner un mock query  
+  where: vi.fn(() => ({ __isFirestoreWhere: true })), // Chain
+  orderBy: vi.fn(() => ({ __isFirestoreOrderBy: true })), // Chain
   limit: vi.fn(),
   startAt: vi.fn(),
   endAt: vi.fn(),
+  onSnapshot: vi.fn((query, callback) => {
+    // Simuler des données vides en async pour éviter les boucles
+    setTimeout(() => {
+      callback({ docs: [] })
+    }, 0)
+    // Retourner une fonction unsubscribe
+    return vi.fn()
+  }),
+  serverTimestamp: vi.fn(() => ({ __type: 'timestamp' })),
 }))
 
 vi.mock('firebase/storage', () => ({

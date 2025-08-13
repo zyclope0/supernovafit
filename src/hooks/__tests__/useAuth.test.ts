@@ -104,7 +104,7 @@ describe('useAuth Hook', () => {
 
     expect(response.success).toBe(true)
     expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
-      expect.anything(),
+      undefined, // Auth object is mocked as undefined
       'test@test.com',
       'password123'
     )
