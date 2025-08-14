@@ -27,21 +27,6 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     }
   }, [autoFocus])
 
-  // Debounce optimisé de la recherche
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query.length >= 2) {
-        performSearch()
-      } else {
-        setResults([])
-        setIsOpen(false)
-        setIsLoading(false)
-      }
-    }, 500) // Augmenté à 500ms pour réduire les requêtes
-
-    return () => clearTimeout(timer)
-  }, [query, performSearch])
-
   const performSearch = useCallback(async () => {
     if (isLoading) return // Éviter les requêtes multiples
     
@@ -59,6 +44,21 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
       setIsLoading(false)
     }
   }, [query, isLoading])
+
+  // Debounce optimisé de la recherche
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query.length >= 2) {
+        performSearch()
+      } else {
+        setResults([])
+        setIsOpen(false)
+        setIsLoading(false)
+      }
+    }, 500) // Augmenté à 500ms pour réduire les requêtes
+
+    return () => clearTimeout(timer)
+  }, [query, performSearch])
 
   const handleSelect = (product: OpenFoodFactsProduct) => {
     onSelectProduct(product)
