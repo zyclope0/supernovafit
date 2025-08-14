@@ -58,9 +58,7 @@ describe('useAuth Hook', () => {
 
     mockOnAuthStateChanged.mockImplementation((auth, callback) => {
       // Cast _callback to function and call it
-      if (typeof callback === 'function') {
-        callback(mockUser as unknown as Parameters<typeof onAuthStateChanged>[1])
-      }
+      if (typeof callback === 'function') { (callback as (u: unknown) => void)(mockUser as unknown) }
       return vi.fn()
     })
 

@@ -64,7 +64,7 @@ function MesureCard({
   mesure: Mesure
   onEdit: (mesure: Mesure) => void
   onDelete: (id: string) => void
-  getStats: (mesure: Mesure) => { imc: number; evolution_poids: number; evolution_masse_grasse: number; poids_ideal_min: number; poids_ideal_max: number }
+  getStats: (mesure: Mesure) => ({ imc: number; evolution_poids: number; evolution_masse_grasse: number; poids_ideal_min: number; poids_ideal_max: number } | null)
 }) {
   const stats = getStats(mesure)
   

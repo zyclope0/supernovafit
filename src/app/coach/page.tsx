@@ -211,7 +211,9 @@ export default function CoachDashboard() {
                     <span className="text-sm text-gray-400">Dernière connexion</span>
                     <span className="text-sm text-white">
                       {athlete.dernier_acces ? 
-                        new Date(athlete.dernier_acces.seconds * 1000).toLocaleDateString('fr-FR') :
+                        (typeof athlete.dernier_acces === 'object' && 'seconds' in (athlete.dernier_acces as any)
+                          ? new Date((athlete.dernier_acces as any).seconds * 1000).toLocaleDateString('fr-FR')
+                          : new Date(athlete.dernier_acces as unknown as string | number | Date).toLocaleDateString('fr-FR')) :
                         'Jamais'}
                     </span>
                   </div>

@@ -73,7 +73,11 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
     const loadUserProfile = async () => {
       if (user?.uid) {
         const profile = await getUserProfile?.(user.uid)
-        if (isMounted) setUserProfile(profile)
+        if (isMounted && profile) setUserProfile({
+          age: profile.age,
+          poids_initial: profile.poids_initial,
+          sexe: profile.sexe,
+        })
       }
     }
     loadUserProfile()

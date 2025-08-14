@@ -169,7 +169,7 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
          
           // Supprimer les doublons par code produit
      const uniqueProducts = allProducts.filter((product, index, self) => 
-       index === self.findIndex(p => p.code === product.code)
+       index === self.findIndex(p => (p as { code?: string }).code === (product as { code?: string }).code)
      );
      
       // Pré-filtre produits valides

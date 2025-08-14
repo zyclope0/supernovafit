@@ -264,7 +264,7 @@ export default function JournalPage() {
   useEffect(() => {
     if (!user || loading || badgesLoading || entries.length === 0) return
 
-    const userData = calculateUserData(entries, photos)
+    const userData = calculateUserData(entries, photos as unknown as any)
     const existingBadgeIds = badges.map(b => b.nom)
     const newBadges = checkNewBadges(userData, existingBadgeIds)
 

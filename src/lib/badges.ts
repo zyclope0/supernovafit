@@ -108,7 +108,7 @@ export function calculateUserData(journalEntries: JournalEntry[], photos: PhotoP
       const entryDate = new Date(entry.date)
       const threeDaysAgo = new Date()
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
-      return entryDate >= threeDaysAgo && entry.humeur >= 9
+      return entryDate >= threeDaysAgo && (entry.humeur ?? 0) >= 9
     })
   
   // Motivation récente (8+)
@@ -117,7 +117,7 @@ export function calculateUserData(journalEntries: JournalEntry[], photos: PhotoP
       const entryDate = new Date(entry.date)
       const fiveDaysAgo = new Date()
       fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5)
-      return entryDate >= fiveDaysAgo && entry.motivation >= 8
+      return entryDate >= fiveDaysAgo && (entry.motivation ?? 0) >= 8
     })
 
   return {

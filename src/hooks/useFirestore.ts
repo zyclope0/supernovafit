@@ -23,6 +23,7 @@ import {
   getDownloadURL, 
   deleteObject 
 } from 'firebase/storage'
+import type { DocumentData } from 'firebase/firestore'
 import { db, storage } from '@/lib/firebase'
 import { useAuth } from './useAuth'
 import { generateId } from '@/lib/utils'
@@ -384,7 +385,7 @@ export function useMesures() {
         }
       })
 
-      await updateDoc(doc(db, 'mesures', id), dataToUpdate)
+      await updateDoc(doc(db, 'mesures', id), dataToUpdate as Partial<DocumentData>)
       return { success: true }
     } catch (error: unknown) {
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
@@ -1314,8 +1315,14 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
           const commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) })) as CoachComment[]
 
           commentsData.sort((a, b) => {
-            const dateA = a.created_at?.toDate?.() || new Date(a.created_at)
-            const dateB = b.created_at?.toDate?.() || new Date(b.created_at)
+            const createdA: any = a.created_at as any
+            const dateA = (typeof createdA === 'object' && createdA && typeof createdA.toDate === 'function')
+              ? createdA.toDate()
+              : new Date(a.created_at as string | number | Date)
+            const createdB: any = b.created_at as any
+            const dateB = (typeof createdB === 'object' && createdB && typeof createdB.toDate === 'function')
+              ? createdB.toDate()
+              : new Date(b.created_at as string | number | Date)
             return dateB.getTime() - dateA.getTime()
           })
 
