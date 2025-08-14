@@ -44,8 +44,7 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
         
-      - name: Build application
-        run: npm run build
+      # Note: Le build se fera dans les workflows de déploiement dépendants
         
       - name: Comment PR with coverage
         if: github.event_name == 'pull_request'
