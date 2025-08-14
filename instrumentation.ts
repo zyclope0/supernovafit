@@ -12,3 +12,20 @@ export async function register() {
     await import('./sentry.edge.config')
   }
 }
+
+// Capture errors from nested React Server Components / request lifecycle
+// Ref: Sentry Next.js manual setup – onRequestError hook
+export async function onRequestError(error: unknown) {
+  try {
+    const Sentry = await import('@sentry/nextjs')
+    // Prefer the dedicated helper when available
+    // Fallback to captureException for older SDKs
+    if (typeof (Sentry as any).captureRequestError === 'function') {
+      ;(Sentry as any).captureRequestError(error)
+    } else if (typeof (Sentry as any).captureException === 'function') {
+      ;(Sentry as any).captureException(error)
+    }
+  } catch {
+    // Swallow to avoid breaking request pipeline in case of import issues
+  }
+}

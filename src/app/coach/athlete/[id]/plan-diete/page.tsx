@@ -8,11 +8,13 @@ import { CoachDietPlan } from '@/types'
 import { ArrowLeft, Save, Plus, Edit2, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
+type AthleteLite = { id: string; nom?: string; email?: string }
+
 export default function CoachDietPlanPage() {
   const { id: athleteId } = useParams()
   const router = useRouter()
   const { user } = useAuth()
-  const [athlete, setAthlete] = useState<any>(null)
+  const [athlete, setAthlete] = useState<AthleteLite | null>(null)
   const [currentPlan, setCurrentPlan] = useState<CoachDietPlan | null>(null)
   const [isCreating, setIsCreating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)

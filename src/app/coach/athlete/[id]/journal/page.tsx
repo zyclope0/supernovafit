@@ -12,12 +12,14 @@ import { db } from '@/lib/firebase'
 import { JournalEntry } from '@/types'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 
+type AthleteLite = { id: string; nom?: string; email?: string }
+
 export default function CoachAthleteJournalPage() {
   const { user } = useAuth()
   const params = useParams()
   const athleteId = params.id as string
   
-  const [athlete, setAthlete] = useState<any>(null)
+  const [athlete, setAthlete] = useState<AthleteLite | null>(null)
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [showCommentModal, setShowCommentModal] = useState(false)

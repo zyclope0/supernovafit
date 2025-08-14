@@ -1,6 +1,6 @@
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts'
 import { Repas } from '@/types'
 import { format, subDays } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -41,7 +41,7 @@ export default function CaloriesChart({ repas, days = 7 }: CaloriesChartProps) {
   const avgCalories = Math.round(data.reduce((sum, d) => sum + d.calories, 0) / data.length)
 
   // Tooltip personnalisé
-  const CustomTooltip = ({ active, payload, label: _label }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (

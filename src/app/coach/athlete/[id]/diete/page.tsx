@@ -14,13 +14,15 @@ import CollapsibleCard from '@/components/ui/CollapsibleCard'
 
 // Charts section removed - not used in this component
 
+type AthleteLite = { id: string; nom?: string; email?: string }
+
 export default function CoachAthleteDietePage() {
   const { userProfile, user } = useAuth()
   const router = useRouter()
   const params = useParams()
   const athleteId = params.id as string
   
-  const [athlete, setAthlete] = useState<any>(null)
+  const [athlete, setAthlete] = useState<AthleteLite | null>(null)
   const [repas, setRepas] = useState<Repas[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
