@@ -29,10 +29,7 @@ Sentry.init({
     if (event.exception) {
       const error = hint.originalException as Error
       
-      // Ignorer erreurs chunk loading (fréquentes mais non critiques)
-      if (error?.name === 'ChunkLoadError') {
-        return null
-      }
+      // Ne PAS filtrer ChunkLoadError: on souhaite les voir pour détecter des versions en cache
       
       // Ignorer erreurs network temporaires
       if (error?.message?.includes('Network Error') || 

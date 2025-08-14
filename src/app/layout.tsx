@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import VitalsReporter from '@/components/analytics/VitalsReporter'
+import ChunkGuard from '@/components/runtime/ChunkGuard'
 import '../styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-gradient-space min-h-screen`}>
         {/* <SentryProvider /> - Désactivé: remplacé par sentry.client.config.ts */}
         <VitalsReporter />
+        <ChunkGuard />
         {children}
         <Toaster
           position="top-right"
