@@ -71,5 +71,12 @@ Sentry.init({
       maskAllText: true,
       blockAllMedia: true,
     }),
+    Sentry.browserTracingIntegration(),
   ],
+  tracesSampler: (samplingContext) => {
+    // Échantillonnage plus élevé pour capter les transactions où Web Vitals seront attachés
+    const url = samplingContext?.location?.href || ''
+    if (url.includes('localhost')) return 1.0
+    return 0.2
+  },
 })

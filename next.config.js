@@ -80,5 +80,6 @@ module.exports = withSentryConfig(
     
     // Enables automatic instrumentation of Vercel Cron Monitors.
     automaticVercelMonitors: true,
+    uploadClientErrors: true,
   }
 )

@@ -44,12 +44,12 @@ const trackVital = (metric: Metric) => {
       rating,
       delta: metric.delta,
       id: metric.id,
-      navigationType: (metric as any).navigationType || 'unknown'
+      navigationType: (metric as unknown as { navigationType?: string }).navigationType || 'unknown'
     },
     level: rating === 'poor' ? 'warning' : 'info'
   })
   
-  // Mapping attendu par Sentry pour le dashboard Web Vitals
+  // Mapping attendu par Sentry pour le dashboard Web Vitals (lowercase + unité correcte)
   const nameMap: Record<string, { key: string; unit: 'none' | 'millisecond' }> = {
     CLS: { key: 'cls', unit: 'none' },
     INP: { key: 'inp', unit: 'millisecond' },
@@ -59,7 +59,14 @@ const trackVital = (metric: Metric) => {
   }
   const mapped = nameMap[metric.name]
   if (mapped) {
-    Sentry.setMeasurement(mapped.key, metric.value, mapped.unit)
+    // Attacher au transaction active si possible (plus fiable que la portée globale)
+    const scope = (Sentry as unknown as { getCurrentScope?: () => unknown }).getCurrentScope?.()
+    const tx = (scope as { getTransaction?: () => { setMeasurement?: (k: string, v: number, u: 'none' | 'millisecond') => void } })?.getTransaction?.()
+    if (tx && typeof tx.setMeasurement === 'function') {
+      tx.setMeasurement(mapped.key, metric.value, mapped.unit)
+    } else {
+      Sentry.setMeasurement(mapped.key, metric.value, mapped.unit)
+    }
   }
   
   // Log pour debug en dev
