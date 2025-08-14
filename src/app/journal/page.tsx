@@ -332,7 +332,7 @@ export default function JournalPage() {
         }
       }
     })
-  }, [entries, objectifs, user, objectifsLoading])
+  }, [entries, objectifs, user, objectifsLoading, updateProgression])
 
   const handleNewEntry = () => {
     setEditingEntry(null)

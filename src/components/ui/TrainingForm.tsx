@@ -78,7 +78,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
     }
     loadUserProfile()
     return () => { isMounted = false }
-  }, [user?.uid])
+  }, [user?.uid, getUserProfile])
 
   // Synchroniser le formulaire quand une nouvelle séance est sélectionnée pour édition
   useEffect(() => {

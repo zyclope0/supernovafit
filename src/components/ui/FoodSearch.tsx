@@ -40,7 +40,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     }, 500) // Augmenté à 500ms pour réduire les requêtes
 
     return () => clearTimeout(timer)
-  }, [query])
+  }, [query, performSearch])
 
   const performSearch = useCallback(async () => {
     if (isLoading) return // Éviter les requêtes multiples

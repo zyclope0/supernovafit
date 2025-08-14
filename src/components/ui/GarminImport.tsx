@@ -263,7 +263,7 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
                         {/* Sélecteur de type */}
                         <div>
                           <label className="block text-sm font-medium text-white mb-2">
-                            Type d'entraînement :
+                            Type d&apos;entraînement :
                           </label>
                           <select
                             value={result.selectedType || result.entrainement.type}

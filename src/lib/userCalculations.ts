@@ -164,7 +164,7 @@ export function generateRecommendations(user: User): string[] {
   }
 
   const imc = calculateIMC(user.taille, user.poids_initial)
-  const imcInfo = interpretIMC(imc)
+  // const imcInfo = interpretIMC(imc) // Non utilisé pour l'instant
   
   // Recommandations basées sur l'IMC
   if (imc < 18.5) {

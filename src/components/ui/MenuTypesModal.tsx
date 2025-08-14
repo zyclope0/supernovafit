@@ -277,7 +277,7 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
 
     toast((t) => (
       <div className="flex flex-col gap-3">
-        <div className="text-white font-medium">Appliquer le template "{template.name}" ?</div>
+        <div className="text-white font-medium">Appliquer le template &quot;{template.name}&quot; ?</div>
         <div className="text-sm text-gray-300">
           {template.meals.length} repas • {template.totalCalories} kcal
         </div>
@@ -308,7 +308,7 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
 
     toast((t) => (
       <div className="flex flex-col gap-3">
-        <div className="text-white font-medium">Supprimer le template "{template.name}" ?</div>
+        <div className="text-white font-medium">Supprimer le template &quot;{template.name}&quot; ?</div>
         <div className="text-sm text-gray-300">Cette action est irréversible.</div>
         <div className="flex gap-2 justify-end">
           <button onClick={() => toast.dismiss(t.id)} className="px-3 py-1 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded">Annuler</button>

@@ -11,7 +11,8 @@ Sentry.init({
   tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: process.env.NODE_ENV === 'development',
+  // Note: debug only works with debug bundle, disabled to avoid warnings
+  debug: false,
 
   // Release tracking
   release: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0',

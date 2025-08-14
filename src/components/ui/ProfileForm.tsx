@@ -211,7 +211,7 @@ export default function ProfileForm({ userProfile, onUpdate }: ProfileFormProps)
                 onChange={(e) => handleChange('niveau_activite', e.target.value)}
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded text-white focus:outline-none focus:border-neon-cyan select-dark"
               >
-                <option value="sedentaire">🪑 Sédentaire (bureau, peu d'exercice)</option>
+                <option value="sedentaire">🪑 Sédentaire (bureau, peu d&apos;exercice)</option>
                 <option value="leger">🚶 Léger (1-3 jours/semaine)</option>
                 <option value="modere">🏃 Modéré (3-5 jours/semaine)</option>
                 <option value="intense">💪 Intense (6-7 jours/semaine)</option>

@@ -96,7 +96,7 @@ function PhotoCard({ photo, mesures, onEdit, onDelete }: {
           
           {photo.commentaire && (
             <div className="text-xs text-white/80 italic truncate">
-              "{photo.commentaire}"
+              &quot;{photo.commentaire}&quot;
             </div>
           )}
         </div>
@@ -458,7 +458,7 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
         <div className="text-center py-12">
           <Camera className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground mb-2">Aucune photo de progression</p>
-          <p className="text-sm text-muted-foreground">Cliquez sur "Ajouter photo" pour commencer</p>
+          <p className="text-sm text-muted-foreground">Cliquez sur &quot;Ajouter photo&quot; pour commencer</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -499,7 +499,7 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Photo A (Avant) */}
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Photo "Avant"</label>
+                  <label className="block text-sm font-medium text-white mb-2">Photo &quot;Avant&quot;</label>
                   <select
                     value={comparisonData.photoA?.id || ''}
                     onChange={(e) => {
@@ -523,7 +523,7 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
 
                 {/* Photo B (Après) */}
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Photo "Après"</label>
+                  <label className="block text-sm font-medium text-white mb-2">Photo &quot;Après&quot;</label>
                   <select
                     value={comparisonData.photoB?.id || ''}
                     onChange={(e) => {

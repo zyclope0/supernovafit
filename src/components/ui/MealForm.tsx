@@ -28,7 +28,7 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [hasValidated, setHasValidated] = useState(false)
   
-  const { favoris, addToFavoris, removeFromFavoris, isFavori } = useFavoris()
+  const { favoris, addToFavoris, isFavori } = useFavoris()
 
   // Ajouter un aliment depuis Open Food Facts
   const handleAddProduct = (product: OpenFoodFactsProduct) => {

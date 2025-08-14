@@ -140,7 +140,7 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
           {/* Commentaire */}
           {training.commentaire && (
             <div className="text-sm text-muted-foreground bg-white/5 p-3 rounded-lg">
-              "{training.commentaire}"
+              &quot;{training.commentaire}&quot;
             </div>
           )}
         </div>

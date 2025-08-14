@@ -59,7 +59,7 @@ export default function TrainingVolumeChart({ entrainements, weeks }: TrainingVo
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10">
       <h2 className="text-lg font-semibold text-white mb-4">
-        Volume d'entraînement ({weeks} semaines)
+        Volume d&apos;entraînement ({weeks} semaines)
       </h2>
       
       <ResponsiveContainer width="100%" height={250}>
