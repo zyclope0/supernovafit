@@ -56,11 +56,15 @@ export default function Sidebar() {
   const journC = useCoachCommentsByModule(!isCoach ? 'journal' : 'journal')
   const mesC = useCoachCommentsByModule(!isCoach ? 'mesures' : 'mesures')
   const now = new Date().getTime()
+  function hasToDate(obj: unknown): obj is { toDate: () => Date } {
+    return typeof obj === 'object' && obj !== null && 'toDate' in (obj as Record<string, unknown>) &&
+      typeof (obj as { toDate?: unknown }).toDate === 'function'
+  }
   const isNewAndUnread = (c: { read_by_athlete?: boolean; created_at?: Date | string | { toDate?: () => Date } }) => {
     if (c?.read_by_athlete === true) return false
-    const createdObj = c?.created_at as { toDate?: () => Date } | Date | string | undefined
-    const created = (typeof createdObj === 'object' && createdObj && typeof createdObj.toDate === 'function')
-      ? createdObj.toDate?.()
+    const createdObj = c?.created_at as unknown
+    const created = hasToDate(createdObj)
+      ? createdObj.toDate()
       : (c?.created_at ? new Date(c.created_at as string | number | Date) : null)
     if (!created) return false
     return now - created.getTime() <= 24 * 60 * 60 * 1000
