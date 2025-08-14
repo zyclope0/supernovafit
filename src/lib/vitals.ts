@@ -38,23 +38,33 @@ const trackVital = (metric: Metric) => {
   // Envoyer TOUTES les métriques à Sentry (pas seulement les poor)
   Sentry.addBreadcrumb({
     category: 'web-vital',
-    message: `${metric.name}: ${Math.round(metric.value)}ms (${rating})`,
+    message: `${metric.name}: ${Math.round(metric.value)} (${rating})`,
     data: {
       value: metric.value,
       rating,
       delta: metric.delta,
       id: metric.id,
-      navigationType: metric.navigationType || 'unknown'
+      navigationType: (metric as any).navigationType || 'unknown'
     },
     level: rating === 'poor' ? 'warning' : 'info'
   })
   
-  // Envoyer comme mesure Sentry pour le dashboard Web Vitals
-  Sentry.setMeasurement(metric.name, metric.value, 'millisecond')
+  // Mapping attendu par Sentry pour le dashboard Web Vitals
+  const nameMap: Record<string, { key: string; unit: 'none' | 'millisecond' }> = {
+    CLS: { key: 'cls', unit: 'none' },
+    INP: { key: 'inp', unit: 'millisecond' },
+    FCP: { key: 'fcp', unit: 'millisecond' },
+    LCP: { key: 'lcp', unit: 'millisecond' },
+    TTFB: { key: 'ttfb', unit: 'millisecond' },
+  }
+  const mapped = nameMap[metric.name]
+  if (mapped) {
+    Sentry.setMeasurement(mapped.key, metric.value, mapped.unit)
+  }
   
   // Log pour debug en dev
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[Web Vital] ${metric.name}: ${Math.round(metric.value)}ms (${rating})`)
+    console.log(`[Web Vital] ${metric.name}: ${Math.round(metric.value)} (${rating})`)
   }
 }
 
