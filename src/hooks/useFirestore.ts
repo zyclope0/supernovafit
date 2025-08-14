@@ -1315,13 +1315,13 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
           const commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) })) as CoachComment[]
 
           commentsData.sort((a, b) => {
-            const createdA: any = a.created_at as any
-            const dateA = (typeof createdA === 'object' && createdA && typeof createdA.toDate === 'function')
-              ? createdA.toDate()
+            const createdA = a.created_at as unknown
+            const dateA = (typeof createdA === 'object' && createdA !== null && typeof (createdA as { toDate?: () => Date }).toDate === 'function')
+              ? (createdA as { toDate: () => Date }).toDate()
               : new Date(a.created_at as string | number | Date)
-            const createdB: any = b.created_at as any
-            const dateB = (typeof createdB === 'object' && createdB && typeof createdB.toDate === 'function')
-              ? createdB.toDate()
+            const createdB = b.created_at as unknown
+            const dateB = (typeof createdB === 'object' && createdB !== null && typeof (createdB as { toDate?: () => Date }).toDate === 'function')
+              ? (createdB as { toDate: () => Date }).toDate()
               : new Date(b.created_at as string | number | Date)
             return dateB.getTime() - dateA.getTime()
           })

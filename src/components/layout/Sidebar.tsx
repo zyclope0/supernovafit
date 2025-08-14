@@ -58,8 +58,9 @@ export default function Sidebar() {
   const now = new Date().getTime()
   const isNewAndUnread = (c: { read_by_athlete?: boolean; created_at?: Date | string | { toDate?: () => Date } }) => {
     if (c?.read_by_athlete === true) return false
-    const created = (typeof c?.created_at === 'object' && c?.created_at && 'toDate' in (c.created_at as any))
-      ? (c.created_at as { toDate?: () => Date }).toDate?.()
+    const createdObj = c?.created_at as { toDate?: () => Date } | Date | string | undefined
+    const created = (typeof createdObj === 'object' && createdObj && typeof createdObj.toDate === 'function')
+      ? createdObj.toDate?.()
       : (c?.created_at ? new Date(c.created_at as string | number | Date) : null)
     if (!created) return false
     return now - created.getTime() <= 24 * 60 * 60 * 1000

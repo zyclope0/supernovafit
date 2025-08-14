@@ -14,6 +14,7 @@ import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 const HistoriqueJournalModal = dynamic(() => import('@/components/ui/HistoriqueJournalModal'), { ssr: false })
 import { calculateUserData, checkNewBadges } from '@/lib/badges'
+import type { PhotoProgression } from '@/types'
 
 // Émojis pour les différents niveaux
 const EMOJI_LEVELS = {
@@ -264,7 +265,7 @@ export default function JournalPage() {
   useEffect(() => {
     if (!user || loading || badgesLoading || entries.length === 0) return
 
-    const userData = calculateUserData(entries, photos as unknown as any)
+    const userData = calculateUserData(entries, photos as unknown as PhotoProgression[])
     const existingBadgeIds = badges.map(b => b.nom)
     const newBadges = checkNewBadges(userData, existingBadgeIds)
 
