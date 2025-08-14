@@ -44,7 +44,7 @@ export default function ProfileForm({ userProfile, onUpdate }: ProfileFormProps)
 
       // Filtrer les valeurs undefined
       const filteredData = Object.fromEntries(
-        Object.entries(updatedProfile).filter(([_key, value]) => value !== undefined)
+        Object.entries(updatedProfile).filter(([, value]) => value !== undefined)
       )
 
       await updateDoc(doc(db, 'users', user.uid), filteredData)
@@ -60,7 +60,7 @@ export default function ProfileForm({ userProfile, onUpdate }: ProfileFormProps)
     }
   }
 
-  const handleChange = (field: keyof User, value: any) => {
+  const handleChange = (field: keyof User, value: string | number | boolean | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

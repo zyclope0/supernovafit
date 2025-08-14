@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Legend,
 } from 'recharts'
+import type { TooltipProps } from 'recharts'
 
 interface CaloriesInOutChartProps {
   repas: Array<{ date: string; macros?: { kcal?: number } }>
@@ -49,11 +50,11 @@ export default function CaloriesInOutChart({ repas, entrainements, days = 7, tde
     }))
   }, [repas, entrainements, days, tdee])
 
-  function CustomTooltip({ active, payload, label }: any) {
+  function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
     if (!active || !payload || payload.length === 0) return null
-    const inVal = payload.find((p: any) => p.dataKey === 'in')?.value || 0
-    const tdeeVal = payload.find((p: any) => p.dataKey === 'outTDEE')?.value || 0
-    const sportVal = payload.find((p: any) => p.dataKey === 'outSport')?.value || 0
+    const inVal = (payload.find(p => p.dataKey === 'in')?.value as number) || 0
+    const tdeeVal = (payload.find(p => p.dataKey === 'outTDEE')?.value as number) || 0
+    const sportVal = (payload.find(p => p.dataKey === 'outSport')?.value as number) || 0
     const outTotal = tdeeVal + sportVal
     const net = inVal - outTotal
     const netColor = net >= 0 ? '#10b981' : '#ef4444'

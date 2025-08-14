@@ -10,7 +10,8 @@ interface TrainingVolumeChartProps {
   weeks: number
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+import type { TooltipProps } from 'recharts'
+const CustomTooltip = ({ active, payload, label }: TooltipProps<string | number, string>) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload // Accéder aux données complètes
     return (

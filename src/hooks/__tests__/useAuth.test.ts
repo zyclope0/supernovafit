@@ -26,7 +26,7 @@ describe('useAuth Hook', () => {
   })
 
   it('should initialize with loading true and no user', () => {
-    mockOnAuthStateChanged.mockImplementation((_auth, _callback) => {
+    mockOnAuthStateChanged.mockImplementation(() => {
       // Simule état initial (loading)
       return vi.fn()
     })
@@ -56,10 +56,10 @@ describe('useAuth Hook', () => {
       toJSON: vi.fn(),
     }
 
-    mockOnAuthStateChanged.mockImplementation((_auth, _callback) => {
+    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
       // Cast _callback to function and call it
-      if (typeof _callback === 'function') {
-        _callback(mockUser as any)
+      if (typeof callback === 'function') {
+        callback(mockUser as unknown as Parameters<typeof onAuthStateChanged>[1])
       }
       return vi.fn()
     })
@@ -96,7 +96,7 @@ describe('useAuth Hook', () => {
       operationType: 'signIn' as const
     }
 
-    mockSignInWithEmailAndPassword.mockResolvedValue(mockUserCredential as any)
+    mockSignInWithEmailAndPassword.mockResolvedValue(mockUserCredential as unknown as Awaited<ReturnType<typeof signInWithEmailAndPassword>>)
 
     const { result } = renderHook(() => useAuth())
 

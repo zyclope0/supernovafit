@@ -293,7 +293,7 @@ export default function JournalPage() {
     objectifs.filter(obj => obj.statut === 'actif').forEach(async (objectif) => {
       let nouvelleProg = 0
 
-      const cibleValue = (objectif as any).cible ?? (objectif as any).cible_valeur ?? 1
+      const cibleValue = (objectif as { cible?: number; cible_valeur?: number }).cible ?? (objectif as { cible?: number; cible_valeur?: number }).cible_valeur ?? 1
 
       if (objectif.type === 'journal') {
         // Calculer le streak actuel pour les objectifs de journal
@@ -308,7 +308,7 @@ export default function JournalPage() {
           else break
         }
         nouvelleProg = Math.min((streak / cibleValue) * 100, 100)
-      } else if ((objectif as any).type === 'humeur') {
+      } else if ((objectif as { type?: string }).type === 'humeur') {
         // Calculer les jours récents avec bonne humeur (>7)
         const recentGoodMoodDays = entries.filter(entry => {
           const entryDate = new Date(entry.date)
@@ -362,9 +362,12 @@ export default function JournalPage() {
     try {
       let result
       if (editingEntry) {
-        // Pour l'update, ne pas inclure user_id (il existe déjà). Inclure updated_at côté hook.
-        const { user_id: _user_id, created_at: _created_at, updated_at: _updated_at, ...updateData } = entryData as any
-        result = await updateEntry(editingEntry.id, updateData)
+        // Pour l'update, ne pas inclure user_id/created_at/updated_at (gérés côté hook)
+        const updateData: Record<string, unknown> = { ...entryData }
+        delete (updateData as { user_id?: unknown }).user_id
+        delete (updateData as { created_at?: unknown }).created_at
+        delete (updateData as { updated_at?: unknown }).updated_at
+        result = await updateEntry(editingEntry.id, updateData as Partial<Omit<JournalEntry, 'id' | 'user_id' | 'created_at'>>)
       } else {
         result = await addEntry({ ...entryData, user_id: user.uid })
       }

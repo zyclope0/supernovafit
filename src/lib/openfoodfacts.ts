@@ -134,7 +134,7 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
        enhanceSearchQuery(normalizedQuery) // Requête élargie
      ].filter((q, index, arr) => arr.indexOf(q) === index); // Supprimer doublons
      
-     const allProducts: any[] = [];
+      const allProducts: unknown[] = [];
      
      for (const queryTerm of queries) {
        const url = new URL('https://world.openfoodfacts.org/cgi/search.pl');
@@ -173,9 +173,9 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
      );
      
       // Pré-filtre produits valides
-      const candidates: OpenFoodFactsProduct[] = uniqueProducts
-        .filter((product: any) => product.product_name && product.nutriments)
-        .map(transformProduct)
+       const candidates: OpenFoodFactsProduct[] = uniqueProducts
+        .filter((product) => (product as unknown as { product_name?: string; nutriments?: unknown }).product_name && (product as unknown as { product_name?: string; nutriments?: unknown }).nutriments)
+        .map(p => transformProduct(p as unknown as Record<string, unknown>))
 
       // Fuzzy matching avec Fuse.js (normalisation accents + pluriels)
       const fuse = new Fuse(candidates, {
@@ -189,7 +189,7 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
         shouldSort: false,
         getFn: (obj: OpenFoodFactsProduct, path: string | string[]) => {
           const key = Array.isArray(path) ? path[0] : path
-          return normalizeText(String((obj as any)[key] ?? ''))
+          return normalizeText(String((obj as unknown as Record<string, unknown>)[key] ?? ''))
         },
       })
 
@@ -211,7 +211,7 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
           const name = normalizeText(p.product_name)
           const freshScore = calculateFreshnessScore(name)
           let categoryBoost = 0
-          const tags = (p as any).categories_tags || []
+          const tags = (p as unknown as { categories_tags?: string[] }).categories_tags || []
           CATEGORY_BOOSTS.forEach(({ tag, boost }) => {
             if (tags.includes(tag)) categoryBoost += boost
           })
@@ -266,19 +266,19 @@ export async function getProductByBarcode(barcode: string): Promise<OpenFoodFact
 /**
  * Transformer les données brutes Open Food Facts
  */
-function transformProduct(rawProduct: any): OpenFoodFactsProduct {
-  const nutriments = rawProduct.nutriments || {};
+function transformProduct(rawProduct: Record<string, unknown>): OpenFoodFactsProduct {
+  const nutriments = (rawProduct as { nutriments?: Record<string, unknown> }).nutriments || {};
   
   return {
-    code: rawProduct.code || rawProduct._id || '',
-    product_name: rawProduct.product_name || rawProduct.product_name_fr || 'Produit sans nom',
-    brands: rawProduct.brands || '',
-    image_url: rawProduct.image_front_url || rawProduct.image_url || '',
+    code: (rawProduct as { code?: string; _id?: string }).code || (rawProduct as { code?: string; _id?: string })._id || '',
+    product_name: (rawProduct as { product_name?: string; product_name_fr?: string }).product_name || (rawProduct as { product_name?: string; product_name_fr?: string }).product_name_fr || 'Produit sans nom',
+    brands: (rawProduct as { brands?: string }).brands || '',
+    image_url: (rawProduct as { image_front_url?: string; image_url?: string }).image_front_url || (rawProduct as { image_front_url?: string; image_url?: string }).image_url || '',
     nutriments: {
-      energy_100g: parseFloat(nutriments['energy-kcal_100g']) || parseFloat(nutriments.energy_100g) || 0,
-      proteins_100g: parseFloat(nutriments.proteins_100g) || 0,
-      carbohydrates_100g: parseFloat(nutriments.carbohydrates_100g) || 0,
-      fat_100g: parseFloat(nutriments.fat_100g) || 0,
+      energy_100g: parseFloat((nutriments as Record<string, unknown>)['energy-kcal_100g'] as string) || parseFloat((nutriments as Record<string, unknown>).energy_100g as string) || 0,
+      proteins_100g: parseFloat((nutriments as Record<string, unknown>).proteins_100g as string) || 0,
+      carbohydrates_100g: parseFloat((nutriments as Record<string, unknown>).carbohydrates_100g as string) || 0,
+      fat_100g: parseFloat((nutriments as Record<string, unknown>).fat_100g as string) || 0,
     },
   };
 }

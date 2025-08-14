@@ -11,7 +11,7 @@ interface PhotoUploadProps {
   mesures: Mesure[]
 }
 
-interface PhotoData {
+  interface PhotoData {
   id: string
   url: string
   fileName?: string
@@ -19,7 +19,7 @@ interface PhotoData {
   type: 'face' | 'profil' | 'dos' | 'libre'
   mesure_id?: string
   commentaire: string
-  created_at: any
+    created_at: Date | string | { toDate?: () => Date }
 }
 
 // Types de photos disponibles
@@ -287,7 +287,7 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
             <div className="flex items-center gap-3">
               <select
                 value={comparisonData.selectedType}
-                onChange={(e) => setComparisonData({...comparisonData, selectedType: e.target.value as any})}
+                  onChange={(e) => setComparisonData({...comparisonData, selectedType: e.target.value as 'face' | 'profil' | 'dos' | 'libre'})}
                 className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-cyan focus:outline-none"
               >
                 {PHOTO_TYPES.map(type => (
@@ -328,7 +328,7 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                 <label className="block text-sm font-medium text-white mb-1">Type de photo</label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as 'face' | 'profil' | 'dos' | 'libre' })}
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
                 >
                   {PHOTO_TYPES.map(type => (
@@ -397,7 +397,7 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                 <label className="block text-sm font-medium text-white mb-1">Type</label>
                 <select
                   value={editingPhoto.type}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, type: e.target.value as any })}
+                  onChange={(e) => setEditingPhoto({ ...editingPhoto, type: e.target.value as 'face' | 'profil' | 'dos' | 'libre' })}
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
                 >
                   {PHOTO_TYPES.map(type => (

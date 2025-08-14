@@ -16,7 +16,7 @@ interface HistoriqueJournalModalProps {
 export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, currentDate, onDateChange }: HistoriqueJournalModalProps) {
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: journalComments } = useCoachCommentsByModule('journal')
-  const commentedEntryDates = useMemo(() => new Set((journalComments || []).map((c: any) => c.date).filter(Boolean)), [journalComments])
+  const commentedEntryDates = useMemo(() => new Set((journalComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [journalComments])
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
 

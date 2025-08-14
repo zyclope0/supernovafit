@@ -41,9 +41,12 @@ export default function ModuleComments({ comments, loading, compact = false }: M
     return null // Ne pas afficher si pas de commentaires
   }
 
-  const formatDate = (timestamp: any) => {
+  const formatDate = (timestamp: unknown) => {
     try {
-      const date = timestamp?.toDate?.() || new Date(timestamp)
+      const ts = timestamp as { toDate?: () => Date } | string | number | Date | undefined
+      const date: Date = typeof ts === 'object' && ts && 'toDate' in ts && typeof (ts as { toDate?: () => Date }).toDate === 'function'
+        ? (ts as { toDate: () => Date }).toDate()
+        : new Date(ts as string | number | Date)
       return date.toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'short',

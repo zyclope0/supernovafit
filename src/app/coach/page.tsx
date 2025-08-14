@@ -180,7 +180,7 @@ export default function CoachDashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAthletes.map((athlete: any) => (
+            {filteredAthletes.map((athlete) => (
               <div
                 key={athlete.id}
                 className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-purple/50 

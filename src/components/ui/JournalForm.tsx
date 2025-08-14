@@ -182,25 +182,25 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
           <EmojiSlider
             label="😊 Humeur"
             value={formData.humeur}
-            onChange={(value) => setFormData({ ...formData, humeur: value as any })}
+            onChange={(value) => setFormData({ ...formData, humeur: value as 1|2|3|4|5|6|7|8|9|10 })}
             color="neon-pink"
           />
           <EmojiSlider
             label="⚡ Énergie"
             value={formData.energie}
-            onChange={(value) => setFormData({ ...formData, energie: value as any })}
+            onChange={(value) => setFormData({ ...formData, energie: value as 1|2|3|4|5|6|7|8|9|10 })}
             color="neon-green"
           />
           <EmojiSlider
             label="😰 Stress"
             value={formData.stress}
-            onChange={(value) => setFormData({ ...formData, stress: value as any })}
+            onChange={(value) => setFormData({ ...formData, stress: value as 1|2|3|4|5|6|7|8|9|10 })}
             color="neon-purple"
           />
           <EmojiSlider
             label="🎯 Motivation"
             value={formData.motivation}
-            onChange={(value) => setFormData({ ...formData, motivation: value as any })}
+            onChange={(value) => setFormData({ ...formData, motivation: value as 1|2|3|4|5|6|7|8|9|10 })}
             color="neon-cyan"
           />
         </div>
@@ -222,7 +222,7 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
           <EmojiSlider
             label="😴 Qualité sommeil"
             value={formData.sommeil_qualite}
-            onChange={(value) => setFormData({ ...formData, sommeil_qualite: value as any })}
+            onChange={(value) => setFormData({ ...formData, sommeil_qualite: value as 1|2|3|4|5|6|7|8|9|10 })}
             color="neon-cyan"
           />
         </div>

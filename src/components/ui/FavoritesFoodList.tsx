@@ -20,8 +20,9 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
   )
 
   const handleSelectAliment = (aliment: Aliment) => {
-    // Créer un nouvel aliment basé sur le favori
-    const { id: _id, ...alimentData } = aliment as any
+    // Créer un nouvel aliment basé sur le favori (sans l'id)
+    const { id, ...alimentData } = aliment
+    void id
     onSelectFood({
       ...alimentData,
       quantite: 100, // Quantité par défaut

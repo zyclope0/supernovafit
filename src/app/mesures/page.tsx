@@ -14,6 +14,7 @@ import dynamic from 'next/dynamic'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
+import type { ComponentType } from 'react'
 function StatsCard({ 
   title, 
   value, 
@@ -25,7 +26,7 @@ function StatsCard({
   title: string
   value: string | number
   unit?: string
-  icon: any
+  icon: ComponentType<{ className?: string }>
   evolution?: number
   color?: string
 }) {
@@ -63,7 +64,7 @@ function MesureCard({
   mesure: Mesure
   onEdit: (mesure: Mesure) => void
   onDelete: (id: string) => void
-  getStats: (mesure: Mesure) => any
+  getStats: (mesure: Mesure) => { imc: number; evolution_poids: number; evolution_masse_grasse: number; poids_ideal_min: number; poids_ideal_max: number }
 }) {
   const stats = getStats(mesure)
   

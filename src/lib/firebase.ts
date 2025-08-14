@@ -17,12 +17,12 @@ const firebaseConfig = {
 
 // Initialiser Firebase uniquement côté client pour éviter les erreurs SSR/prerender
 const isBrowser = typeof window !== 'undefined';
-const app = isBrowser ? (!getApps().length ? initializeApp(firebaseConfig) : getApp()) : (undefined as any);
+const app = isBrowser ? (!getApps().length ? initializeApp(firebaseConfig) : getApp()) : (undefined as unknown as ReturnType<typeof initializeApp>);
 
 // Services Firebase
-export const auth = isBrowser ? getAuth(app) : (undefined as any);
-export const db = isBrowser ? getFirestore(app) : (undefined as any);
-export const storage = isBrowser ? getStorage(app) : (undefined as any);
+export const auth = isBrowser ? getAuth(app) : (undefined as unknown as ReturnType<typeof getAuth>);
+export const db = isBrowser ? getFirestore(app) : (undefined as unknown as ReturnType<typeof getFirestore>);
+export const storage = isBrowser ? getStorage(app) : (undefined as unknown as ReturnType<typeof getStorage>);
 
 // Analytics - Chargement dynamique côté client uniquement
 export let analytics: unknown = null;

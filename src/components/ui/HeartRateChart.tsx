@@ -4,17 +4,18 @@ import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, 
 import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Entrainement } from '@/types'
+import type { TooltipProps } from 'recharts'
 
 interface HeartRateChartProps {
   entrainements: Entrainement[]
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<string | number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass-effect p-3 rounded-lg border border-white/10 text-sm text-white">
         <p className="font-bold mb-1">{format(parseISO(label), 'EEEE d MMMM', { locale: fr })}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <p key={index} style={{ color: entry.color }}>
             {`${entry.name}: ${entry.value} bpm`}
           </p>

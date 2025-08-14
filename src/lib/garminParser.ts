@@ -220,7 +220,7 @@ export class GarminParser {
     }
 
     // Ajouter seulement les champs qui ont une valeur (pas undefined)
-    const result: any = { ...baseResult }
+    const result: Record<string, unknown> = { ...baseResult }
     
     if (activity.calories) result.calories = activity.calories
     if (activity.averageHeartRate) result.fc_moyenne = activity.averageHeartRate
@@ -233,7 +233,7 @@ export class GarminParser {
     if (elevationGain) result.elevation_gain = elevationGain
 
     // Debug: entraînement converti (retiré en production)
-    return result
+    return result as Omit<Entrainement, 'id' | 'created_at'>
   }
 
   /**

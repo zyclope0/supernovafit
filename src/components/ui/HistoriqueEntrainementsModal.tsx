@@ -16,7 +16,7 @@ interface HistoriqueEntrainementsModalProps {
 export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrainings, currentDate, onDateChange }: HistoriqueEntrainementsModalProps) {
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: trainingComments } = useCoachCommentsByModule('entrainements')
-  const commentedTrainingIds = useMemo(() => new Set((trainingComments || []).map((c: any) => c.training_id).filter(Boolean)), [trainingComments])
+  const commentedTrainingIds = useMemo(() => new Set((trainingComments || []).map((c) => (c as { training_id?: string }).training_id).filter(Boolean)), [trainingComments])
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
 

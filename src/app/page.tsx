@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { formatNumber } from '@/lib/utils'
 import dynamic from 'next/dynamic'
+import type { Repas } from '@/types'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
 
@@ -89,7 +90,7 @@ function QuickActions() {
   )
 }
 
-function ProgressChart({ repas }: { repas: any[] }) {
+function ProgressChart({ repas }: { repas: Repas[] }) {
   return <CaloriesChart repas={repas} days={7} />
 }
 

@@ -33,7 +33,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
   // Récupération des données utilisateur
   const { user } = useAuth()
   const { getUserProfile } = useUserProfile()
-  const [userProfile, setUserProfile] = useState<any>(null)
+  const [userProfile, setUserProfile] = useState<Partial<{ age: number; poids_initial: number; sexe: 'M' | 'F' }>>({})
 
   // États de base
   const [type, setType] = useState(existingTraining?.type || 'cardio')
@@ -148,7 +148,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
     const finalCalories = useAutoCalories ? autoCalories : calories
     
     // Construire l'objet pour validation (avec user_id temporaire)
-    const trainingDataForValidation: any = {
+    const trainingDataForValidation: Record<string, unknown> = {
       user_id: 'temp', // Temporaire pour validation
       type,
       duree,
@@ -175,7 +175,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
     if (fatigueApres !== 5) trainingDataForValidation.fatigue_apres = fatigueApres
 
     // Validation avec Zod
-    const validation = validateData(entrainementSchema, trainingDataForValidation)
+    const validation = validateData(entrainementSchema, trainingDataForValidation as unknown as Entrainement)
     
     if (!validation.success && validation.errors) {
       setValidationErrors(validation.errors)
@@ -186,8 +186,10 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
     setValidationErrors([])
     
     // Retirer le user_id temporaire pour l'envoi final
-    const { user_id: _user_id, ...finalTrainingData } = trainingDataForValidation
-    onSubmit(finalTrainingData)
+    // retirer user_id temporaire
+    const { user_id, ...finalTrainingData } = trainingDataForValidation
+    void user_id
+    onSubmit(finalTrainingData as Omit<Entrainement, 'id' | 'user_id'>)
   }
 
   const selectedType = TRAINING_TYPES.find(t => t.value === type)

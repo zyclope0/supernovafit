@@ -93,7 +93,9 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
 
   // Ajouter aux favoris
   const handleAddToFavoris = async (aliment: Aliment) => {
-    const { id: _id, ...alimentData } = aliment
+    const alimentData: Omit<Aliment, 'id'> = { ...aliment }
+    // @ts-expect-error: remove id for favoris payload
+    delete (alimentData as unknown as { id?: string }).id
     const result = await addToFavoris(alimentData)
     
     if (result.success) {

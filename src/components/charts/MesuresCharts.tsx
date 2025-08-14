@@ -16,18 +16,20 @@ import {
 import { Mesure } from '@/types'
 import { formatDate } from '@/lib/utils'
 import { TrendingUp, TrendingDown, Minus, Scale, Ruler, Heart, Target } from 'lucide-react'
+import type { ComponentType } from 'react'
 
 interface MesuresChartsProps {
   mesures: Mesure[]
 }
 
 // Composant de tooltip personnalisé
-const CustomTooltip = ({ active, payload, label }: any) => {
+import type { TooltipProps } from 'recharts'
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass-effect p-3 rounded-lg border border-white/20 shadow-lg">
         <p className="text-white font-medium">{formatDate(label)}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <p key={index} style={{ color: entry.color }} className="text-sm">
             {entry.dataKey === 'poids' && `Poids: ${entry.value} kg`}
             {entry.dataKey === 'imc' && `IMC: ${entry.value}`}
@@ -51,7 +53,7 @@ function StatCard({ title, value, unit, trend, icon: Icon, color = 'neon-cyan' }
   value: number | string
   unit?: string
   trend?: number
-  icon: any
+  icon: ComponentType<{ className?: string }>
   color?: string
 }) {
   const getTrendIcon = () => {

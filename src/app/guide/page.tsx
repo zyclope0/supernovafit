@@ -1,11 +1,12 @@
 'use client'
 
 import MainLayout from '@/components/layout/MainLayout'
+import type { ComponentType } from 'react'
 import Link from 'next/link'
 import { BookOpen, Rocket, ChefHat, Dumbbell, Ruler, MessageCircle, Shield, Link as LinkIcon } from 'lucide-react'
 
 export default function GuidePage() {
-  const Section = ({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) => (
+  const Section = ({ title, icon: Icon, children }: { title: string; icon: ComponentType<{ className?: string }>; children: React.ReactNode }) => (
     <div className="glass-effect p-6 rounded-xl border border-white/10">
       <div className="flex items-center gap-2 mb-3">
         <Icon className="h-5 w-5 text-neon-cyan" />

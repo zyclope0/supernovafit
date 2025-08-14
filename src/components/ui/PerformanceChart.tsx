@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Entrainement } from '@/types'
+import type { TooltipProps } from 'recharts'
 
 interface PerformanceChartProps {
   entrainements: Entrainement[]
@@ -11,7 +12,7 @@ interface PerformanceChartProps {
   title: string
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<string | number, string>) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     return (

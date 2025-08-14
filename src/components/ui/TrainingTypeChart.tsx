@@ -30,7 +30,8 @@ const TYPE_EMOJIS = {
   'autre': '⚡'
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+import type { TooltipProps } from 'recharts'
+const CustomTooltip = ({ active, payload }: TooltipProps<string | number, string>) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     return (

@@ -139,7 +139,8 @@ function MealCard({
 
 const MealCardMemo = React.memo(MealCard)
 
-function DailySummary({ todayMeals }: { todayMeals: any[] }) {
+import type { Repas } from '@/types'
+function DailySummary({ todayMeals }: { todayMeals: Repas[] }) {
   // Calculer les totaux du jour
   const totals = todayMeals.reduce((acc, meal) => {
     if (meal.macros) {
@@ -377,7 +378,7 @@ export default function DietePage() {
   }
 
   // Appliquer un template de menu
-  const handleApplyTemplate = async (templateMeals: any[]) => {
+  const handleApplyTemplate = async (templateMeals: Array<{ repas: MealType; aliments: Aliment[]; macros: Macros }>) => {
     if (!user) return
 
     try {
@@ -558,7 +559,7 @@ export default function DietePage() {
   )
 } 
 
-function HistoriqueSection({ allRepas }: { allRepas: any[] }) {
+function HistoriqueSection({ allRepas }: { allRepas: Repas[] }) {
   const sorted = [...allRepas].sort((a, b) => b.date.localeCompare(a.date))
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)

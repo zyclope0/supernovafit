@@ -93,7 +93,7 @@ export function calculateCalorieNeeds(user: User): {
  * Calcule la répartition macros recommandée selon l'objectif
  * Basé sur ISSN Position Stand 2024, ACSM Guidelines 2024
  */
-export function calculateMacroSplit(calorieTarget: number, objectif: string, _poids?: number): {
+export function calculateMacroSplit(calorieTarget: number, objectif: string, /* poids?: number */): {
   proteines: { g: number; kcal: number; percentage: number }
   glucides: { g: number; kcal: number; percentage: number }
   lipides: { g: number; kcal: number; percentage: number }

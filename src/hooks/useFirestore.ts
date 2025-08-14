@@ -384,7 +384,7 @@ export function useMesures() {
         }
       })
 
-      await updateDoc(doc(db, 'mesures', id), dataToUpdate as any)
+      await updateDoc(doc(db, 'mesures', id), dataToUpdate)
       return { success: true }
     } catch (error: unknown) {
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
@@ -542,13 +542,13 @@ export function usePhotos() {
     try {
       // Filtrer les valeurs undefined pour Firestore
       const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(([_, value]) => value !== undefined)
+        Object.entries(updates).filter(([, value]) => value !== undefined)
       )
       
       // Si mesure_id est vide, le mettre à null explicitement
       if ('mesure_id' in updates && !updates.mesure_id) {
         // Firestore: null acceptable mais côté types attendre string|undefined; on force null dans Doc
-        ;(filteredUpdates as any).mesure_id = null
+        (filteredUpdates as Record<string, unknown>).mesure_id = null
       }
 
       await updateDoc(doc(db, 'photos_progression', photoId), filteredUpdates)
@@ -615,7 +615,7 @@ export function useJournal() {
           ...entryData,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp()
-        }).filter(([_, value]) => value !== undefined)
+        }).filter(([, value]) => value !== undefined)
       )
       
       const docRef = await addDoc(collection(db, 'journal'), filteredData)
@@ -753,8 +753,8 @@ export function usePhotosLibres() {
       return { success: true, id: docRef.id, url: downloadURL }
     } catch (error: unknown) {
       console.error('❌ UPLOAD - Erreur upload photo:', error)
-      console.error('❌ UPLOAD - Code erreur:', (error as any)?.code)
-      console.error('❌ UPLOAD - Message:', (error as any)?.message)
+      console.error('❌ UPLOAD - Code erreur:', (error as unknown as { code?: string })?.code)
+      console.error('❌ UPLOAD - Message:', (error as unknown as { message?: string })?.message)
       setUploading(false)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
@@ -771,7 +771,7 @@ export function usePhotosLibres() {
     try {
       // Filtrer les valeurs undefined
       const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(([_, value]) => value !== undefined)
+        Object.entries(updates).filter(([, value]) => value !== undefined)
       )
 
       await updateDoc(doc(db, 'photos_libres', photoId), {
@@ -966,9 +966,10 @@ export function useObjectifs() {
 }
 
 // Hook pour récupérer le profil utilisateur
+import type { User as UserProfile } from '@/types'
 export function useUserProfile() {
   const { user } = useAuth()
-  const [userProfile, setUserProfile] = useState<any>(null)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -983,7 +984,7 @@ export function useUserProfile() {
     const unsubscribe = onSnapshot(docRef,
       (snapshot) => {
         if (snapshot.exists()) {
-          setUserProfile({ id: snapshot.id, ...snapshot.data() })
+          setUserProfile({ id: snapshot.id, ...(snapshot.data() as Partial<UserProfile>) } as UserProfile)
         } else {
           setUserProfile(null)
         }
@@ -999,13 +1000,13 @@ export function useUserProfile() {
     return () => unsubscribe()
   }, [user])
 
-  const getUserProfile = async (userId: string) => {
+  const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
     try {
       const docRef = doc(db, 'users', userId)
       const docSnap = await getDoc(docRef)
       
       if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() }
+        return { id: docSnap.id, ...(docSnap.data() as Partial<UserProfile>) } as UserProfile
       }
       return null
     } catch (error) {
@@ -1020,7 +1021,8 @@ export function useUserProfile() {
 // Hook pour gérer les relations coach-athlète
 export function useCoachAthletes() {
   const { user } = useAuth()
-  const [athletes, setAthletes] = useState<any[]>([])
+  type AthleteLite = Pick<UserProfile, 'id' | 'nom' | 'email' | 'objectif' | 'dernier_acces'> & { coach_id?: string }
+  const [athletes, setAthletes] = useState<AthleteLite[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -1037,8 +1039,8 @@ export function useCoachAthletes() {
       (snapshot) => {
         const athletesData = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        })).filter(athlete => athlete.id !== user.uid) // Exclure le coach lui-même
+          ...(doc.data() as Partial<UserProfile>)
+        })).filter(athlete => athlete.id !== user.uid) as AthleteLite[] // Exclure le coach lui-même
         
         setAthletes(athletesData)
         setLoading(false)
@@ -1309,7 +1311,7 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
 
         const q = query(collection(db, 'coach_comments'), ...constraints)
         unsubscribe = onSnapshot(q, (snapshot) => {
-          const commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) })) as any[]
+          const commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as object) })) as CoachComment[]
 
           commentsData.sort((a, b) => {
             const dateA = a.created_at?.toDate?.() || new Date(a.created_at)
@@ -1317,7 +1319,7 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
             return dateB.getTime() - dateA.getTime()
           })
 
-          setComments(commentsData as any)
+          setComments(commentsData)
           setLoading(false)
         })
       } catch (error) {

@@ -7,7 +7,7 @@ export interface BadgeDefinition {
   description: string
   icone: string
   condition: string
-  checkCondition: (userData: any) => boolean
+  checkCondition: (userData: CalculatedUserData) => boolean
 }
 
 // Badges prédéfinis simples
@@ -74,7 +74,16 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
 ]
 
 // Fonction pour calculer les données utilisateur nécessaires
-export function calculateUserData(journalEntries: any[], photos: any[]) {
+import type { JournalEntry, PhotoProgression } from '@/types'
+export interface CalculatedUserData {
+  streakJournal: number
+  humeursRecentes: number
+  motivationRecente: number
+  totalJournalEntries: number
+  totalPhotos: number
+}
+
+export function calculateUserData(journalEntries: JournalEntry[], photos: PhotoProgression[]): CalculatedUserData {
   // Calcul streak journal (simple)
   const sortedEntries = journalEntries
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -121,7 +130,7 @@ export function calculateUserData(journalEntries: any[], photos: any[]) {
 }
 
 // Fonction pour vérifier quels nouveaux badges sont débloqués
-export function checkNewBadges(userData: any, existingBadgeNames: string[]): BadgeDefinition[] {
+export function checkNewBadges(userData: CalculatedUserData, existingBadgeNames: string[]): BadgeDefinition[] {
   return BADGE_DEFINITIONS.filter(badge => 
     !existingBadgeNames.includes(badge.nom) && 
     badge.checkCondition(userData)

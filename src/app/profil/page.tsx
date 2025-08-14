@@ -5,6 +5,7 @@ import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import ProfileForm from '@/components/ui/ProfileForm'
 import { User, Settings, TrendingUp } from 'lucide-react'
+import type { User as UserProfile } from '@/types'
 
 export default function ProfilPage() {
   const { user, userProfile, loading } = useAuth()
@@ -35,7 +36,7 @@ export default function ProfilPage() {
     )
   }
 
-  const handleProfileUpdate = (profile: any) => {
+  const handleProfileUpdate = (profile: UserProfile) => {
     setUpdatedProfile(profile)
   }
 

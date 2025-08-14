@@ -3,8 +3,16 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
 } from 'recharts'
 
+type DieteChartPoint = {
+  date: string
+  calories?: number
+  prot?: number
+  glucides?: number
+  lipides?: number
+}
+
 interface CoachDieteChartsProps {
-  data: any[]
+  data: DieteChartPoint[]
   title: string
 }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import type { TooltipProps, LegendProps } from 'recharts'
 import { Macros } from '@/types'
 
 interface MacrosChartProps {
@@ -41,7 +42,7 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
   ].filter(item => item.value > 0)
 
   // Tooltip personnalisé
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
@@ -60,20 +61,20 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
   }
 
   // Légende personnalisée
-  const CustomLegend = ({ payload }: any) => {
+  const CustomLegend = ({ payload }: LegendProps) => {
     return (
       <div className="flex justify-center gap-6 mt-4">
-        {payload.map((entry: any, index: number) => (
+        {payload?.map((entry, index: number) => (
           <div key={index} className="flex items-center gap-2">
             <div 
               className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: entry.color }}
+              style={{ backgroundColor: (entry as unknown as { color?: string }).color }}
             />
             <span className="text-sm text-white">
-              {entry.value}
+              {entry.value as string}
             </span>
             <span className="text-xs text-muted-foreground">
-              ({entry.payload.percentage}%)
+              ({(entry.payload as unknown as { percentage?: number }).percentage}%)
             </span>
           </div>
         ))}

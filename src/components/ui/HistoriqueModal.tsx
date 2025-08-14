@@ -16,7 +16,7 @@ interface HistoriqueModalProps {
 export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate, onDateChange }: HistoriqueModalProps) {
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: dieteComments } = useCoachCommentsByModule('diete')
-  const commentedDates = useMemo(() => new Set((dieteComments || []).map((c: any) => c.date).filter(Boolean)), [dieteComments])
+  const commentedDates = useMemo(() => new Set((dieteComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [dieteComments])
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
   

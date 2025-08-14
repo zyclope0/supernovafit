@@ -51,7 +51,8 @@ export default function AthleteDetailPage() {
   const athleteId = params.id as string
   
   const [loading, setLoading] = useState(true)
-  const [athleteData, setAthleteData] = useState<any>(null)
+  type AthleteDashboard = typeof MOCK_ATHLETE_DATA & { id: string; nom: string; email: string; objectif: string }
+  const [athleteData, setAthleteData] = useState<AthleteDashboard | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'nutrition' | 'training' | 'measures'>('overview')
 
   useEffect(() => {
@@ -147,9 +148,9 @@ export default function AthleteDetailPage() {
             { id: 'training', label: 'Entraînements' },
             { id: 'measures', label: 'Mesures' }
           ].map((tab) => (
-            <button
+              <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as 'overview' | 'nutrition' | 'training' | 'measures')}
               className={`flex-1 py-2 px-4 rounded-lg transition-all ${
                 activeTab === tab.id
                   ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple'
@@ -197,7 +198,7 @@ export default function AthleteDetailPage() {
                 Activités récentes
               </h3>
               <div className="space-y-3">
-                {athleteData.activites_recentes.map((activite: any, index: number) => (
+                {athleteData.activites_recentes.map((activite: { date: string; type: string; duree: number; calories: number }, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div>
                       <p className="text-white font-medium">{activite.type}</p>

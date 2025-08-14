@@ -76,12 +76,13 @@ export default function CreateCoachPage() {
         router.push('/auth')
       }, 3000)
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur création compte coach:', error)
+      const err = error as { code?: string }
       
-      if (error.code === 'auth/email-already-in-use') {
+      if (err.code === 'auth/email-already-in-use') {
         toast.error('Cet email est déjà utilisé')
-      } else if (error.code === 'auth/weak-password') {
+      } else if (err.code === 'auth/weak-password') {
         toast.error('Le mot de passe est trop faible')
       } else {
         toast.error('Erreur lors de la création du compte')

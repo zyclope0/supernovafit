@@ -257,7 +257,7 @@ export default function CoachAthleteJournalPage() {
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="glass-effect rounded-2xl p-6 border border-white/10 max-w-lg w-full">
               <h3 className="text-xl font-semibold text-white mb-2">
-                Commenter l'entrée du journal
+                Commenter l&apos;entrée du journal
               </h3>
               <p className="text-sm text-gray-400 mb-4">
                 {new Date(selectedEntry.date).toLocaleDateString('fr-FR', {

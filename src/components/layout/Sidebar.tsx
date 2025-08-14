@@ -56,9 +56,11 @@ export default function Sidebar() {
   const journC = useCoachCommentsByModule(!isCoach ? 'journal' : 'journal')
   const mesC = useCoachCommentsByModule(!isCoach ? 'mesures' : 'mesures')
   const now = new Date().getTime()
-  const isNewAndUnread = (c: any) => {
+  const isNewAndUnread = (c: { read_by_athlete?: boolean; created_at?: Date | string | { toDate?: () => Date } }) => {
     if (c?.read_by_athlete === true) return false
-    const created = c?.created_at?.toDate?.() || (c?.created_at ? new Date(c.created_at) : null)
+    const created = typeof c?.created_at === 'object' && c?.created_at && 'toDate' in c.created_at
+      ? c.created_at.toDate?.()
+      : (c?.created_at ? new Date(c.created_at) : null)
     if (!created) return false
     return now - created.getTime() <= 24 * 60 * 60 * 1000
   }

@@ -133,7 +133,7 @@ function adjustMETBySpeed(baseMET: number, vitesse: number, type: string): numbe
   if (type === 'cyclisme') vitesseRef = 16
   
   const speedDiff = Math.max(0, vitesse - vitesseRef)
-  const adjustedMET = baseMET + (speedDiff * (metData as any).vitesse_factor)
+  const adjustedMET = baseMET + (speedDiff * (metData as unknown as { vitesse_factor: number }).vitesse_factor)
   
   return Math.min(metData.max, Math.max(metData.min, adjustedMET))
 }
@@ -160,7 +160,7 @@ export function calculateCalories(data: CalorieCalculationData): number {
   if (fc_moyenne && age) {
     const fcMax = calculateMaxHR(age)
     const hrPercentage = calculateHRPercentage(fc_moyenne, fcMax)
-    if ((metData as any).fc_factor || type === 'cardio') {
+    if ((metData as unknown as { fc_factor?: boolean }).fc_factor || type === 'cardio') {
       met = adjustMETByHeartRate(met, hrPercentage)
     }
   }
