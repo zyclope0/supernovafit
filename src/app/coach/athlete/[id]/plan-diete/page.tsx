@@ -11,7 +11,8 @@ import toast from 'react-hot-toast'
 type AthleteLite = { id: string; nom?: string; email?: string }
 
 export default function CoachDietPlanPage() {
-  const { id: athleteId } = useParams()
+  const params = useParams<{ id: string }>()
+  const athleteId: string = params.id
   const router = useRouter()
   const { user } = useAuth()
   const [athlete, setAthlete] = useState<AthleteLite | null>(null)
