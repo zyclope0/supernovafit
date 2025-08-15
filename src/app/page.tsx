@@ -225,7 +225,10 @@ export default function Dashboard() {
                 <button
                   onClick={() => {
                     // Option pour changer de coach (à implémenter si nécessaire)
-                    toast.info('Pour changer de coach, contactez votre coach actuel')
+                    toast('Pour changer de coach, contactez votre coach actuel', {
+                      icon: '💡',
+                      duration: 4000
+                    })
                   }}
                   className="text-xs text-muted-foreground hover:text-white transition-colors"
                 >
