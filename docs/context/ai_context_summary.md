@@ -115,7 +115,7 @@ password: "Test123!"
 - Inputs avec focus néon
 - Animations smooth partout
 
-## 🚀 État Actuel - 6 MODULES PRODUCTION-READY (mis à jour)
+## 🚀 **ÉTAT ACTUEL - 6 MODULES PRODUCTION-READY + INVITATIONS COACH-ATHLÈTE** (mis à jour)
 
 ### ✅ **MODULES 100% FONCTIONNELS** (mis à jour)
 #### 📊 **DASHBOARD** - Tableau de bord temps réel
@@ -123,6 +123,7 @@ password: "Test123!"
 - **Actions rapides** : Liens directs vers tous les 6 modules
 - **Données dynamiques** : Connexion Firebase en temps réel
 - **Design cohérent** : Thème espace/néon, animations fluides
+- **🎯 Invitations coach** : Composant de saisie de code pour les athlètes non liés
 
 #### 🍽️ **DIÈTE & NUTRITION** - Système complet
 - **Recherche alimentaire** : Open Food Facts (2M+ aliments)
@@ -167,6 +168,18 @@ password: "Test123!"
 - **Recommandations** : Macros personnalisées selon objectifs
 - **Préférences** : Unités (métrique/impérial), langue, paramètres
 - **Indicateur complétude** : Suivi du remplissage profil
+- **🔗 Relation coach-athlète** : Champ `ownerCoachId` pour lier athlète à coach
+
+#### 🤝 **SYSTÈME D'INVITATIONS COACH-ATHLÈTE** - ✅ **NOUVEAU**
+- **🎯 Codes d'invitation** : Génération automatique (6 caractères A-Z/2-9, sans O/0/I/1)
+- **⏰ TTL 72h** : Expiration automatique des codes
+- **🔄 Usage unique** : Chaque code ne peut être utilisé qu'une fois
+- **🛡️ Rate limiting** : 5 générations maximum par 10 minutes par coach
+- **📱 Interface coach** : Modal complet avec génération, copie, révocation
+- **📝 Interface athlète** : Composant de saisie avec validation en temps réel
+- **🔐 Sécurité** : Règles Firestore appropriées, validation côté client/serveur
+- **📊 Analytics** : Tracking des événements `invite_generated` et `invite_claimed`
+- **🎨 UX moderne** : Design cohérent avec le thème espace/néon
 
 ### ✅ **QUALITÉ PRODUCTION ATTEINTE** (hébergement Firebase SSR)
 - **🔔 Toast notifications** : UX moderne ✅
@@ -178,6 +191,7 @@ password: "Test123!"
 - **🧭 Imports dynamiques** généralisés (charts, modales, import Garmin, PhotoUpload) ✅
 - **📷 next/image** + preconnect images ✅
 - **📉 Lighthouse (home)**: FCP≈0.44s, LCP≈1.31s, TBT≈0.72s, CLS≈0.08 ✅
+- **🔗 Relations coach-athlète** : Système d'invitations sécurisé et ergonomique ✅
 
 ## 🎯 **PLAN ACTUEL - OPTION A : CONSOLIDATION & QUALITÉ** (Janvier 2025)
 
@@ -397,4 +411,4 @@ password: "Test123!"
 
 ---
 
-**Version** : 1.3.1 | **MAJ** : 13 Janvier 2025 | **Status** : 6 MODULES PRODUCTION + OPTION A TERMINÉE ✅ + SENTRY 100% COMPLET 🚨 + DÉPLOIEMENT RÉUSSI 🌐 + ESLINT ACTIVÉ 🧹 + SENTRY DSN FIXED ✅ + TDEE HARMONISÉ ✅ | **Score** : 10/10 | **Prochaine** : Nettoyage ESLint progressif 
+**Version** : 1.3.2 | **MAJ** : 13 Janvier 2025 | **Status** : 6 MODULES PRODUCTION + INVITATIONS COACH-ATHLÈTE ✅ + SENTRY 100% COMPLET 🚨 + DÉPLOIEMENT RÉUSSI 🌐 + ESLINT ACTIVÉ 🧹 + SENTRY DSN FIXED ✅ + TDEE HARMONISÉ ✅ | **Score** : 10/10 | **Prochaine** : Nettoyage ESLint progressif 

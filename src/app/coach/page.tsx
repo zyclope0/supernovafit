@@ -8,6 +8,7 @@ import MainLayout from '@/components/layout/MainLayout'
 import { Users, TrendingUp, Calendar, FileText, Award, Plus, Search, Activity, BarChart3, BookOpen, Scale } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import InviteModal from '@/components/ui/InviteModal'
 
 // interface AthleteWithStats {
 //   id: string
@@ -28,6 +29,7 @@ export default function CoachDashboard() {
   const { athletes: coachAthletes } = useCoachAthletes()
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
+  const [showInviteModal, setShowInviteModal] = useState(false)
 
   useEffect(() => {
     // Vérifier que l'utilisateur est bien un coach
@@ -80,7 +82,10 @@ export default function CoachDashboard() {
               </span>
             </h1>
           </div>
-          <button className="btn-primary flex items-center gap-2">
+          <button 
+            onClick={() => setShowInviteModal(true)}
+            className="btn-primary flex items-center gap-2"
+          >
             <Plus className="w-4 h-4" />
             Inviter un athlète
           </button>
@@ -299,6 +304,15 @@ export default function CoachDashboard() {
             </div>
           </Link>
         </div>
+
+        {/* Modal d'invitation */}
+        {showInviteModal && userProfile && (
+          <InviteModal
+            isOpen={showInviteModal}
+            onClose={() => setShowInviteModal(false)}
+            coachId={userProfile.id}
+          />
+        )}
       </div>
     </MainLayout>
   )

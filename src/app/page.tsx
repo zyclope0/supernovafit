@@ -9,6 +9,7 @@ import { formatNumber } from '@/lib/utils'
 import { calculateTDEE } from '@/lib/userCalculations'
 import dynamic from 'next/dynamic'
 import type { Repas } from '@/types'
+import InviteCodeInput from '@/components/ui/InviteCodeInput'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
 
@@ -203,6 +204,11 @@ export default function Dashboard() {
           <QuickActions />
           <ProgressChart repas={repas} />
         </div>
+
+        {/* Section invitation coach (pour les athlètes) */}
+        {user && userProfile?.role === 'sportif' && !userProfile?.ownerCoachId && (
+          <InviteCodeInput />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE} />

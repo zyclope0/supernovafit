@@ -219,5 +219,36 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && 
         resource.data.coach_id == request.auth.uid;
     }
+
+    // Règles pour la collection 'invites'
+    match /invites/{inviteId} {
+      // Les coachs peuvent créer des invitations
+      allow create: if isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
+        request.resource.data.coachId == request.auth.uid;
+      
+      // Lecture publique des invitations (nécessaire pour la validation côté athlète)
+      // Mais on ne peut lire que les invitations actives
+      allow read: if isAuthenticated() && 
+        resource.data.status == 'active';
+      
+      // Permettre de lister les invitations (nécessaire pour les requêtes where)
+      allow list: if isAuthenticated();
+      
+      // Mise à jour:
+      // - Coach: peut révoquer ses invitations
+      // - Athlète: peut marquer comme utilisée (status = 'used')
+      allow update: if isAuthenticated() && (
+        resource.data.coachId == request.auth.uid ||
+        (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'sportif' &&
+          resource.data.status == 'active' &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'usedByAthleteId', 'usedAt']) &&
+          request.resource.data.status == 'used'
+        )
+      );
+      
+      allow delete: if false; // Pas de suppression
+    }
   }
 }

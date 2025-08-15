@@ -26,6 +26,23 @@ export interface User {
   profil_complete?: boolean;
   created_at?: Date | string;
   updated_at?: Date | string;
+  
+  // Relation coach-athlète (v1 mono-coach)
+  ownerCoachId?: string; // ID du coach propriétaire
+}
+
+// Types pour les invitations coach-athlète
+export type InviteStatus = 'active' | 'used' | 'revoked';
+
+export interface Invite {
+  code: string; // Code à 6 caractères A-Z/2-9
+  coachId: string; // ID du coach qui génère l'invitation
+  createdAt: Date;
+  expiresAt: Date; // TTL 72h
+  status: InviteStatus;
+  usedByAthleteId?: string; // ID de l'athlète qui a utilisé le code
+  usedAt?: Date; // Date d'utilisation
+  revokedAt?: Date; // Date de révocation (si applicable)
 }
 
 // Types pour les repas
