@@ -86,6 +86,12 @@ const trackVital = (metric: Metric) => {
 // Main function pour initialiser Web Vitals monitoring
 export function reportWebVitals() {
   try {
+    // Log pour debug en production aussi
+    console.log('[Web Vitals] Starting initialization...', {
+      env: process.env.NODE_ENV,
+      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET'
+    })
+    
     // Vitals critiques (web-vitals v4)
     onCLS(trackVital)
     onINP(trackVital) // Remplace FID
@@ -94,9 +100,7 @@ export function reportWebVitals() {
     onTTFB(trackVital)
     
     // Log initialisation
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Web Vitals] Monitoring initialized')
-    }
+    console.log('[Web Vitals] Monitoring initialized successfully')
   } catch (error) {
     console.error('Erreur initialisation Web Vitals:', error)
     Sentry.captureException(error)
