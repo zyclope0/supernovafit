@@ -21,8 +21,27 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: Build
-        run: npm run build
+      - name: Build and Debug
+        run: |
+          echo "Checking if Sentry DSN is available before build..."
+          if [ -n "$NEXT_PUBLIC_SENTRY_DSN" ]; then
+            echo "✅ NEXT_PUBLIC_SENTRY_DSN is SET before build"
+            echo "Length: ${#NEXT_PUBLIC_SENTRY_DSN}"
+            echo "DSN: $NEXT_PUBLIC_SENTRY_DSN"
+          else
+            echo "❌ NEXT_PUBLIC_SENTRY_DSN is NOT SET before build"
+          fi
+          
+          npm run build
+          
+          echo "Checking if Sentry DSN is still available after build..."
+          if [ -n "$NEXT_PUBLIC_SENTRY_DSN" ]; then
+            echo "✅ NEXT_PUBLIC_SENTRY_DSN is SET after build"
+            echo "Length: ${#NEXT_PUBLIC_SENTRY_DSN}"
+            echo "DSN: $NEXT_PUBLIC_SENTRY_DSN"
+          else
+            echo "❌ NEXT_PUBLIC_SENTRY_DSN is NOT SET after build"
+          fi
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
@@ -33,16 +52,6 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
           NEXT_PUBLIC_SENTRY_DSN: "https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456"
           NEXT_PUBLIC_APP_VERSION: "1.2.0"
-      - name: Debug Environment Variables After Build
-        run: |
-          echo "Checking if Sentry DSN was injected during build..."
-          if [ -n "$NEXT_PUBLIC_SENTRY_DSN" ]; then
-            echo "✅ NEXT_PUBLIC_SENTRY_DSN is SET"
-            echo "Length: ${#NEXT_PUBLIC_SENTRY_DSN}"
-            echo "DSN: $NEXT_PUBLIC_SENTRY_DSN"
-          else
-            echo "❌ NEXT_PUBLIC_SENTRY_DSN is NOT SET"
-          fi
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:

@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/nextjs'
 // Debug logs pour vérifier la configuration
 console.log('[Sentry] Initializing with config:', {
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET',
+  dsnValue: process.env.NEXT_PUBLIC_SENTRY_DSN || 'undefined',
   env: process.env.NODE_ENV,
   version: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0'
 })
