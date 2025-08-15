@@ -19,8 +19,14 @@ service cloud.firestore {
         (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
       
       allow create: if isOwner(userId);
-      // Mise à jour seulement par le propriétaire (le coach ne modifie pas le profil de l'athlète)
-      allow update: if isOwner(userId);
+      // Mise à jour par le propriétaire OU pour lier un athlète à un coach via invitation
+      allow update: if isOwner(userId) || 
+        (
+          isAuthenticated() && 
+          request.auth.uid == userId &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['ownerCoachId', 'updated_at']) &&
+          request.resource.data.ownerCoachId != null
+        );
       allow delete: if false; // Pas de suppression
     }
     
@@ -227,12 +233,16 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
         request.resource.data.coachId == request.auth.uid;
       
-      // Lecture publique des invitations (nécessaire pour la validation côté athlète)
-      // Mais on ne peut lire que les invitations actives
-      allow read: if isAuthenticated() && 
-        resource.data.status == 'active';
+      // Lecture: 
+      // - Coach peut lire ses propres invitations
+      // - Athlète peut lire les invitations actives (pour validation)
+      allow read: if isAuthenticated() && (
+        resource.data.coachId == request.auth.uid ||
+        resource.data.status == 'active'
+      );
       
       // Permettre de lister les invitations (nécessaire pour les requêtes where)
+      // Le filtrage se fait côté client avec where('coachId', '==', coachId)
       allow list: if isAuthenticated();
       
       // Mise à jour:

@@ -37,7 +37,6 @@ const coachNavigation = [
   { name: 'Mes Athlètes', href: '/coach', icon: UsersIcon },
   { name: 'Programmes', href: '/coach/programmes', icon: CalendarDaysIcon },
   { name: 'Rapports', href: '/coach/rapports', icon: ChartBarIcon },
-  { name: 'Invitations', href: '/coach/invitations', icon: UserIcon },
 ]
 
 const authNavigation = [

@@ -10,6 +10,8 @@ import { calculateTDEE } from '@/lib/userCalculations'
 import dynamic from 'next/dynamic'
 import type { Repas } from '@/types'
 import InviteCodeInput from '@/components/ui/InviteCodeInput'
+import { Users } from 'lucide-react'
+import toast from 'react-hot-toast'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
 
@@ -206,8 +208,32 @@ export default function Dashboard() {
         </div>
 
         {/* Section invitation coach (pour les athlètes) */}
-        {user && userProfile?.role === 'sportif' && !userProfile?.ownerCoachId && (
-          <InviteCodeInput />
+        {user && userProfile?.role === 'sportif' && (
+          <div>
+            {!userProfile?.ownerCoachId ? (
+              // Affichage principal si pas de coach
+              <InviteCodeInput />
+            ) : (
+              // Affichage discret si déjà un coach
+              <div className="glass-effect p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Users className="h-4 w-4 text-neon-green" />
+                  <span className="text-sm text-white">
+                    Vous êtes lié à un coach
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    // Option pour changer de coach (à implémenter si nécessaire)
+                    toast.info('Pour changer de coach, contactez votre coach actuel')
+                  }}
+                  className="text-xs text-muted-foreground hover:text-white transition-colors"
+                >
+                  Changer de coach
+                </button>
+              </div>
+            )}
+          </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

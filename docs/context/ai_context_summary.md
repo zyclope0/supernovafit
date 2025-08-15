@@ -10,7 +10,7 @@
 - **Design** : Thème espace futuriste avec effets néon (purple, cyan, pink, green)
 - **Tech** : Next.js 14, TypeScript, Firebase, Tailwind CSS
 
-## 🎯 État Actuel (10 Août 2025 - Post-déploiement + Monitoring Complet + ESLint)
+## 🎯 État Actuel (15 Août 2025 - Post-déploiement + Monitoring Complet + ESLint + Invitations Coach-Athlète Corrigées)
 
 ### ✅ Phase 1 TERMINÉE
 1. **Structure Next.js** : App Router, TypeScript, configuration complète
@@ -170,16 +170,17 @@ password: "Test123!"
 - **Indicateur complétude** : Suivi du remplissage profil
 - **🔗 Relation coach-athlète** : Champ `ownerCoachId` pour lier athlète à coach
 
-#### 🤝 **SYSTÈME D'INVITATIONS COACH-ATHLÈTE** - ✅ **NOUVEAU**
+#### 🤝 **SYSTÈME D'INVITATIONS COACH-ATHLÈTE** - ✅ **NOUVEAU & CORRIGÉ**
 - **🎯 Codes d'invitation** : Génération automatique (6 caractères A-Z/2-9, sans O/0/I/1)
 - **⏰ TTL 72h** : Expiration automatique des codes
 - **🔄 Usage unique** : Chaque code ne peut être utilisé qu'une fois
 - **🛡️ Rate limiting** : 5 générations maximum par 10 minutes par coach
 - **📱 Interface coach** : Modal complet avec génération, copie, révocation
 - **📝 Interface athlète** : Composant de saisie avec validation en temps réel
-- **🔐 Sécurité** : Règles Firestore appropriées, validation côté client/serveur
+- **🔐 Sécurité** : Règles Firestore corrigées, validation côté client/serveur
 - **📊 Analytics** : Tracking des événements `invite_generated` et `invite_claimed`
 - **🎨 UX moderne** : Design cohérent avec le thème espace/néon
+- **✅ Permissions corrigées** : Mise à jour des règles Firestore pour permettre la liaison coach-athlète
 
 ### ✅ **QUALITÉ PRODUCTION ATTEINTE** (hébergement Firebase SSR)
 - **🔔 Toast notifications** : UX moderne ✅
@@ -411,4 +412,4 @@ password: "Test123!"
 
 ---
 
-**Version** : 1.3.2 | **MAJ** : 13 Janvier 2025 | **Status** : 6 MODULES PRODUCTION + INVITATIONS COACH-ATHLÈTE ✅ + SENTRY 100% COMPLET 🚨 + DÉPLOIEMENT RÉUSSI 🌐 + ESLINT ACTIVÉ 🧹 + SENTRY DSN FIXED ✅ + TDEE HARMONISÉ ✅ | **Score** : 10/10 | **Prochaine** : Nettoyage ESLint progressif 
+**Version** : 1.3.4 | **MAJ** : 15 Août 2025 | **Status** : 6 MODULES PRODUCTION + INVITATIONS COACH-ATHLÈTE OPTIMISÉES ✅ + SENTRY 100% COMPLET 🚨 + DÉPLOIEMENT RÉUSSI 🌐 + ESLINT ACTIVÉ 🧹 + SENTRY DSN FIXED ✅ + TDEE HARMONISÉ ✅ | **Score** : 10/10 | **Prochaine** : Déploiement final 

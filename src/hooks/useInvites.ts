@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { collection, doc, addDoc, getDoc, updateDoc, query, where, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore'
+import { collection, doc, setDoc, getDoc, updateDoc, query, where, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { Invite, InviteStatus } from '@/types'
 import { generateInviteCode, calculateExpirationDate, validateInviteCode } from '@/lib/inviteUtils'
@@ -32,6 +32,7 @@ export function useCoachInvites(coachId: string) {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const invitesData = snapshot.docs.map(doc => ({
         ...doc.data(),
+        code: doc.id, // Le code est l'ID du document
         createdAt: doc.data().createdAt?.toDate(),
         expiresAt: doc.data().expiresAt?.toDate(),
         usedAt: doc.data().usedAt?.toDate(),
@@ -77,7 +78,8 @@ export function useCoachInvites(coachId: string) {
         status: 'active' as InviteStatus
       }
 
-      await addDoc(collection(db, 'invites'), inviteData)
+      // Utiliser le code comme ID du document pour faciliter la récupération
+      await setDoc(doc(db, 'invites', code), inviteData)
 
       // Analytics
       Sentry.addBreadcrumb({

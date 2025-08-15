@@ -178,7 +178,10 @@ export default function CoachDashboard() {
             <p className="text-gray-400 mb-6">
               Commencez par inviter des athlètes à rejoindre votre équipe
             </p>
-            <button className="btn-primary mx-auto">
+            <button 
+              onClick={() => setShowInviteModal(true)}
+              className="btn-primary mx-auto"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Inviter un athlète
             </button>
@@ -261,7 +264,7 @@ export default function CoachDashboard() {
         )}
 
         {/* Actions rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link
             href="/coach/programmes"
             className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-purple/50 
@@ -286,20 +289,6 @@ export default function CoachDashboard() {
               <div>
                 <h3 className="text-lg font-semibold text-white">Rapports</h3>
                 <p className="text-sm text-gray-400">Analyser les progressions</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/coach/invitations"
-            className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-green/50 
-                     transition-all cursor-pointer group"
-          >
-            <div className="flex items-center gap-4">
-              <Plus className="w-12 h-12 text-neon-green group-hover:scale-110 transition-transform" />
-              <div>
-                <h3 className="text-lg font-semibold text-white">Invitations</h3>
-                <p className="text-sm text-gray-400">Gérer les invitations</p>
               </div>
             </div>
           </Link>
