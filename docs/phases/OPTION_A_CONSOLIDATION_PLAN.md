@@ -599,23 +599,37 @@ npm install @sentry/nextjs
 ```typescript
 import * as Sentry from "@sentry/nextjs"
 
+// DSN Sentry hardcodé pour production (plus fiable que les variables d'environnement)
+const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
+
 Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn: SENTRY_DSN,
   
   // Performance monitoring
-  tracesSampleRate: 1.0,
+  tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
   
   // Release tracking
-  release: process.env.NEXT_PUBLIC_APP_VERSION,
+  release: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0',
   environment: process.env.NODE_ENV,
   
-  // Error filtering
+  // Error filtering avancé pour SuperNovaFit
   beforeSend(event, hint) {
     // Filtrer erreurs non critiques
     if (event.exception) {
-      const error = hint.originalException
-      if (error?.name === 'ChunkLoadError') {
-        return null // Ignorer erreurs chunk loading
+      const error = hint.originalException as Error
+      
+      // Ignorer erreurs network temporaires
+      if (error?.message?.includes('Network Error') || 
+          error?.message?.includes('fetch') ||
+          error?.message?.includes('Failed to fetch')) {
+        return null
+      }
+      
+      // Ignorer erreurs Firebase quota (attendues)
+      if (error?.message?.includes('quota-exceeded') ||
+          error?.message?.includes('permission-denied') ||
+          error?.message?.includes('unavailable')) {
+        return null
       }
     }
     return event
@@ -624,7 +638,8 @@ Sentry.init({
   // User context
   initialScope: {
     tags: {
-      component: "supernovafit-frontend"
+      component: "supernovafit-frontend",
+      module: "fitness-app"
     },
   },
 })

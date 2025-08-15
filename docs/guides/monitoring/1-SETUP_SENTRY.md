@@ -91,18 +91,21 @@ Configurer Sentry pour recevoir automatiquement :
 
 ## 🔐 **ÉTAPE 3 : CONFIGURER .ENV.LOCAL**
 
-### **3.1 Ajouter DSN dans SuperNovaFit**
-```bash
-# 1. Ouvrir ton projet SuperNovaFit
-# 2. Éditer fichier .env.local
-# 3. Ajouter ligne :
+### **3.1 Configuration Sentry (DSN Hardcodé)**
 
-NEXT_PUBLIC_SENTRY_DSN=https://ton-dsn-complet-ici@o123.ingest.sentry.io/456
+**✅ SOLUTION FINALE :** Le DSN Sentry est maintenant hardcodé dans `sentry.client.config.ts` pour éviter les problèmes de variables d'environnement en production.
 
-# ⚠️ IMPORTANT : Remplacer par TON DSN réel !
+```typescript
+// sentry.client.config.ts
+const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
 ```
 
-### **3.2 Exemple .env.local Complet**
+**⚠️ POUR TON PROJET :** Remplace le DSN ci-dessus par ton DSN Sentry personnel.
+
+### **3.2 Configuration .env.local (Optionnel)**
+
+**ℹ️ NOTE :** Le DSN Sentry est maintenant hardcodé, donc pas besoin de variable d'environnement.
+
 ```bash
 # Firebase (existant)
 NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyBe176JrNl_R0NmUAFkhCISThnFUUgt8U4
@@ -113,8 +116,7 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=261698689691
 NEXT_PUBLIC_FIREBASE_APP_ID=1:261698689691:web:edc7a7135d94a8250c443e
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-RV0RK8JWN4
 
-# Sentry (nouveau)
-NEXT_PUBLIC_SENTRY_DSN=https://abc123@o456.ingest.sentry.io/789
+# Sentry : DSN hardcodé dans sentry.client.config.ts
 ```
 
 ### **3.3 Redémarrer Application**
@@ -122,7 +124,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://abc123@o456.ingest.sentry.io/789
 # Terminal dans SuperNovaFit :
 # Ctrl+C pour arrêter serveur dev
 npm run dev
-# → Serveur restart avec Sentry configuré
+# → Serveur restart avec Sentry configuré (DSN hardcodé)
 ```
 
 ---
@@ -137,7 +139,7 @@ npm run dev
 # 2. Ouvrir DevTools (F12) → Console
 
 # 3. Taper cette commande pour provoquer erreur :
-throw new Error("Test Sentry - ça marche!")
+setTimeout(() => { throw new Error('SentryPing') }, 0)
 
 # 4. Check Sentry Dashboard (refresh page)
 # → Tu devrais voir la nouvelle erreur !
@@ -164,7 +166,7 @@ throw new Error("Test Sentry - ça marche!")
 # → Password: Test123!
 
 # 2. Provoquer une erreur (F12 Console) :
-throw new Error("Test avec utilisateur connecté")
+setTimeout(() => { throw new Error('SentryPing') }, 0)
 
 # 3. Check Sentry → Issue Details
 # → User ID doit apparaître dans "User Context"
@@ -208,7 +210,7 @@ throw new Error("Test avec utilisateur connecté")
 ```bash
 ✅ Compte Sentry créé
 ✅ Projet "supernovafit" créé
-✅ DSN copié et ajouté dans .env.local
+✅ DSN copié et hardcodé dans sentry.client.config.ts
 ✅ App redémarrée (npm run dev)
 ✅ Test erreur → Apparaît dans Sentry
 ✅ Test Web Vitals → Apparaît dans Performance
@@ -221,8 +223,8 @@ throw new Error("Test avec utilisateur connecté")
 # Si erreurs n'apparaissent pas :
 
 # 1. Vérifier DSN correct :
-echo $NEXT_PUBLIC_SENTRY_DSN
-# → Doit afficher ton DSN complet
+# → Ouvrir sentry.client.config.ts
+# → Vérifier que SENTRY_DSN contient ton DSN
 
 # 2. Vérifier console navigateur :
 # F12 → Network → Filtrer "sentry"

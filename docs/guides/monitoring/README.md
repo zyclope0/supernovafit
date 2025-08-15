@@ -9,6 +9,7 @@
 
 - **[1. SETUP_SENTRY.md](./1-SETUP_SENTRY.md)** → Configuration Sentry + récupération DSN
 - **[SENTRY_DSN_VISUEL.md](./SENTRY_DSN_VISUEL.md)** → **Guide visuel DSN** (captures d'écran)
+- **[SENTRY_DSN_FIX.md](./SENTRY_DSN_FIX.md)** → **Résolution problème variables d'environnement**
 - **[2. FIREBASE_ANALYTICS.md](./2-FIREBASE_ANALYTICS.md)** → Console Firebase & métriques  
 - **[3. WEB_VITALS.md](./3-WEB_VITALS.md)** → Performance monitoring
 - **[4. MONITORING_QUOTIDIEN.md](./4-MONITORING_QUOTIDIEN.md)** → Workflow daily/weekly
@@ -23,8 +24,8 @@
 # 1. Créer compte Sentry (gratuit)
 # → Suivre Guide/1-SETUP_SENTRY.md
 
-# 2. Configurer DSN dans .env.local
-NEXT_PUBLIC_SENTRY_DSN=ton_dsn_ici
+# 2. Configurer DSN hardcodé dans sentry.client.config.ts
+# → Remplacer le DSN par le tien
 
 # 3. Redémarrer l'app
 npm run dev
