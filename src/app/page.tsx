@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { formatNumber } from '@/lib/utils'
+import { calculateTDEE } from '@/lib/userCalculations'
 import dynamic from 'next/dynamic'
 import type { Repas } from '@/types'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
@@ -131,7 +132,6 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
 
   // Calcul TDEE précis si profil complet disponible, sinon estimation basique
-  const { calculateTDEE } = require('@/lib/userCalculations')
   const preciseTDEE = userProfile ? calculateTDEE(userProfile) : null
   const estimatedTDEE = preciseTDEE || (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0)
 

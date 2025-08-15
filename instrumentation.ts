@@ -20,10 +20,10 @@ export async function onRequestError(error: unknown) {
     const Sentry = await import('@sentry/nextjs')
     // Prefer the dedicated helper when available
     // Fallback to captureException for older SDKs
-    if (typeof (Sentry as any).captureRequestError === 'function') {
-      ;(Sentry as any).captureRequestError(error)
-    } else if (typeof (Sentry as any).captureException === 'function') {
-      ;(Sentry as any).captureException(error)
+    if ('captureRequestError' in Sentry && typeof Sentry.captureRequestError === 'function') {
+      Sentry.captureRequestError(error, {} as any, {} as any)
+    } else if (typeof Sentry.captureException === 'function') {
+      Sentry.captureException(error)
     }
   } catch {
     // Swallow to avoid breaking request pipeline in case of import issues

@@ -267,11 +267,11 @@ export const CALORIE_SUGGESTIONS = {
 /**
  * Retourne des estimations rapides pour l'UI
  */
-export function getQuickCalorieEstimate(type: string, duree: number): number {
+export function getQuickCalorieEstimate(type: string, duree: number, poids?: number): number {
   const metData = MET_VALUES[type as keyof typeof MET_VALUES]
   if (!metData) return 0
   
-  const poidsMoyen = 70 // kg
+  const poidsUtilise = poids || 70 // kg - fallback si pas fourni
   const tempsHeures = duree / 60
-  return Math.round(metData.base * poidsMoyen * tempsHeures)
+  return Math.round(metData.base * poidsUtilise * tempsHeures)
 }

@@ -5,6 +5,7 @@ import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import ProfileForm from '@/components/ui/ProfileForm'
 import { User, Settings, TrendingUp } from 'lucide-react'
+import { calculateTDEE } from '@/lib/userCalculations'
 import type { User as UserProfile } from '@/types'
 
 export default function ProfilPage() {
@@ -160,8 +161,6 @@ export default function ProfilPage() {
               </div>
               <div className="text-lg font-semibold text-white">
                 {(() => {
-                  // Utiliser la fonction centralisée de userCalculations.ts
-                  const { calculateTDEE } = require('@/lib/userCalculations')
                   const tdee = calculateTDEE(currentProfile)
                   return tdee ? `${tdee} kcal/j` : 'Non calculé'
                 })()}
