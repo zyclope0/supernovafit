@@ -4,16 +4,21 @@
 
 import * as Sentry from '@sentry/nextjs'
 
-// Debug logs pour vérifier la configuration
-console.log('[Sentry] Initializing with config:', {
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET',
-  dsnValue: process.env.NEXT_PUBLIC_SENTRY_DSN || 'undefined',
-  env: process.env.NODE_ENV,
-  version: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0'
-})
+// DSN Sentry hardcodé pour production (plus fiable que les variables d'environnement)
+const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
+
+// Debug logs pour vérifier la configuration (production uniquement)
+if (process.env.NODE_ENV === 'production') {
+  console.log('[Sentry] Initializing with config:', {
+    dsn: SENTRY_DSN ? 'SET' : 'NOT SET',
+    dsnValue: SENTRY_DSN || 'undefined',
+    env: process.env.NODE_ENV,
+    version: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0'
+  })
+}
 
 Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn: SENTRY_DSN,
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,

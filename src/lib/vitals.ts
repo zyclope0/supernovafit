@@ -87,10 +87,12 @@ const trackVital = (metric: Metric) => {
 export function reportWebVitals() {
   try {
     // Log pour debug en production aussi
-    console.log('[Web Vitals] Starting initialization...', {
-      env: process.env.NODE_ENV,
-      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET'
-    })
+if (process.env.NODE_ENV === 'production') {
+  console.log('[Web Vitals] Starting initialization...', {
+    env: process.env.NODE_ENV,
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET'
+  })
+}
     
     // Vitals critiques (web-vitals v4)
     onCLS(trackVital)
