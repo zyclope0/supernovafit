@@ -21,6 +21,16 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+      - name: Debug Environment Variables
+        run: |
+          echo "Checking if Sentry DSN is available..."
+          if [ -n "${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}" ]; then
+            echo "✅ NEXT_PUBLIC_SENTRY_DSN is SET"
+            echo "Length: ${#NEXT_PUBLIC_SENTRY_DSN}"
+          else
+            echo "❌ NEXT_PUBLIC_SENTRY_DSN is NOT SET"
+          fi
+          
       - name: Build
         run: npm run build
         env:
