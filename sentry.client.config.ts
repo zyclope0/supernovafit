@@ -7,8 +7,8 @@ import * as Sentry from '@sentry/nextjs'
 // DSN Sentry hardcodé pour production (plus fiable que les variables d'environnement)
 const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
 
-// Debug logs pour vérifier la configuration (production uniquement)
-if (process.env.NODE_ENV === 'production') {
+// Debug logs pour vérifier la configuration (développement uniquement)
+if (process.env.NODE_ENV === 'development') {
   console.log('[Sentry] Initializing with config:', {
     dsn: SENTRY_DSN ? 'SET' : 'NOT SET',
     dsnValue: SENTRY_DSN || 'undefined',
