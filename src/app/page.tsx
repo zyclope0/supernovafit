@@ -95,7 +95,7 @@ function ProgressChart({ repas }: { repas: Repas[] }) {
 }
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  const { user, userProfile } = useAuth()
   const { repas, loading: repasLoading } = useRepas()
   const { entrainements, loading: trainingsLoading } = useEntrainements()
   const { mesures, loading: measuresLoading } = useMesures()
@@ -130,9 +130,10 @@ export default function Dashboard() {
     .filter(m => m.poids)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
 
-  // Estimation TDEE simple si profil minimal (poids) disponible
-  // Hypothèse: TDEE ~ 30 kcal/kg/jour (approx maint.) si pas d'autres infos
-  const estimatedTDEE = latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0
+  // Calcul TDEE précis si profil complet disponible, sinon estimation basique
+  const { calculateTDEE } = require('@/lib/userCalculations')
+  const preciseTDEE = userProfile ? calculateTDEE(userProfile) : null
+  const estimatedTDEE = preciseTDEE || (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0)
 
   // Loading state
   if (repasLoading && trainingsLoading && measuresLoading) {
@@ -154,7 +155,7 @@ export default function Dashboard() {
     <MainLayout>
       <div className="space-y-6">
         {/* Carte de bienvenue */}
-        <WelcomeCard username={user?.email?.split('@')[0]} />
+        <WelcomeCard username={userProfile?.nom || user?.email?.split('@')[0]} />
 
         {/* Message si pas connecté */}
         {!user && (

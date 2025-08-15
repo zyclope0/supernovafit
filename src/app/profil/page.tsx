@@ -95,7 +95,7 @@ export default function ProfilPage() {
 
         {/* Vue d'ensemble rapide */}
         {completeness > 50 && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="glass-effect p-4 rounded-lg border border-white/10">
               <div className="flex items-center gap-2 mb-2">
                 <User className="h-4 w-4 text-neon-purple" />
@@ -150,6 +150,21 @@ export default function ProfilPage() {
                   })() 
                   : 'Non calculé'
                 }
+              </div>
+            </div>
+
+            <div className="glass-effect p-4 rounded-lg border border-white/10">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="h-4 w-4 text-neon-green" />
+                <span className="text-sm text-muted-foreground">TDEE</span>
+              </div>
+              <div className="text-lg font-semibold text-white">
+                {(() => {
+                  // Utiliser la fonction centralisée de userCalculations.ts
+                  const { calculateTDEE } = require('@/lib/userCalculations')
+                  const tdee = calculateTDEE(currentProfile)
+                  return tdee ? `${tdee} kcal/j` : 'Non calculé'
+                })()}
               </div>
             </div>
           </div>
