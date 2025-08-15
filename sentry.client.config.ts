@@ -23,7 +23,7 @@ Sentry.init({
   // This sets the sample rate to be 10%. You may want this to be 100% while in development and sample at a lower rate in production.
   replaysSessionSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
 
-  // Error filtering (same as SentryProvider but as fallback)
+  // Error filtering avancé pour SuperNovaFit
   beforeSend(event, hint) {
     // Filtrer erreurs non critiques
     if (event.exception) {
@@ -33,19 +33,28 @@ Sentry.init({
       
       // Ignorer erreurs network temporaires
       if (error?.message?.includes('Network Error') || 
-          error?.message?.includes('fetch')) {
+          error?.message?.includes('fetch') ||
+          error?.message?.includes('Failed to fetch')) {
         return null
       }
       
       // Ignorer erreurs Firebase quota (attendues)
       if (error?.message?.includes('quota-exceeded') ||
-          error?.message?.includes('permission-denied')) {
+          error?.message?.includes('permission-denied') ||
+          error?.message?.includes('unavailable')) {
         return null
       }
 
       // Ignorer erreurs d'extension navigateur
       if (error?.message?.includes('Non-Error promise rejection') ||
-          error?.message?.includes('chrome-extension://')) {
+          error?.message?.includes('chrome-extension://') ||
+          error?.message?.includes('moz-extension://')) {
+        return null
+      }
+      
+      // Ignorer erreurs de timeout
+      if (error?.message?.includes('timeout') ||
+          error?.message?.includes('aborted')) {
         return null
       }
     }

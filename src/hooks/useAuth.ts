@@ -68,7 +68,12 @@ export function useAuth() {
             }
           } catch (error) {
             console.error('Erreur lors de la récupération du profil:', error)
-            Sentry.captureException(error)
+            // Ne capturer que les erreurs non-Firebase
+            if (error instanceof Error && 
+                !error.message.includes('permission-denied') &&
+                !error.message.includes('quota-exceeded')) {
+              Sentry.captureException(error)
+            }
           } finally {
             setProfileLoading(false)
           }

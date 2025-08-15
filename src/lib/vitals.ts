@@ -59,13 +59,21 @@ const trackVital = (metric: Metric) => {
   }
   const mapped = nameMap[metric.name]
   if (mapped) {
-    // Attacher au transaction active si possible (plus fiable que la portée globale)
-    const scope = (Sentry as unknown as { getCurrentScope?: () => unknown }).getCurrentScope?.()
-    const tx = (scope as { getTransaction?: () => { setMeasurement?: (k: string, v: number, u: 'none' | 'millisecond') => void } })?.getTransaction?.()
-    if (tx && typeof tx.setMeasurement === 'function') {
-      tx.setMeasurement(mapped.key, metric.value, mapped.unit)
-    } else {
-      Sentry.setMeasurement(mapped.key, metric.value, mapped.unit)
+    try {
+      // Attacher au transaction active si possible (plus fiable que la portée globale)
+      const scope = (Sentry as unknown as { getCurrentScope?: () => unknown }).getCurrentScope?.()
+      const tx = (scope as { getTransaction?: () => { setMeasurement?: (k: string, v: number, u: 'none' | 'millisecond') => void } })?.getTransaction?.()
+      if (tx && typeof tx.setMeasurement === 'function') {
+        tx.setMeasurement(mapped.key, metric.value, mapped.unit)
+      } else {
+        // Fallback sécurisé
+        Sentry.setMeasurement(mapped.key, metric.value, mapped.unit)
+      }
+    } catch (error) {
+      // Ignorer les erreurs de measurement pour éviter le bruit
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Sentry measurement failed:', error)
+      }
     }
   }
   

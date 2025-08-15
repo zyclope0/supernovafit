@@ -99,6 +99,8 @@ export const trackError = (errorType: string, errorMessage: string, context?: st
     timestamp: Date.now()
   })
   
-  // Envoyer aussi à Sentry
-  Sentry.captureMessage(`Analytics Error: ${errorType} - ${errorMessage}`, 'error')
+  // Envoyer aussi à Sentry seulement pour erreurs critiques
+  if (errorType !== 'analytics_init' && errorType !== 'event_tracking') {
+    Sentry.captureMessage(`Analytics Error: ${errorType} - ${errorMessage}`, 'error')
+  }
 }
