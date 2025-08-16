@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { X, Copy, RefreshCw, Users, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { useCoachInvites } from '@/hooks/useInvites'
 import { getTimeUntilExpiration, formatExpirationDate } from '@/lib/inviteUtils'
-import type { Invite } from '@/types'
+// import type { Invite } from '@/types' - Type non utilisé dans ce fichier
 
 interface InviteModalProps {
   isOpen: boolean
@@ -96,7 +96,7 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
                 </button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Ce code expire dans 72h et ne peut être utilisé qu'une seule fois
+                Ce code expire dans 72h et ne peut être utilisé qu&apos;une seule fois
               </p>
             </div>
           )}
@@ -104,7 +104,7 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
 
         {/* Liste des invitations */}
         <div>
-          <h3 className="text-lg font-medium text-white mb-4">Codes d'invitation actifs</h3>
+          <h3 className="text-lg font-medium text-white mb-4">Codes d&apos;invitation actifs</h3>
           
           {loading ? (
             <div className="flex items-center justify-center py-8">
@@ -113,7 +113,7 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
           ) : invites.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>Aucun code d'invitation généré</p>
+              <p>Aucun code d&apos;invitation généré</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-64 overflow-y-auto">

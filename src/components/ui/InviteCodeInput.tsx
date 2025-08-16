@@ -73,7 +73,7 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
         <div>
           <h3 className="text-white font-medium">Rejoindre un coach</h3>
           <p className="text-sm text-muted-foreground">
-            Entrez le code d'invitation fourni par votre coach
+            Entrez le code d&apos;invitation fourni par votre coach
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label htmlFor="invite-code" className="block text-sm font-medium text-white mb-2">
-            Code d'invitation
+            Code d&apos;invitation
           </label>
           <div className="relative">
             <input
@@ -135,7 +135,7 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
 
       <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
         <p className="text-xs text-blue-400">
-          <strong>Info :</strong> Le code expire dans 72h et ne peut être utilisé qu'une seule fois.
+          <strong>Info :</strong> Le code expire dans 72h et ne peut être utilisé qu&apos;une seule fois.
         </p>
       </div>
     </div>

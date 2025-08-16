@@ -1,4 +1,4 @@
-import { Invite, InviteStatus } from '@/types'
+import { Invite } from '@/types'
 
 /**
  * Génère un code d'invitation à 6 caractères
