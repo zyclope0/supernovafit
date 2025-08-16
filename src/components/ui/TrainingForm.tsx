@@ -30,7 +30,7 @@ const TRAINING_TYPES = [
 
 export default function TrainingForm({ onSubmit, onCancel, existingTraining, isEditing, isSubmitting }: TrainingFormProps) {
   // Récupération des données utilisateur
-  const { user, userProfile } = useAuth()
+  const { userProfile } = useAuth()
 
   // États de base
   const [type, setType] = useState(existingTraining?.type || 'cardio')
