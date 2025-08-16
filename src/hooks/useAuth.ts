@@ -67,7 +67,6 @@ export function useAuth() {
               Sentry.setTag('user_type', 'athlete')
             }
           } catch (error) {
-            console.error('Erreur lors de la récupération du profil:', error)
             // Ne capturer que les erreurs non-Firebase
             if (error instanceof Error && 
                 !error.message.includes('permission-denied') &&

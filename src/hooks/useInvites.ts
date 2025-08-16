@@ -42,7 +42,7 @@ export function useCoachInvites(coachId: string) {
       setInvites(invitesData)
       setLoading(false)
     }, (error) => {
-      console.error('Erreur lors de la récupération des invitations:', error)
+      // Handle error silently
       setLoading(false)
       Sentry.captureException(error)
     })

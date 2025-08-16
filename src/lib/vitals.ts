@@ -71,16 +71,11 @@ const trackVital = (metric: Metric) => {
       }
     } catch (error) {
       // Ignorer les erreurs de measurement pour éviter le bruit
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Sentry measurement failed:', error)
-      }
+      // Silently ignore measurement errors in production
     }
   }
   
-  // Log pour debug en dev
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[Web Vital] ${metric.name}: ${Math.round(metric.value)} (${rating})`)
-  }
+  // Web Vitals tracked silently
 }
 
 // Main function pour initialiser Web Vitals monitoring
@@ -93,12 +88,9 @@ export function reportWebVitals() {
     onLCP(trackVital)
     onTTFB(trackVital)
     
-    // Log initialisation
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Web Vitals] Monitoring initialized successfully')
-    }
+    // Web Vitals monitoring initialized
   } catch (error) {
-    console.error('Erreur initialisation Web Vitals:', error)
+    // Capture error silently in Sentry
     Sentry.captureException(error)
   }
 }

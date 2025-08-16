@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef } from 'react'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { Repas } from '@/types'
 import { X, Calendar, TrendingUp, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
@@ -19,6 +20,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
   const commentedDates = useMemo(() => new Set((dieteComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [dieteComments])
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
+  const focusTrapRef = useFocusTrap(isOpen)
   
   // Générer les 30 derniers jours
   const getLast30Days = () => {
@@ -111,7 +113,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
+      <div ref={focusTrapRef} className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">

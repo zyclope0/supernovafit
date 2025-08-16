@@ -58,18 +58,21 @@ function PhotoCard({ photo, mesures, onEdit, onDelete }: {
             <button
               onClick={() => setShowPreview(true)}
               className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+              aria-label="Prévisualiser la photo"
             >
               <Eye className="h-4 w-4 text-white" />
             </button>
             <button
               onClick={() => onEdit(photo)}
               className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
+              aria-label="Modifier la photo"
             >
               <Edit3 className="h-4 w-4 text-white" />
             </button>
             <button
               onClick={() => onDelete(photo)}
               className="p-2 bg-red-500/20 rounded-full hover:bg-red-500/30 transition-colors"
+              aria-label="Supprimer la photo"
             >
               <Trash2 className="h-4 w-4 text-red-400" />
             </button>
@@ -109,6 +112,7 @@ function PhotoCard({ photo, mesures, onEdit, onDelete }: {
             <button
               onClick={() => setShowPreview(false)}
               className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+              aria-label="Fermer la prévisualisation"
             >
               <X className="h-6 w-6" />
             </button>

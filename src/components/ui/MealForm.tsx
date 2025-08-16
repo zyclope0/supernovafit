@@ -244,6 +244,7 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
                 <button
                   onClick={() => removeAliment(aliment.id)}
                   className="p-2 text-red-400 hover:text-red-300 transition-colors"
+                  aria-label="Supprimer l'aliment"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

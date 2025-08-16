@@ -151,6 +151,7 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
             onClick={onEdit}
             className="p-2 text-muted-foreground hover:text-neon-cyan transition-colors"
             title="Modifier"
+            aria-label="Modifier l'entraînement"
           >
             <Edit className="h-4 w-4" />
           </button>
@@ -158,6 +159,7 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
             onClick={onDelete}
             className="p-2 text-muted-foreground hover:text-red-400 transition-colors"
             title="Supprimer"
+            aria-label="Supprimer l'entraînement"
           >
             <Trash2 className="h-4 w-4" />
           </button>

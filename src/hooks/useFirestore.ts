@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { 
   collection, 
   doc, 
@@ -598,7 +599,8 @@ export function useJournal() {
         setLoading(false)
       },
       (error) => {
-        console.error('❌ FIRESTORE - Erreur snapshot journal:', error)
+        // Handle error silently
+        Sentry.captureException(error)
         setLoading(false)
       }
     )
@@ -622,7 +624,7 @@ export function useJournal() {
       const docRef = await addDoc(collection(db, 'journal'), filteredData)
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      console.error('❌ Erreur ajout entrée journal:', error)
+      Sentry.captureException(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -874,7 +876,7 @@ export function useBadges() {
 
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      console.error('❌ BADGES - Erreur ajout badge:', error)
+      Sentry.captureException(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -912,7 +914,8 @@ export function useObjectifs() {
         setLoading(false)
       },
       (error) => {
-        console.error('❌ FIRESTORE - Erreur snapshot objectifs:', error)
+        // Handle error silently
+        Sentry.captureException(error)
         setLoading(false)
       }
     )
@@ -939,7 +942,7 @@ export function useObjectifs() {
 
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      console.error('❌ OBJECTIFS - Erreur ajout objectif:', error)
+      Sentry.captureException(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }

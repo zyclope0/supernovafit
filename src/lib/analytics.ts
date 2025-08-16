@@ -9,7 +9,7 @@ if (typeof window !== 'undefined') {
   try {
     analytics = getAnalytics(app)
   } catch (error) {
-    console.error('Erreur initialisation Analytics:', error)
+    // Capture error silently in Sentry
     Sentry.captureException(error)
   }
 }
@@ -29,7 +29,7 @@ export const trackEvent = (eventName: string, parameters?: Record<string, unknow
       level: 'info'
     })
   } catch (error) {
-    console.error('Erreur tracking event:', error)
+    // Capture error silently in Sentry
     Sentry.captureException(error)
   }
 }

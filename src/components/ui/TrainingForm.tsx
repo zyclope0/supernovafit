@@ -8,7 +8,6 @@ import { getQuickCalorieEstimate, smartCalorieCalculation } from '@/lib/calories
 import { entrainementSchema, validateData } from '@/lib/validation'
 import { X, Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { useUserProfile } from '@/hooks/useFirestore'
 
 interface TrainingFormProps {
   onSubmit: (training: Omit<Entrainement, 'id' | 'user_id'>) => void
@@ -31,9 +30,7 @@ const TRAINING_TYPES = [
 
 export default function TrainingForm({ onSubmit, onCancel, existingTraining, isEditing, isSubmitting }: TrainingFormProps) {
   // Récupération des données utilisateur
-  const { user } = useAuth()
-  const { getUserProfile } = useUserProfile()
-  const [userProfile, setUserProfile] = useState<Partial<{ age: number; poids_initial: number; sexe: 'M' | 'F' }>>({})
+  const { user, userProfile } = useAuth()
 
   // États de base
   const [type, setType] = useState(existingTraining?.type || 'cardio')
@@ -67,22 +64,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [hasValidated, setHasValidated] = useState(false)
 
-  // Récupération du profil utilisateur au montage
-  useEffect(() => {
-    let isMounted = true
-    const loadUserProfile = async () => {
-      if (user?.uid) {
-        const profile = await getUserProfile?.(user.uid)
-        if (isMounted && profile) setUserProfile({
-          age: profile.age,
-          poids_initial: profile.poids_initial,
-          sexe: profile.sexe,
-        })
-      }
-    }
-    loadUserProfile()
-    return () => { isMounted = false }
-  }, [user?.uid, getUserProfile])
+  // Le profil utilisateur est déjà disponible via useAuth
 
   // Synchroniser le formulaire quand une nouvelle séance est sélectionnée pour édition
   useEffect(() => {
@@ -122,9 +104,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
           fc_moyenne: fcMoyenne || undefined,
           distance: distance || undefined,
           vitesse_moy: calculatedSpeed || undefined,
-          age: userProfile?.age || 30, // Utilise le profil ou valeur par défaut
-          poids_utilisateur: userProfile?.poids_initial || 70, // Utilise le profil ou valeur par défaut
-          sexe: (userProfile?.sexe || 'M') as 'M' | 'F' // Utilise le profil ou valeur par défaut
+          age: userProfile?.age || 30, // Utilise le profil utilisateur réel
+          poids_utilisateur: userProfile?.poids_initial || 70, // Utilise le poids réel du profil
+          sexe: (userProfile?.sexe || 'M') as 'M' | 'F' // Utilise le sexe réel du profil
         }
         
           const result = smartCalorieCalculation(calculationData)
