@@ -10,8 +10,13 @@
 ### **🎯 PHASE EN COURS : OPTION A - CONSOLIDATION & QUALITÉ**
 - **Décision prise** : Option A choisie (vs Mode Coach ou PWA)
 - **Durée prévue** : 2-3 semaines  
-- **Avancement** : Phase 1 (Tests) en préparation
+- **Avancement** : Toutes phases terminées - Projet en maintenance
 - **Score qualité actuel** : 9.7/10 → Objectif 10/10
+
+### **🚨 BUGS CRITIQUES IDENTIFIÉS**
+- **Tests Firebase** : Fuite mémoire dans useFirestore.test.ts
+- **Pages Coach** : Routes manquantes (404 sur programmes/rapports)
+- **Performance** : Absence de pagination sur listes longues
 
 ### **🔥 STATUT TECHNIQUE**
 - **Application fonctionnelle** : 6 modules production (Dashboard, Diète, Entraînements, Mesures, Journal, Profil)

@@ -330,7 +330,7 @@ password: "Test123!"
   - Tests automatisés (Jest/RTL, e2e)
   - CORS/vars prod documentées et appliquées côté déploiement
 
-## ⚠️ Points d'Attention Post-Revue (17 Janvier 2025)
+## ⚠️ Points d'Attention Post-Revue (20 Janvier 2025)
 
 ### 🎯 **QUALITÉ CODE EXCEPTIONNELLE**
 - **Architecture** : Exemplaire et évolutive (10/10) ✅
@@ -340,21 +340,37 @@ password: "Test123!"
 - **UX/UI** : Moderne, cohérente, accessible (9.5/10) ✅
 - **TypeScript** : Strict, bien typé, validation Zod complète ✅
 
-### 🔍 **POINTS D'AMÉLIORATION MINEURS IDENTIFIÉS (mis à jour)**
-1. **TODOs dans le code** :
-   - `TrainingForm.tsx` : Utilise des valeurs hardcodées pour âge/poids/sexe
-   - Solution : Récupérer depuis le profil utilisateur enrichi
+### 🔍 **POINTS D'AMÉLIORATION IDENTIFIÉS (mis à jour 20/01/2025)**
 
-2. **Console.log** : maintenus uniquement pour erreurs critiques
+#### 🔴 **BUGS CRITIQUES**
+1. **Tests Firebase - Fuite mémoire** :
+   - `useFirestore.test.ts` cause "JavaScript heap out of memory" après ~30s
+   - Impact : Tests unitaires impossibles à exécuter
+   - Solution : Refactoriser les mocks Firebase avec cleanup approprié
 
-3. **Module Admin** :
-   - Reste en placeholder sans fonctionnalités actives
-   - Solution : Implémenter le mode coach dans la Phase 4
+2. **Pages Coach manquantes** :
+   - Routes `/coach/all-athletes`, `/coach/programmes`, `/coach/rapports` retournent 404
+   - Impact : Navigation cassée pour les coachs
+   - Solution : Implémenter les pages ou désactiver les liens
 
-4. **Performance** :
-   - Pas de pagination sur les listes longues (historique 30 jours)
-   - Images non optimisées (pas de WebP, compression basique)
-   - Solution : Implémenter la pagination et l'optimisation d'images
+3. **Absence de pagination** :
+   - Listes de 30+ jours sans pagination (repas, entraînements, journal)
+   - Impact : Performance dégradée, UX lente
+   - Solution : Pagination côté client avec lazy loading
+
+#### 🟡 **AMÉLIORATIONS PRIORITAIRES**
+1. **Export de données** : CSV/PDF pour analyses externes
+2. **Mode hors-ligne** : PWA avec cache et sync
+3. **Accessibilité** : Contraste, navigation clavier, ARIA labels
+4. **Optimisation mobile** : Graphiques responsive, zones tactiles 44px+
+5. **Feedback utilisateur** : Skeleton screens, animations transitions
+
+#### 🟢 **FONCTIONNALITÉS SUGGÉRÉES**
+1. **Intelligence nutritionnelle** : Suggestions selon objectifs
+2. **Intégrations** : Strava, MyFitnessPal, Apple Health
+3. **Gamification** : Défis, points, récompenses
+4. **Mode clair/sombre** : Alternative au thème néon
+5. **Onboarding** : Tour guidé pour nouveaux utilisateurs
 
 ### Techniques
 - Node.js PATH à réactiver dans chaque terminal PowerShell : `$env:PATH += ";C:\Program Files\nodejs"`
