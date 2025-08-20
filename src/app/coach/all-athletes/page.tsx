@@ -11,6 +11,18 @@ import toast from 'react-hot-toast'
 type FilterType = 'all' | 'with-coach' | 'without-coach'
 type ObjectifType = 'all' | 'maintien' | 'prise_masse' | 'seche' | 'performance'
 
+// Type pour les athlètes dans la page
+interface AthleteData {
+  id: string
+  nom?: string
+  email?: string
+  objectif?: string
+  dernier_acces?: unknown
+  ownerCoachId?: string
+  date_invitation?: unknown
+  role?: string
+}
+
 export default function AllAthletesPage() {
   const { userProfile } = useAuth()
   const router = useRouter()
@@ -74,7 +86,7 @@ export default function AllAthletesPage() {
   }
 
   // Filtrer les athlètes selon la recherche et les filtres
-  const filteredAthletes = athletes.filter(athlete => {
+  const filteredAthletes = athletes.filter((athlete: AthleteData) => {
     const matchesSearch = athlete.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          athlete.email?.toLowerCase().includes(searchTerm.toLowerCase())
     
@@ -96,10 +108,10 @@ export default function AllAthletesPage() {
   // Statistiques
   const stats = {
     total: athletes.length,
-    withCoach: athletes.filter(a => a.ownerCoachId).length,
-    withoutCoach: athletes.filter(a => !a.ownerCoachId).length,
-    active: athletes.filter(a => isAthleteActive(a.dernier_acces)).length,
-    inactive: athletes.filter(a => !isAthleteActive(a.dernier_acces)).length
+    withCoach: athletes.filter((a: AthleteData) => a.ownerCoachId).length,
+    withoutCoach: athletes.filter((a: AthleteData) => !a.ownerCoachId).length,
+    active: athletes.filter((a: AthleteData) => isAthleteActive(a.dernier_acces)).length,
+    inactive: athletes.filter((a: AthleteData) => !isAthleteActive(a.dernier_acces)).length
   }
 
   const handleInvite = (athleteId: string) => {
@@ -314,9 +326,9 @@ export default function AllAthletesPage() {
               </p>
             </div>
           ) : (
-            filteredAthletes.map((athlete) => (
-              <div
-                key={athlete.id}
+                                      filteredAthletes.map((athlete: AthleteData) => (
+               <div
+                 key={athlete.id}
                 className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-purple/50 
                          transition-all hover:transform hover:scale-[1.02]"
               >
@@ -390,7 +402,7 @@ export default function AllAthletesPage() {
                     <Clock className="w-4 h-4" />
                     <span>Dernière activité: {formatLastActivity(athlete.dernier_acces)}</span>
                   </div>
-                  {athlete.date_invitation && (
+                  {athlete.date_invitation !== undefined && athlete.date_invitation !== null && (
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       <span>Coach depuis: {formatInvitationDate(athlete.date_invitation)}</span>

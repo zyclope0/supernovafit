@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import * as Sentry from '@sentry/nextjs'
 import { 
   collection, 
@@ -14,6 +14,7 @@ import {
   where, 
   orderBy,
   limit,
+  startAfter,
   serverTimestamp,
   onSnapshot,
   QueryConstraint
@@ -27,6 +28,7 @@ import {
 import type { DocumentData } from 'firebase/firestore'
 import { db, storage } from '@/lib/firebase'
 import { useAuth } from './useAuth'
+import { useFirebaseError } from './useFirebaseError'
 import { generateId } from '@/lib/utils'
 import { Repas, Entrainement, Mesure, JournalEntry, Aliment, MesureStats, PhotoProgression, Badge, Objectif, PhotoLibre, CoachDietPlan } from '@/types'
 
@@ -35,6 +37,12 @@ export function useRepas() {
   const { user } = useAuth()
   const [repas, setRepas] = useState<Repas[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Gestion d'erreurs Firebase centralisée
+  const repasErrorHandler = useFirebaseError({
+    context: 'Repas',
+    maxRetries: 2
+  })
 
   useEffect(() => {
     if (!user) {
@@ -59,7 +67,7 @@ export function useRepas() {
         setLoading(false)
       },
       (error) => {
-        console.error('❌ FIRESTORE - Erreur snapshot:', error)
+        repasErrorHandler.handleError(error)
         setLoading(false)
       }
     )
@@ -80,7 +88,7 @@ export function useRepas() {
       
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      console.error('❌ Erreur lors de l\'enregistrement:', error)
+      repasErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -97,7 +105,7 @@ export function useRepas() {
       await updateDoc(doc(db, 'repas', id), updateData)
       return { success: true }
     } catch (error: unknown) {
-      console.error('❌ Erreur lors de la mise à jour:', error)
+      repasErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -107,6 +115,7 @@ export function useRepas() {
       await deleteDoc(doc(db, 'repas', id))
       return { success: true }
     } catch (error: unknown) {
+      repasErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -119,6 +128,12 @@ export function useEntrainements() {
   const { user } = useAuth()
   const [entrainements, setEntrainements] = useState<Entrainement[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Gestion d'erreurs Firebase centralisée
+  const entrainementsErrorHandler = useFirebaseError({
+    context: 'Entrainements',
+    maxRetries: 2
+  })
 
   useEffect(() => {
     if (!user) {
@@ -133,14 +148,20 @@ export function useEntrainements() {
       orderBy('date', 'desc')
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const entrainementsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Entrainement[]
-      setEntrainements(entrainementsData)
-      setLoading(false)
-    })
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const entrainementsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Entrainement[]
+        setEntrainements(entrainementsData)
+        setLoading(false)
+      },
+      (error) => {
+        entrainementsErrorHandler.handleError(error)
+        setLoading(false)
+      }
+    )
 
     return () => unsubscribe()
   }, [user])
@@ -178,7 +199,7 @@ export function useEntrainements() {
       
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      console.error('❌ ERREUR AJOUT ENTRAÎNEMENT:', error)
+      entrainementsErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -194,6 +215,7 @@ export function useEntrainements() {
       })
       return { success: true }
     } catch (error: unknown) {
+      entrainementsErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -205,6 +227,7 @@ export function useEntrainements() {
       await deleteDoc(doc(db, 'entrainements', id))
       return { success: true }
     } catch (error: unknown) {
+      entrainementsErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -220,6 +243,12 @@ export function useFavoris() {
   const { user } = useAuth()
   const [favoris, setFavoris] = useState<Aliment[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Gestion d'erreurs Firebase centralisée
+  const favorisErrorHandler = useFirebaseError({
+    context: 'Favoris',
+    maxRetries: 2
+  })
 
   useEffect(() => {
     if (!user) {
@@ -234,14 +263,20 @@ export function useFavoris() {
       orderBy('created_at', 'desc')
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const favorisData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Aliment[]
-      setFavoris(favorisData)
-      setLoading(false)
-    })
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const favorisData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Aliment[]
+        setFavoris(favorisData)
+        setLoading(false)
+      },
+      (error) => {
+        favorisErrorHandler.handleError(error)
+        setLoading(false)
+      }
+    )
 
     return () => unsubscribe()
   }, [user])
@@ -269,6 +304,7 @@ export function useFavoris() {
       })
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
+      favorisErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -280,6 +316,7 @@ export function useFavoris() {
       await deleteDoc(doc(db, 'favoris_aliments', id))
       return { success: true }
     } catch (error: unknown) {
+      favorisErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -299,6 +336,12 @@ export function useMesures() {
   const { user } = useAuth()
   const [mesures, setMesures] = useState<Mesure[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Gestion d'erreurs Firebase centralisée
+  const mesuresErrorHandler = useFirebaseError({
+    context: 'Mesures',
+    maxRetries: 2
+  })
 
   useEffect(() => {
     if (!user) {
@@ -313,14 +356,20 @@ export function useMesures() {
       orderBy('date', 'desc')
     )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const mesuresData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Mesure[]
-      setMesures(mesuresData)
-      setLoading(false)
-    })
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const mesuresData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Mesure[]
+        setMesures(mesuresData)
+        setLoading(false)
+      },
+      (error) => {
+        mesuresErrorHandler.handleError(error)
+        setLoading(false)
+      }
+    )
 
     return () => unsubscribe()
   }, [user])
@@ -359,6 +408,7 @@ export function useMesures() {
       const docRef = await addDoc(collection(db, 'mesures'), dataToSave)
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
+      mesuresErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -1022,7 +1072,52 @@ export function useUserProfile() {
   return { userProfile, loading, getUserProfile }
 }
 
-// Hook pour gérer les relations coach-athlète
+// Hook pour récupérer tous les athlètes (pour la page "Tous les Athlètes")
+export function useAllAthletes() {
+  const { user } = useAuth()
+  type AthleteLite = Pick<UserProfile, 'id' | 'nom' | 'email' | 'objectif' | 'dernier_acces' | 'ownerCoachId' | 'date_invitation'>
+  const [athletes, setAthletes] = useState<AthleteLite[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!user) {
+      setAthletes([])
+      setLoading(false)
+      return
+    }
+
+    // Récupérer tous les utilisateurs (sportifs uniquement)
+    const q = collection(db, 'users')
+
+    const unsubscribe = onSnapshot(q,
+      (snapshot) => {
+        const athletesData = snapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...(doc.data() as Partial<UserProfile>)
+          }))
+          .filter(athlete => 
+            athlete.id !== user.uid && // Exclure le coach lui-même
+            athlete.role === 'sportif' // Seulement les sportifs
+          ) as AthleteLite[]
+        
+        setAthletes(athletesData)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('❌ FIRESTORE - Erreur récupération tous les athlètes:', error)
+        setAthletes([])
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [user])
+
+  return { athletes, loading }
+}
+
+// Hook pour gérer les relations coach-athlète (ATHLÈTES LIÉS AU COACH)
 export function useCoachAthletes() {
   const { user } = useAuth()
   type AthleteLite = Pick<UserProfile, 'id' | 'nom' | 'email' | 'objectif' | 'dernier_acces'> & { coach_id?: string }
@@ -1036,21 +1131,25 @@ export function useCoachAthletes() {
       return
     }
 
-    // Récupérer tous les utilisateurs
-    const q = collection(db, 'users')
+    // Récupérer uniquement les athlètes liés au coach actuel
+    const q = query(
+      collection(db, 'users'),
+      where('ownerCoachId', '==', user.uid),
+      where('role', '==', 'sportif')
+    )
 
     const unsubscribe = onSnapshot(q,
       (snapshot) => {
         const athletesData = snapshot.docs.map(doc => ({
           id: doc.id,
           ...(doc.data() as Partial<UserProfile>)
-        })).filter(athlete => athlete.id !== user.uid) as AthleteLite[] // Exclure le coach lui-même
+        })) as AthleteLite[]
         
         setAthletes(athletesData)
         setLoading(false)
       },
       (error) => {
-        console.error('❌ FIRESTORE - Erreur récupération athlètes:', error)
+        console.error('❌ FIRESTORE - Erreur récupération athlètes coach:', error)
         setAthletes([])
         setLoading(false)
       }
@@ -1095,7 +1194,7 @@ export function useCoachAthletes() {
       // Vérifier que l'athlète est bien lié au coach
       const athleteDoc = await getDoc(doc(db, 'users', athleteId))
       
-      if (athleteDoc.exists() && athleteDoc.data().coach_id === user.uid) {
+      if (athleteDoc.exists() && athleteDoc.data().ownerCoachId === user.uid) {
         // Récupérer les données récentes de l'athlète
         const now = new Date()
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
@@ -1355,4 +1454,137 @@ export async function updateCoachCommentRead(commentId: string, read: boolean) {
     console.error('Erreur update read_by_athlete:', error)
     return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
   }
+}
+
+// Hook générique pour la pagination Firestore
+function usePaginatedData<T>(
+  collectionName: string,
+  userId: string,
+  pageSize: number = 20,
+  orderByField: string = 'date',
+  orderDirection: 'asc' | 'desc' = 'desc'
+) {
+  const [data, setData] = useState<T[]>([])
+  const [loading, setLoading] = useState(true)
+  const [hasMore, setHasMore] = useState(true)
+  const [lastDoc, setLastDoc] = useState<DocumentData | null>(null)
+
+  const loadMore = useCallback(async () => {
+    if (!userId || loading || !hasMore) return
+
+    try {
+      setLoading(true)
+      
+      const constraints: QueryConstraint[] = [
+        where('user_id', '==', userId),
+        orderBy(orderByField, orderDirection),
+        limit(pageSize)
+      ]
+
+      if (lastDoc) {
+        constraints.push(startAfter(lastDoc))
+      }
+
+      const q = query(collection(db, collectionName), ...constraints)
+      const snapshot = await getDocs(q)
+      
+      const newData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as T[]
+
+      if (lastDoc) {
+        setData(prev => [...prev, ...newData])
+      } else {
+        setData(newData)
+      }
+
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
+      setHasMore(snapshot.docs.length === pageSize)
+    } catch (error) {
+      console.error(`Erreur pagination ${collectionName}:`, error)
+    } finally {
+      setLoading(false)
+    }
+  }, [userId, loading, hasMore, lastDoc, collectionName, orderByField, orderDirection, pageSize])
+
+  const reset = useCallback(() => {
+    setData([])
+    setLastDoc(null)
+    setHasMore(true)
+    setLoading(true)
+  }, [])
+
+  useEffect(() => {
+    if (userId) {
+      setData([])
+      setLastDoc(null)
+      setHasMore(true)
+      setLoading(true)
+      // Charger les premières données
+      const loadInitialData = async () => {
+        try {
+          const constraints: QueryConstraint[] = [
+            where('user_id', '==', userId),
+            orderBy(orderByField, orderDirection),
+            limit(pageSize)
+          ]
+
+          const q = query(collection(db, collectionName), ...constraints)
+          const snapshot = await getDocs(q)
+          
+          const newData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as T[]
+
+          setData(newData)
+          setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
+          setHasMore(snapshot.docs.length === pageSize)
+        } catch (error) {
+          console.error(`Erreur pagination ${collectionName}:`, error)
+        } finally {
+          setLoading(false)
+        }
+      }
+      
+      loadInitialData()
+    } else {
+      setData([])
+      setLoading(false)
+      setHasMore(false)
+    }
+  }, [userId, collectionName, orderByField, orderDirection, pageSize])
+
+  return {
+    data,
+    loading,
+    hasMore,
+    loadMore,
+    reset
+  }
+}
+
+// Hook paginé pour les repas
+export function usePaginatedRepas(pageSize: number = 20) {
+  const { user } = useAuth()
+  return usePaginatedData<Repas>('repas', user?.uid || '', pageSize, 'date', 'desc')
+}
+
+// Hook paginé pour les entraînements
+export function usePaginatedEntrainements(pageSize: number = 20) {
+  const { user } = useAuth()
+  return usePaginatedData<Entrainement>('entrainements', user?.uid || '', pageSize, 'date', 'desc')
+}
+
+// Hook paginé pour les mesures
+export function usePaginatedMesures(pageSize: number = 20) {
+  const { user } = useAuth()
+  return usePaginatedData<Mesure>('mesures', user?.uid || '', pageSize, 'date', 'desc')
+}
+
+// Hook paginé pour le journal
+export function usePaginatedJournal(pageSize: number = 20) {
+  const { user } = useAuth()
+  return usePaginatedData<JournalEntry>('journal', user?.uid || '', pageSize, 'date', 'desc')
 }
