@@ -256,7 +256,7 @@ function DailySummary({ todayMeals }: { todayMeals: Repas[] }) {
 
 export default function DietePage() {
   const { user } = useAuth()
-  const { repas, addRepas, updateRepas, deleteRepas } = useRepas()
+  const { repas, loading: repasLoading, addRepas, updateRepas, deleteRepas } = useRepas() // Pour les opérations CRUD et données
   const { currentPlan, loading: planLoading } = useAthleteDietPlan()
   const [selectedDate, setSelectedDate] = useState('')
   const { comments: dieteComments, loading: commentsLoading } = useCoachCommentsByModule('diete', selectedDate)
@@ -290,7 +290,7 @@ export default function DietePage() {
   ]
 
   // Filtrer les repas du jour sélectionné
-  const todayMeals = useMemo(() => repas.filter(r => r.date === selectedDate), [repas, selectedDate])
+  const todayMeals = useMemo(() => repas.filter((r: Repas) => r.date === selectedDate), [repas, selectedDate])
 
   // Gérer l'ajout ou la modification d'un repas
   const handleAddMeal = async (mealType: MealType, aliments: Aliment[], macros: Macros) => {
@@ -464,7 +464,7 @@ export default function DietePage() {
           <DailySummary todayMeals={todayMeals} />
           {todayMeals.length > 0 && (
           <MacrosChart 
-            macros={todayMeals.reduce((total, meal) => ({
+            macros={todayMeals.reduce((total: Macros, meal: Repas) => ({
               kcal: total.kcal + (meal.macros?.kcal || 0),
               prot: total.prot + (meal.macros?.prot || 0),
               glucides: total.glucides + (meal.macros?.glucides || 0),
@@ -484,7 +484,7 @@ export default function DietePage() {
               setShowMealForm(null)
               setEditingMeal(null)
             }}
-            existingAliments={editingMeal ? todayMeals.find(m => m.id === editingMeal)?.aliments : undefined}
+            existingAliments={editingMeal ? todayMeals.find((m: Repas) => m.id === editingMeal)?.aliments : undefined}
             isEditing={!!editingMeal}
             isSubmitting={isSubmitting}
           />
@@ -497,7 +497,7 @@ export default function DietePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {meals.map((meal) => {
                 // Récupérer TOUS les repas de ce type
-                const mealsOfType = todayMeals.filter(m => m.repas === meal.type)
+                const mealsOfType = todayMeals.filter((m: Repas) => m.repas === meal.type)
                 
                 // Prendre le plus récent (dernier dans la journée)
                 const mealData = mealsOfType.length > 0 
@@ -505,8 +505,8 @@ export default function DietePage() {
                   : null
                 
                 // Combiner tous les aliments et macros si plusieurs repas
-                const combinedAliments = mealsOfType.flatMap(m => m.aliments || [])
-                const combinedMacros = mealsOfType.reduce((total, m) => ({
+                const combinedAliments = mealsOfType.flatMap((m: Repas) => m.aliments || [])
+                const combinedMacros = mealsOfType.reduce((total: Macros, m: Repas) => ({
                   kcal: total.kcal + (m.macros?.kcal || 0),
                   prot: total.prot + (m.macros?.prot || 0),
                   glucides: total.glucides + (m.macros?.glucides || 0),
@@ -548,58 +548,39 @@ export default function DietePage() {
         <HistoriqueModal
           isOpen={showHistorique}
           onClose={() => setShowHistorique(false)}
-          allRepas={repas}
           currentDate={selectedDate}
           onDateChange={(d) => setSelectedDate(d)}
         />
 
-        <HistoriqueSection allRepas={repas} />
+        <HistoriqueSection allRepas={repas} loading={repasLoading} />
       </div>
     </MainLayout>
   )
 } 
 
-function HistoriqueSection({ allRepas }: { allRepas: Repas[] }) {
+function HistoriqueSection({ allRepas, loading }: { allRepas: Repas[], loading: boolean }) {
   const sorted = [...allRepas].sort((a, b) => b.date.localeCompare(a.date))
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(20)
-  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize))
-  const start = (page - 1) * pageSize
-  const pageItems = sorted.slice(start, start + pageSize)
-
-  if (sorted.length === 0) return null
+  
+  if (sorted.length === 0 && !loading) return null
 
   return (
     <CollapsibleCard title="Historique des repas" defaultOpen={false}>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">{sorted.length} jours • Page {page}/{totalPages}</div>
-          <label className="text-xs text-muted-foreground flex items-center gap-2">
-            Par page
-            <select
-              aria-label="Taille de page"
-              value={pageSize}
-              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
-              className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-            </select>
-          </label>
+          <div className="text-xs text-muted-foreground">{sorted.length} repas affichés</div>
         </div>
         <div className="divide-y divide-white/10">
-          {pageItems.map((r) => (
+          {sorted.map((r) => (
             <div key={r.id} className="py-2 flex items-center justify-between">
               <div className="text-sm text-white">
                 {new Date(r.date).toLocaleDateString('fr-FR')}
               </div>
               <div className="text-xs text-muted-foreground">
-                {r.aliments?.length || 0} aliments • {r.macros?.kcal || 0} kcal
+                {r.aliments?.length || 0} aliments • {Math.round(r.macros?.kcal || 0)} kcal
               </div>
               <a
                 href={`?date=${r.date}`}
-                className="ml-3 px-2 py-1 text-xs bg-white/10 text-white rounded hover:bg-white/15"
+                className="ml-3 px-2 py-1 text-xs bg-white/10 text-white rounded hover:bg-white/10"
                 aria-label={`Voir le jour ${new Date(r.date).toLocaleDateString('fr-FR')}`}
               >
                 Voir
@@ -607,25 +588,9 @@ function HistoriqueSection({ allRepas }: { allRepas: Repas[] }) {
             </div>
           ))}
         </div>
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
-              >
-                Précédent
-              </button>
-              <span className="text-xs text-muted-foreground">{start + 1}–{Math.min(sorted.length, start + pageSize)}</span>
-            </div>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
-            >
-              Suivant
-            </button>
+        {loading && sorted.length > 0 && (
+          <div className="flex justify-center mt-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-neon-cyan"></div>
           </div>
         )}
       </div>

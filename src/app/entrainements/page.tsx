@@ -12,7 +12,7 @@ const TrainingTypeChart = dynamic(() => import('@/components/ui/TrainingTypeChar
 const PerformanceChart = dynamic(() => import('@/components/ui/PerformanceChart'), { ssr: false })
 const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), { ssr: false })
 import { useAuth } from '@/hooks/useAuth'
-import { useEntrainements } from '@/hooks/useFirestore'
+import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
 import { Plus, TrendingUp, Timer, Target, BarChart3, Upload } from 'lucide-react'
 // import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
@@ -42,7 +42,8 @@ function StatsCard({ title, value, unit, icon, color = "neon-green" }: {
 
 export default function EntrainementsPage() {
   const { user } = useAuth()
-  const { entrainements, loading, addEntrainement, updateEntrainement, deleteEntrainement } = useEntrainements()
+  const { addEntrainement, updateEntrainement, deleteEntrainement } = useEntrainements() // Pour les opérations CRUD
+  const { data: entrainements, loading, hasMore, loadMore } = usePaginatedEntrainements(30) // Charger 30 entraînements par page
   const [showForm, setShowForm] = useState(false)
   const [editingTraining, setEditingTraining] = useState<Entrainement | null>(null)
   const [showCharts, setShowCharts] = useState(false)
@@ -368,7 +369,13 @@ export default function EntrainementsPage() {
         {/* Liste simple de tous les entraînements (ordre décroissant) */}
         {user && entrainements.length > 0 && (
           <CollapsibleCard title="Tous les entraînements" defaultOpen={false}>
-            <SimpleAllTrainingsList trainings={entrainements} onShowDetail={(t) => { setEditingTraining(t); setShowForm(true) }} />
+            <SimpleAllTrainingsList 
+              trainings={entrainements} 
+              onShowDetail={(t) => { setEditingTraining(t); setShowForm(true) }}
+              hasMore={hasMore}
+              loadMore={loadMore}
+              loading={loading}
+            />
           </CollapsibleCard>
         )}
       </div>
@@ -376,7 +383,19 @@ export default function EntrainementsPage() {
   )
 }
 
-function SimpleAllTrainingsList({ trainings, onShowDetail }: { trainings: Entrainement[]; onShowDetail: (t: Entrainement) => void }) {
+function SimpleAllTrainingsList({ 
+  trainings, 
+  onShowDetail, 
+  hasMore = false, 
+  loadMore, 
+  loading = false 
+}: { 
+  trainings: Entrainement[]; 
+  onShowDetail: (t: Entrainement) => void;
+  hasMore?: boolean;
+  loadMore?: () => Promise<void>;
+  loading?: boolean;
+}) {
   const sorted = [...trainings].sort((a, b) => b.date.localeCompare(a.date))
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
@@ -440,6 +459,19 @@ function SimpleAllTrainingsList({ trainings, onShowDetail }: { trainings: Entrai
             className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
           >
             Suivant
+          </button>
+        </div>
+      )}
+      
+      {/* Bouton "Charger plus" pour la pagination Firestore */}
+      {hasMore && loadMore && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={() => loadMore()}
+            disabled={loading}
+            className="px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg font-medium hover:bg-neon-green/30 transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Chargement...' : 'Charger plus d\'entraînements'}
           </button>
         </div>
       )}

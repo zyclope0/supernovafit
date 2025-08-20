@@ -35,6 +35,7 @@ const userNavigation = [
 const coachNavigation = [
   { name: 'Tableau de bord', href: '/coach', icon: HomeIcon },
   { name: 'Mes Athlètes', href: '/coach', icon: UsersIcon },
+  { name: 'Tous les Athlètes', href: '/coach/all-athletes', icon: UsersIcon },
   { name: 'Programmes', href: '/coach/programmes', icon: CalendarDaysIcon },
   { name: 'Rapports', href: '/coach/rapports', icon: ChartBarIcon },
 ]

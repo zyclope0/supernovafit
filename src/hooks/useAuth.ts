@@ -14,6 +14,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { User as UserType } from '@/types'
 import * as Sentry from '@sentry/nextjs'
+import { useFirebaseError } from './useFirebaseError'
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
@@ -21,6 +22,12 @@ export function useAuth() {
   // loading: état d'auth uniquement (ne bloque plus sur le profil)
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
+  
+  // Gestion d'erreurs Firebase centralisée
+  const authErrorHandler = useFirebaseError({
+    context: 'Authentication',
+    maxRetries: 2
+  })
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -67,7 +74,10 @@ export function useAuth() {
               Sentry.setTag('user_type', 'athlete')
             }
           } catch (error) {
-            // Ne capturer que les erreurs non-Firebase
+            // Gérer l'erreur avec le système centralisé
+            authErrorHandler.handleError(error)
+            
+            // Ne capturer que les erreurs non-Firebase dans Sentry
             if (error instanceof Error && 
                 !error.message.includes('permission-denied') &&
                 !error.message.includes('quota-exceeded')) {
@@ -98,10 +108,11 @@ export function useAuth() {
 
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings)
-      // Sauvegarder l&apos;email pour la vérification
+      // Sauvegarder l'email pour la vérification
       window.localStorage.setItem('emailForSignIn', email)
       return { success: true }
     } catch (error: unknown) {
+      authErrorHandler.handleError(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -120,6 +131,7 @@ export function useAuth() {
           window.localStorage.removeItem('emailForSignIn')
           return { success: true }
         } catch (error: unknown) {
+          authErrorHandler.handleError(error)
           return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
         }
       }

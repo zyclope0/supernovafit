@@ -1,53 +1,69 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
-import { Repas } from '@/types'
 import { X, Calendar, TrendingUp, BarChart3, Eye } from 'lucide-react'
-import { useCoachCommentsByModule } from '@/hooks/useFirestore'
+import { useCoachCommentsByModule, useRepas } from '@/hooks/useFirestore'
+import { Repas } from '@/types' // Importer les types Repas et Macros
 
 interface HistoriqueModalProps {
   isOpen: boolean
   onClose: () => void
-  allRepas: Repas[]
   currentDate: string
   onDateChange: (date: string) => void
 }
 
-export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate, onDateChange }: HistoriqueModalProps) {
+interface GlobalStats {
+  totalDays: number
+  totalCalories: number
+  totalMeals: number
+  averageCaloriesPerDay: number
+}
+
+export default function HistoriqueModal({ isOpen, onClose, currentDate, onDateChange }: HistoriqueModalProps) {
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: dieteComments } = useCoachCommentsByModule('diete')
   const commentedDates = useMemo(() => new Set((dieteComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [dieteComments])
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
   const focusTrapRef = useFocusTrap(isOpen)
-  
-  // Générer les 30 derniers jours
-  const getLast30Days = () => {
-    const days = []
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date()
-      date.setDate(date.getDate() - i)
-      days.push(date.toISOString().split('T')[0])
-    }
-    return days
-  }
 
-  const last30Days = getLast30Days()
+  const { repas: allRepas, loading: repasLoading } = useRepas() // Charger tous les repas
+
+  // Générer les 30 derniers jours (ou plus selon les données chargées)
+  const getLast30Days = useCallback(() => {
+    // Si allRepas est vide ou en chargement, on utilise les 30 derniers jours par défaut
+    if (repasLoading && allRepas.length === 0) {
+      const days = []
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date()
+        date.setDate(date.getDate() - i)
+        days.push(date.toISOString().split('T')[0])
+      }
+      return days
+    } else if (allRepas.length > 0) {
+      // Sinon, on prend toutes les dates uniques des repas chargés, triées
+      const uniqueDates = Array.from(new Set(allRepas.map((r: Repas) => r.date)))
+      return uniqueDates.sort((a: string, b: string) => b.localeCompare(a))
+    }
+    return []
+  }, [allRepas, repasLoading]) // Ajout de allRepas et repasLoading comme dépendances
+
+  const last30Days = useMemo(() => getLast30Days(), [getLast30Days])
 
   // Calculer les stats par jour
   const getStatsForDate = (date: string) => {
-    const dayMeals = allRepas.filter(r => r.date === date)
-    const totalCalories = dayMeals.reduce((sum, meal) => sum + (meal.macros?.kcal || 0), 0)
-    const totalProteins = dayMeals.reduce((sum, meal) => sum + (meal.macros?.prot || 0), 0)
+    const dayMeals = allRepas.filter((r: Repas) => r.date === date)
+    const totalCalories = dayMeals.reduce((sum: number, meal: Repas) => sum + (meal.macros?.kcal || 0), 0)
+    const totalProteins = dayMeals.reduce((sum: number, meal: Repas) => sum + (meal.macros?.prot || 0), 0)
     const mealsCount = dayMeals.length
     
     return { totalCalories, totalProteins, mealsCount, meals: dayMeals }
   }
 
   // Calculer les stats globales des 30 derniers jours
-  const globalStats = last30Days.reduce((acc, date) => {
-    const stats = getStatsForDate(date)
+  const globalStats: GlobalStats = last30Days.reduce((acc: GlobalStats, dateStr: string) => {
+    const stats = getStatsForDate(dateStr)
     if (stats.mealsCount > 0) {
       acc.totalDays++
       acc.totalCalories += stats.totalCalories
@@ -161,7 +177,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
               <div className="mb-6">
                 <h3 className="text-lg font-medium text-white mb-4">30 derniers jours</h3>
                 <div className="grid grid-cols-7 gap-2" role="grid" aria-label="Calendrier des 30 derniers jours">
-                  {last30Days.map((date, idx) => {
+                  {last30Days.map((date: string, idx: number) => {
                     const stats = getStatsForDate(date)
                     const hasData = stats.mealsCount > 0
                     const hasCoachComments = commentedDates.has(date)
@@ -225,6 +241,13 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                   <span className="text-muted-foreground">Aujourd&apos;hui</span>
                 </div>
               </div>
+
+
+              {repasLoading && allRepas.length > 0 && (
+                <div className="flex justify-center mt-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-neon-cyan"></div>
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -260,7 +283,7 @@ export default function HistoriqueModal({ isOpen, onClose, allRepas, currentDate
                 <div>
                   <h4 className="text-md font-medium text-white mb-3">Détail des 7 derniers jours</h4>
                   <div className="space-y-2">
-                    {last30Days.slice(-7).reverse().map((date) => {
+                    {last30Days.slice(-7).reverse().map((date: string) => {
                       const stats = getStatsForDate(date)
                       
                       return (

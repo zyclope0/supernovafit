@@ -4,7 +4,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
-import { useMesures, useCoachCommentsByModule } from '@/hooks/useFirestore'
+import { useMesures, useCoachCommentsByModule, usePaginatedMesures } from '@/hooks/useFirestore'
 import { Mesure } from '@/types'
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
@@ -133,7 +133,8 @@ function MesureCard({
 
 export default function MesuresPage() {
   const { user } = useAuth()
-  const { mesures, loading, addMesure, updateMesure, deleteMesure, getStats } = useMesures()
+  const { addMesure, updateMesure, deleteMesure, getStats } = useMesures() // Pour les opérations CRUD
+  const { data: mesures, loading, hasMore, loadMore } = usePaginatedMesures(30) // Charger 30 mesures par page
   const { comments: mesureComments, loading: commentsLoading } = useCoachCommentsByModule('mesures')
   const [showForm, setShowForm] = useState(false)
   const [editingMesure, setEditingMesure] = useState<Mesure | null>(null)
@@ -566,6 +567,19 @@ export default function MesuresPage() {
                     />
                   ))}
                 </div>
+                
+                {/* Bouton "Charger plus" pour la pagination Firestore */}
+                {hasMore && loadMore && (
+                  <div className="flex justify-center pt-4">
+                    <button
+                      onClick={() => loadMore()}
+                      disabled={loading}
+                      className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors disabled:opacity-50"
+                    >
+                      {loading ? 'Chargement...' : 'Charger plus de mesures'}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </>

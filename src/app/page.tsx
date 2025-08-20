@@ -138,8 +138,8 @@ export default function Dashboard() {
   const preciseTDEE = userProfile ? calculateTDEE(userProfile) : null
   const estimatedTDEE = preciseTDEE || (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0)
 
-  // Loading state
-  if (repasLoading && trainingsLoading && measuresLoading) {
+  // Loading state - attendre que l'utilisateur soit chargé et que les données soient prêtes
+  if (!user || repasLoading || trainingsLoading || measuresLoading) {
     return (
       <MainLayout>
         <div className="space-y-6">

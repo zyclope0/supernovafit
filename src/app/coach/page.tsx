@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCoachAthletes } from '@/hooks/useFirestore'
 import { useRouter } from 'next/navigation'
 import MainLayout from '@/components/layout/MainLayout'
-import { Users, TrendingUp, Calendar, FileText, Award, Plus, Search, Activity, BarChart3, BookOpen, Scale } from 'lucide-react'
+import { Users, Plus, Search, Activity, BarChart3, BookOpen, Scale } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import InviteModal from '@/components/ui/InviteModal'
@@ -73,77 +73,54 @@ export default function CoachDashboard() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">
-              Dashboard Coach
-              <span className="ml-3 text-sm text-gray-400 font-normal">
-                Gérez vos athlètes et suivez leurs progressions
-              </span>
-            </h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Mes Athlètes</h1>
+            <p className="text-muted-foreground">
+              Gérez vos athlètes et suivez leurs progressions
+            </p>
           </div>
-          <button 
-            onClick={() => setShowInviteModal(true)}
-            className="btn-primary flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Inviter un athlète
-          </button>
+          <div className="flex items-center gap-2">
+            <Users className="w-8 h-8 text-neon-purple" />
+          </div>
         </div>
 
         {/* Statistiques globales */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="glass-effect rounded-xl p-6 border border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Total Athlètes</p>
-                <p className="text-3xl font-bold text-white">{stats.totalAthletes}</p>
-                <p className="text-xs text-neon-green mt-1">
-                  {stats.athletesActifs} actifs
-                </p>
+                <p className="text-sm text-muted-foreground">Mes Athlètes</p>
+                <p className="text-2xl font-bold text-white">{stats.totalAthletes}</p>
               </div>
-              <Users className="w-10 h-10 text-neon-purple opacity-50" />
+              <Users className="w-8 h-8 text-neon-purple" />
             </div>
           </div>
-
-          <div className="glass-effect rounded-xl p-6 border border-white/10">
+          
+          <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Progression Moyenne</p>
-                <p className="text-3xl font-bold text-white">
-                  +{stats.progressionMoyenne.toFixed(1)}%
-                </p>
-                <p className="text-xs text-neon-cyan mt-1">
-                  Sur 30 jours
+                <p className="text-sm text-muted-foreground">Actifs cette semaine</p>
+                <p className="text-2xl font-bold text-neon-green">
+                  {filteredAthletes.filter(a => {
+                    if (!a.dernier_acces) return false
+                    const lastAccess = new Date(a.dernier_acces)
+                    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                    return lastAccess > weekAgo
+                  }).length}
                 </p>
               </div>
-              <TrendingUp className="w-10 h-10 text-neon-green opacity-50" />
+              <Activity className="w-8 h-8 text-neon-green" />
             </div>
           </div>
-
-          <div className="glass-effect rounded-xl p-6 border border-white/10">
+          
+          <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Taux de Réussite</p>
-                <p className="text-3xl font-bold text-white">{stats.tauxReussite}%</p>
-                <p className="text-xs text-neon-pink mt-1">
-                  Objectifs atteints
-                </p>
+                <p className="text-sm text-muted-foreground">Actions</p>
+                <p className="text-2xl font-bold text-neon-cyan">2</p>
               </div>
-              <Award className="w-10 h-10 text-neon-pink opacity-50" />
-            </div>
-          </div>
-
-          <div className="glass-effect rounded-xl p-6 border border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm">Programmes Actifs</p>
-                <p className="text-3xl font-bold text-white">12</p>
-                <p className="text-xs text-neon-purple mt-1">
-                  3 nouveaux ce mois
-                </p>
-              </div>
-              <Calendar className="w-10 h-10 text-neon-cyan opacity-50" />
+              <Plus className="w-8 h-8 text-neon-cyan" />
             </div>
           </div>
         </div>
@@ -265,30 +242,30 @@ export default function CoachDashboard() {
 
         {/* Actions rapides */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link
-            href="/coach/programmes"
+          <button
+            onClick={() => setShowInviteModal(true)}
             className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-purple/50 
-                     transition-all cursor-pointer group"
+                     transition-all cursor-pointer group text-left"
           >
             <div className="flex items-center gap-4">
-              <Calendar className="w-12 h-12 text-neon-purple group-hover:scale-110 transition-transform" />
+              <Plus className="w-12 h-12 text-neon-purple group-hover:scale-110 transition-transform" />
               <div>
-                <h3 className="text-lg font-semibold text-white">Programmes</h3>
-                <p className="text-sm text-gray-400">Créer et gérer les programmes</p>
+                <h3 className="text-lg font-semibold text-white">Inviter un athlète</h3>
+                <p className="text-sm text-gray-400">Ajouter un nouvel athlète à votre équipe</p>
               </div>
             </div>
-          </Link>
+          </button>
 
           <Link
-            href="/coach/rapports"
+            href="/coach/all-athletes"
             className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-cyan/50 
-                     transition-all cursor-pointer group"
+                     transition-all cursor-pointer group text-left"
           >
             <div className="flex items-center gap-4">
-              <FileText className="w-12 h-12 text-neon-cyan group-hover:scale-110 transition-transform" />
+              <Users className="w-12 h-12 text-neon-cyan group-hover:scale-110 transition-transform" />
               <div>
-                <h3 className="text-lg font-semibold text-white">Rapports</h3>
-                <p className="text-sm text-gray-400">Analyser les progressions</p>
+                <h3 className="text-lg font-semibold text-white">Voir tous les athlètes</h3>
+                <p className="text-sm text-gray-400">Découvrir et inviter de nouveaux athlètes</p>
               </div>
             </div>
           </Link>
