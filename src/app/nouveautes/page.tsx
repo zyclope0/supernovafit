@@ -14,123 +14,176 @@ export default function NouveautesPage() {
           <span className="text-xs text-white/60">v{APP_VERSION} · {APP_RELEASE_DATE}</span>
         </div>
 
-        <CollapsibleCard title={`v${APP_VERSION} — Améliorations UX/UI Coach`} defaultOpen>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Page &quot;Tous les Athlètes&quot;</strong> : Badges dynamiques actif/inactif avec couleurs distinctives</li>
-            <li><strong>Icônes objectifs</strong> : Badges Target avec couleurs spécifiques (bleu, orange, rouge, jaune)</li>
-            <li><strong>Cohérence visuelle</strong> : Harmonisation des couleurs entre filtres et badges</li>
-            <li><strong>Layout optimisé</strong> : Cartes plus compactes, informations mieux organisées</li>
-            <li><strong>Types TypeScript</strong> : Interface AthleteData et types explicites pour la robustesse</li>
-            <li><strong>Pull Request</strong> : Système de gestion des versions amélioré</li>
-          </ul>
+        {/* NOUVELLES FONCTIONNALITÉS UTILISATEUR */}
+        <CollapsibleCard title={`v${APP_VERSION} — 🎨 Interface Coach Améliorée`} defaultOpen>
+          <div className="space-y-3">
+            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
+              <h4 className="font-semibold text-neon-purple mb-2">✨ Page &quot;Tous les Athlètes&quot; Redesign</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Badges dynamiques</strong> : Reconnaissance immédiate des athlètes actifs (vert) vs inactifs (rouge)</li>
+                <li><strong>Icônes objectifs colorées</strong> : Distinction visuelle par type d&apos;objectif (maintien, prise de masse, sèche, performance)</li>
+                <li><strong>Layout optimisé</strong> : Cartes plus compactes, informations mieux organisées</li>
+                <li><strong>Filtres intelligents</strong> : Recherche par nom, filtrage par statut coach et objectif</li>
+              </ul>
+            </div>
+            
+            <div className="bg-neon-green/10 p-3 rounded-lg border border-neon-green/20">
+              <h4 className="font-semibold text-neon-green mb-2">🚀 Expérience Utilisateur Améliorée</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Cohérence visuelle</strong> : Couleurs harmonisées dans toute l&apos;interface</li>
+                <li><strong>Navigation intuitive</strong> : Distinction claire entre &quot;Mes Athlètes&quot; et &quot;Tous les Athlètes&quot;</li>
+                <li><strong>Statistiques en temps réel</strong> : Compteurs dynamiques pour un suivi efficace</li>
+                <li><strong>Actions rapides</strong> : Boutons d&apos;invitation et de consultation de profil optimisés</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.8.4 — Modules Coach Complets" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Pages manquantes</strong> : /coach/programmes, /coach/rapports, /coach/all-athletes créées</li>
-            <li><strong>Navigation corrigée</strong> : Distinction &quot;Mes Athlètes&quot; vs &quot;Tous les Athlètes&quot;</li>
-            <li><strong>Hook useAllAthletes</strong> : Récupération de tous les athlètes avec filtres</li>
-            <li><strong>Filtres avancés</strong> : Par statut coach, objectif, recherche en temps réel</li>
-            <li><strong>Statistiques dynamiques</strong> : Compteurs actifs/inactifs, avec/sans coach</li>
-          </ul>
+        <CollapsibleCard title="v1.8.4 — 📊 Gestion Complète des Athlètes" defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+              <h4 className="font-semibold text-blue-400 mb-2">👥 Nouveaux Modules Coach</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Page &quot;Tous les Athlètes&quot;</strong> : Vue d&apos;ensemble complète avec filtres avancés</li>
+                <li><strong>Page &quot;Programmes&quot;</strong> : Gestion des programmes d&apos;entraînement (en développement)</li>
+                <li><strong>Page &quot;Rapports&quot;</strong> : Analyse et reporting des performances (en développement)</li>
+                <li><strong>Navigation restructurée</strong> : Organisation logique des fonctionnalités coach</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.8.3 — Gestion d&apos;Erreurs Firebase" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Système centralisé</strong> : Mapping complet des erreurs Firebase vers messages utilisateur</li>
-            <li><strong>Retry automatique</strong> : Gestion intelligente des erreurs récupérables</li>
-            <li><strong>Composants réutilisables</strong> : FirebaseErrorDisplay pour affichage uniforme</li>
-            <li><strong>Hooks intégrés</strong> : useFirebaseError dans tous les modules critiques</li>
-          </ul>
+        <CollapsibleCard title="v1.8.3 — 🛡️ Gestion d&apos;Erreurs Améliorée" defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-orange-500/10 p-3 rounded-lg border border-orange-500/20">
+              <h4 className="font-semibold text-orange-400 mb-2">🔧 Messages d&apos;Erreur Intelligents</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Messages en français</strong> : Erreurs techniques traduites en langage utilisateur</li>
+                <li><strong>Retry automatique</strong> : Tentatives de reconnexion automatiques en cas de problème</li>
+                <li><strong>Interface d&apos;erreur unifiée</strong> : Affichage cohérent des problèmes sur toutes les pages</li>
+                <li><strong>Gestion des timeouts</strong> : Meilleure gestion des connexions lentes</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.8.2 — Pagination Complète" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Pagination Firestore</strong> : Entraînements et Mesures avec bouton &quot;Charger plus&quot;</li>
-            <li><strong>Performance optimisée</strong> : Chargement progressif sur toutes les listes longues</li>
-            <li><strong>Correction boucle infinie</strong> : useEffect stabilisé dans usePaginatedData</li>
-            <li><strong>Interface utilisateur</strong> : États de chargement et gestion d&apos;erreurs</li>
-          </ul>
+        <CollapsibleCard title="v1.8.2 — ⚡ Performance Optimisée" defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-green-500/10 p-3 rounded-lg border border-green-500/20">
+              <h4 className="font-semibold text-green-400 mb-2">📱 Chargement Progressif</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Pagination intelligente</strong> : Chargement par lots des entraînements et mesures</li>
+                <li><strong>Bouton &quot;Charger plus&quot;</strong> : Contrôle utilisateur sur le chargement des données</li>
+                <li><strong>Performance améliorée</strong> : Temps de chargement réduit sur les listes longues</li>
+                <li><strong>États de chargement</strong> : Indicateurs visuels pendant les opérations</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.8.1 — Corrections &amp; Stabilisation" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Erreur usePaginatedData</strong> : Fonction manquante ajoutée</li>
-            <li><strong>Boucle infinie React</strong> : useCallback pour stabiliser les fonctions</li>
-            <li><strong>Firebase manquant</strong> : Dépendance installée</li>
-            <li><strong>Page diète</strong> : Récupération des repas corrigée</li>
-            <li><strong>TypeScript</strong> : Toutes les erreurs résolues</li>
-          </ul>
+        <CollapsibleCard title="v1.7.0 — 🧪 Environnement de Test" defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
+              <h4 className="font-semibold text-purple-400 mb-2">👨‍💼 Comptes de Démonstration</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>8 utilisateurs de test</strong> : Coachs et athlètes avec données réalistes</li>
+                <li><strong>Données variées</strong> : Repas, entraînements, mesures et journal complets</li>
+                <li><strong>Accès rapide</strong> : Liens directs vers les comptes de test depuis le Guide</li>
+                <li><strong>Environnement stable</strong> : Tests sans impact sur les données de production</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.8.0 — Pagination Firestore" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Hook générique</strong> : usePaginatedData implémenté</li>
-            <li><strong>Hooks spécifiques</strong> : usePaginatedRepas, usePaginatedEntrainements, etc.</li>
-            <li><strong>Interface utilisateur</strong> : Boutons &quot;Charger plus&quot; et états de chargement</li>
-            <li><strong>Optimisation performance</strong> : Chargement progressif des données</li>
-          </ul>
+        <CollapsibleCard title="v1.6.0 — 🎯 Interface Coach" defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-cyan-500/10 p-3 rounded-lg border border-cyan-500/20">
+              <h4 className="font-semibold text-cyan-400 mb-2">📈 Dashboard Coach</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Métriques en temps réel</strong> : Statistiques dynamiques des athlètes</li>
+                <li><strong>Page &quot;Mes Athlètes&quot;</strong> : Gestion des relations coach-athlète</li>
+                <li><strong>Statistiques réelles</strong> : Données provenant directement de la base</li>
+                <li><strong>Navigation optimisée</strong> : Interface dédiée aux besoins des coachs</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.7.0 — Données de Test" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Scripts de génération</strong> : Utilisateurs coach/athlète réalistes</li>
-            <li><strong>Données complètes</strong> : Repas, entraînements, mesures, journal</li>
-            <li><strong>Tests automatisés</strong> : Batterie de tests fonctionnels</li>
-            <li><strong>Environnement de test</strong> : 8 utilisateurs avec données variées</li>
-          </ul>
+        <CollapsibleCard title="v1.5.0 — 🤝 Système d&apos;Invitations" defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20">
+              <h4 className="font-semibold text-yellow-400 mb-2">📨 Invitations Coach-Athlète</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Codes d&apos;invitation uniques</strong> : Sécurisation des relations coach-athlète</li>
+                <li><strong>Interface coach</strong> : Envoi d&apos;invitations depuis le dashboard</li>
+                <li><strong>Interface athlète</strong> : Acceptation d&apos;invitations avec code</li>
+                <li><strong>Sécurité renforcée</strong> : Règles d&apos;accès Firestore configurées</li>
+              </ul>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.6.0 — Interface Coach Améliorée" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Dashboard coach</strong> : Métriques et statistiques en temps réel</li>
-            <li><strong>Page &quot;Mes Athlètes&quot;</strong> : Filtres et gestion des relations</li>
-            <li><strong>Navigation optimisée</strong> : UX améliorée pour les coachs</li>
-            <li><strong>Statistiques réelles</strong> : Données dynamiques depuis Firestore</li>
-          </ul>
+        {/* MISE À JOURS TECHNIQUES (RÉTRACTABLE) */}
+        <CollapsibleCard title="🔧 Mises à Jour Techniques" defaultOpen={false}>
+          <div className="space-y-4">
+            <div className="text-sm text-gray-400 mb-3">
+              Ces améliorations techniques améliorent la stabilité et les performances de l&apos;application.
+            </div>
+            
+            <div className="space-y-2">
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.8.1 — Corrections &amp; Stabilisation</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>Correction boucle infinie React avec useCallback</li>
+                  <li>Résolution erreurs TypeScript et dépendances</li>
+                  <li>Optimisation des hooks Firebase</li>
+                </ul>
+              </div>
+              
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.8.0 — Pagination Firestore</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>Hook générique usePaginatedData</li>
+                  <li>Hooks spécifiques pour chaque module</li>
+                  <li>Optimisation des requêtes Firestore</li>
+                </ul>
+              </div>
+              
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.4.0 — Tests &amp; Qualité</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>Configuration Vitest pour tests modernes</li>
+                  <li>Tests calculs métier (BMR/TDEE/MET)</li>
+                  <li>CI/CD avec GitHub Actions</li>
+                  <li>Tests hooks critiques</li>
+                </ul>
+              </div>
+              
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.3.0 — Améliorations Interface</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>Recherche aliments fuzzy matching</li>
+                  <li>Pagination côté client (Journal/Entraînements)</li>
+                  <li>Optimisation des résultats de recherche</li>
+                </ul>
+              </div>
+              
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.2.0 — Fonctionnalités de Base</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>SEO: favicon + Open Graph</li>
+                  <li>Accessibilité: aria-labels</li>
+                  <li>Commentaires coach contextuels</li>
+                  <li>Sections rétractables diète</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </CollapsibleCard>
 
-        <CollapsibleCard title="v1.5.0 — Système d&apos;Invitations" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Système d&apos;invitations</strong> : Génération de codes uniques</li>
-            <li><strong>Interface coach</strong> : Invitation d&apos;athlètes</li>
-            <li><strong>Interface athlète</strong> : Rejoindre un coach</li>
-            <li><strong>Sécurité Firestore</strong> : Règles d&apos;accès configurées</li>
-          </ul>
-        </CollapsibleCard>
-
-        <CollapsibleCard title="v1.4.0 — Tests &amp; Qualité" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li><strong>Vitest Setup</strong> : Configuration testing moderne</li>
-            <li><strong>Tests calculs métier</strong> : BMR/TDEE/MET précision</li>
-            <li><strong>CI/CD avec tests</strong> : GitHub Actions quality workflow</li>
-            <li><strong>Tests hooks critiques</strong> : useAuth, useFirestore</li>
-          </ul>
-        </CollapsibleCard>
-
-        <CollapsibleCard title="v1.3.0 — Améliorations précédentes" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li>Recherche aliments plus intelligente (fuzzy matching, synonymes FR)</li>
-            <li>Résultats de recherche plus lisibles (fond moins transparent)</li>
-            <li>Historique paginé (Journal et Entraînements) avec taille de page (10/20/50)</li>
-            <li>Accès rapide &quot;Comptes de test&quot; depuis le Guide</li>
-          </ul>
-        </CollapsibleCard>
-
-        <CollapsibleCard title="v1.2.0 — Fonctionnalités de base" defaultOpen={false}>
-          <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-            <li>SEO: favicon + Open Graph</li>
-            <li>Robots/Sitemap</li>
-            <li>Navigation: lien Guide dans la Sidebar</li>
-            <li>Accessibilité: aria-label sur boutons</li>
-            <li>Commentaires Coach: affichage contextuel + badge 24h</li>
-            <li>Diète: sections rétractables, charts conditionnels</li>
-          </ul>
-        </CollapsibleCard>
-
-        <CollapsibleCard title="Historique" defaultOpen={false}>
+        <CollapsibleCard title="📚 Guide &amp; Support" defaultOpen={false}>
           <p className="text-sm text-white/70">
-            Consultez le <Link href="/guide" className="underline decoration-dotted">Guide</Link> pour une vue d&apos;ensemble des modules et des bonnes pratiques.
+            Consultez le <Link href="/guide" className="underline decoration-dotted text-neon-purple hover:text-neon-purple/80">Guide</Link> pour une vue d&apos;ensemble des modules et des bonnes pratiques d&apos;utilisation.
           </p>
         </CollapsibleCard>
       </div>
