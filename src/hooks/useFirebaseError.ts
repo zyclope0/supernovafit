@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { 
   analyzeFirebaseError, 
@@ -128,10 +128,12 @@ export function useFirebaseError(options: UseFirebaseErrorOptions = {}) {
         isRetrying: false
       }))
 
-      // Gérer la nouvelle erreur
-      handleError(error)
+      // Log et afficher l'erreur
+      logFirebaseError(error, context)
+      const message = getUserFriendlyMessage(error)
+      toast.error(`Tentative échouée: ${message}`)
     }
-  }, [errorState, maxRetries, handleError, onRetry])
+  }, [errorState.retryCount, errorState.error, maxRetries, context, onRetry])
 
   const clearError = useCallback(() => {
     setErrorState({
@@ -142,33 +144,18 @@ export function useFirebaseError(options: UseFirebaseErrorOptions = {}) {
     })
   }, [])
 
-  const resetRetryCount = useCallback(() => {
-    setErrorState(prev => ({
-      ...prev,
-      retryCount: 0
-    }))
-  }, [])
-
-  return {
-    // État d'erreur
-    hasError: errorState.hasError,
-    error: errorState.error,
-    retryCount: errorState.retryCount,
-    isRetrying: errorState.isRetrying,
-    canRetry: errorState.error ? isRetryableError(errorState.error) : false,
-    maxRetriesReached: errorState.retryCount >= maxRetries,
-    
-    // Actions
+  // Stabiliser l'objet retourné avec useMemo
+  const errorHandler = useMemo(() => ({
     handleError,
     retry,
     clearError,
-    resetRetryCount,
-    
-    // Utilitaires
-    getUserFriendlyMessage: (error: unknown) => getUserFriendlyMessage(error),
-    getErrorSeverity: (error: unknown) => getErrorSeverity(error),
-    isRetryableError: (error: unknown) => isRetryableError(error)
-  }
+    error: errorState.error,
+    hasError: errorState.hasError,
+    retryCount: errorState.retryCount,
+    isRetrying: errorState.isRetrying
+  }), [handleError, retry, clearError, errorState.error, errorState.hasError, errorState.retryCount, errorState.isRetrying])
+
+  return errorHandler
 }
 
 // Hook spécialisé pour les opérations CRUD avec retry automatique
