@@ -17,7 +17,8 @@ import {
   XMarkIcon,
   RocketLaunchIcon,
   UserIcon,
-  UsersIcon
+  UsersIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
 
 // Navigation pour les utilisateurs normaux (sportifs)
@@ -27,6 +28,7 @@ const userNavigation = [
   { name: 'Entraînements', href: '/entrainements', icon: CalendarDaysIcon },
   { name: 'Mesures', href: '/mesures', icon: ScaleIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
+  { name: 'Export', href: '/export', icon: ArrowDownTrayIcon },
   { name: 'Guide', href: '/guide', icon: BookOpenIcon },
   { name: 'Mon Profil', href: '/profil', icon: UserIcon },
 ]
