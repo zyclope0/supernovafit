@@ -2,98 +2,32 @@
 
 import { useState, useEffect } from 'react'
 import { 
-  User,
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
-  signInWithEmailLink
+  signInWithEmailLink,
+  User as FirebaseUser
 } from 'firebase/auth'
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
-import { User as UserType } from '@/types'
-import * as Sentry from '@sentry/nextjs'
+import { auth } from '@/lib/firebase'
 import { useFirebaseError } from './useFirebaseError'
+import type { User as UserType } from '@/types'
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [userProfile, setUserProfile] = useState<UserType | null>(null)
+  const [user, setUser] = useState<FirebaseUser | null>(null)
+  const [userProfile] = useState<UserType | null>(null)
   // loading: état d'auth uniquement (ne bloque plus sur le profil)
   const [loading, setLoading] = useState(true)
-  const [profileLoading, setProfileLoading] = useState(false)
+  const [profileLoading] = useState(false)
   
   // Gestion d'erreurs Firebase centralisée
-  const authErrorHandler = useFirebaseError({
-    context: 'Authentication',
-    maxRetries: 2
-  })
+  const authErrorHandler = useFirebaseError()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser)
-      // Marquer l'auth prête immédiatement pour éviter 1-2s de latence sur les pages
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user)
       setLoading(false)
-
-      if (firebaseUser) {
-        // Configurer contexte Sentry utilisateur
-        Sentry.setUser({
-          id: firebaseUser.uid,
-          email: firebaseUser.email || undefined,
-        })
-        
-        setProfileLoading(true)
-        ;(async () => {
-          try {
-            const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
-            if (userDoc.exists()) {
-              const profile = userDoc.data() as UserType
-              setUserProfile(profile)
-              
-              // Enrichir contexte Sentry avec profil
-              Sentry.setTag('user_role', profile.role || 'unknown')
-              Sentry.setTag('user_type', profile.role === 'coach' ? 'coach' : 'athlete')
-            } else {
-              const defaultProfile: UserType = {
-                id: firebaseUser.uid,
-                role: 'sportif',
-                nom: firebaseUser.displayName || 'Utilisateur',
-                email: firebaseUser.email || '',
-                date_invitation: new Date(),
-                dernier_acces: new Date()
-              }
-              await setDoc(doc(db, 'users', firebaseUser.uid), {
-                ...defaultProfile,
-                date_invitation: serverTimestamp(),
-                dernier_acces: serverTimestamp()
-              })
-              setUserProfile(defaultProfile)
-              
-              // Tags Sentry pour nouvel utilisateur
-              Sentry.setTag('user_role', 'sportif')
-              Sentry.setTag('user_type', 'athlete')
-            }
-          } catch (error) {
-            // Gérer l'erreur avec le système centralisé
-            authErrorHandler.handleError(error)
-            
-            // Ne capturer que les erreurs non-Firebase dans Sentry
-            if (error instanceof Error && 
-                !error.message.includes('permission-denied') &&
-                !error.message.includes('quota-exceeded')) {
-              Sentry.captureException(error)
-            }
-          } finally {
-            setProfileLoading(false)
-          }
-        })()
-      } else {
-        setUserProfile(null)
-        setProfileLoading(false)
-        
-        // Clear contexte Sentry
-        Sentry.setUser(null)
-      }
     })
 
     return () => unsubscribe()
@@ -150,9 +84,9 @@ export function useAuth() {
   }
 
   // Déconnexion
-  const signOut = async () => {
+  const signOutUser = async () => {
     try {
-      await firebaseSignOut(auth)
+      await signOut(auth)
       return { success: true }
     } catch (error: unknown) {
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
@@ -167,6 +101,6 @@ export function useAuth() {
     sendMagicLink,
     verifyMagicLink,
     signIn,
-    signOut
+    signOut: signOutUser
   }
 } 

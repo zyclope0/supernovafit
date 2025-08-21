@@ -18,7 +18,6 @@ import {
   Calendar,
   Download,
   CheckCircle,
-  AlertCircle,
   Loader2,
   Sparkles,
   TrendingUp,
@@ -31,13 +30,9 @@ import type { ExportFormat, ExportDataType, ExportPeriod } from '@/types/export'
 export default function ExportPage() {
   const {
     exportData,
-    exportTodayData,
-    exportWeekData,
-    exportMonthData,
     exportState,
     error,
-    loading,
-    resetExportState
+    loading
   } = useExportData()
 
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('pdf')

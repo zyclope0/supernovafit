@@ -4,26 +4,23 @@
  */
 
 import { useState, useCallback } from 'react'
-import { useAuth } from './useAuth'
-import { useFirebaseError } from './useFirebaseError'
-import { useRepas, useEntrainements, useMesures } from './useFirestore'
-
-import type { 
-  ExportConfig, 
-  ExportFormat, 
-  ExportDataType, 
-  ExportPeriod,
-  ExportMetadata,
-  ExportResult,
-  ExportState
-} from '@/types/export'
-
+import { useAuth } from '@/hooks/useAuth'
+import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
+import { useFirebaseError } from '@/hooks/useFirebaseError'
 import { generateAndDownloadCSV } from '@/lib/export/csv-export'
 import { generateAndDownloadJSON } from '@/lib/export/json-export'
 import { generateAndDownloadExcel } from '@/lib/export/excel-export'
 import { generateCompletePDF } from '@/lib/export/pdf-export'
 import { generateFileName, getPeriodDescription } from '@/lib/export/csv-export'
 import { APP_VERSION } from '@/lib/constants'
+
+import type { 
+  ExportConfig, 
+  ExportFormat, 
+  ExportDataType, 
+  ExportState,
+  ExportResult
+} from '@/types/export'
 
 /**
  * Hook principal pour l'export de données
@@ -45,24 +42,100 @@ export function useExportData() {
   })
 
   /**
+   * Filtrer les données selon la configuration
+   */
+  const getFilteredData = useCallback((config: ExportConfig) => {
+    let filteredRepas = repas
+    let filteredEntrainements = entrainements
+    let filteredMesures = mesures
+
+    // Filtrer par type de données
+    if (config.dataType !== 'all') {
+      if (config.dataType !== 'repas') filteredRepas = []
+      if (config.dataType !== 'entrainements') filteredEntrainements = []
+      if (config.dataType !== 'mesures') filteredMesures = []
+    }
+
+    // Filtrer par période
+    if (config.startDate && config.endDate) {
+      const startDate = new Date(config.startDate)
+      const endDate = new Date(config.endDate)
+      
+      filteredRepas = filteredRepas.filter(r => {
+        const repasDate = new Date(r.date)
+        return repasDate >= startDate && repasDate <= endDate
+      })
+      
+      filteredEntrainements = filteredEntrainements.filter(e => {
+        const entrainementDate = new Date(e.date)
+        return entrainementDate >= startDate && entrainementDate <= endDate
+      })
+      
+      filteredMesures = filteredMesures.filter(m => {
+        const mesureDate = new Date(m.date)
+        return mesureDate >= startDate && mesureDate <= endDate
+      })
+    }
+
+    // Appliquer les filtres spécifiques
+    if (config.filters) {
+      if (config.filters.mealTypes && config.filters.mealTypes.length > 0) {
+        filteredRepas = filteredRepas.filter(r => 
+          config.filters!.mealTypes!.includes(r.repas)
+        )
+      }
+      
+      if (config.filters.trainingTypes && config.filters.trainingTypes.length > 0) {
+        filteredEntrainements = filteredEntrainements.filter(e => 
+          config.filters!.trainingTypes!.includes(e.type)
+        )
+      }
+      
+      if (config.filters.minCalories) {
+        filteredRepas = filteredRepas.filter(r => r.macros.kcal >= config.filters!.minCalories!)
+      }
+      
+      if (config.filters.maxCalories) {
+        filteredRepas = filteredRepas.filter(r => r.macros.kcal <= config.filters!.maxCalories!)
+      }
+      
+      if (config.filters.minDuration) {
+        filteredEntrainements = filteredEntrainements.filter(e => e.duree >= config.filters!.minDuration!)
+      }
+      
+      if (config.filters.maxDuration) {
+        filteredEntrainements = filteredEntrainements.filter(e => e.duree <= config.filters!.maxDuration!)
+      }
+    }
+
+    return {
+      repas: filteredRepas,
+      entrainements: filteredEntrainements,
+      mesures: filteredMesures
+    }
+  }, [repas, entrainements, mesures])
+
+  /**
    * Fonction principale d'export
    */
-  const exportData = useCallback(async (config: ExportConfig): Promise<void> => {
+  const exportData = useCallback(async (config: ExportConfig) => {
     if (!user) {
       handleError(new Error('Utilisateur non connecté'))
       return
     }
 
-    try {
-      setExportState(prev => ({
-        ...prev,
-        isExporting: true,
-        progress: 0,
-        currentStep: 'Préparation des données...',
-        error: null,
-        result: null
-      }))
+    if (repasLoading || entrainementsLoading || mesuresLoading) return
 
+    setExportState(prev => ({
+      ...prev,
+      isExporting: true,
+      progress: 0,
+      currentStep: 'Préparation des données...',
+      error: null,
+      result: null
+    }))
+
+    try {
       // Récupérer les données filtrées
       const filteredData = getFilteredData(config)
       
@@ -73,7 +146,7 @@ export function useExportData() {
       }))
 
       // Générer les métadonnées
-      const metadata: ExportMetadata = {
+      const metadata: ExportResult['metadata'] = {
         exportedAt: new Date().toISOString(),
         exportedBy: user.uid,
         totalRecords: filteredData.repas.length + filteredData.entrainements.length + filteredData.mesures.length,
@@ -179,7 +252,7 @@ export function useExportData() {
         }
       }))
     }
-  }, [user, repas, entrainements, mesures, handleError])
+  }, [user, handleError, repasLoading, entrainementsLoading, mesuresLoading, getFilteredData])
 
   /**
    * Export rapide pour aujourd'hui
@@ -253,80 +326,6 @@ export function useExportData() {
   const updateExportState = useCallback((updates: Partial<ExportState>) => {
     setExportState(prev => ({ ...prev, ...updates }))
   }, [])
-
-  /**
-   * Filtrer les données selon la configuration
-   */
-  const getFilteredData = useCallback((config: ExportConfig) => {
-    let filteredRepas = repas
-    let filteredEntrainements = entrainements
-    let filteredMesures = mesures
-
-    // Filtrer par type de données
-    if (config.dataType !== 'all') {
-      if (config.dataType !== 'repas') filteredRepas = []
-      if (config.dataType !== 'entrainements') filteredEntrainements = []
-      if (config.dataType !== 'mesures') filteredMesures = []
-    }
-
-    // Filtrer par période
-    if (config.startDate && config.endDate) {
-      const startDate = new Date(config.startDate)
-      const endDate = new Date(config.endDate)
-      
-      filteredRepas = filteredRepas.filter(r => {
-        const repasDate = new Date(r.date)
-        return repasDate >= startDate && repasDate <= endDate
-      })
-      
-      filteredEntrainements = filteredEntrainements.filter(e => {
-        const entrainementDate = new Date(e.date)
-        return entrainementDate >= startDate && entrainementDate <= endDate
-      })
-      
-      filteredMesures = filteredMesures.filter(m => {
-        const mesureDate = new Date(m.date)
-        return mesureDate >= startDate && mesureDate <= endDate
-      })
-    }
-
-    // Appliquer les filtres spécifiques
-    if (config.filters) {
-      if (config.filters.mealTypes && config.filters.mealTypes.length > 0) {
-        filteredRepas = filteredRepas.filter(r => 
-          config.filters!.mealTypes!.includes(r.repas)
-        )
-      }
-      
-      if (config.filters.trainingTypes && config.filters.trainingTypes.length > 0) {
-        filteredEntrainements = filteredEntrainements.filter(e => 
-          config.filters!.trainingTypes!.includes(e.type)
-        )
-      }
-      
-      if (config.filters.minCalories) {
-        filteredRepas = filteredRepas.filter(r => r.macros.kcal >= config.filters!.minCalories!)
-      }
-      
-      if (config.filters.maxCalories) {
-        filteredRepas = filteredRepas.filter(r => r.macros.kcal <= config.filters!.maxCalories!)
-      }
-      
-      if (config.filters.minDuration) {
-        filteredEntrainements = filteredEntrainements.filter(e => e.duree >= config.filters!.minDuration!)
-      }
-      
-      if (config.filters.maxDuration) {
-        filteredEntrainements = filteredEntrainements.filter(e => e.duree <= config.filters!.maxDuration!)
-      }
-    }
-
-    return {
-      repas: filteredRepas,
-      entrainements: filteredEntrainements,
-      mesures: filteredMesures
-    }
-  }, [repas, entrainements, mesures])
 
   return {
     // État

@@ -1,21 +1,14 @@
 /**
  * Utilitaires d'export JSON pour SuperNovaFit
- * Génère des fichiers JSON structurés pour l'analyse de données
- * Suit les patterns TypeScript stricts du projet
+ * Gère la génération et le téléchargement de fichiers JSON structurés
  */
 
 import { saveAs } from 'file-saver'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { APP_VERSION } from '@/lib/constants'
-
 import type { 
   ExportConfig, 
-  ExportMetadata, 
-  ExportFilters,
-  RepasExportData,
-  EntrainementExportData,
-  MesureExportData
+  ExportMetadata
 } from '@/types/export'
 import type { Repas, Entrainement, Mesure } from '@/types'
 
@@ -29,20 +22,25 @@ export async function generateAndDownloadJSON(
   fileName: string
 ): Promise<void> {
   try {
-    let jsonData: any
+    let jsonData: Record<string, unknown>
 
     switch (config.dataType) {
       case 'repas':
-        jsonData = formatRepasForJSON(data.repas, config, metadata)
+        jsonData = formatRepasForJSON(data.repas)
         break
       case 'entrainements':
-        jsonData = formatEntrainementsForJSON(data.entrainements, config, metadata)
+        jsonData = formatEntrainementsForJSON(data.entrainements)
         break
       case 'mesures':
-        jsonData = formatMesuresForJSON(data.mesures, config, metadata)
+        jsonData = formatMesuresForJSON(data.mesures)
         break
       case 'all':
-        jsonData = formatAllDataForJSON(data.repas, data.entrainements, data.mesures, config, metadata)
+        jsonData = {
+          repas: formatRepasForJSON(data.repas),
+          entrainements: formatEntrainementsForJSON(data.entrainements),
+          mesures: formatMesuresForJSON(data.mesures),
+          metadata
+        }
         break
       default:
         throw new Error(`Type de données non supporté: ${config.dataType}`)
@@ -63,11 +61,7 @@ export async function generateAndDownloadJSON(
 /**
  * Formate les données de repas pour export JSON
  */
-export function formatRepasForJSON(
-  repas: Repas[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-): RepasExportData {
+export function formatRepasForJSON(repas: Repas[]): Record<string, unknown> {
   return {
     repas: repas.map(repas => ({
       date: format(new Date(repas.date), 'yyyy-MM-dd', { locale: fr }),
@@ -90,11 +84,7 @@ export function formatRepasForJSON(
 /**
  * Formate les données d'entraînements pour export JSON
  */
-export function formatEntrainementsForJSON(
-  entrainements: Entrainement[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-): EntrainementExportData {
+export function formatEntrainementsForJSON(entrainements: Entrainement[]): Record<string, unknown> {
   return {
     entrainements: entrainements.map(ent => ({
       date: format(new Date(ent.date), 'yyyy-MM-dd', { locale: fr }),
@@ -118,11 +108,7 @@ export function formatEntrainementsForJSON(
 /**
  * Formate les données de mesures pour export JSON
  */
-export function formatMesuresForJSON(
-  mesures: Mesure[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-): MesureExportData {
+export function formatMesuresForJSON(mesures: Mesure[]): Record<string, unknown> {
   const sortedMesures = mesures.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   const firstMesure = sortedMesures[0]
   const lastMesure = sortedMesures[sortedMesures.length - 1]
@@ -130,44 +116,27 @@ export function formatMesuresForJSON(
   return {
     mesures: mesures.map(mesure => ({
       date: format(new Date(mesure.date), 'yyyy-MM-dd', { locale: fr }),
-      poids: mesure.poids || 0,
-      imc: mesure.imc || 0,
+      poids: mesure.poids,
+      taille: mesure.taille,
+      imc: mesure.imc,
       masse_grasse: mesure.masse_grasse,
       masse_musculaire: mesure.masse_musculaire,
       tour_taille: mesure.tour_taille,
       tour_bras: mesure.tour_bras,
-      tour_poitrine: mesure.tour_poitrine
+      tour_poitrine: mesure.tour_poitrine,
+      commentaire: mesure.commentaire || ''
     })),
-    summary: {
-      totalMesures: mesures.length,
-      poidsInitial: firstMesure?.poids || 0,
-      poidsActuel: lastMesure?.poids || 0,
-      evolution: lastMesure && firstMesure ? lastMesure.poids! - firstMesure.poids! : 0,
-      objectifAtteint: false // À implémenter selon la logique métier
-    }
-  }
-}
-
-/**
- * Formate toutes les données pour export JSON
- */
-export function formatAllDataForJSON(
-  repas: Repas[],
-  entrainements: Entrainement[],
-  mesures: Mesure[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-) {
-  return {
-    metadata,
-    repas: formatRepasForJSON(repas, config, metadata),
-    entrainements: formatEntrainementsForJSON(entrainements, config, metadata),
-    mesures: formatMesuresForJSON(mesures, config, metadata),
-    summary: {
-      totalRecords: repas.length + entrainements.length + mesures.length,
-      period: metadata.period,
-      exportedAt: metadata.exportedAt,
-      version: metadata.version
+    statistiques: {
+      total_mesures: mesures.length,
+      periode: firstMesure && lastMesure ? {
+        debut: format(new Date(firstMesure.date), 'yyyy-MM-dd', { locale: fr }),
+        fin: format(new Date(lastMesure.date), 'yyyy-MM-dd', { locale: fr })
+      } : null,
+      evolution_poids: firstMesure && lastMesure ? {
+        debut: firstMesure.poids || 0,
+        fin: lastMesure.poids || 0,
+        difference: (lastMesure.poids || 0) - (firstMesure.poids || 0)
+      } : null
     }
   }
 }

@@ -1,45 +1,23 @@
 /**
  * Utilitaires d'export Excel pour SuperNovaFit
- * Utilise xlsx pour la génération de fichiers Excel avec graphiques
- * Suit les patterns TypeScript stricts du projet
+ * Gère la génération et le téléchargement de fichiers Excel avec formatage professionnel
  */
 
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-
 import type { 
   ExportConfig, 
-  ExportMetadata,
-  RepasExportData,
-  EntrainementExportData,
-  MesureExportData
+  ExportMetadata
 } from '@/types/export'
 import type { Repas, Entrainement, Mesure } from '@/types'
-import {
+import { 
   generateWeightChartData,
   generateCaloriesChartData,
   generateMacrosChartData,
-  generateWorkoutFrequencyChartData,
-  generateIMCChartData,
-  generateWorkoutTypeChartData,
-  calculateChartStatistics,
-  type ChartData
+  calculateChartStatistics
 } from './chart-utils'
-
-/**
- * Couleurs de marque SuperNovaFit
- */
-const BRAND_COLORS = {
-  primary: '#2980b9',
-  secondary: '#e74c3c',
-  success: '#27ae60',
-  warning: '#f39c12',
-  info: '#3498db',
-  light: '#ecf0f1',
-  dark: '#2c3e50'
-}
 
 /**
  * Styles Excel personnalisés
@@ -102,24 +80,24 @@ export async function generateAndDownloadExcel(
     
     // Feuilles de données selon la configuration
     if (config.dataType === 'repas' || config.dataType === 'all') {
-      addRepasSheet(workbook, repas, metadata)
+      addRepasSheet(workbook, repas)
     }
     
     if (config.dataType === 'entrainements' || config.dataType === 'all') {
-      addEntrainementsSheet(workbook, entrainements, metadata)
+      addEntrainementsSheet(workbook, entrainements)
     }
     
     if (config.dataType === 'mesures' || config.dataType === 'all') {
-      addMesuresSheet(workbook, mesures, metadata)
+      addMesuresSheet(workbook, mesures)
     }
     
     // Feuille de graphiques
     if (config.includeCharts) {
-      addChartsSheet(workbook, repas, entrainements, mesures, metadata)
+      addChartsSheet(workbook, repas, entrainements, mesures)
     }
     
     // Feuille de statistiques
-    addStatisticsSheet(workbook, repas, entrainements, mesures, metadata)
+    addStatisticsSheet(workbook, repas, entrainements, mesures)
     
     // Générer et télécharger le fichier
     const excelBuffer = XLSX.write(workbook, { 
@@ -192,7 +170,7 @@ function addSummarySheet(
 /**
  * Ajoute une feuille pour les repas
  */
-function addRepasSheet(workbook: XLSX.WorkBook, repas: Repas[], metadata: ExportMetadata): void {
+function addRepasSheet(workbook: XLSX.WorkBook, repas: Repas[]): void {
   const headers = ['Date', 'Type de repas', 'Aliments', 'Calories (kcal)', 'Protéines (g)', 'Glucides (g)', 'Lipides (g)']
   
   const data = repas.map(r => [
@@ -219,7 +197,7 @@ function addRepasSheet(workbook: XLSX.WorkBook, repas: Repas[], metadata: Export
 /**
  * Ajoute une feuille pour les entraînements
  */
-function addEntrainementsSheet(workbook: XLSX.WorkBook, entrainements: Entrainement[], metadata: ExportMetadata): void {
+function addEntrainementsSheet(workbook: XLSX.WorkBook, entrainements: Entrainement[]): void {
   const headers = ['Date', 'Type', 'Durée (min)', 'Calories (kcal)', 'Distance (km)', 'FC moyenne (bpm)', 'Commentaire']
   
   const data = entrainements.map(e => [
@@ -246,7 +224,7 @@ function addEntrainementsSheet(workbook: XLSX.WorkBook, entrainements: Entrainem
 /**
  * Ajoute une feuille pour les mesures
  */
-function addMesuresSheet(workbook: XLSX.WorkBook, mesures: Mesure[], metadata: ExportMetadata): void {
+function addMesuresSheet(workbook: XLSX.WorkBook, mesures: Mesure[]): void {
   const headers = ['Date', 'Poids (kg)', 'IMC', 'Masse grasse (%)', 'Masse musculaire (kg)', 'Tour taille (cm)', 'Tour bras (cm)']
   
   const data = mesures.map(m => [
@@ -273,7 +251,7 @@ function addMesuresSheet(workbook: XLSX.WorkBook, mesures: Mesure[], metadata: E
 /**
  * Ajoute une feuille de graphiques (données pour graphiques Excel)
  */
-function addChartsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[], metadata: ExportMetadata): void {
+function addChartsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
   const chartData = []
   
   // Données pour graphique d'évolution du poids
@@ -298,29 +276,27 @@ function addChartsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: 
     chartData.push(['', '', '', ''])
   }
   
-  // Données pour graphique des macros
+  // Données pour graphique des macronutriments
   if (repas.length > 0) {
     const macrosData = generateMacrosChartData(repas)
-    chartData.push(['Répartition des macronutriments', '', '', ''])
-    chartData.push(['Macronutriment', 'Quantité (g)', '', ''])
+    chartData.push(['Répartition macronutriments', '', '', ''])
+    chartData.push(['Type', 'Valeur (g)', '', ''])
     macrosData.labels.forEach((label, index) => {
       chartData.push([label, macrosData.datasets[0].data[index], '', ''])
     })
-    chartData.push(['', '', '', ''])
   }
   
-  const worksheet = XLSX.utils.aoa_to_sheet(chartData)
-  
-  // Appliquer les styles
-  applyStylesToSheet(worksheet, chartData.length, 4)
-  
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Données Graphiques')
+  if (chartData.length > 0) {
+    const worksheet = XLSX.utils.aoa_to_sheet(chartData)
+    applyStylesToSheet(worksheet, chartData.length, 4)
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Graphiques')
+  }
 }
 
 /**
  * Ajoute une feuille de statistiques avancées
  */
-function addStatisticsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[], metadata: ExportMetadata): void {
+function addStatisticsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
   const stats = calculateChartStatistics(repas, entrainements, mesures)
   
   const statisticsData = [

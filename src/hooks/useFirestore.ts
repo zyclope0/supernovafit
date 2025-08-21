@@ -51,6 +51,7 @@ export function useRepas() {
       return
     }
 
+    setLoading(true)
     const q = query(
       collection(db, 'repas'),
       where('user_id', '==', user.uid),
@@ -59,7 +60,7 @@ export function useRepas() {
 
     const unsubscribe = onSnapshot(q, 
       (snapshot) => {
-        const repasData = snapshot.docs.map(doc => ({
+        const repasData = snapshot.docs.map((doc: { id: string; data: () => Record<string, unknown> }) => ({
           id: doc.id,
           ...doc.data()
         })) as Repas[]
@@ -73,7 +74,7 @@ export function useRepas() {
     )
 
     return () => unsubscribe()
-  }, [user])
+  }, [user, repasErrorHandler])
 
   const addRepas = async (repasData: Omit<Repas, 'id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
@@ -164,7 +165,7 @@ export function useEntrainements() {
     )
 
     return () => unsubscribe()
-  }, [user])
+  }, [user, entrainementsErrorHandler])
 
   const addEntrainement = async (entrainementData: Omit<Entrainement, 'id'>) => {
     if (!user) {
@@ -279,7 +280,7 @@ export function useFavoris() {
     )
 
     return () => unsubscribe()
-  }, [user])
+  }, [user, favorisErrorHandler])
 
   const addToFavoris = async (aliment: Omit<Aliment, 'id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
@@ -372,7 +373,7 @@ export function useMesures() {
     )
 
     return () => unsubscribe()
-  }, [user])
+  }, [user, mesuresErrorHandler])
 
   const addMesure = async (mesureData: Omit<Mesure, 'id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }

@@ -135,7 +135,7 @@ export async function generateCompletePDF(
   }
 
   // Recommandations
-  addRecommendationsPage(doc, repas, entrainements, mesures)
+  addRecommendationsPage(doc, repas, entrainements)
 
   // Télécharger le PDF
   await generateAndDownloadPDF(doc, fileName)
@@ -486,7 +486,7 @@ function addMesuresSection(doc: jsPDF, mesures: Mesure[]): void {
 /**
  * Ajoute une page de recommandations
  */
-function addRecommendationsPage(doc: jsPDF, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
+function addRecommendationsPage(doc: jsPDF, repas: Repas[], entrainements: Entrainement[]): void {
   doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
   doc.text('Recommandations', 20, 30)

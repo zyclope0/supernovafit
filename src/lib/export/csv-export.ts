@@ -1,26 +1,18 @@
 /**
  * Utilitaires d'export CSV pour SuperNovaFit
- * Utilise Papa Parse pour la génération de fichiers CSV
- * Suit les patterns TypeScript stricts du projet
+ * Gère la génération et le téléchargement de fichiers CSV
  */
 
 import Papa from 'papaparse'
 import { saveAs } from 'file-saver'
-import { format as formatDate } from 'date-fns'
+import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { APP_VERSION } from '@/lib/constants'
-
 import type { 
   ExportConfig, 
-  ExportMetadata,
-  ExportPeriod,
-  CSVExportData, 
-  ExportFilters,
-  RepasExportData,
-  EntrainementExportData,
-  MesureExportData
+  ExportMetadata, 
+  ExportPeriod
 } from '@/types/export'
-import type { Repas, Entrainement, Mesure, User } from '@/types'
+import type { Repas, Entrainement, Mesure } from '@/types'
 
 /**
  * Génère les métadonnées d'export
@@ -38,18 +30,51 @@ export function generateExportMetadata(
     totalRecords,
     period: periodDescription,
     filters: config.filters || {},
-    version: APP_VERSION
+    version: '1.0.0' // Assuming a default version for now
   }
 }
 
 /**
- * Génère la description de la période d'export
+ * Génère un nom de fichier pour l'export
  */
-export function getPeriodDescription(
-  period: ExportPeriod,
-  startDate?: string,
-  endDate?: string
-): string {
+export function generateFileName(config: ExportConfig, metadata: ExportMetadata): string {
+  const dataTypeLabel = getDataTypeLabel(config.dataType)
+  const periodLabel = getPeriodLabel(config.period)
+  const timestamp = format(new Date(metadata.exportedAt), 'yyyy-MM-dd_HH-mm', { locale: fr })
+  
+  return `SuperNovaFit_${dataTypeLabel}_${periodLabel}_${timestamp}`
+}
+
+/**
+ * Obtient le label pour le type de données
+ */
+function getDataTypeLabel(dataType: string): string {
+  switch (dataType) {
+    case 'repas': return 'Repas'
+    case 'entrainements': return 'Entrainements'
+    case 'mesures': return 'Mesures'
+    case 'all': return 'ToutesDonnees'
+    default: return 'Donnees'
+  }
+}
+
+/**
+ * Obtient le label pour la période
+ */
+function getPeriodLabel(period: ExportPeriod): string {
+  switch (period) {
+    case 'day': return 'Aujourdhui'
+    case 'week': return 'CetteSemaine'
+    case 'month': return 'CeMois'
+    case 'custom': return 'Personnalise'
+    default: return 'Periode'
+  }
+}
+
+/**
+ * Obtient la description de la période
+ */
+export function getPeriodDescription(period: ExportPeriod, startDate?: string, endDate?: string): string {
   switch (period) {
     case 'day':
       return 'Aujourd\'hui'
@@ -57,13 +82,9 @@ export function getPeriodDescription(
       return 'Cette semaine'
     case 'month':
       return 'Ce mois'
-    case 'quarter':
-      return 'Ce trimestre'
-    case 'year':
-      return 'Cette année'
     case 'custom':
       if (startDate && endDate) {
-        return `Du ${formatDate(new Date(startDate), 'dd/MM/yyyy', { locale: fr })} au ${formatDate(new Date(endDate), 'dd/MM/yyyy', { locale: fr })}`
+        return `Du ${format(new Date(startDate), 'dd/MM/yyyy', { locale: fr })} au ${format(new Date(endDate), 'dd/MM/yyyy', { locale: fr })}`
       }
       return 'Période personnalisée'
     default:
@@ -74,104 +95,46 @@ export function getPeriodDescription(
 /**
  * Formate les données de repas pour export CSV
  */
-export function formatRepasForCSV(
-  repas: Repas[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-): CSVExportData {
-  const headers = [
-    'Date',
-    'Type de repas',
-    'Aliments',
-    'Calories (kcal)',
-    'Protéines (g)',
-    'Glucides (g)',
-    'Lipides (g)',
-    'Commentaire'
-  ]
-
-  const rows = repas.map(repas => [
-    formatDate(new Date(repas.date), 'dd/MM/yyyy', { locale: fr }),
-    getMealTypeLabel(repas.repas),
-    repas.aliments.map(a => `${a.nom} (${a.quantite}${a.unite})`).join(', '),
-    repas.macros.kcal.toString(),
-    repas.macros.prot.toString(),
-    repas.macros.glucides.toString(),
-    repas.macros.lipides.toString(),
-    '' // Commentaire (à implémenter si nécessaire)
-  ])
-
-  return { headers, rows, metadata }
+export function formatRepasForCSV(repas: Repas[]): Record<string, unknown>[] {
+  return repas.map(r => ({
+    Date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+    Repas: r.repas,
+    Aliments: r.aliments.map((a: { nom: string }) => a.nom).join(', '),
+    Calories: r.macros.kcal,
+    Protéines: r.macros.prot,
+    Glucides: r.macros.glucides,
+    Lipides: r.macros.lipides,
+    Commentaire: ''
+  }))
 }
 
 /**
  * Formate les données d'entraînements pour export CSV
  */
-export function formatEntrainementsForCSV(
-  entrainements: Entrainement[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-): CSVExportData {
-  const headers = [
-    'Date',
-    'Type d\'entraînement',
-    'Durée (min)',
-    'Calories (kcal)',
-    'Distance (km)',
-    'FC moyenne (bpm)',
-    'FC max (bpm)',
-    'Vitesse moy (km/h)',
-    'Commentaire'
-  ]
-
-  const rows = entrainements.map(ent => [
-    formatDate(new Date(ent.date), 'dd/MM/yyyy', { locale: fr }),
-    ent.type,
-    ent.duree.toString(),
-    ent.calories?.toString() || '',
-    ent.distance?.toString() || '',
-    ent.fc_moyenne?.toString() || '',
-    ent.fc_max?.toString() || '',
-    ent.vitesse_moy?.toString() || '',
-    ent.commentaire || ''
-  ])
-
-  return { headers, rows, metadata }
+export function formatEntrainementsForCSV(entrainements: Entrainement[]): Record<string, unknown>[] {
+  return entrainements.map(e => ({
+    Date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+    Type: e.type,
+    Durée: `${e.duree} minutes`,
+    Calories: e.calories || 0,
+    Commentaire: e.commentaire || '',
+    Exercices: ''
+  }))
 }
 
 /**
  * Formate les données de mesures pour export CSV
  */
-export function formatMesuresForCSV(
-  mesures: Mesure[],
-  config: ExportConfig,
-  metadata: ExportMetadata
-): CSVExportData {
-  const headers = [
-    'Date',
-    'Poids (kg)',
-    'IMC',
-    'Masse grasse (%)',
-    'Masse musculaire (kg)',
-    'Tour de taille (cm)',
-    'Tour de bras (cm)',
-    'Tour de poitrine (cm)',
-    'Commentaire'
-  ]
-
-  const rows = mesures.map(mesure => [
-    formatDate(new Date(mesure.date), 'dd/MM/yyyy', { locale: fr }),
-    mesure.poids?.toString() || '',
-    mesure.imc?.toFixed(1) || '',
-    mesure.masse_grasse?.toString() || '',
-    mesure.masse_musculaire?.toString() || '',
-    mesure.tour_taille?.toString() || '',
-    mesure.tour_bras?.toString() || '',
-    mesure.tour_poitrine?.toString() || '',
-    mesure.commentaire || ''
-  ])
-
-  return { headers, rows, metadata }
+export function formatMesuresForCSV(mesures: Mesure[]): Record<string, unknown>[] {
+  return mesures.map(m => ({
+    Date: format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
+    Poids: `${m.poids} kg`,
+    Taille: `${m.taille} cm`,
+    IMC: m.imc?.toFixed(2) || '0.00',
+    'Masse grasse': `${m.masse_grasse}%`,
+    'Masse musculaire': `${m.masse_musculaire} kg`,
+    Commentaire: m.commentaire || ''
+  }))
 }
 
 /**
@@ -184,33 +147,21 @@ export async function generateAndDownloadCSV(
   fileName: string
 ): Promise<void> {
   try {
-    let csvData: CSVExportData
+    let csvData: Record<string, unknown>[]
 
     switch (config.dataType) {
       case 'repas':
-        csvData = formatRepasForCSV(data.repas, config, metadata)
+        csvData = formatRepasForCSV(data.repas)
         break
       case 'entrainements':
-        csvData = formatEntrainementsForCSV(data.entrainements, config, metadata)
+        csvData = formatEntrainementsForCSV(data.entrainements)
         break
       case 'mesures':
-        csvData = formatMesuresForCSV(data.mesures, config, metadata)
+        csvData = formatMesuresForCSV(data.mesures)
         break
       case 'all':
         // Combiner toutes les données
-        const repasData = formatRepasForCSV(data.repas, config, metadata)
-        const entrainementsData = formatEntrainementsForCSV(data.entrainements, config, metadata)
-        const mesuresData = formatMesuresForCSV(data.mesures, config, metadata)
-        
-        csvData = {
-          headers: ['Type', ...repasData.headers],
-          rows: [
-            ...repasData.rows.map(row => ['Repas', ...row]),
-            ...entrainementsData.rows.map(row => ['Entraînement', ...row]),
-            ...mesuresData.rows.map(row => ['Mesure', ...row])
-          ],
-          metadata
-        }
+        csvData = formatAllDataForCSV(data.repas, data.entrainements, data.mesures)
         break
       default:
         throw new Error(`Type de données non supporté: ${config.dataType}`)
@@ -218,158 +169,123 @@ export async function generateAndDownloadCSV(
 
     // Convertir en CSV avec Papa Parse
     const csv = Papa.unparse({
-      fields: csvData.headers,
-      data: csvData.rows
+      fields: Object.keys(csvData[0] || {}), // Dynamically get headers from the first row
+      data: csvData
     })
 
     // Ajouter les métadonnées en commentaires
     const metadataComments = [
       `# SuperNovaFit Export - ${metadata.version}`,
       `# Période: ${metadata.period}`,
-      `# Généré le: ${formatDate(new Date(metadata.exportedAt), 'dd/MM/yyyy à HH:mm', { locale: fr })}`,
+      `# Généré le: ${format(new Date(metadata.exportedAt), 'dd/MM/yyyy à HH:mm', { locale: fr })}`,
       `# Total enregistrements: ${metadata.totalRecords}`,
       ''
     ].join('\n')
 
     const finalCsv = metadataComments + csv
 
-    // Créer et télécharger le fichier
+    // Créer le blob et télécharger
     const blob = new Blob([finalCsv], { type: 'text/csv;charset=utf-8;' })
     saveAs(blob, `${fileName}.csv`)
 
   } catch (error) {
     console.error('Erreur lors de la génération CSV:', error)
-    throw new Error('Impossible de générer le fichier CSV')
+    throw new Error('Erreur lors de la génération du fichier CSV')
   }
 }
 
 /**
- * Génère un nom de fichier pour l'export
+ * Applique des filtres aux données
  */
-export function generateFileName(
-  config: ExportConfig,
-  metadata: ExportMetadata
-): string {
-  const dataTypeLabel = getDataTypeLabel(config.dataType)
-  const periodLabel = getPeriodLabel(config.period)
-  const timestamp = formatDate(new Date(metadata.exportedAt), 'yyyy-MM-dd_HH-mm', { locale: fr })
-  
-  return `SuperNovaFit_${dataTypeLabel}_${periodLabel}_${timestamp}`
-}
-
-/**
- * Obtient le label français du type de repas
- */
-function getMealTypeLabel(mealType: string): string {
-  const labels: Record<string, string> = {
-    'petit_dej': 'Petit déjeuner',
-    'collation_matin': 'Collation matin',
-    'dejeuner': 'Déjeuner',
-    'collation_apres_midi': 'Collation après-midi',
-    'diner': 'Dîner',
-    'collation_soir': 'Collation soir'
-  }
-  
-  return labels[mealType] || mealType
-}
-
-/**
- * Obtient le label français du type de données
- */
-function getDataTypeLabel(dataType: string): string {
-  const labels: Record<string, string> = {
-    'repas': 'Repas',
-    'entrainements': 'Entrainements',
-    'mesures': 'Mesures',
-    'journal': 'Journal',
-    'photos': 'Photos',
-    'all': 'ToutesDonnees'
-  }
-  
-  return labels[dataType] || dataType
-}
-
-/**
- * Obtient le label français de la période
- */
-function getPeriodLabel(period: string): string {
-  const labels: Record<string, string> = {
-    'day': 'Jour',
-    'week': 'Semaine',
-    'month': 'Mois',
-    'quarter': 'Trimestre',
-    'year': 'Annee',
-    'custom': 'Personnalise'
-  }
-  
-  return labels[period] || period
-}
-
-/**
- * Filtre les données selon la configuration
- */
-export function filterDataByConfig<T>(
+export function applyFilters<T extends Record<string, unknown>>(
   data: T[],
-  config: ExportConfig,
-  dateField: keyof T = 'date' as keyof T
+  filters: Record<string, unknown>
 ): T[] {
-  let filteredData = [...data]
+  let filteredData = data
 
-  // Filtre par période
-  if (config.startDate && config.endDate) {
+  // Filtrer par date si spécifié
+  if (filters.startDate && filters.endDate) {
+    const startDate = new Date(filters.startDate as string)
+    const endDate = new Date(filters.endDate as string)
+    
     filteredData = filteredData.filter(item => {
-      const itemDate = (item as any)[dateField]
-      if (!itemDate) return false
-      
-      const date = new Date(itemDate)
-      const start = new Date(config.startDate!)
-      const end = new Date(config.endDate!)
-      
-      return date >= start && date <= end
+      const itemDate = new Date((item.date as string) || '')
+      return itemDate >= startDate && itemDate <= endDate
     })
   }
 
-  // Filtre par type (pour les repas)
-  if (config.filters?.mealTypes && config.dataType === 'repas') {
+  // Filtrer par calories si spécifié
+  if (filters.minCalories || filters.maxCalories) {
     filteredData = filteredData.filter(item => {
-      const mealType = (item as any).repas
-      return config.filters!.mealTypes!.includes(mealType)
+      const calories = (item.Calories as number) || 0
+      const minCalories = (filters.minCalories as number) || 0
+      const maxCalories = (filters.maxCalories as number) || Infinity
+      return calories >= minCalories && calories <= maxCalories
     })
   }
 
-  // Filtre par type (pour les entraînements)
-  if (config.filters?.trainingTypes && config.dataType === 'entrainements') {
+  // Filtrer par durée si spécifié
+  if (filters.minDuration || filters.maxDuration) {
     filteredData = filteredData.filter(item => {
-      const trainingType = (item as any).type
-      return config.filters!.trainingTypes!.includes(trainingType)
-    })
-  }
-
-  // Filtre par calories
-  if (config.filters?.minCalories || config.filters?.maxCalories) {
-    filteredData = filteredData.filter(item => {
-      const calories = (item as any).calories || (item as any).macros?.kcal
-      if (!calories) return true
-      
-      const min = config.filters?.minCalories || 0
-      const max = config.filters?.maxCalories || Infinity
-      
-      return calories >= min && calories <= max
-    })
-  }
-
-  // Filtre par durée (pour les entraînements)
-  if (config.filters?.minDuration || config.filters?.maxDuration) {
-    filteredData = filteredData.filter(item => {
-      const duration = (item as any).duree
-      if (!duration) return true
-      
-      const min = config.filters?.minDuration || 0
-      const max = config.filters?.maxDuration || Infinity
-      
-      return duration >= min && duration <= max
+      const duration = parseInt((item.Durée as string)?.split(' ')[0] || '0')
+      const minDuration = (filters.minDuration as number) || 0
+      const maxDuration = (filters.maxDuration as number) || Infinity
+      return duration >= minDuration && duration <= maxDuration
     })
   }
 
   return filteredData
+}
+
+export function formatAllDataForCSV(
+  repas: Repas[], 
+  entrainements: Entrainement[], 
+  mesures: Mesure[]
+): Record<string, unknown>[] {
+  const allData: Record<string, unknown>[] = []
+  
+  // Ajouter les repas
+  repas.forEach(r => {
+    allData.push({
+      Type: 'Repas',
+      Date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+      Détail: r.repas,
+      Calories: r.macros.kcal,
+      Protéines: r.macros.prot,
+      Glucides: r.macros.glucides,
+      Lipides: r.macros.lipides,
+      Commentaire: ''
+    })
+  })
+  
+  // Ajouter les entraînements
+  entrainements.forEach(e => {
+    allData.push({
+      Type: 'Entraînement',
+      Date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+      Détail: e.type,
+      Durée: `${e.duree} minutes`,
+      Calories: e.calories || 0,
+      Commentaire: e.commentaire || ''
+    })
+  })
+  
+  // Ajouter les mesures
+  mesures.forEach(m => {
+    allData.push({
+      Type: 'Mesure',
+      Date: format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
+      Détail: 'Mesures corporelles',
+      Poids: `${m.poids} kg`,
+      IMC: m.imc?.toFixed(2) || '0.00',
+      'Masse grasse': `${m.masse_grasse}%`,
+      Commentaire: m.commentaire || ''
+    })
+  })
+  
+  return allData.sort((a, b) => {
+    const dateA = new Date(a.Date as string).getTime()
+    const dateB = new Date(b.Date as string).getTime()
+    return dateB - dateA
+  })
 }
