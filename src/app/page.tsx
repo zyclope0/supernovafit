@@ -138,8 +138,8 @@ export default function Dashboard() {
   const preciseTDEE = userProfile ? calculateTDEE(userProfile) : null
   const estimatedTDEE = preciseTDEE || (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0)
 
-  // Loading state - attendre que l'utilisateur soit chargé et que les données soient prêtes
-  if (!user || repasLoading || trainingsLoading || measuresLoading) {
+  // Loading state - afficher le contenu dès que l'utilisateur est connecté
+  if (!user) {
     return (
       <MainLayout>
         <div className="space-y-6">
@@ -173,28 +173,28 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard 
             title="Calories aujourd&apos;hui" 
-            value={formatNumber(todayStats.kcal)} 
+            value={repasLoading ? '...' : formatNumber(todayStats.kcal)} 
             unit="kcal" 
             icon="🔥" 
             color="neon-green"
           />
           <StatsCard 
             title="Protéines" 
-            value={formatNumber(todayStats.prot)} 
+            value={repasLoading ? '...' : formatNumber(todayStats.prot)} 
             unit="g" 
             icon="🥩" 
             color="neon-cyan"
           />
           <StatsCard 
             title="Entraînements" 
-            value={thisWeekTrainings} 
+            value={trainingsLoading ? '...' : thisWeekTrainings} 
             unit="cette semaine" 
             icon="💪" 
             color="neon-pink"
           />
           <StatsCard 
             title="Poids actuel" 
-            value={latestWeight?.poids ? formatNumber(latestWeight.poids) : '--'} 
+            value={measuresLoading ? '...' : (latestWeight?.poids ? formatNumber(latestWeight.poids) : '--')} 
             unit="kg" 
             icon="⚖️" 
             color="neon-purple"

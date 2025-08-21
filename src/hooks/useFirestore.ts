@@ -74,7 +74,7 @@ export function useRepas() {
     )
 
     return () => unsubscribe()
-  }, [user, repasErrorHandler])
+  }, [user])
 
   const addRepas = async (repasData: Omit<Repas, 'id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
@@ -165,7 +165,7 @@ export function useEntrainements() {
     )
 
     return () => unsubscribe()
-  }, [user, entrainementsErrorHandler])
+  }, [user])
 
   const addEntrainement = async (entrainementData: Omit<Entrainement, 'id'>) => {
     if (!user) {
@@ -280,7 +280,7 @@ export function useFavoris() {
     )
 
     return () => unsubscribe()
-  }, [user, favorisErrorHandler])
+  }, [user])
 
   const addToFavoris = async (aliment: Omit<Aliment, 'id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
@@ -373,7 +373,7 @@ export function useMesures() {
     )
 
     return () => unsubscribe()
-  }, [user, mesuresErrorHandler])
+  }, [user])
 
   const addMesure = async (mesureData: Omit<Mesure, 'id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
