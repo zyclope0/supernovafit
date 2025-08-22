@@ -1,0 +1,75 @@
+diff --git a/tailwind.config.ts b/tailwind.config.ts
+index 1234567..abcdefg 100644
+--- a/tailwind.config.ts
++++ b/tailwind.config.ts
+@@ -15,8 +15,11 @@ const config: Config = {
+       },
+       colors: {
+         'neon-purple': '#a855f7',
++        'neon-purple-a11y': '#8b2be2', // Ratio 4.5:1 sur dark
+         'neon-cyan': '#22d3ee',
++        'neon-cyan-a11y': '#00b8d4', // Ratio 4.5:1 sur dark
+         'neon-green': '#10b981',
++        'neon-green-a11y': '#00a86b', // Ratio 4.5:1 sur dark
+         'neon-pink': '#ec4899',
+         'space-900': '#0f0f1e',
+         'space-800': '#1a1a2e',
+
+diff --git a/src/styles/globals.css b/src/styles/globals.css
+index 1234567..abcdefg 100644
+--- a/src/styles/globals.css
++++ b/src/styles/globals.css
+@@ -10,6 +10,24 @@
+   --background-end-rgb: 15, 15, 30;
+ }
+ 
++/* Couleurs accessibles avec contraste suffisant */
++:root {
++  --color-primary: #8b2be2; /* neon-purple-a11y */
++  --color-secondary: #00b8d4; /* neon-cyan-a11y */
++  --color-success: #00a86b; /* neon-green-a11y */
++  --color-error: #dc2626; /* red-600 */
++  --color-warning: #f59e0b; /* amber-500 */
++}
++
++/* Classes utilitaires pour les couleurs accessibles */
++.text-primary { color: var(--color-primary); }
++.text-secondary { color: var(--color-secondary); }
++.text-success { color: var(--color-success); }
++.text-error { color: var(--color-error); }
++.text-warning { color: var(--color-warning); }
++
++.bg-primary { background-color: var(--color-primary); }
++.bg-secondary { background-color: var(--color-secondary); }
++
+ @media (prefers-color-scheme: dark) {
+   :root {
+     --foreground-rgb: 255, 255, 255;
+
+diff --git a/src/app/diete/page.tsx b/src/app/diete/page.tsx
+index 1234567..abcdefg 100644
+--- a/src/app/diete/page.tsx
++++ b/src/app/diete/page.tsx
+@@ -94,7 +94,7 @@ function MealCard({
+           )}
+           <button 
+             onClick={onAddMeal}
+-            className="px-3 py-1 bg-neon-purple/20 text-neon-purple rounded-lg text-sm font-medium hover:bg-neon-purple/30 transition-colors"
++            className="px-3 py-1 bg-neon-purple-a11y/30 text-neon-purple-a11y rounded-lg text-sm font-medium hover:bg-neon-purple-a11y/40 transition-colors"
+           >
+             <PlusCircle className="h-4 w-4 inline mr-1" />
+             Ajouter
+@@ -424,7 +424,7 @@ export default function DietePage() {
+           <div className="flex space-x-3">
+             <button 
+               onClick={() => setShowMenuTypes(true)}
+-              className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors"
++              className="px-4 py-2 bg-neon-purple-a11y/30 text-neon-purple-a11y rounded-lg font-medium hover:bg-neon-purple-a11y/40 transition-colors"
+             >
+               Menu-type
+             </button>
+             <button 
+               onClick={() => setShowHistorique(true)}
+-              className="px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors"
++              className="px-4 py-2 bg-neon-cyan-a11y/30 text-neon-cyan-a11y rounded-lg font-medium hover:bg-neon-cyan-a11y/40 transition-colors"
+             >

@@ -1,0 +1,72 @@
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index 1234567..abcdefg 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -44,8 +44,20 @@ export default function RootLayout({
+   children: React.ReactNode
+ }) {
+   return (
+-    <html lang="en" suppressHydrationWarning>
++    <html lang="fr" suppressHydrationWarning>
+       <body className={cn(inter.className, "bg-gray-950 text-gray-100")}>
++        {/* Skip links pour l'accessibilité */}
++        <a 
++          href="#main-content" 
++          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-neon-purple focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-cyan"
++        >
++          Aller au contenu principal
++        </a>
++        <a 
++          href="#navigation" 
++          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-48 focus:z-50 focus:px-4 focus:py-2 focus:bg-neon-purple focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neon-cyan"
++        >
++          Aller à la navigation
++        </a>
+         <ChunkGuard>
+           {children}
+         </ChunkGuard>
+
+diff --git a/src/components/layout/MainLayout.tsx b/src/components/layout/MainLayout.tsx
+index 1234567..abcdefg 100644
+--- a/src/components/layout/MainLayout.tsx
++++ b/src/components/layout/MainLayout.tsx
+@@ -22,7 +22,7 @@ export default function MainLayout({ children }: { children: React.ReactNode })
+   return (
+     <div className="flex h-screen overflow-hidden">
+       {/* Sidebar */}
+-      <Sidebar />
++      <Sidebar id="navigation" />
+ 
+       {/* Main content */}
+       <div className="flex-1 flex flex-col">
+@@ -66,7 +66,7 @@ export default function MainLayout({ children }: { children: React.ReactNode })
+         </header>
+ 
+         {/* Main content area */}
+-        <main className="flex-1 overflow-auto">
++        <main id="main-content" className="flex-1 overflow-auto">
+           {children}
+         </main>
+       </div>
+
+diff --git a/src/components/layout/Sidebar.tsx b/src/components/layout/Sidebar.tsx
+index 1234567..abcdefg 100644
+--- a/src/components/layout/Sidebar.tsx
++++ b/src/components/layout/Sidebar.tsx
+@@ -51,7 +51,7 @@ import type { Role } from '@/types'
+ import { useEffect, useMemo, useState } from 'react'
+ import { useFirebaseError } from '@/hooks/useFirebaseError'
+ 
+-export default function Sidebar() {
++export default function Sidebar({ id }: { id?: string }) {
+   const { user, userProfile, signOut } = useAuth()
+   const pathname = usePathname()
+@@ -241,7 +241,7 @@ export default function Sidebar() {
+   ]
+ 
+   return (
+-    <aside className="h-screen w-64 bg-gray-900/50 backdrop-blur border-r border-gray-800 flex flex-col">
++    <aside id={id} className="h-screen w-64 bg-gray-900/50 backdrop-blur border-r border-gray-800 flex flex-col">
+       {/* Logo */}
+       <div className="p-6 border-b border-gray-800">
+         <Link href="/" className="flex items-center space-x-3">

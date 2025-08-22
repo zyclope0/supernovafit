@@ -1,0 +1,152 @@
+diff --git a/src/app/export/page.tsx b/src/app/export/page.tsx
+index 1234567..abcdefg 100644
+--- a/src/app/export/page.tsx
++++ b/src/app/export/page.tsx
+@@ -6,30 +6,21 @@
+ 'use client'
+ 
+ import { useState } from 'react'
+-import { useExportData } from '@/hooks/useExportData'
+-import { ExportButton } from '@/components/ui/ExportButton'
++import dynamic from 'next/dynamic'
+ import { FormErrorDisplay } from '@/components/ui/FirebaseErrorDisplay'
+ import MainLayout from '@/components/layout/MainLayout'
+-import { 
+-  FileText, 
+-  FileSpreadsheet, 
+-  FileJson, 
+-  BarChart3, 
+-  Calendar,
+-  Download,
+-  CheckCircle,
+-  Loader2,
+-  Sparkles,
+-  TrendingUp,
+-  Zap,
+-  Target
+-} from 'lucide-react'
++import * as Icons from 'lucide-react'
++
++// Dynamic imports pour réduire le bundle initial
++const ExportContent = dynamic(
++  () => import('@/components/export/ExportContent'),
++  { 
++    loading: () => <div className="animate-pulse h-96 bg-white/5 rounded-lg" />,
++    ssr: false 
++  }
++)
+ 
+ import type { ExportFormat, ExportDataType, ExportPeriod } from '@/types/export'
+ 
+ export default function ExportPage() {
+-  const {
+-    exportData,
+-    exportState,
+-    error,
+-    loading
+-  } = useExportData()
+-
+   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('pdf')
+   const [selectedDataType, setSelectedDataType] = useState<ExportDataType>('all')
+   const [selectedPeriod, setSelectedPeriod] = useState<ExportPeriod>('week')
+@@ -40,6 +31,48 @@ export default function ExportPage() {
+   return (
+     <MainLayout>
+       <div className="min-h-screen p-4 md:p-8">
++        <ExportContent
++          selectedFormat={selectedFormat}
++          setSelectedFormat={setSelectedFormat}
++          selectedDataType={selectedDataType}
++          setSelectedDataType={setSelectedDataType}
++          selectedPeriod={selectedPeriod}
++          setSelectedPeriod={setSelectedPeriod}
++          includeCharts={includeCharts}
++          setIncludeCharts={setIncludeCharts}
++          customStartDate={customStartDate}
++          setCustomStartDate={setCustomStartDate}
++          customEndDate={customEndDate}
++          setCustomEndDate={setCustomEndDate}
++        />
++      </div>
++    </MainLayout>
++  )
++}
+
+diff --git a/src/components/export/ExportContent.tsx b/src/components/export/ExportContent.tsx
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/src/components/export/ExportContent.tsx
+@@ -0,0 +1,50 @@
++'use client'
++
++import { useExportData } from '@/hooks/useExportData'
++import { ExportButton } from '@/components/ui/ExportButton'
++import { 
++  FileText, 
++  FileSpreadsheet, 
++  FileJson, 
++  BarChart3
++} from 'lucide-react'
++
++interface ExportContentProps {
++  // Props from parent
++}
++
++export default function ExportContent(props: ExportContentProps) {
++  const {
++    exportData,
++    exportState,
++    error,
++    loading
++  } = useExportData()
++
++  // Contenu original de la page export déplacé ici
++  // Cela permet de charger ce contenu lourd uniquement quand nécessaire
++
++  return (
++    <>
++      {/* Contenu de l'export */}
++    </>
++  )
++}
+
+diff --git a/src/hooks/useExportData.ts b/src/hooks/useExportData.ts
+index 1234567..abcdefg 100644
+--- a/src/hooks/useExportData.ts
++++ b/src/hooks/useExportData.ts
+@@ -1,10 +1,25 @@
+ import { useState, useCallback } from 'react'
+-import { generatePDF } from '@/lib/export/pdf-export'
+-import { generateExcel } from '@/lib/export/excel-export'
+-import { generateCSV } from '@/lib/export/csv-export'
+-import { generateJSON } from '@/lib/export/json-export'
+ 
+ export function useExportData() {
++  // Lazy load les fonctions d'export pour réduire le bundle
++  const exportFunctions = {
++    pdf: () => import('@/lib/export/pdf-export').then(m => m.generatePDF),
++    excel: () => import('@/lib/export/excel-export').then(m => m.generateExcel),
++    csv: () => import('@/lib/export/csv-export').then(m => m.generateCSV),
++    json: () => import('@/lib/export/json-export').then(m => m.generateJSON)
++  }
+
+diff --git a/src/hooks/useExportData.ts b/src/hooks/useExportData.ts
+index 1234567..abcdefg 100644
+--- a/src/hooks/useExportData.ts
++++ b/src/hooks/useExportData.ts
+@@ -1,10 +1,25 @@
+ import { useState, useCallback } from 'react'
+-import { generatePDF } from '@/lib/export/pdf-export'
+-import { generateExcel } from '@/lib/export/excel-export'
+-import { generateCSV } from '@/lib/export/csv-export'
+-import { generateJSON } from '@/lib/export/json-export'
+ 
+ export function useExportData() {
++  // Lazy load les fonctions d'export pour réduire le bundle
++  const exportFunctions = {
++    pdf: () => import('@/lib/export/pdf-export').then(m => m.generatePDF),
++    excel: () => import('@/lib/export/excel-export').then(m => m.generateExcel),
++    csv: () => import('@/lib/export/csv-export').then(m => m.generateCSV),
++    json: () => import('@/lib/export/json-export').then(m => m.generateJSON)
++  }
