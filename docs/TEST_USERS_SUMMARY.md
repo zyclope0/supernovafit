@@ -4,7 +4,7 @@
 
 Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils sont prêts à être utilisés pour tester l'application.
 
-**Version** : 1.9.2 | **Dernière mise à jour** : 17.08.2025
+**Version** : 1.9.3 | **Dernière mise à jour** : 22.08.2025
 
 ---
 
@@ -165,7 +165,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 
 ## 🚀 **STATUT ACTUEL**
 
-- **Version** : 1.9.2
+- **Version** : 1.9.3
 - **Statut** : ✅ STABLE
 - **Build** : ✅ Réussi
 - **Tests** : ✅ 15/17 passent

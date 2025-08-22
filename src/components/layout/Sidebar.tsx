@@ -34,7 +34,9 @@ const navigation = [
 ]
 
 const publicNavigation = [
+  { name: 'Accueil', href: '/', icon: HomeIcon },
   { name: 'Guide', href: '/guide', icon: BookOpenIcon },
+  { name: 'Nouveautés', href: '/nouveautes', icon: SparklesIcon },
 ]
 
 const coachNavigation = [
@@ -340,12 +342,8 @@ export default function Sidebar() {
             {!sidebarCollapsed && (
               <div className="mt-6 pt-4 border-t border-white/10">
                 <div className="text-xs text-accessible text-center space-y-2">
-                  <div>Version 1.9.2 (2025-08-17)</div>
+                  <div>Version 1.9.3</div>
                   <div className="flex flex-wrap justify-center gap-2 text-xs">
-                    <Link href="/nouveautes" className="text-accessible hover:text-neon-cyan transition-colors">
-                      Nouveautés
-                    </Link>
-                    <span className="text-white/30">·</span>
                     <Link href="/legal/privacy" className="text-accessible hover:text-neon-cyan transition-colors">
                       Confidentialité
                     </Link>
