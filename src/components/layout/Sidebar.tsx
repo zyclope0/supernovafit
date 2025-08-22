@@ -1,218 +1,367 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
-import { APP_VERSION, APP_RELEASE_DATE } from '@/lib/constants'
-import { useCoachCommentsByModule } from '@/hooks/useFirestore'
-import {
+import { 
+  Bars3Icon, 
+  XMarkIcon,
   HomeIcon,
   ChartBarIcon,
-  CalendarDaysIcon,
+  CalendarIcon,
   ScaleIcon,
   BookOpenIcon,
+  UserGroupIcon,
   CogIcon,
-  Bars3Icon,
-  XMarkIcon,
-  RocketLaunchIcon,
-  UserIcon,
+  ArrowRightOnRectangleIcon,
+  DocumentTextIcon,
+  SparklesIcon,
   UsersIcon,
-  ArrowDownTrayIcon
+  ClipboardDocumentListIcon,
+  ChartPieIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline'
 
-// Navigation pour les utilisateurs normaux (sportifs)
-const userNavigation = [
+const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
   { name: 'Diète', href: '/diete', icon: ChartBarIcon },
-  { name: 'Entraînements', href: '/entrainements', icon: CalendarDaysIcon },
+  { name: 'Entraînements', href: '/entrainements', icon: CalendarIcon },
   { name: 'Mesures', href: '/mesures', icon: ScaleIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
-  { name: 'Export', href: '/export', icon: ArrowDownTrayIcon },
-  { name: 'Guide', href: '/guide', icon: BookOpenIcon },
-  { name: 'Mon Profil', href: '/profil', icon: UserIcon },
+  { name: 'Export', href: '/export', icon: DocumentTextIcon },
 ]
 
-// Navigation spécifique pour les coachs
+const publicNavigation = [
+  { name: 'Guide', href: '/guide', icon: BookOpenIcon },
+]
+
 const coachNavigation = [
-  { name: 'Tableau de bord', href: '/coach', icon: HomeIcon },
-  { name: 'Mes Athlètes', href: '/coach', icon: UsersIcon },
+  { name: 'Dashboard', href: '/coach', icon: HomeIcon },
+  { name: 'Mes Athlètes', href: '/coach/mes-athletes', icon: UserGroupIcon },
   { name: 'Tous les Athlètes', href: '/coach/all-athletes', icon: UsersIcon },
-  { name: 'Programmes', href: '/coach/programmes', icon: CalendarDaysIcon },
-  { name: 'Rapports', href: '/coach/rapports', icon: ChartBarIcon },
+  { name: 'Programmes', href: '/coach/programmes', icon: ClipboardDocumentListIcon },
+  { name: 'Rapports', href: '/coach/rapports', icon: ChartPieIcon },
 ]
 
 const authNavigation = [
-  { name: 'Authentification', href: '/auth', icon: CogIcon },
+  { name: 'Profil', href: '/profil', icon: CogIcon },
+  { name: 'Nouveautés', href: '/nouveautes', icon: SparklesIcon },
 ]
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
-  const { userProfile } = useAuth()
-  
-  // Badges nouveaux commentaires (dernieres 24h) pour l'athlète
+  const { user, userProfile, loading, signOut } = useAuth()
   const isCoach = userProfile?.role === 'coach'
-  const dieteC = useCoachCommentsByModule(!isCoach ? 'diete' : 'diete')
-  const entrC = useCoachCommentsByModule(!isCoach ? 'entrainements' : 'entrainements')
-  const journC = useCoachCommentsByModule(!isCoach ? 'journal' : 'journal')
-  const mesC = useCoachCommentsByModule(!isCoach ? 'mesures' : 'mesures')
-  const now = new Date().getTime()
-  function hasToDate(obj: unknown): obj is { toDate: () => Date } {
-    return typeof obj === 'object' && obj !== null && 'toDate' in (obj as Record<string, unknown>) &&
-      typeof (obj as { toDate?: unknown }).toDate === 'function'
+
+  // Détection du type d'appareil et gestion responsive
+  useEffect(() => {
+    const checkDevice = () => {
+      const mobile = window.innerWidth < 1024 // lg breakpoint
+      setIsMobile(mobile)
+      
+      // Sur mobile : sidebar fermée par défaut
+      // Sur desktop : sidebar ouverte par défaut
+      if (mobile) {
+        setSidebarOpen(false)
+        setSidebarCollapsed(false)
+      } else {
+        setSidebarOpen(true)
+        // Récupérer l'état de la sidebar depuis localStorage
+        const savedState = localStorage.getItem('sidebarCollapsed')
+        if (savedState !== null) {
+          setSidebarCollapsed(JSON.parse(savedState))
+        }
+      }
+    }
+
+    checkDevice()
+    window.addEventListener('resize', checkDevice)
+    return () => window.removeEventListener('resize', checkDevice)
+  }, [])
+
+  // Sauvegarder l'état de la sidebar dans localStorage
+  useEffect(() => {
+    if (!isMobile) {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed))
+    }
+  }, [sidebarCollapsed, isMobile])
+
+  // Navigation clavier pour la sidebar
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && sidebarOpen && isMobile) {
+        setSidebarOpen(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [sidebarOpen, isMobile])
+
+  const handleSignOut = async () => {
+    try {
+      const result = await signOut()
+      if (result.success) {
+        // Rediriger vers la page d'accueil après déconnexion
+        window.location.href = '/'
+      } else {
+        console.error('Erreur lors de la déconnexion:', result.error)
+      }
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error)
+    }
   }
-  const isNewAndUnread = (c: { read_by_athlete?: boolean; created_at?: Date | string | { toDate?: () => Date } }) => {
-    if (c?.read_by_athlete === true) return false
-    const createdObj = c?.created_at as unknown
-    const created = hasToDate(createdObj)
-      ? createdObj.toDate()
-      : (c?.created_at ? new Date(c.created_at as string | number | Date) : null)
-    if (!created) return false
-    return now - created.getTime() <= 24 * 60 * 60 * 1000
-  }
-  const newCounts = {
-    diete: dieteC.comments?.filter(isNewAndUnread).length || 0,
-    entrainements: entrC.comments?.filter(isNewAndUnread).length || 0,
-    journal: journC.comments?.filter(isNewAndUnread).length || 0,
-    mesures: mesC.comments?.filter(isNewAndUnread).length || 0,
-  }
-  
-  // Choisir la navigation selon le rôle de l'utilisateur
-  const navigation = userProfile?.role === 'coach' ? coachNavigation : userNavigation
+
+  const currentNavigation = isCoach ? coachNavigation : navigation
+  const displayNavigation = user ? currentNavigation : publicNavigation
 
   return (
     <>
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
+      {/* Bouton d'ouverture (mobile uniquement) */}
+      {isMobile && (
         <button
-          type="button"
-          className="glass-effect p-2 rounded-lg glow-purple"
           onClick={() => setSidebarOpen(true)}
+          className="fixed top-4 left-4 z-50 p-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white hover:bg-white/20 transition-all duration-200 focus-accessible"
           aria-label="Ouvrir le menu latéral"
+          aria-expanded={sidebarOpen}
+          aria-controls="sidebar"
         >
-          <Bars3Icon className="h-6 w-6 text-white" />
+          <Bars3Icon className="h-6 w-6" />
         </button>
-      </div>
+      )}
 
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+      {/* Overlay (mobile uniquement) */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
       )}
 
       {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out lg:translate-x-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        glass-effect border-r border-white/10
-      `}>
-        <div className="flex h-full flex-col">
+      <div
+        id="sidebar"
+        className={`
+          fixed top-0 left-0 h-full bg-space-900/95 backdrop-blur-xl border-r border-white/10 z-50
+          transition-all duration-300 ease-in-out
+          ${isMobile 
+            ? `w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
+            : `${sidebarCollapsed ? 'w-16' : 'w-64'}`
+          }
+        `}
+        role="navigation"
+        aria-label="Navigation principale"
+      >
+        <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/10">
-            <div className="flex items-center space-x-3">
-              <RocketLaunchIcon className="h-8 w-8 text-neon-purple animate-pulse-glow" />
-              <div>
-                <h1 className="text-xl font-bold neon-text">SuperNovaFit</h1>
-                <p className="text-xs text-muted-foreground">Plateforme Fitness</p>
+          <div className="flex items-center justify-between p-4 border-b border-white/10">
+            {!sidebarCollapsed && (
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-neon-purple to-neon-cyan rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">S</span>
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-white">SuperNovaFit</h1>
+                  <p className="text-xs text-accessible">Plateforme Fitness</p>
+                </div>
               </div>
+            )}
+            
+            <div className="flex items-center space-x-2">
+              {/* Bouton collapse/expand (desktop uniquement) */}
+              {!isMobile && (
+                <button
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="p-1 text-white/60 hover:text-white hover:bg-white/10 rounded transition-all duration-200 focus-accessible"
+                  aria-label={sidebarCollapsed ? "Développer la sidebar" : "Réduire la sidebar"}
+                >
+                  {sidebarCollapsed ? (
+                    <ChevronRightIcon className="h-5 w-5" />
+                  ) : (
+                    <ChevronLeftIcon className="h-5 w-5" />
+                  )}
+                </button>
+              )}
+              
+              {/* Bouton fermer (mobile uniquement) */}
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1 text-white/60 hover:text-white hover:bg-white/10 rounded transition-all duration-200 focus-accessible"
+                  aria-label="Fermer le menu latéral"
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </button>
+              )}
             </div>
-            <button
-              type="button"
-              className="lg:hidden p-1 rounded-md text-white hover:bg-white/10"
-              onClick={() => setSidebarOpen(false)}
-              aria-label="Fermer le menu latéral"
-            >
-              <XMarkIcon className="h-6 w-6" />
-            </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
-            {navigation.map((item) => {
-              // Pour le mode coach, éviter la double surbrillance
-              const isActive = userProfile?.role === 'coach' 
-                ? pathname === item.href && !(item.name === 'Mes Athlètes' && pathname === '/coach')
-                : pathname === item.href
-                
-              const badgeCount = !isCoach ? (
-                item.name === 'Diète' ? newCounts.diete :
-                item.name === 'Entraînements' ? newCounts.entrainements :
-                item.name === 'Journal' ? newCounts.journal :
-                item.name === 'Mesures' ? newCounts.mesures : 0
-              ) : 0
+          <nav className="flex-1 px-4 py-6 space-y-2" role="menubar">
+            {!loading && displayNavigation.map((item) => {
+            // Pour le mode coach, éviter la double surbrillance
+            const isActive = user && userProfile?.role === 'coach' 
+              ? pathname === item.href && !(item.name === 'Mes Athlètes' && pathname === '/coach')
+              : pathname === item.href
 
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`
-                    group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
-                    ${isActive 
-                      ? 'bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 glow-purple text-white' 
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5 hover:glow-cyan'
-                    }
-                  `}
-                  onClick={() => setSidebarOpen(false)}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <item.icon className={`
-                    mr-3 h-5 w-5 transition-colors duration-200
-                    ${isActive ? 'text-neon-purple' : 'text-muted-foreground group-hover:text-neon-cyan'}
-                  `} />
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`
+                  group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
+                  nav-accessible
+                  ${isActive 
+                    ? 'bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 glow-purple text-white' 
+                    : 'text-accessible hover:text-white hover:bg-white/5 hover:glow-cyan'
+                  }
+                `}
+                onClick={() => isMobile && setSidebarOpen(false)}
+                aria-current={isActive ? 'page' : undefined}
+                role="menuitem"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    isMobile && setSidebarOpen(false)
+                  }
+                }}
+                title={sidebarCollapsed ? item.name : undefined}
+              >
+                <item.icon className={`
+                  transition-colors duration-200
+                  ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
+                  ${isActive ? 'text-neon-purple' : 'text-accessible group-hover:text-neon-cyan'}
+                `} aria-hidden="true" />
+                {!sidebarCollapsed && (
                   <span className="flex-1 flex items-center justify-between">
                     <span>{item.name}</span>
-                    {badgeCount > 0 && (
-                      <span className="ml-2 inline-flex items-center justify-center min-w-[18px] h-5 px-1 text-[10px] font-semibold rounded-full bg-neon-pink/30 text-neon-pink border border-neon-pink/40">
-                        {badgeCount}
-                      </span>
-                    )}
                   </span>
-                </Link>
-              )
-            })}
+                )}
+              </Link>
+            )
+          })}
           </nav>
 
-          {/* Auth Section */}
-          <div className="px-4 pb-4">
-            {authNavigation.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`
-                    group flex items-center px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200
-                    ${isActive 
-                      ? 'bg-gradient-to-r from-neon-green/20 to-neon-cyan/20 border border-neon-green/30 glow-cyan text-white' 
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5 hover:glow-green'
+          {/* Navigation d'authentification */}
+          <div className="px-4 py-4 border-t border-white/10">
+            <nav className="space-y-2" role="menubar">
+              {!loading && user && authNavigation.map((item) => {
+                const isActive = pathname === item.href
+                
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`
+                      group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                      nav-accessible
+                      ${isActive 
+                        ? 'bg-gradient-to-r from-neon-green/20 to-neon-green/10 border border-neon-green/30 text-white' 
+                        : 'text-accessible hover:text-white hover:bg-white/5 hover:glow-green'
+                      }
+                    `}
+                    onClick={() => isMobile && setSidebarOpen(false)}
+                    aria-current={isActive ? 'page' : undefined}
+                    role="menuitem"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        isMobile && setSidebarOpen(false)
+                      }
+                    }}
+                    title={sidebarCollapsed ? item.name : undefined}
+                  >
+                    <item.icon className={`
+                      transition-colors duration-200
+                      ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
+                      ${isActive ? 'text-neon-green' : 'text-accessible group-hover:text-neon-green'}
+                    `} aria-hidden="true" />
+                    {!sidebarCollapsed && <span>{item.name}</span>}
+                  </Link>
+                )
+              })}
+              
+              {/* Bouton de connexion/déconnexion */}
+              {!loading && user ? (
+                <button
+                  onClick={handleSignOut}
+                  className="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-accessible hover:text-white hover:bg-white/5 focus-accessible"
+                  aria-label="Se déconnecter"
+                  role="menuitem"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleSignOut()
                     }
-                  `}
-                  onClick={() => setSidebarOpen(false)}
+                  }}
+                  title={sidebarCollapsed ? "Se déconnecter" : undefined}
                 >
-                  <item.icon className={`
-                    mr-2 h-4 w-4 transition-colors duration-200
-                    ${isActive ? 'text-neon-green' : 'text-muted-foreground group-hover:text-neon-green'}
-                  `} />
-                  {item.name}
+                  <ArrowRightOnRectangleIcon className={`
+                    transition-colors duration-200 text-accessible group-hover:text-red-400
+                    ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
+                  `} aria-hidden="true" />
+                  {!sidebarCollapsed && <span>Se déconnecter</span>}
+                </button>
+              ) : !loading ? (
+                <Link
+                  href="/auth"
+                  className="w-full group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-accessible hover:text-white hover:bg-white/5 focus-accessible"
+                  aria-label="Se connecter"
+                  role="menuitem"
+                  tabIndex={0}
+                  onClick={() => isMobile && setSidebarOpen(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      isMobile && setSidebarOpen(false)
+                    }
+                  }}
+                  title={sidebarCollapsed ? "Se connecter" : undefined}
+                >
+                  <ArrowRightOnRectangleIcon className={`
+                    transition-colors duration-200 text-accessible group-hover:text-neon-green
+                    ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
+                  `} aria-hidden="true" />
+                  {!sidebarCollapsed && <span>Se connecter</span>}
                 </Link>
-              )
-            })}
-          </div>
-
-          {/* Footer */}
-          <div className="p-4 border-t border-white/10">
-            <div className="text-xs text-muted-foreground text-center">
-              <p>Version {APP_VERSION} <span className="text-white/30">({APP_RELEASE_DATE})</span></p>
-              <p className="mt-1">
-                Thème Espace 🚀 · <Link href="/nouveautes" className="underline decoration-dotted hover:text-white">Nouveautés</Link>
-                <span className="mx-2">·</span>
-                <Link href="/legal/privacy" className="underline decoration-dotted hover:text-white">Confidentialité</Link>
-                <span className="mx-1">/</span>
-                <Link href="/legal/cookies" className="underline decoration-dotted hover:text-white">Cookies</Link>
-                <span className="mx-1">/</span>
-                <Link href="/legal/terms" className="underline decoration-dotted hover:text-white">CGU</Link>
-              </p>
-            </div>
+              ) : null}
+            </nav>
+            
+            {/* Informations de version et liens */}
+            {!sidebarCollapsed && (
+              <div className="mt-6 pt-4 border-t border-white/10">
+                <div className="text-xs text-accessible text-center space-y-2">
+                  <div>Version 1.9.2 (2025-08-17)</div>
+                  <div className="flex flex-wrap justify-center gap-2 text-xs">
+                    <Link href="/nouveautes" className="text-accessible hover:text-neon-cyan transition-colors">
+                      Nouveautés
+                    </Link>
+                    <span className="text-white/30">·</span>
+                    <Link href="/legal/privacy" className="text-accessible hover:text-neon-cyan transition-colors">
+                      Confidentialité
+                    </Link>
+                    <span className="text-white/30">·</span>
+                    <Link href="/legal/cookies" className="text-accessible hover:text-neon-cyan transition-colors">
+                      Cookies
+                    </Link>
+                    <span className="text-white/30">·</span>
+                    <Link href="/legal/terms" className="text-accessible hover:text-neon-cyan transition-colors">
+                      CGU
+                    </Link>
+                  </div>
+                  <div className="text-white/40">Thème Espace 🚀</div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

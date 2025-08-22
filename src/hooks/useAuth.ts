@@ -13,21 +13,49 @@ import {
 import { auth } from '@/lib/firebase'
 import { useFirebaseError } from './useFirebaseError'
 import type { User as UserType } from '@/types'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
 export function useAuth() {
   const [user, setUser] = useState<FirebaseUser | null>(null)
-  const [userProfile] = useState<UserType | null>(null)
+  const [userProfile, setUserProfile] = useState<UserType | null>(null)
   // loading: état d'auth uniquement (ne bloque plus sur le profil)
   const [loading, setLoading] = useState(true)
-  const [profileLoading] = useState(false)
+  const [profileLoading, setProfileLoading] = useState(false)
   
   // Gestion d'erreurs Firebase centralisée
   const authErrorHandler = useFirebaseError()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('Auth state changed:', user?.email)
       setUser(user)
       setLoading(false)
+      
+      // Charger le profil utilisateur si connecté
+      if (user) {
+        setProfileLoading(true)
+        try {
+          console.log('Loading profile for user:', user.uid)
+          const userDoc = await getDoc(doc(db, 'users', user.uid))
+          if (userDoc.exists()) {
+            const profileData = userDoc.data() as UserType
+            console.log('Profile loaded:', profileData)
+            setUserProfile(profileData)
+          } else {
+            console.log('No profile found for user:', user.uid)
+            setUserProfile(null)
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement du profil:', error)
+          setUserProfile(null)
+        } finally {
+          setProfileLoading(false)
+        }
+      } else {
+        console.log('User logged out, clearing profile')
+        setUserProfile(null)
+      }
     })
 
     return () => unsubscribe()

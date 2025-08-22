@@ -10,7 +10,7 @@ import { calculateTDEE } from '@/lib/userCalculations'
 import dynamic from 'next/dynamic'
 import type { Repas } from '@/types'
 import InviteCodeInput from '@/components/ui/InviteCodeInput'
-import { Users } from 'lucide-react'
+import { Users, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
@@ -98,8 +98,135 @@ function ProgressChart({ repas }: { repas: Repas[] }) {
   return <CaloriesChart repas={repas} days={7} />
 }
 
+// Page d'accueil pour les utilisateurs non connectés
+function LandingPage() {
+  const features = [
+    {
+      icon: '📊',
+      title: 'Suivi Nutritionnel',
+      description: 'Enregistrez vos repas et suivez vos macronutriments avec précision'
+    },
+    {
+      icon: '💪',
+      title: 'Entraînements',
+      description: 'Planifiez et suivez vos séances d&apos;entraînement personnalisées'
+    },
+    {
+      icon: '📏',
+      title: 'Mesures Corporelles',
+      description: 'Surveillez votre progression avec des graphiques détaillés'
+    },
+    {
+      icon: '📈',
+      title: 'Analyses Avancées',
+      description: 'Graphiques et rapports pour optimiser vos performances'
+    },
+    {
+      icon: '👥',
+      title: 'Coaching Personnalisé',
+      description: 'Connectez-vous avec des coaches certifiés pour un suivi expert'
+    },
+    {
+      icon: '📱',
+      title: 'Interface Moderne',
+      description: 'Design responsive et accessible sur tous vos appareils'
+    }
+  ]
+
+  const stats = [
+    { value: '10K+', label: 'Utilisateurs actifs' },
+    { value: '50K+', label: 'Repas enregistrés' },
+    { value: '95%', label: 'Satisfaction client' },
+    { value: '24/7', label: 'Support disponible' }
+  ]
+
+  return (
+    <MainLayout>
+      <div className="space-y-12">
+        {/* Hero Section */}
+        <div className="text-center space-y-6">
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-6xl font-bold text-white">
+              <span className="bg-gradient-to-r from-neon-cyan to-neon-purple bg-clip-text text-transparent">
+                SuperNovaFit
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+              Votre plateforme complète de fitness et nutrition pour atteindre vos objectifs
+            </p>
+            <p className="text-lg text-accessible max-w-2xl mx-auto">
+              Suivez votre alimentation, planifiez vos entraînements et connectez-vous avec des coaches certifiés pour maximiser vos résultats.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/auth"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
+            >
+              Commencer gratuitement
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+            <Link
+              href="/guide"
+              className="inline-flex items-center px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-all duration-200 border border-white/20"
+            >
+              Découvrir le guide
+            </Link>
+          </div>
+        </div>
+
+        {/* Statistiques */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {stats.map((stat, index) => (
+            <div key={index} className="glass-effect p-6 rounded-lg border border-white/10 text-center">
+              <div className="text-2xl md:text-3xl font-bold text-neon-cyan mb-2">{stat.value}</div>
+              <div className="text-sm text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Fonctionnalités */}
+        <div className="space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">Fonctionnalités Principales</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Tout ce dont vous avez besoin pour transformer votre approche du fitness et de la nutrition
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <div key={index} className="glass-effect p-6 rounded-lg border border-white/10 hover:border-neon-cyan/30 transition-all duration-200">
+                <div className="text-3xl mb-4">{feature.icon}</div>
+                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="glass-effect p-8 rounded-xl border border-neon-cyan/20 bg-gradient-to-r from-neon-cyan/5 to-neon-purple/5 text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">Prêt à transformer votre vie ?</h2>
+          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Rejoignez des milliers d&apos;utilisateurs qui ont déjà atteint leurs objectifs avec SuperNovaFit
+          </p>
+          <Link
+            href="/auth"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
+          >
+            Créer mon compte gratuitement
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Link>
+        </div>
+      </div>
+    </MainLayout>
+  )
+}
+
 export default function Dashboard() {
-  const { user, userProfile } = useAuth()
+  const { user, userProfile, loading } = useAuth()
   const { repas, loading: repasLoading } = useRepas()
   const { entrainements, loading: trainingsLoading } = useEntrainements()
   const { mesures, loading: measuresLoading } = useMesures()
@@ -138,16 +265,18 @@ export default function Dashboard() {
   const preciseTDEE = userProfile ? calculateTDEE(userProfile) : null
   const estimatedTDEE = preciseTDEE || (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0)
 
-  // Loading state - afficher le contenu dès que l'utilisateur est connecté
-  if (!user) {
+  // Si pas d'utilisateur connecté, afficher la page d'accueil
+  if (!loading && !user) {
+    return <LandingPage />
+  }
+
+  // Si en cours de chargement, afficher un spinner
+  if (loading) {
     return (
       <MainLayout>
-        <div className="space-y-6">
-          <div className="glass-effect p-6 rounded-xl border border-white/10">
-            <div className="animate-pulse">
-              <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-white/20 rounded w-1/2"></div>
-            </div>
+        <div className="container mx-auto p-4">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-neon-cyan border-t-transparent"></div>
           </div>
         </div>
       </MainLayout>

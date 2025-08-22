@@ -15,7 +15,43 @@ export default function NouveautesPage() {
         </div>
 
         {/* NOUVELLES FONCTIONNALITÉS UTILISATEUR */}
-        <CollapsibleCard title={`v${APP_VERSION} — 🎨 Interface Coach Améliorée`} defaultOpen>
+        <CollapsibleCard title={`v${APP_VERSION} — 🎨 Interface Moderne & Export de Données`} defaultOpen>
+          <div className="space-y-3">
+            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
+              <h4 className="font-semibold text-neon-purple mb-2">📊 Export de Données Complet</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Multi-formats</strong> : Export CSV, JSON, Excel et PDF avec graphiques intégrés</li>
+                <li><strong>Graphiques professionnels</strong> : Visualisations avancées dans les rapports PDF et Excel</li>
+                <li><strong>Filtres personnalisables</strong> : Sélection de période et types de données</li>
+                <li><strong>Design professionnel</strong> : Rapports avec mise en page soignée et couleurs de marque</li>
+                <li><strong>Statistiques calculées</strong> : Analyses automatiques des données exportées</li>
+              </ul>
+            </div>
+            
+            <div className="bg-neon-green/10 p-3 rounded-lg border border-neon-green/20">
+              <h4 className="font-semibold text-neon-green mb-2">✨ Interface Glassmorphism</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Design moderne</strong> : Effets de verre et bordures translucides</li>
+                <li><strong>Animations fluides</strong> : Transitions et effets hover avancés</li>
+                <li><strong>Couleurs de marque</strong> : Palette SuperNovaFit cohérente (neon-purple, neon-cyan)</li>
+                <li><strong>Responsive design</strong> : Adaptation parfaite mobile et desktop</li>
+                <li><strong>États visuels</strong> : Indicateurs de progression et succès animés</li>
+              </ul>
+            </div>
+
+            <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+              <h4 className="font-semibold text-blue-400 mb-2">🚀 Performance & Stabilité</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Chargement optimisé</strong> : Dashboard qui s&apos;affiche immédiatement</li>
+                <li><strong>Pagination intelligente</strong> : Chargement progressif sur toutes les listes</li>
+                <li><strong>Gestion d&apos;erreurs robuste</strong> : Messages clairs et retry automatique</li>
+                <li><strong>Navigation cohérente</strong> : Sidebar intégrée sur toutes les pages</li>
+              </ul>
+            </div>
+          </div>
+        </CollapsibleCard>
+
+        <CollapsibleCard title="v1.9.1 — 🎨 Interface Coach Améliorée" defaultOpen={false}>
           <div className="space-y-3">
             <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
               <h4 className="font-semibold text-neon-purple mb-2">✨ Page &quot;Tous les Athlètes&quot; Redesign</h4>
@@ -131,6 +167,26 @@ export default function NouveautesPage() {
             </div>
             
             <div className="space-y-2">
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.9.2 — Corrections &amp; Stabilisation</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>Correction boucle infinie Firebase avec useMemo</li>
+                  <li>Optimisation chargement initial dashboard</li>
+                  <li>Stabilisation hooks useFirebaseError</li>
+                  <li>Tests temporairement désactivés (problèmes mémoire)</li>
+                </ul>
+              </div>
+
+              <div className="border-l-2 border-gray-600 pl-3">
+                <h5 className="text-xs font-semibold text-gray-300">v1.9.1 — Export de Données</h5>
+                <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">
+                  <li>Intégration jsPDF, Papa Parse, xlsx</li>
+                  <li>Graphiques Chart.js dans exports</li>
+                  <li>Hook useExportData centralisé</li>
+                  <li>Types TypeScript complets</li>
+                </ul>
+              </div>
+              
               <div className="border-l-2 border-gray-600 pl-3">
                 <h5 className="text-xs font-semibold text-gray-300">v1.8.1 — Corrections &amp; Stabilisation</h5>
                 <ul className="list-disc pl-4 text-xs text-gray-400 space-y-1 mt-1">

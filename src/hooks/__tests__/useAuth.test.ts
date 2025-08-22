@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock Firebase Auth avant import
@@ -10,6 +10,23 @@ vi.mock('firebase/auth', () => ({
   sendSignInLinkToEmail: vi.fn(),
   isSignInWithEmailLink: vi.fn(),
   signInWithEmailLink: vi.fn(),
+}))
+
+// Mock Firestore pour éviter les logs de débogage
+vi.mock('firebase/firestore', () => ({
+  getFirestore: vi.fn(),
+  doc: vi.fn(),
+  getDoc: vi.fn(() => Promise.resolve({ exists: () => false, data: () => null })),
+  collection: vi.fn(),
+  query: vi.fn(),
+  where: vi.fn(),
+  orderBy: vi.fn(),
+  limit: vi.fn(),
+  onSnapshot: vi.fn(() => vi.fn()),
+  addDoc: vi.fn(),
+  updateDoc: vi.fn(),
+  deleteDoc: vi.fn(),
+  serverTimestamp: vi.fn(),
 }))
 
 import { useAuth } from '../useAuth'
@@ -57,8 +74,12 @@ describe('useAuth Hook', () => {
     }
 
     mockOnAuthStateChanged.mockImplementation((auth, callback) => {
-      // Cast _callback to function and call it
-      if (typeof callback === 'function') { (callback as (u: unknown) => void)(mockUser as unknown) }
+      // Appeler le callback de manière asynchrone pour éviter les warnings act()
+      setTimeout(() => {
+        if (typeof callback === 'function') {
+          (callback as (u: unknown) => void)(mockUser as unknown)
+        }
+      }, 0)
       return vi.fn()
     })
 
@@ -98,7 +119,10 @@ describe('useAuth Hook', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    const response = await result.current.signIn('test@test.com', 'password123')
+    let response
+    await act(async () => {
+      response = await result.current.signIn('test@test.com', 'password123')
+    })
 
     expect(response.success).toBe(true)
     expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
@@ -113,7 +137,10 @@ describe('useAuth Hook', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    const response = await result.current.signIn('test@test.com', 'wrongpassword')
+    let response
+    await act(async () => {
+      response = await result.current.signIn('test@test.com', 'wrongpassword')
+    })
 
     expect(response.success).toBe(false)
     expect(response.error).toBeDefined()
@@ -124,7 +151,9 @@ describe('useAuth Hook', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    await result.current.signOut()
+    await act(async () => {
+      await result.current.signOut()
+    })
 
     expect(mockSignOut).toHaveBeenCalled()
   })
@@ -132,7 +161,10 @@ describe('useAuth Hook', () => {
   it('should handle magic link sending', async () => {
     const { result } = renderHook(() => useAuth())
 
-    const response = await result.current.sendMagicLink('test@test.com')
+    let response
+    await act(async () => {
+      response = await result.current.sendMagicLink('test@test.com')
+    })
 
     // Le hook devrait retourner un objet avec success
     expect(typeof response).toBe('object')
@@ -142,7 +174,10 @@ describe('useAuth Hook', () => {
   it('should verify magic link', async () => {
     const { result } = renderHook(() => useAuth())
 
-    const response = await result.current.verifyMagicLink()
+    let response
+    await act(async () => {
+      response = await result.current.verifyMagicLink()
+    })
 
     // Le hook devrait retourner un objet avec success
     expect(typeof response).toBe('object')

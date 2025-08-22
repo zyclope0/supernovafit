@@ -416,9 +416,9 @@ export default function DietePage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold neon-text">Diète & Nutrition</h1>
-            <p className="text-muted-foreground">{today}</p>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-white">Diète</h1>
+            <p className="text-sm text-accessible">{today}</p>
           </div>
           <div className="flex space-x-3">
             <button 
@@ -567,7 +567,7 @@ function HistoriqueSection({ allRepas, loading }: { allRepas: Repas[], loading: 
     <CollapsibleCard title="Historique des repas" defaultOpen={false}>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">{sorted.length} repas affichés</div>
+          <div className="text-xs text-accessible-secondary">{sorted.length} repas affichés</div>
         </div>
         <div className="divide-y divide-white/10">
           {sorted.map((r) => (

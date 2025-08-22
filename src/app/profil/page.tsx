@@ -4,38 +4,14 @@ import { useState } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import ProfileForm from '@/components/ui/ProfileForm'
-import { User, Settings, TrendingUp } from 'lucide-react'
+import { User as UserIcon, Settings, TrendingUp } from 'lucide-react'
 import { calculateTDEE } from '@/lib/userCalculations'
 import type { User as UserProfile } from '@/types'
+import AuthGuard from '@/components/auth/AuthGuard'
 
 export default function ProfilPage() {
-  const { user, userProfile, loading } = useAuth()
+  const { userProfile } = useAuth()
   const [updatedProfile, setUpdatedProfile] = useState(userProfile)
-
-  if (loading) {
-    return (
-      <MainLayout>
-        <div className="container mx-auto p-4">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-2 border-neon-cyan border-t-transparent"></div>
-          </div>
-        </div>
-      </MainLayout>
-    )
-  }
-
-  if (!user || !userProfile) {
-    return (
-      <MainLayout>
-        <div className="container mx-auto p-4">
-          <div className="glass-effect p-6 rounded-lg border border-white/10 text-center">
-            <h1 className="text-xl font-semibold text-white mb-4">Accès refusé</h1>
-            <p className="text-muted-foreground">Vous devez être connecté pour accéder à cette page.</p>
-          </div>
-        </div>
-      </MainLayout>
-    )
-  }
 
   const handleProfileUpdate = (profile: UserProfile) => {
     setUpdatedProfile(profile)
@@ -44,17 +20,20 @@ export default function ProfilPage() {
   // Calcul de la complétude du profil
   const calculateProfileCompleteness = () => {
     const profile = updatedProfile || userProfile
+    if (!profile) return 0
+    
     const fields = ['nom', 'age', 'sexe', 'taille', 'poids_initial', 'objectif', 'niveau_activite']
     const completedFields = fields.filter(field => profile[field as keyof typeof profile])
     return Math.round((completedFields.length / fields.length) * 100)
   }
 
   const completeness = calculateProfileCompleteness()
-  const currentProfile = updatedProfile || userProfile
+  const currentProfile = (updatedProfile || userProfile) as UserProfile | null
 
   return (
-    <MainLayout>
-      <div className="container mx-auto p-4 space-y-6">
+    <AuthGuard>
+      <MainLayout>
+        <div className="container mx-auto p-4 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -95,11 +74,11 @@ export default function ProfilPage() {
         )}
 
         {/* Vue d'ensemble rapide */}
-        {completeness > 50 && (
+        {completeness > 50 && currentProfile && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="glass-effect p-4 rounded-lg border border-white/10">
               <div className="flex items-center gap-2 mb-2">
-                <User className="h-4 w-4 text-neon-purple" />
+                <UserIcon className="h-4 w-4 text-neon-purple" />
                 <span className="text-sm text-muted-foreground">Âge</span>
               </div>
               <div className="text-lg font-semibold text-white">
@@ -140,7 +119,7 @@ export default function ProfilPage() {
             
             <div className="glass-effect p-4 rounded-lg border border-white/10">
               <div className="flex items-center gap-2 mb-2">
-                <User className="h-4 w-4 text-neon-pink" />
+                <UserIcon className="h-4 w-4 text-neon-pink" />
                 <span className="text-sm text-muted-foreground">IMC</span>
               </div>
               <div className="text-lg font-semibold text-white">
@@ -170,11 +149,20 @@ export default function ProfilPage() {
         )}
 
         {/* Formulaire de profil */}
-        <ProfileForm 
-          userProfile={currentProfile}
-          onUpdate={handleProfileUpdate}
-        />
+        {currentProfile ? (
+          <ProfileForm 
+            userProfile={currentProfile}
+            onUpdate={handleProfileUpdate}
+          />
+        ) : (
+          <div className="glass-effect p-6 rounded-lg border border-white/10">
+            <div className="flex items-center justify-center min-h-[200px]">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-neon-cyan border-t-transparent"></div>
+            </div>
+          </div>
+        )}
       </div>
-    </MainLayout>
+      </MainLayout>
+    </AuthGuard>
   )
 }

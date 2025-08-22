@@ -12,7 +12,7 @@ export const OPENFOOD_TAGS_SUGGESTIONS = [
 ]
 
 // Application metadata
-export const APP_VERSION = '1.8.5'
+export const APP_VERSION = '1.9.2'
 export const APP_RELEASE_DATE = '2025-08-17'
 
 

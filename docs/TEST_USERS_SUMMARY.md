@@ -4,6 +4,8 @@
 
 Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils sont prêts à être utilisés pour tester l'application.
 
+**Version** : 1.9.2 | **Dernière mise à jour** : 17.08.2025
+
 ---
 
 ## 👨‍💼 **COACHS** (3 utilisateurs)
@@ -98,67 +100,75 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 
 ## 🎯 **CAS D'USAGE RECOMMANDÉS**
 
-### Test du Mode Coach
-- **Utiliser** : `coach.martin@supernovafit.com` / `Coach123!`
-- **Fonctionnalités à tester** :
-  - Dashboard coach
-  - Liste des athlètes
-  - Commentaires sur les modules
-  - Génération d'invitations
+### **Pour tester les fonctionnalités Coach :**
+- **Connexion** : `coach.martin@supernovafit.com` / `Coach123!`
+- **Pages à tester** :
+  - Dashboard coach avec métriques athlètes
+  - "Mes Athlètes" avec filtres et statistiques
+  - "Tous les Athlètes" avec recherche avancée
+  - Pages athlètes individuelles (déjà liés)
 
-### Test du Mode Athlète
-- **Utiliser** : `athlete.lucas@supernovafit.com` / `Athlete123!`
-- **Fonctionnalités à tester** :
-  - Dashboard athlète
-  - Modules diète, entraînements, mesures, journal
-  - Réception des commentaires coach
-  - Système d'invitations
+### **Pour tester les fonctionnalités Athlète :**
+- **Connexion** : `athlete.lucas@supernovafit.com` / `Athlete123!`
+- **Pages à tester** :
+  - Dashboard avec statistiques personnelles
+  - Diète avec ajout de repas et recherche Open Food Facts
+  - Entraînements avec import Garmin
+  - Mesures avec calculs automatiques IMC
+  - Journal avec photos libres
+  - Export de données (CSV, JSON, Excel, PDF)
 
-### Test des Relations Coach-Athlète
-- **Coach** : `coach.martin@supernovafit.com`
-- **Athlètes liés** : Lucas Bernard, Julie Mercier
-- **Tester** : Commentaires, invitations, permissions
-
----
-
-## 📊 **PROFILS COMPLETS**
-
-Tous les utilisateurs ont des profils complets avec :
-- ✅ Âge, sexe, taille, poids initial
-- ✅ Objectifs et niveau d'activité
-- ✅ Préférences (unités, langue)
-- ✅ Relations coach-athlète établies
-- ✅ Profils marqués comme complets
+### **Fonctionnalités récentes à tester :**
+- ✅ **Export de données** : Page dédiée avec graphiques intégrés
+- ✅ **Interface moderne** : Glassmorphism et animations
+- ✅ **Pagination** : Chargement progressif sur toutes les listes
+- ✅ **Gestion d'erreurs** : Messages utilisateur centralisés
+- ✅ **Performance** : Chargement initial optimisé
 
 ---
 
-## 🔧 **NOTES TECHNIQUES**
+## 🔧 **FONCTIONNALITÉS DISPONIBLES**
 
-### Données de Test
-- Les utilisateurs sont créés dans Firebase Auth
-- Les profils sont stockés dans Firestore (collection `users`)
-- Les relations coach-athlète sont établies via `ownerCoachId`
+### **Modules Coach :**
+- ✅ Dashboard avec métriques athlètes
+- ✅ Gestion des athlètes (liés et non liés)
+- ✅ Filtres avancés et recherche
+- ✅ Pages programmes et rapports (placeholders)
+- ✅ Navigation optimisée
 
-### Permissions
-- Les règles Firestore sont strictes (sécurité)
-- Les utilisateurs peuvent lire/écrire leurs propres données
-- Les coachs peuvent lire les données de leurs athlètes
+### **Modules Athlète :**
+- ✅ Dashboard personnel avec statistiques
+- ✅ Suivi nutritionnel complet
+- ✅ Gestion des entraînements
+- ✅ Mesures corporelles avec calculs
+- ✅ Journal de progression
+- ✅ Export de données multi-format
+- ✅ Interface moderne et responsive
 
-### Sécurité
-- ⚠️ **Ne pas utiliser en production**
-- ✅ **Clés publiques uniquement** utilisées
-- 🔒 **Mots de passe sécurisés** mais simples pour les tests
+### **Fonctionnalités communes :**
+- ✅ Authentification Firebase
+- ✅ Profils utilisateur complets
+- ✅ Système d'invitations coach-athlète
+- ✅ Design glassmorphism cohérent
+- ✅ Gestion d'erreurs robuste
 
 ---
 
-## 🚀 **PRÊT À TESTER !**
+## 📊 **DONNÉES DE TEST**
 
-L'environnement de test est maintenant prêt. Vous pouvez :
+### **Repas** : ~150 repas par athlète (30 jours)
+### **Entraînements** : ~45 entraînements par athlète (30 jours)
+### **Mesures** : ~15 mesures par athlète (évolution progressive)
+### **Journal** : ~30 entrées par athlète (humeur, énergie, commentaires)
 
-1. **Tester l'interface utilisateur** avec différents rôles
-2. **Vérifier les fonctionnalités** coach-athlète
-3. **Tester les calculs** de macros, calories, TDEE
-4. **Valider les permissions** Firestore
-5. **Démonstrer l'application** avec des données réalistes
+---
 
-**✨ Bon test !**
+## 🚀 **STATUT ACTUEL**
+
+- **Version** : 1.9.2
+- **Statut** : ✅ STABLE
+- **Build** : ✅ Réussi
+- **Tests** : ✅ 15/17 passent
+- **Linting** : ✅ 0 erreurs
+- **Performance** : ✅ Optimisée
+- **Déploiement** : ✅ Prêt pour production

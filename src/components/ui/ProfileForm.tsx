@@ -15,19 +15,31 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ userProfile, onUpdate }: ProfileFormProps) {
   const { user } = useAuth()
+  
   const [formData, setFormData] = useState<Partial<User>>({
-    nom: userProfile.nom || '',
-    age: userProfile.age || undefined,
-    sexe: userProfile.sexe || undefined,
-    taille: userProfile.taille || undefined,
-    poids_initial: userProfile.poids_initial || undefined,
-    objectif: userProfile.objectif || 'maintien',
-    niveau_activite: userProfile.niveau_activite || 'modere',
-    unite_poids: userProfile.unite_poids || 'kg',
-    unite_taille: userProfile.unite_taille || 'cm',
-    langue: userProfile.langue || 'fr'
+    nom: userProfile?.nom || '',
+    age: userProfile?.age || undefined,
+    sexe: userProfile?.sexe || undefined,
+    taille: userProfile?.taille || undefined,
+    poids_initial: userProfile?.poids_initial || undefined,
+    objectif: userProfile?.objectif || 'maintien',
+    niveau_activite: userProfile?.niveau_activite || 'modere',
+    unite_poids: userProfile?.unite_poids || 'kg',
+    unite_taille: userProfile?.unite_taille || 'cm',
+    langue: userProfile?.langue || 'fr'
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Vérifier que userProfile n'est pas null avant de rendre le contenu
+  if (!userProfile) {
+    return (
+      <div className="glass-effect p-6 rounded-lg border border-white/10">
+        <div className="flex items-center justify-center min-h-[200px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-neon-cyan border-t-transparent"></div>
+        </div>
+      </div>
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

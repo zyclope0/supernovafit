@@ -4,26 +4,25 @@
 
 @layer base {
   :root {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-    --card: 224 71% 8%;
-    --card-foreground: 213 31% 91%;
-    --popover: 224 71% 8%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 270 95% 75%;
-    --primary-foreground: 224 71% 4%;
-    --secondary: 190 95% 65%;
-    --secondary-foreground: 224 71% 4%;
-    --muted: 223 47% 11%;
-    --muted-foreground: 213 31% 60%;
-    --accent: 320 95% 65%;
-    --accent-foreground: 224 71% 4%;
-    --destructive: 0 85% 60%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 223 47% 20%;
-    --input: 223 47% 20%;
-    --ring: 270 95% 75%;
-    --radius: 0.5rem;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
   }
 }
 
@@ -85,13 +84,68 @@
     color: white !important;
     padding: 8px 12px;
   }
+
+  /* Classes d'accessibilité améliorées */
+  .text-accessible {
+    @apply text-white/90; /* Contraste amélioré pour text-muted-foreground */
+  }
+
+  .text-accessible-secondary {
+    @apply text-white/75; /* Contraste moyen pour textes secondaires */
+  }
+
+  .text-accessible-tertiary {
+    @apply text-white/60; /* Contraste minimum acceptable */
+  }
+
+  /* Focus amélioré pour l'accessibilité */
+  .focus-accessible {
+    @apply focus:outline-none focus:ring-2 focus:ring-neon-cyan focus:ring-offset-2 focus:ring-offset-space-900;
+  }
+
+  /* Navigation clavier améliorée */
+  .keyboard-navigation {
+    @apply focus-accessible;
+  }
+
+  /* Boutons avec accessibilité */
+  .btn-accessible {
+    @apply focus-accessible transition-all duration-200;
+  }
+
+  /* Liens avec accessibilité */
+  .link-accessible {
+    @apply focus-accessible underline decoration-dotted underline-offset-4;
+  }
 }
 
 /* Accessibilité: anneau de focus néon et scrollbar fine utilitaire */
-:root { --focus-ring: 0 0 0 3px rgba(6, 182, 212, 0.35); }
-*:focus-visible { outline: none !important; box-shadow: var(--focus-ring); border-color: rgba(6,182,212,.5) !important; }
+:root { 
+  --focus-ring: 0 0 0 3px rgba(6, 182, 212, 0.5); /* Contraste amélioré */
+  --focus-ring-purple: 0 0 0 3px rgba(147, 51, 234, 0.5); /* Focus alternatif */
+}
+
+/* Focus visible amélioré */
+*:focus-visible { 
+  outline: none !important; 
+  box-shadow: var(--focus-ring) !important; 
+  border-color: rgba(6,182,212,.7) !important; /* Contraste amélioré */
+}
+
+/* Focus pour éléments avec couleurs néon */
+.btn-neon:focus-visible {
+  box-shadow: var(--focus-ring-purple) !important;
+  border-color: rgba(147,51,234,.7) !important;
+}
+
+/* Amélioration du contraste pour les textes */
+.text-muted-foreground {
+  @apply text-accessible;
+}
+
+/* Scrollbar fine utilitaire */
 .scrollbar-thin::-webkit-scrollbar{ height:6px; width:6px; }
-.scrollbar-thin::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.2); border-radius:8px; }
+.scrollbar-thin::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.3); border-radius:8px; }
 
 /* Scrollbar personnalisée */
 ::-webkit-scrollbar {
@@ -109,82 +163,74 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme(colors.neon.purple);
+  background: theme(colors.space.500);
 }
 
-/* Animations custom */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+/* Amélioration de l'accessibilité pour les éléments interactifs */
+button, a, input, select, textarea {
+  @apply focus-accessible;
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+/* Amélioration du contraste pour les icônes */
+.icon-accessible {
+  @apply text-accessible;
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+/* Amélioration du contraste pour les badges et étiquettes */
+.badge-accessible {
+  @apply bg-white/10 text-accessible border border-white/20;
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+/* Amélioration du contraste pour les tooltips et infobulles */
+.tooltip-accessible {
+  @apply bg-space-800 text-accessible border border-white/20 shadow-lg;
 }
 
-/* Styles pour les select et options */
-select {
-  color: white !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
+/* Amélioration de la navigation clavier */
+.nav-accessible {
+  @apply focus-accessible;
 }
 
-select option {
-  background-color: #1e293b !important; /* space-800 */
-  color: white !important;
-  padding: 8px 12px;
+.nav-accessible:focus {
+  @apply bg-white/10 border border-neon-cyan/50;
 }
 
-select option:hover,
-select option:focus {
-  background-color: #334155 !important; /* space-700 */
-  color: #06b6d4 !important; /* neon-cyan */
+/* Amélioration des modales pour l'accessibilité */
+.modal-accessible {
+  @apply focus-accessible;
 }
 
-select option:checked {
-  background-color: #a855f7 !important; /* neon-purple */
-  color: white !important;
+.modal-accessible:focus {
+  @apply ring-2 ring-neon-cyan ring-offset-2 ring-offset-space-900;
 }
 
-/* Style pour les select sur navigateurs WebKit */
-select::-webkit-scrollbar {
-  width: 8px;
+/* Amélioration des formulaires pour l'accessibilité */
+.form-accessible input,
+.form-accessible select,
+.form-accessible textarea {
+  @apply focus-accessible border-white/20;
 }
 
-select::-webkit-scrollbar-track {
-  background: #1e293b;
+.form-accessible input:focus,
+.form-accessible select:focus,
+.form-accessible textarea:focus {
+  @apply border-neon-cyan/50 bg-white/5;
 }
 
-select::-webkit-scrollbar-thumb {
-  background: #a855f7;
-  border-radius: 4px;
+/* Amélioration des listes pour l'accessibilité */
+.list-accessible {
+  @apply focus-accessible;
 }
 
-/* Fix pour Firefox */
-@-moz-document url-prefix() {
-  select {
-    color: white !important;
-    background-color: #1e293b !important;
-  }
-  
-  select option {
-    background-color: #1e293b !important;
-    color: white !important;
-  }
+.list-accessible li:focus {
+  @apply bg-white/5 border border-neon-cyan/30;
+}
+
+/* Amélioration des cartes pour l'accessibilité */
+.card-accessible {
+  @apply focus-accessible;
+}
+
+.card-accessible:focus {
+  @apply ring-2 ring-neon-cyan/50 ring-offset-2 ring-offset-space-900;
 } 
