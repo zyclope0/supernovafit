@@ -119,12 +119,12 @@ describe('useAuth Hook', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    let response
+    let response: { success: boolean; error?: string } | undefined
     await act(async () => {
       response = await result.current.signIn('test@test.com', 'password123')
     })
 
-    expect(response.success).toBe(true)
+    expect(response?.success).toBe(true)
     expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
       undefined, // Auth object is mocked as undefined
       'test@test.com',
@@ -137,13 +137,13 @@ describe('useAuth Hook', () => {
 
     const { result } = renderHook(() => useAuth())
 
-    let response
+    let response: { success: boolean; error?: string } | undefined
     await act(async () => {
       response = await result.current.signIn('test@test.com', 'wrongpassword')
     })
 
-    expect(response.success).toBe(false)
-    expect(response.error).toBeDefined()
+    expect(response?.success).toBe(false)
+    expect(response?.error).toBeDefined()
   })
 
   it('should handle signOut', async () => {
@@ -161,26 +161,26 @@ describe('useAuth Hook', () => {
   it('should handle magic link sending', async () => {
     const { result } = renderHook(() => useAuth())
 
-    let response
+    let response: { success: boolean } | undefined
     await act(async () => {
       response = await result.current.sendMagicLink('test@test.com')
     })
 
     // Le hook devrait retourner un objet avec success
     expect(typeof response).toBe('object')
-    expect('success' in response).toBe(true)
+    expect(response && 'success' in response).toBe(true)
   })
 
   it('should verify magic link', async () => {
     const { result } = renderHook(() => useAuth())
 
-    let response
+    let response: { success: boolean } | undefined
     await act(async () => {
       response = await result.current.verifyMagicLink()
     })
 
     // Le hook devrait retourner un objet avec success
     expect(typeof response).toBe('object')
-    expect('success' in response).toBe(true)
+    expect(response && 'success' in response).toBe(true)
   })
 })
