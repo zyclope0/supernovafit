@@ -212,7 +212,7 @@ export default function MesuresPage() {
       } else {
         toast.error(result.error || 'Erreur lors de l\'enregistrement')
       }
-    } catch (error) {
+    } catch {
       toast.error('Erreur inattendue')
     } finally {
       setIsSubmitting(false)

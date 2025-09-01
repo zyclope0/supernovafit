@@ -6,10 +6,25 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useExportData } from '@/hooks/useExportData'
-import { ExportButton } from '@/components/ui/ExportButton'
-import { FormErrorDisplay } from '@/components/ui/FirebaseErrorDisplay'
+import FirebaseErrorDisplay from '@/components/ui/FirebaseErrorDisplay'
 import MainLayout from '@/components/layout/MainLayout'
+
+// Lazy load du composant lourd ExportButton + icônes
+const ExportButton = dynamic(
+  () => import('@/components/ui/ExportButton').then(mod => ({ default: mod.ExportButton })),
+  {
+    loading: () => (
+      <div className="h-12 w-32 bg-blue-500/20 animate-pulse rounded-lg flex items-center justify-center text-sm text-blue-400">
+        Chargement...
+      </div>
+    ),
+    ssr: false
+  }
+)
+
+
 import { 
   FileText, 
   FileSpreadsheet, 
@@ -18,11 +33,7 @@ import {
   Calendar,
   Download,
   CheckCircle,
-  Loader2,
-  Sparkles,
-  TrendingUp,
-  Zap,
-  Target
+  Loader2
 } from 'lucide-react'
 
 import type { ExportFormat, ExportDataType, ExportPeriod } from '@/types/export'
@@ -86,7 +97,7 @@ export default function ExportPage() {
       value: 'all', 
       label: 'Toutes les données', 
       description: 'Repas, entraînements et mesures',
-      icon: Target,
+      icon: BarChart3,
       color: 'from-indigo-500 to-purple-500'
     },
     { 
@@ -100,14 +111,14 @@ export default function ExportPage() {
       value: 'entrainements', 
       label: 'Entraînements uniquement', 
       description: 'Données d\'activité physique',
-      icon: TrendingUp,
+      icon: Calendar,
       color: 'from-green-500 to-emerald-500'
     },
     { 
       value: 'mesures', 
       label: 'Mesures uniquement', 
       description: 'Données de progression',
-      icon: Zap,
+      icon: Download,
       color: 'from-blue-500 to-cyan-500'
     }
   ]
@@ -155,7 +166,7 @@ export default function ExportPage() {
         {/* Header avec effet glassmorphism */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-3 mb-4 p-3 rounded-full bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30">
-            <Sparkles className="h-6 w-6 text-neon-purple animate-pulse" />
+            <FileText className="h-6 w-6 text-neon-purple animate-pulse" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-neon-purple to-neon-cyan bg-clip-text text-transparent">
               Export de Données
             </h1>
@@ -168,7 +179,7 @@ export default function ExportPage() {
         {/* Affichage des erreurs */}
         {error && (
           <div className="mb-6">
-            <FormErrorDisplay error={error} />
+            <FirebaseErrorDisplay error={error} />
           </div>
         )}
 

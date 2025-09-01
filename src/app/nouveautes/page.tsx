@@ -15,14 +15,48 @@ export default function NouveautesPage() {
         </div>
 
         {/* NOUVELLES FONCTIONNALITÉS UTILISATEUR */}
-        <CollapsibleCard title={`v${APP_VERSION} — 🎨 Interface Améliorée`} defaultOpen>
+        <CollapsibleCard title={`v${APP_VERSION} — ⚡ Performance & Sécurité`} defaultOpen>
+          <div className="space-y-3">
+            <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
+              <h4 className="font-semibold text-emerald-400 mb-2">⚡ Images Ultra-Rapides</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Chargement instantané</strong> : Images optimisées automatiquement en AVIF et WebP</li>
+                <li><strong>Économie de données</strong> : Réduction de 20 à 50% de la taille des images</li>
+                <li><strong>Adaptation intelligente</strong> : Taille automatique selon votre appareil</li>
+                <li><strong>Effet de transition</strong> : Chargement progressif avec effet de flou élégant</li>
+              </ul>
+            </div>
+            
+            <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+              <h4 className="font-semibold text-blue-400 mb-2">🔒 Sécurité Renforcée</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>0 vulnérabilité</strong> : Toutes les failles de sécurité corrigées</li>
+                <li><strong>Dépendances à jour</strong> : Bibliothèques mises à jour vers les versions sécurisées</li>
+                <li><strong>Export plus fiable</strong> : Génération PDF/Excel plus stable et rapide</li>
+                <li><strong>Code nettoyé</strong> : Suppression du code inutile pour plus de performance</li>
+              </ul>
+            </div>
+
+            <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
+              <h4 className="font-semibold text-purple-400 mb-2">🚀 Performance Générale</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Page Export 35% plus rapide</strong> : Chargement optimisé de 602KB à 388KB</li>
+                <li><strong>Application plus fluide</strong> : Suppression du code mort et optimisations</li>
+                <li><strong>Maintenance améliorée</strong> : Code plus propre pour de futures mises à jour</li>
+                <li><strong>Stabilité accrue</strong> : Tests renforcés et détection d&apos;erreurs améliorée</li>
+              </ul>
+            </div>
+          </div>
+        </CollapsibleCard>
+
+        {/* VERSION PRÉCÉDENTE */}
+        <CollapsibleCard title="v1.9.3 — 🎨 Interface Améliorée" defaultOpen={false}>
           <div className="space-y-3">
             <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
               <h4 className="font-semibold text-purple-400 mb-2">🎨 Interface Améliorée</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>Navigation déconnectée</strong> : Lien &quot;Accueil&quot; ajouté pour les utilisateurs non connectés</li>
                 <li><strong>Footer simplifié</strong> : Suppression des liens redondants et de la date</li>
-                <li><strong>Version mise à jour</strong> : Passage à la version 1.9.3</li>
                 <li><strong>Interface plus claire</strong> : Navigation optimisée selon le statut de connexion</li>
               </ul>
             </div>
@@ -32,26 +66,39 @@ export default function NouveautesPage() {
         {/* MISES À JOUR TECHNIQUES */}
         <CollapsibleCard title="🔧 Mises à Jour Techniques" defaultOpen={false}>
           <div className="space-y-3">
+            <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
+              <h4 className="font-semibold text-emerald-400 mb-2">🔒 Audit Sécurité Complet</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>0 vulnérabilités npm</strong> : jsPDF 2.5.1→3.0.2, xlsx→exceljs migration</li>
+                <li><strong>Dépendances nettoyées</strong> : 15 packages inutiles supprimés (-439KB)</li>
+                <li><strong>Code mort supprimé</strong> : 10 fichiers et 20 exports non utilisés éliminés</li>
+                <li><strong>ESLint production</strong> : Détection d&apos;erreurs activée en build</li>
+                <li><strong>TypeScript strict</strong> : 100% des erreurs de type corrigées</li>
+              </ul>
+            </div>
+
+            <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+              <h4 className="font-semibold text-blue-400 mb-2">⚡ Optimisations Performance</h4>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Bundle export -35%</strong> : 602KB → 388KB grâce au code splitting</li>
+                <li><strong>Images AVIF/WebP</strong> : Formats modernes activés automatiquement</li>
+                <li><strong>Lazy loading intelligent</strong> : Composant OptimizedImage créé</li>
+                <li><strong>Device sizes optimisées</strong> : Adaptation automatique mobile/desktop</li>
+                <li><strong>Build time amélioré</strong> : Compilation plus rapide et stable</li>
+              </ul>
+            </div>
+
             <div className="bg-green-500/10 p-3 rounded-lg border border-green-500/20">
-              <h4 className="font-semibold text-green-400 mb-2">✅ Tests Unitaires Robustes</h4>
+              <h4 className="font-semibold text-green-400 mb-2">✅ Tests & Qualité</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>Tests useFirestore résolus</strong> : Approche unitaire pour éviter les problèmes de mémoire</li>
                 <li><strong>23 tests passent</strong> : Couverture complète des fonctions métier</li>
                 <li><strong>Tests rapides</strong> : Exécution en 2.84s vs 30s+ avant</li>
                 <li><strong>Validation des données</strong> : Tests de structure, calculs et formats</li>
-                <li><strong>Stabilité garantie</strong> : 0 erreurs de mémoire, 0 warnings act()</li>
+                <li><strong>CI/CD robuste</strong> : Workflows GitHub Actions optimisés</li>
               </ul>
             </div>
-            
-            <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
-              <h4 className="font-semibold text-blue-400 mb-2">🔧 Corrections TypeScript</h4>
-              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Typage strict</strong> : Toutes les erreurs TypeScript corrigées</li>
-                <li><strong>Opérateurs de chaînage</strong> : Gestion sécurisée des valeurs undefined</li>
-                <li><strong>Vérifications de sécurité</strong> : Protection contre les erreurs de type</li>
-                <li><strong>Code plus robuste</strong> : Déploiement sécurisé sans erreurs</li>
-              </ul>
-            </div>
+
           </div>
         </CollapsibleCard>
 

@@ -231,7 +231,7 @@ export default function Sidebar() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault()
-                    isMobile && setSidebarOpen(false)
+                    if (isMobile) setSidebarOpen(false)
                   }
                 }}
                 title={sidebarCollapsed ? item.name : undefined}
@@ -276,7 +276,7 @@ export default function Sidebar() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault()
-                        isMobile && setSidebarOpen(false)
+                        if (isMobile) setSidebarOpen(false)
                       }
                     }}
                     title={sidebarCollapsed ? item.name : undefined}
@@ -324,7 +324,7 @@ export default function Sidebar() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault()
-                      isMobile && setSidebarOpen(false)
+                      if (isMobile) setSidebarOpen(false)
                     }
                   }}
                   title={sidebarCollapsed ? "Se connecter" : undefined}

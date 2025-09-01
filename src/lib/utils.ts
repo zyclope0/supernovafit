@@ -75,16 +75,6 @@ export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
-// Valider un email
-export function isValidEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+// Fonction isValidEmail supprimée - non utilisée
 
-// Obtenir la couleur selon la valeur (pour les graphiques)
-export function getColorByValue(value: number, min: number, max: number): string {
-  const ratio = (value - min) / (max - min);
-  if (ratio < 0.33) return 'text-neon-green';
-  if (ratio < 0.66) return 'text-neon-cyan';
-  return 'text-neon-purple';
-} 
+// Fonction getColorByValue supprimée - non utilisée 

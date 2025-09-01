@@ -4,18 +4,13 @@
 
 import * as Sentry from '@sentry/nextjs'
 
+// Hook pour instrumenter les transitions de navigation
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
+
 // DSN Sentry hardcodé pour production (plus fiable que les variables d'environnement)
 const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
 
-// Debug logs pour vérifier la configuration (développement uniquement)
-if (process.env.NODE_ENV === 'development') {
-  console.log('[Sentry] Initializing with config:', {
-    dsn: SENTRY_DSN ? 'SET' : 'NOT SET',
-    dsnValue: SENTRY_DSN || 'undefined',
-    env: process.env.NODE_ENV,
-    version: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0'
-  })
-}
+// Configuration simplifiée pour éviter les erreurs de syntaxe au premier chargement
 
 Sentry.init({
   dsn: SENTRY_DSN,

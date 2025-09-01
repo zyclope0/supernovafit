@@ -7,10 +7,7 @@ import { useState, useCallback } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { useFirebaseError } from '@/hooks/useFirebaseError'
-import { generateAndDownloadCSV } from '@/lib/export/csv-export'
-import { generateAndDownloadJSON } from '@/lib/export/json-export'
-import { generateAndDownloadExcel } from '@/lib/export/excel-export'
-import { generateCompletePDF } from '@/lib/export/pdf-export'
+// Imports légers seulement - les exports lourds seront lazy-loadés
 import { generateFileName, getPeriodDescription } from '@/lib/export/csv-export'
 import { APP_VERSION } from '@/lib/constants'
 
@@ -169,6 +166,7 @@ export function useExportData() {
       
       switch (config.format) {
         case 'csv':
+          const { generateAndDownloadCSV } = await import('@/lib/export/csv-export')
           await generateAndDownloadCSV(filteredData, config, metadata, fileName)
           result = {
             success: true,
@@ -178,6 +176,7 @@ export function useExportData() {
           break
 
         case 'json':
+          const { generateAndDownloadJSON } = await import('@/lib/export/json-export')
           await generateAndDownloadJSON(filteredData, config, metadata, fileName)
           result = {
             success: true,
@@ -187,6 +186,7 @@ export function useExportData() {
           break
 
         case 'excel':
+          const { generateAndDownloadExcel } = await import('@/lib/export/excel-export')
           await generateAndDownloadExcel(
             filteredData.repas,
             filteredData.entrainements,
@@ -203,6 +203,7 @@ export function useExportData() {
           break
 
         case 'pdf':
+          const { generateCompletePDF } = await import('@/lib/export/pdf-export')
           await generateCompletePDF(
             filteredData.repas,
             filteredData.entrainements,

@@ -1288,7 +1288,7 @@ export function useCoachDietPlans(athleteId: string) {
 
     const unsubscribe = fetchDietPlans()
     return () => {
-      if (unsubscribe) unsubscribe
+      unsubscribe.then(unsub => unsub && unsub())
     }
   }, [user, athleteId])
 
@@ -1377,7 +1377,7 @@ export function useAthleteDietPlan() {
 
     const unsubscribe = fetchCurrentPlan()
     return () => {
-      if (unsubscribe) unsubscribe
+      unsubscribe.then(unsub => unsub && unsub())
     }
   }, [user])
 

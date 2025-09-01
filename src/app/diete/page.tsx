@@ -395,7 +395,7 @@ export default function DietePage() {
       }
       
       toast.success(`Template appliqué ! ${templateMeals.length} repas ajoutés.`)
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors de l\'application du template')
     }
   }

@@ -5,7 +5,7 @@
  */
 
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTableImport from 'jspdf-autotable'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { APP_VERSION } from '@/lib/constants'
@@ -26,11 +26,23 @@ import {
 } from './chart-utils'
 
 // Extensions pour jsPDF
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: Record<string, unknown>) => jsPDF
-  }
+// Types pour jspdf-autotable 5.x
+interface AutoTableOptions {
+  startY?: number
+  head?: string[][]
+  body?: (string | number)[][]
+  theme?: 'striped' | 'grid' | 'plain'
+  headStyles?: Record<string, unknown>
+  styles?: Record<string, unknown>
+  columnStyles?: Record<string, unknown>
+  margin?: { top?: number; right?: number; bottom?: number; left?: number }
+  pageBreak?: 'auto' | 'avoid' | 'always'
+  showHead?: 'everyPage' | 'firstPage' | 'never'
 }
+
+// Fonction autoTable pour jspdf-autotable 5.x  
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+declare function autoTable(doc: jsPDF, options: AutoTableOptions): void
 
 /**
  * Configuration par défaut pour les PDF
@@ -401,7 +413,7 @@ function addRepasSection(doc: jsPDF, repas: Repas[]): void {
     `${r.macros.lipides}g`
   ])
   
-  doc.autoTable({
+  autoTableImport(doc, {
     startY: 40,
     head: [['Date', 'Type', 'Aliments', 'Calories', 'Protéines', 'Glucides', 'Lipides']],
     body: tableData,
@@ -437,7 +449,7 @@ function addEntrainementsSection(doc: jsPDF, entrainements: Entrainement[]): voi
     e.commentaire || '-'
   ])
   
-  doc.autoTable({
+  autoTableImport(doc, {
     startY: 40,
     head: [['Date', 'Type', 'Durée', 'Calories', 'Distance', 'FC moy', 'Commentaire']],
     body: tableData,
@@ -473,7 +485,7 @@ function addMesuresSection(doc: jsPDF, mesures: Mesure[]): void {
     m.tour_bras ? `${m.tour_bras} cm` : '-'
   ])
   
-  doc.autoTable({
+  autoTableImport(doc, {
     startY: 40,
     head: [['Date', 'Poids', 'IMC', 'Masse grasse', 'Masse musculaire', 'Tour taille', 'Tour bras']],
     body: tableData,

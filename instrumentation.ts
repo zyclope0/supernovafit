@@ -13,8 +13,6 @@ export async function register() {
   }
 }
 
-// Capture errors from nested React Server Components / request lifecycle
-// Ref: Sentry Next.js manual setup – onRequestError hook
 export async function onRequestError(error: unknown) {
   try {
     const Sentry = await import('@sentry/nextjs')

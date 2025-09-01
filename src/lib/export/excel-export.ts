@@ -1,9 +1,10 @@
 /**
  * Utilitaires d'export Excel pour SuperNovaFit
  * Gère la génération et le téléchargement de fichiers Excel avec formatage professionnel
+ * Migré de xlsx vers exceljs pour résoudre les vulnérabilités de sécurité
  */
 
-import * as XLSX from 'xlsx'
+import { Workbook, Worksheet } from 'exceljs'
 import { saveAs } from 'file-saver'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -20,13 +21,13 @@ import {
 } from './chart-utils'
 
 /**
- * Styles Excel personnalisés
+ * Styles Excel personnalisés pour exceljs
  */
 const EXCEL_STYLES = {
   header: {
-    font: { bold: true, color: { rgb: 'FFFFFF' } },
-    fill: { fgColor: { rgb: '2980B9' } },
-    alignment: { horizontal: 'center', vertical: 'center' },
+    font: { bold: true, color: { argb: 'FFFFFFFF' } },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2980B9' } },
+    alignment: { horizontal: 'center', vertical: 'middle' },
     border: {
       top: { style: 'thin' },
       bottom: { style: 'thin' },
@@ -35,8 +36,8 @@ const EXCEL_STYLES = {
     }
   },
   subHeader: {
-    font: { bold: true, color: { rgb: '2C3E50' } },
-    fill: { fgColor: { rgb: 'ECF0F1' } },
+    font: { bold: true, color: { argb: 'FF2C3E50' } },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFECF0F1' } },
     alignment: { horizontal: 'center' },
     border: {
       bottom: { style: 'thin' }
@@ -51,15 +52,15 @@ const EXCEL_STYLES = {
     }
   },
   highlight: {
-    fill: { fgColor: { rgb: 'E8F4FD' } }
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F4FD' } }
   },
   success: {
-    fill: { fgColor: { rgb: 'D5F4E6' } }
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD5F4E6' } }
   },
   warning: {
-    fill: { fgColor: { rgb: 'FEF9E7' } }
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF9E7' } }
   }
-}
+} as const
 
 /**
  * Génère et télécharge un fichier Excel avec formatage avancé
@@ -73,7 +74,13 @@ export async function generateAndDownloadExcel(
   fileName: string
 ): Promise<void> {
   try {
-    const workbook = XLSX.utils.book_new()
+    const workbook = new Workbook()
+    
+    // Métadonnées du workbook
+    workbook.creator = 'SuperNovaFit'
+    workbook.lastModifiedBy = 'SuperNovaFit'
+    workbook.created = new Date()
+    workbook.modified = new Date()
     
     // Feuille de résumé
     addSummarySheet(workbook, repas, entrainements, mesures, metadata)
@@ -100,13 +107,9 @@ export async function generateAndDownloadExcel(
     addStatisticsSheet(workbook, repas, entrainements, mesures)
     
     // Générer et télécharger le fichier
-    const excelBuffer = XLSX.write(workbook, { 
-      bookType: 'xlsx', 
-      type: 'array',
-      bookSST: false
-    })
+    const buffer = await workbook.xlsx.writeBuffer()
     
-    const blob = new Blob([excelBuffer], { 
+    const blob = new Blob([buffer], { 
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
     })
     
@@ -121,14 +124,24 @@ export async function generateAndDownloadExcel(
  * Ajoute une feuille de résumé
  */
 function addSummarySheet(
-  workbook: XLSX.WorkBook,
+  workbook: Workbook,
   repas: Repas[],
   entrainements: Entrainement[],
   mesures: Mesure[],
   metadata: ExportMetadata
 ): void {
   const stats = calculateChartStatistics(repas, entrainements, mesures)
+  const worksheet = workbook.addWorksheet('Résumé')
   
+  // Configuration des colonnes
+  worksheet.columns = [
+    { width: 25 },
+    { width: 20 },
+    { width: 15 },
+    { width: 15 }
+  ]
+  
+  // Données du résumé
   const summaryData = [
     ['RAPPORT SUPERNOVA FIT', '', '', ''],
     ['', '', '', ''],
@@ -151,153 +164,229 @@ function addSummarySheet(
     ['Évolution IMC', `${stats.imcEvolution > 0 ? '+' : ''}${stats.imcEvolution.toFixed(2)}`, '', '']
   ]
   
-  const worksheet = XLSX.utils.aoa_to_sheet(summaryData)
+  // Ajout des données
+  summaryData.forEach((row) => {
+    worksheet.addRow(row)
+  })
   
-  // Appliquer les styles
-  applyStylesToSheet(worksheet, summaryData.length, 4)
+  // Application des styles
+  applyStylesToWorksheet(worksheet, summaryData.length)
   
-  // Fusionner les cellules pour le titre
-  worksheet['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
-    { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
-    { s: { r: 7, c: 0 }, e: { r: 7, c: 3 } },
-    { s: { r: 16, c: 0 }, e: { r: 16, c: 3 } }
-  ]
-  
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Résumé')
+  // Fusion des cellules pour les titres
+  worksheet.mergeCells('A1:D1') // Titre principal
+  worksheet.mergeCells('A3:D3') // Métadonnées
+  worksheet.mergeCells('A8:D8') // Statistiques générales
+  worksheet.mergeCells('A17:D17') // Évolution
 }
 
 /**
  * Ajoute une feuille pour les repas
  */
-function addRepasSheet(workbook: XLSX.WorkBook, repas: Repas[]): void {
-  const headers = ['Date', 'Type de repas', 'Aliments', 'Calories (kcal)', 'Protéines (g)', 'Glucides (g)', 'Lipides (g)']
+function addRepasSheet(workbook: Workbook, repas: Repas[]): void {
+  const worksheet = workbook.addWorksheet('Repas')
   
-  const data = repas.map(r => [
-    format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
-    r.repas,
-    r.aliments.map(a => `${a.nom} (${a.quantite}${a.unite})`).join(', '),
-    r.macros.kcal,
-    r.macros.prot,
-    r.macros.glucides,
-    r.macros.lipides
-  ])
+  // Configuration des colonnes
+  worksheet.columns = [
+    { header: 'Date', key: 'date', width: 12 },
+    { header: 'Type de repas', key: 'type', width: 20 },
+    { header: 'Aliments', key: 'aliments', width: 40 },
+    { header: 'Calories (kcal)', key: 'calories', width: 15 },
+    { header: 'Protéines (g)', key: 'proteines', width: 15 },
+    { header: 'Glucides (g)', key: 'glucides', width: 15 },
+    { header: 'Lipides (g)', key: 'lipides', width: 15 }
+  ]
   
-  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data])
+  // Ajout des données
+  repas.forEach(r => {
+    worksheet.addRow({
+      date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+      type: r.repas,
+      aliments: r.aliments.map(a => `${a.nom} (${a.quantite}${a.unite})`).join(', '),
+      calories: r.macros.kcal,
+      proteines: r.macros.prot,
+      glucides: r.macros.glucides,
+      lipides: r.macros.lipides
+    })
+  })
   
-  // Appliquer les styles
-  applyStylesToSheet(worksheet, data.length + 1, headers.length)
+  // Application des styles
+  applyStylesToWorksheet(worksheet, repas.length + 1)
   
-  // Ajouter des formules de calcul
-  addFormulasToSheet(worksheet, data.length + 1, headers.length, 'repas')
-  
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Repas')
+  // Ajout des formules de calcul
+  addFormulasToWorksheet(worksheet, repas.length + 1, 'repas')
 }
 
 /**
  * Ajoute une feuille pour les entraînements
  */
-function addEntrainementsSheet(workbook: XLSX.WorkBook, entrainements: Entrainement[]): void {
-  const headers = ['Date', 'Type', 'Durée (min)', 'Calories (kcal)', 'Distance (km)', 'FC moyenne (bpm)', 'Commentaire']
+function addEntrainementsSheet(workbook: Workbook, entrainements: Entrainement[]): void {
+  const worksheet = workbook.addWorksheet('Entraînements')
   
-  const data = entrainements.map(e => [
-    format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
-    e.type,
-    e.duree,
-    e.calories || 0,
-    e.distance || 0,
-    e.fc_moyenne || 0,
-    e.commentaire || ''
-  ])
+  // Configuration des colonnes
+  worksheet.columns = [
+    { header: 'Date', key: 'date', width: 12 },
+    { header: 'Type', key: 'type', width: 20 },
+    { header: 'Durée (min)', key: 'duree', width: 15 },
+    { header: 'Calories (kcal)', key: 'calories', width: 15 },
+    { header: 'Distance (km)', key: 'distance', width: 15 },
+    { header: 'FC moyenne (bpm)', key: 'fc', width: 18 },
+    { header: 'Commentaire', key: 'commentaire', width: 30 }
+  ]
   
-  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data])
+  // Ajout des données
+  entrainements.forEach(e => {
+    worksheet.addRow({
+      date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+      type: e.type,
+      duree: e.duree,
+      calories: e.calories || 0,
+      distance: e.distance || 0,
+      fc: e.fc_moyenne || 0,
+      commentaire: e.commentaire || ''
+    })
+  })
   
-  // Appliquer les styles
-  applyStylesToSheet(worksheet, data.length + 1, headers.length)
+  // Application des styles
+  applyStylesToWorksheet(worksheet, entrainements.length + 1)
   
-  // Ajouter des formules de calcul
-  addFormulasToSheet(worksheet, data.length + 1, headers.length, 'entrainements')
-  
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Entraînements')
+  // Ajout des formules de calcul
+  addFormulasToWorksheet(worksheet, entrainements.length + 1, 'entrainements')
 }
 
 /**
  * Ajoute une feuille pour les mesures
  */
-function addMesuresSheet(workbook: XLSX.WorkBook, mesures: Mesure[]): void {
-  const headers = ['Date', 'Poids (kg)', 'IMC', 'Masse grasse (%)', 'Masse musculaire (kg)', 'Tour taille (cm)', 'Tour bras (cm)']
+function addMesuresSheet(workbook: Workbook, mesures: Mesure[]): void {
+  const worksheet = workbook.addWorksheet('Mesures')
   
-  const data = mesures.map(m => [
-    format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
-    m.poids || 0,
-    m.imc || 0,
-    m.masse_grasse || 0,
-    m.masse_musculaire || 0,
-    m.tour_taille || 0,
-    m.tour_bras || 0
-  ])
+  // Configuration des colonnes
+  worksheet.columns = [
+    { header: 'Date', key: 'date', width: 12 },
+    { header: 'Poids (kg)', key: 'poids', width: 12 },
+    { header: 'IMC', key: 'imc', width: 10 },
+    { header: 'Masse grasse (%)', key: 'masse_grasse', width: 18 },
+    { header: 'Masse musculaire (kg)', key: 'masse_musculaire', width: 22 },
+    { header: 'Tour taille (cm)', key: 'tour_taille', width: 18 },
+    { header: 'Tour bras (cm)', key: 'tour_bras', width: 16 }
+  ]
   
-  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...data])
+  // Ajout des données
+  mesures.forEach(m => {
+    worksheet.addRow({
+      date: format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
+      poids: m.poids || 0,
+      imc: m.imc || 0,
+      masse_grasse: m.masse_grasse || 0,
+      masse_musculaire: m.masse_musculaire || 0,
+      tour_taille: m.tour_taille || 0,
+      tour_bras: m.tour_bras || 0
+    })
+  })
   
-  // Appliquer les styles
-  applyStylesToSheet(worksheet, data.length + 1, headers.length)
+  // Application des styles
+  applyStylesToWorksheet(worksheet, mesures.length + 1)
   
-  // Ajouter des formules de calcul
-  addFormulasToSheet(worksheet, data.length + 1, headers.length, 'mesures')
-  
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Mesures')
+  // Ajout des formules de calcul
+  addFormulasToWorksheet(worksheet, mesures.length + 1, 'mesures')
 }
 
 /**
  * Ajoute une feuille de graphiques (données pour graphiques Excel)
  */
-function addChartsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
-  const chartData = []
+function addChartsSheet(workbook: Workbook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
+  const worksheet = workbook.addWorksheet('Graphiques')
+  
+  let currentRow = 1
   
   // Données pour graphique d'évolution du poids
   if (mesures.length >= 2) {
     const weightData = generateWeightChartData(mesures)
-    chartData.push(['Évolution du poids', '', '', ''])
-    chartData.push(['Date', 'Poids (kg)', '', ''])
-    weightData.labels.forEach((label, index) => {
-      chartData.push([label, weightData.datasets[0].data[index], '', ''])
+    
+    worksheet.getCell(`A${currentRow}`).value = 'Évolution du poids'
+    worksheet.getCell(`A${currentRow}`).style = EXCEL_STYLES.header
+    currentRow += 2
+    
+    worksheet.getCell(`A${currentRow}`).value = 'Date'
+    worksheet.getCell(`B${currentRow}`).value = 'Poids (kg)'
+    worksheet.getRow(currentRow).eachCell(cell => {
+      cell.style = EXCEL_STYLES.subHeader
     })
-    chartData.push(['', '', '', ''])
+    currentRow++
+    
+    weightData.labels.forEach((label, index) => {
+      worksheet.getCell(`A${currentRow}`).value = label
+      worksheet.getCell(`B${currentRow}`).value = weightData.datasets[0].data[index]
+      currentRow++
+    })
+    currentRow += 2
   }
   
   // Données pour graphique des calories
   if (repas.length > 0) {
     const caloriesData = generateCaloriesChartData(repas)
-    chartData.push(['Calories par jour', '', '', ''])
-    chartData.push(['Date', 'Calories (kcal)', '', ''])
-    caloriesData.labels.forEach((label, index) => {
-      chartData.push([label, caloriesData.datasets[0].data[index], '', ''])
+    
+    worksheet.getCell(`A${currentRow}`).value = 'Calories par jour'
+    worksheet.getCell(`A${currentRow}`).style = EXCEL_STYLES.header
+    currentRow += 2
+    
+    worksheet.getCell(`A${currentRow}`).value = 'Date'
+    worksheet.getCell(`B${currentRow}`).value = 'Calories (kcal)'
+    worksheet.getRow(currentRow).eachCell(cell => {
+      cell.style = EXCEL_STYLES.subHeader
     })
-    chartData.push(['', '', '', ''])
+    currentRow++
+    
+    caloriesData.labels.forEach((label, index) => {
+      worksheet.getCell(`A${currentRow}`).value = label
+      worksheet.getCell(`B${currentRow}`).value = caloriesData.datasets[0].data[index]
+      currentRow++
+    })
+    currentRow += 2
   }
   
   // Données pour graphique des macronutriments
   if (repas.length > 0) {
     const macrosData = generateMacrosChartData(repas)
-    chartData.push(['Répartition macronutriments', '', '', ''])
-    chartData.push(['Type', 'Valeur (g)', '', ''])
+    
+    worksheet.getCell(`A${currentRow}`).value = 'Répartition macronutriments'
+    worksheet.getCell(`A${currentRow}`).style = EXCEL_STYLES.header
+    currentRow += 2
+    
+    worksheet.getCell(`A${currentRow}`).value = 'Type'
+    worksheet.getCell(`B${currentRow}`).value = 'Valeur (g)'
+    worksheet.getRow(currentRow).eachCell(cell => {
+      cell.style = EXCEL_STYLES.subHeader
+    })
+    currentRow++
+    
     macrosData.labels.forEach((label, index) => {
-      chartData.push([label, macrosData.datasets[0].data[index], '', ''])
+      worksheet.getCell(`A${currentRow}`).value = label
+      worksheet.getCell(`B${currentRow}`).value = macrosData.datasets[0].data[index]
+      currentRow++
     })
   }
   
-  if (chartData.length > 0) {
-    const worksheet = XLSX.utils.aoa_to_sheet(chartData)
-    applyStylesToSheet(worksheet, chartData.length, 4)
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Graphiques')
-  }
+  // Configuration des colonnes
+  worksheet.columns = [
+    { width: 25 },
+    { width: 20 }
+  ]
 }
 
 /**
  * Ajoute une feuille de statistiques avancées
  */
-function addStatisticsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
+function addStatisticsSheet(workbook: Workbook, repas: Repas[], entrainements: Entrainement[], mesures: Mesure[]): void {
   const stats = calculateChartStatistics(repas, entrainements, mesures)
+  const worksheet = workbook.addWorksheet('Statistiques')
+  
+  // Configuration des colonnes
+  worksheet.columns = [
+    { width: 25 },
+    { width: 20 },
+    { width: 15 },
+    { width: 15 }
+  ]
   
   const statisticsData = [
     ['Statistiques Avancées', '', '', ''],
@@ -317,97 +406,77 @@ function addStatisticsSheet(workbook: XLSX.WorkBook, repas: Repas[], entrainemen
     ['Évolution IMC', stats.imcEvolution, '', '']
   ]
   
-  const worksheet = XLSX.utils.aoa_to_sheet(statisticsData)
+  // Ajout des données
+  statisticsData.forEach((row) => {
+    worksheet.addRow(row)
+  })
   
-  // Appliquer les styles
-  applyStylesToSheet(worksheet, statisticsData.length, 4)
+  // Application des styles
+  applyStylesToWorksheet(worksheet, statisticsData.length)
   
-  // Fusionner les cellules pour les titres
-  worksheet['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
-    { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
-    { s: { r: 7, c: 0 }, e: { r: 7, c: 3 } },
-    { s: { r: 12, c: 0 }, e: { r: 12, c: 3 } }
-  ]
-  
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Statistiques')
+  // Fusion des cellules pour les titres
+  worksheet.mergeCells('A1:D1') // Titre principal
+  worksheet.mergeCells('A3:D3') // Nutrition
+  worksheet.mergeCells('A8:D8') // Entraînement
+  worksheet.mergeCells('A13:D13') // Progression
 }
 
 /**
  * Applique les styles à une feuille Excel
  */
-function applyStylesToSheet(worksheet: XLSX.WorkSheet, rows: number, cols: number): void {
-  // Styles pour les en-têtes
-  for (let col = 0; col < cols; col++) {
-    const cellRef = XLSX.utils.encode_cell({ r: 0, c: col })
-    if (worksheet[cellRef]) {
-      worksheet[cellRef].s = EXCEL_STYLES.header
-    }
-  }
+function applyStylesToWorksheet(worksheet: Worksheet, rows: number): void {
+  // Style pour la ligne d'en-tête
+  const headerRow = worksheet.getRow(1)
+  headerRow.eachCell(cell => {
+    cell.style = EXCEL_STYLES.header
+  })
   
   // Styles pour les données
-  for (let row = 1; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: row, c: col })
-      if (worksheet[cellRef]) {
-        worksheet[cellRef].s = EXCEL_STYLES.data
-      }
-    }
+  for (let row = 2; row <= rows; row++) {
+    const dataRow = worksheet.getRow(row)
+    dataRow.eachCell(cell => {
+      cell.style = EXCEL_STYLES.data
+    })
   }
 }
 
 /**
  * Ajoute des formules de calcul à une feuille
  */
-function addFormulasToSheet(worksheet: XLSX.WorkSheet, rows: number, cols: number, type: string): void {
-  const lastRow = rows + 1
+function addFormulasToWorksheet(worksheet: Worksheet, rows: number, type: string): void {
+  const lastRow = rows + 2
   
   // Formules selon le type de données
   switch (type) {
     case 'repas':
       // Total calories
-      const totalCaloriesRef = XLSX.utils.encode_cell({ r: lastRow, c: 3 })
-      worksheet[totalCaloriesRef] = { 
-        f: `SUM(D2:D${rows})`,
-        v: 0,
-        s: EXCEL_STYLES.highlight
-      }
+      worksheet.getCell(`D${lastRow}`).value = { formula: `SUM(D2:D${rows})` }
+      worksheet.getCell(`D${lastRow}`).style = EXCEL_STYLES.highlight
+      worksheet.getCell(`A${lastRow}`).value = 'TOTAL'
       
       // Moyenne calories
-      const avgCaloriesRef = XLSX.utils.encode_cell({ r: lastRow + 1, c: 3 })
-      worksheet[avgCaloriesRef] = { 
-        f: `AVERAGE(D2:D${rows})`,
-        v: 0,
-        s: EXCEL_STYLES.highlight
-      }
+      worksheet.getCell(`D${lastRow + 1}`).value = { formula: `AVERAGE(D2:D${rows})` }
+      worksheet.getCell(`D${lastRow + 1}`).style = EXCEL_STYLES.highlight
+      worksheet.getCell(`A${lastRow + 1}`).value = 'MOYENNE'
       break
       
     case 'entrainements':
       // Total durée
-      const totalDurationRef = XLSX.utils.encode_cell({ r: lastRow, c: 2 })
-      worksheet[totalDurationRef] = { 
-        f: `SUM(C2:C${rows})`,
-        v: 0,
-        s: EXCEL_STYLES.highlight
-      }
+      worksheet.getCell(`C${lastRow}`).value = { formula: `SUM(C2:C${rows})` }
+      worksheet.getCell(`C${lastRow}`).style = EXCEL_STYLES.highlight
+      worksheet.getCell(`A${lastRow}`).value = 'TOTAL'
       
       // Moyenne durée
-      const avgDurationRef = XLSX.utils.encode_cell({ r: lastRow + 1, c: 2 })
-      worksheet[avgDurationRef] = { 
-        f: `AVERAGE(C2:C${rows})`,
-        v: 0,
-        s: EXCEL_STYLES.highlight
-      }
+      worksheet.getCell(`C${lastRow + 1}`).value = { formula: `AVERAGE(C2:C${rows})` }
+      worksheet.getCell(`C${lastRow + 1}`).style = EXCEL_STYLES.highlight
+      worksheet.getCell(`A${lastRow + 1}`).value = 'MOYENNE'
       break
       
     case 'mesures':
       // Dernier poids
-      const lastWeightRef = XLSX.utils.encode_cell({ r: lastRow, c: 1 })
-      worksheet[lastWeightRef] = { 
-        f: `B${rows}`,
-        v: 0,
-        s: EXCEL_STYLES.highlight
-      }
+      worksheet.getCell(`B${lastRow}`).value = { formula: `B${rows}` }
+      worksheet.getCell(`B${lastRow}`).style = EXCEL_STYLES.highlight
+      worksheet.getCell(`A${lastRow}`).value = 'DERNIER'
       break
   }
 }

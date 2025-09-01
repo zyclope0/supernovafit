@@ -26,6 +26,13 @@ export default defineConfig({
         'tailwind.config.js',
         'src/app/layout.tsx', // Layout spécifique Next.js
         '**/*.stories.tsx',   // Storybook si ajouté plus tard
+        '.next/**',           // Build Next.js
+        '.firebase/**',       // Firebase build
+        'dist/**',           // Distribution
+        'build/**',          // Build générique
+        'coverage/**',       // Éviter récursion
+        '**/.next/**',       // Build Next.js dans subdirs
+        '**/.firebase/**',   // Firebase dans subdirs
       ],
       thresholds: {
         global: {

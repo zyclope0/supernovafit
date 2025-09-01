@@ -69,7 +69,7 @@ const trackVital = (metric: Metric) => {
         // Fallback sécurisé
         Sentry.setMeasurement(mapped.key, metric.value, mapped.unit)
       }
-    } catch (error) {
+    } catch {
       // Ignorer les erreurs de measurement pour éviter le bruit
       // Silently ignore measurement errors in production
     }

@@ -1,6 +1,7 @@
 // Système de badges simple pour SuperNovaFit
 
-export interface BadgeDefinition {
+// Interface BadgeDefinition supprimée - non utilisée
+interface BadgeDefinition {
   id: string
   type: 'streak' | 'objectif' | 'performance' | 'special'
   nom: string
@@ -10,8 +11,8 @@ export interface BadgeDefinition {
   checkCondition: (userData: CalculatedUserData) => boolean
 }
 
-// Badges prédéfinis simples
-export const BADGE_DEFINITIONS: BadgeDefinition[] = [
+// Export supprimé - badges non utilisés actuellement  
+const BADGE_DEFINITIONS: BadgeDefinition[] = [
   // Badges Streak
   {
     id: 'streak_3_jours',
@@ -75,7 +76,8 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
 
 // Fonction pour calculer les données utilisateur nécessaires
 import type { JournalEntry, PhotoProgression } from '@/types'
-export interface CalculatedUserData {
+// Export supprimé - interface utilisée uniquement en interne
+interface CalculatedUserData {
   streakJournal: number
   humeursRecentes: number
   motivationRecente: number

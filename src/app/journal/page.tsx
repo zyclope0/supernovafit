@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { useJournal, useBadges, usePhotosLibres, useObjectifs, useCoachCommentsByModule } from '@/hooks/useFirestore'
@@ -247,6 +247,17 @@ export default function JournalPage() {
     { titre: "😊 Bonne humeur", description: "Humeur >7 pendant 5 jours", cible: 5, type: "humeur" as const },
     { titre: "💪 Actif", description: "3 entraînements cette semaine", cible: 3, type: "entrainement" as const }
   ]
+
+  // 🚀 Optimisation Performance - Issue #7
+  const objectifsActifs = useMemo(() => 
+    objectifs.filter(o => o.statut === 'actif'), 
+    [objectifs]
+  )
+  
+  const objectifsAccomplis = useMemo(() => 
+    objectifs.filter(o => o.statut === 'accompli').slice(0, 3), 
+    [objectifs]
+  )
 
   // Date d'aujourd&apos;hui
   const today = new Date().toISOString().split('T')[0]
@@ -516,7 +527,7 @@ export default function JournalPage() {
 
               {/* Objectifs actifs */}
               <div className="space-y-3 mb-4">
-                {objectifs.filter(o => o.statut === 'actif').map((objectif) => (
+                {objectifsActifs.map((objectif) => (
                   <div key={objectif.id} className="p-3 rounded-lg bg-gradient-to-r from-neon-cyan/10 to-neon-purple/10 border border-neon-cyan/20">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-white">{objectif.titre}</h4>
@@ -560,11 +571,11 @@ export default function JournalPage() {
               )}
 
               {/* Objectifs complétés */}
-              {objectifs.filter(o => o.statut === 'accompli').length > 0 && (
+              {objectifsAccomplis.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/10">
                   <p className="text-sm text-muted-foreground mb-2">✅ Objectifs atteints :</p>
                   <div className="flex flex-wrap gap-2">
-                    {objectifs.filter(o => o.statut === 'accompli').slice(0, 3).map((objectif) => (
+                    {objectifsAccomplis.map((objectif) => (
                       <span key={objectif.id} className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">
                         {objectif.titre}
                       </span>

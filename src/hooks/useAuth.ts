@@ -26,24 +26,20 @@ export function useAuth() {
   // Gestion d'erreurs Firebase centralisée
   const authErrorHandler = useFirebaseError()
 
-  useEffect(() => {
+    useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log('Auth state changed:', user?.email)
       setUser(user)
       setLoading(false)
-      
+
       // Charger le profil utilisateur si connecté
       if (user) {
         setProfileLoading(true)
         try {
-          console.log('Loading profile for user:', user.uid)
           const userDoc = await getDoc(doc(db, 'users', user.uid))
           if (userDoc.exists()) {
             const profileData = userDoc.data() as UserType
-            console.log('Profile loaded:', profileData)
             setUserProfile(profileData)
           } else {
-            console.log('No profile found for user:', user.uid)
             setUserProfile(null)
           }
         } catch (error) {
@@ -53,7 +49,6 @@ export function useAuth() {
           setProfileLoading(false)
         }
       } else {
-        console.log('User logged out, clearing profile')
         setUserProfile(null)
       }
     })
