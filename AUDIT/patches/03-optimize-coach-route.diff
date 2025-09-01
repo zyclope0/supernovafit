@@ -1,0 +1,83 @@
+diff --git a/src/app/coach/athlete/[id]/page.tsx b/src/app/coach/athlete/[id]/page.tsx
+index 1234567..abcdefg 100644
+--- a/src/app/coach/athlete/[id]/page.tsx
++++ b/src/app/coach/athlete/[id]/page.tsx
+@@ -1,15 +1,31 @@
+ 'use client'
+ 
+-import { useState, useEffect } from 'react'
++import { useState, useEffect, Suspense } from 'react'
++import dynamic from 'next/dynamic'
+ import { useAuth } from '@/hooks/useAuth'
+ import { useFirestore } from '@/hooks/useFirestore'
+-import { CaloriesChart } from '@/components/ui/CaloriesChart'
+-import { MacrosChart } from '@/components/ui/MacrosChart'
+-import { TrainingVolumeChart } from '@/components/ui/TrainingVolumeChart'
+-import { ModuleComments } from '@/components/ui/ModuleComments'
+ import { ArrowLeftIcon } from '@heroicons/react/24/outline'
+ import Link from 'next/link'
+ 
++// Dynamic imports pour réduire le bundle initial
++const CaloriesChart = dynamic(
++  () => import('@/components/ui/CaloriesChart'),
++  { 
++    ssr: false,
++    loading: () => <div className="h-64 animate-pulse bg-gray-800 rounded-lg" />
++  }
++)
++
++const MacrosChart = dynamic(
++  () => import('@/components/ui/MacrosChart'),
++  { ssr: false }
++)
++
++const TrainingVolumeChart = dynamic(
++  () => import('@/components/ui/TrainingVolumeChart'),
++  { ssr: false }
++)
++
+ interface AthleteProfile {
+   id: string
+   nom: string
+@@ -29,6 +45,15 @@ export default function AthleteDetailPage({ params }: { params: { id: string } }
+   const [repasData, setRepasData] = useState<any[]>([])
+   const [entrainementsData, setEntrainementsData] = useState<any[]>([])
+ 
++  // Lazy load des commentaires uniquement si nécessaire
++  const ModuleComments = loading ? null : dynamic(
++    () => import('@/components/ui/ModuleComments'),
++    {
++      ssr: false,
++      loading: () => <div className="animate-pulse">Chargement des commentaires...</div>
++    }
++  )
++
+   useEffect(() => {
+     const loadAthleteData = async () => {
+       if (!user || user.role !== 'coach') return
+@@ -88,7 +113,9 @@ export default function AthleteDetailPage({ params }: { params: { id: string } }
+             </div>
+ 
+             {/* Graphiques */}
+-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
++            <Suspense fallback={
++              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
++                {[1, 2, 3, 4].map(i => (
++                  <div key={i} className="h-64 animate-pulse bg-gray-800 rounded-lg" />
++                ))}
++              </div>
++            }>
++              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+               {/* Calories */}
+               <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6">
+                 <h3 className="text-lg font-semibold mb-4">Calories (7 derniers jours)</h3>
+@@ -108,7 +135,8 @@ export default function AthleteDetailPage({ params }: { params: { id: string } }
+                 <h3 className="text-lg font-semibold mb-4">Volume d'entraînement</h3>
+                 <TrainingVolumeChart data={entrainementsData} />
+               </div>
+-            </div>
++              </div>
++            </Suspense>
+ 
+             {/* Commentaires */}
+             {ModuleComments && (

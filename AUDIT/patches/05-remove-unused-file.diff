@@ -1,0 +1,57 @@
+diff --git a/src/components/ui/OptimizedImage.tsx b/src/components/ui/OptimizedImage.tsx
+deleted file mode 100644
+index 1234567..0000000
+--- a/src/components/ui/OptimizedImage.tsx
++++ /dev/null
+@@ -1,48 +0,0 @@
+-import Image from 'next/image'
+-import { useState } from 'react'
+-
+-interface OptimizedImageProps {
+-  src: string
+-  alt: string
+-  width: number
+-  height: number
+-  className?: string
+-  priority?: boolean
+-  quality?: number
+-}
+-
+-export function OptimizedImage({
+-  src,
+-  alt,
+-  width,
+-  height,
+-  className = '',
+-  priority = false,
+-  quality = 75,
+-}: OptimizedImageProps) {
+-  const [isLoading, setIsLoading] = useState(true)
+-  const [error, setError] = useState(false)
+-
+-  if (error) {
+-    return (
+-      <div 
+-        className={`bg-gray-800 flex items-center justify-center ${className}`}
+-        style={{ width, height }}
+-      >
+-        <span className="text-gray-500">Image non disponible</span>
+-      </div>
+-    )
+-  }
+-
+-  return (
+-    <Image
+-      src={src}
+-      alt={alt}
+-      width={width}
+-      height={height}
+-      className={`${className} ${isLoading ? 'blur-sm' : 'blur-0'} transition-all duration-300`}
+-      priority={priority}
+-      quality={quality}
+-      onLoadingComplete={() => setIsLoading(false)}
+-      onError={() => setError(true)}
+-    />
+-  )
+-}
+\ No newline at end of file

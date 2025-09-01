@@ -1,0 +1,59 @@
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index 1234567..abcdefg 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -52,6 +52,18 @@ export default async function RootLayout({
+         )}
+       >
+         <body className={inter.className}>
++          {/* Skip Links for Accessibility */}
++          <a 
++            href="#main-content" 
++            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-primary text-white px-4 py-2 rounded-md shadow-lg transition-all"
++          >
++            Aller au contenu principal
++          </a>
++          <a 
++            href="#main-nav" 
++            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-52 focus:z-50 bg-primary text-white px-4 py-2 rounded-md shadow-lg transition-all"
++          >
++            Aller à la navigation
++          </a>
+           <ChunkGuard>
+             <AuthGuard>
+               <WebVitalsReporter />
+
+diff --git a/src/components/layout/MainLayout.tsx b/src/components/layout/MainLayout.tsx
+index 2345678..3456789 100644
+--- a/src/components/layout/MainLayout.tsx
++++ b/src/components/layout/MainLayout.tsx
+@@ -17,9 +17,9 @@ export function MainLayout({ children }: MainLayoutProps) {
+ 
+   return (
+     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+-      <Sidebar />
++      <Sidebar id="main-nav" />
+       <div className="lg:pl-64">
+-        <main className="relative px-4 sm:px-6 lg:px-8 py-8">
++        <main id="main-content" className="relative px-4 sm:px-6 lg:px-8 py-8">
+           {children}
+         </main>
+       </div>
+
+diff --git a/src/components/layout/Sidebar.tsx b/src/components/layout/Sidebar.tsx
+index 4567890..5678901 100644
+--- a/src/components/layout/Sidebar.tsx
++++ b/src/components/layout/Sidebar.tsx
+@@ -100,7 +100,11 @@ export function Sidebar() {
+   }, [])
+ 
+   return (
+-    <nav className={`fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out ${
++    <nav 
++      id="main-nav"
++      role="navigation"
++      aria-label="Navigation principale"
++      className={`fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out ${
+       isOpen ? 'translate-x-0' : '-translate-x-full'
+     } lg:translate-x-0 lg:static lg:inset-0`}>
+       <div className="flex flex-col h-full bg-gray-900/95 backdrop-blur-xl border-r border-gray-800">

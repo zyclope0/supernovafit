@@ -1,0 +1,125 @@
+diff --git a/src/components/ui/IconButton.tsx b/src/components/ui/IconButton.tsx
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/src/components/ui/IconButton.tsx
+@@ -0,0 +1,45 @@
++import { ButtonHTMLAttributes, forwardRef } from 'react'
++import { cn } from '@/lib/utils'
++
++interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
++  icon: React.ElementType
++  label: string
++  variant?: 'primary' | 'secondary' | 'danger' | 'ghost'
++  size?: 'sm' | 'md' | 'lg'
++}
++
++export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
++  ({ icon: Icon, label, variant = 'primary', size = 'md', className, ...props }, ref) => {
++    const variants = {
++      primary: 'bg-primary hover:bg-primary/80 text-white',
++      secondary: 'bg-gray-700 hover:bg-gray-600 text-gray-100',
++      danger: 'bg-red-600 hover:bg-red-700 text-white',
++      ghost: 'hover:bg-gray-800 text-gray-400 hover:text-gray-100'
++    }
++
++    const sizes = {
++      sm: 'p-1.5',
++      md: 'p-2',
++      lg: 'p-3'
++    }
++
++    const iconSizes = {
++      sm: 'w-4 h-4',
++      md: 'w-5 h-5',
++      lg: 'w-6 h-6'
++    }
++
++    return (
++      <button
++        ref={ref}
++        aria-label={label}
++        title={label}
++        className={cn(
++          'rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-gray-900',
++          variants[variant],
++          sizes[size],
++          className
++        )}
++        {...props}
++      >
++        <Icon className={iconSizes[size]} aria-hidden="true" />
++      </button>
++    )
++  }
++)
++
++IconButton.displayName = 'IconButton'
+
+diff --git a/src/app/diete/page.tsx b/src/app/diete/page.tsx
+index 2345678..3456789 100644
+--- a/src/app/diete/page.tsx
++++ b/src/app/diete/page.tsx
+@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
+ import { useFirestore } from '@/hooks/useFirestore'
+ import { MealForm } from '@/components/ui/MealForm'
+ import { MacrosDisplay } from '@/components/ui/MacrosDisplay'
++import { IconButton } from '@/components/ui/IconButton'
+ import { TrashIcon, PencilIcon, HeartIcon } from '@heroicons/react/24/outline'
+ import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
+ import dynamic from 'next/dynamic'
+@@ -180,25 +181,19 @@ export default function DietePage() {
+                       </div>
+                       <div className="flex items-center gap-2">
+                         {/* Favoris */}
+-                        <button
+-                          onClick={() => toggleFavori(repas.id, repas.is_favori)}
+-                          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+-                        >
+-                          {repas.is_favori ? (
+-                            <HeartSolidIcon className="w-5 h-5 text-red-500" />
+-                          ) : (
+-                            <HeartIcon className="w-5 h-5 text-gray-400" />
+-                          )}
+-                        </button>
++                        <IconButton
++                          icon={repas.is_favori ? HeartSolidIcon : HeartIcon}
++                          label={repas.is_favori ? "Retirer des favoris" : "Ajouter aux favoris"}
++                          onClick={() => toggleFavori(repas.id, repas.is_favori)}
++                          variant="ghost"
++                          className={repas.is_favori ? 'text-red-500' : ''}
++                        />
+                         
+                         {/* Modifier */}
+-                        <button
++                        <IconButton
++                          icon={PencilIcon}
++                          label="Modifier le repas"
+                           onClick={() => {
+                             setEditingMeal(repas)
+                             setSelectedMeal({
+@@ -208,17 +203,15 @@ export default function DietePage() {
+                               aliments: repas.aliments || []
+                             })
+                           }}
+-                          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+-                        >
+-                          <PencilIcon className="w-5 h-5 text-gray-400" />
+-                        </button>
++                          variant="ghost"
++                        />
+                         
+                         {/* Supprimer */}
+-                        <button
++                        <IconButton
++                          icon={TrashIcon}
++                          label="Supprimer le repas"
+                           onClick={() => deleteMeal(repas.id)}
+-                          className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+-                        >
+-                          <TrashIcon className="w-5 h-5 text-gray-400" />
+-                        </button>
++                          variant="ghost"
++                        />
+                       </div>
+                     </div>
