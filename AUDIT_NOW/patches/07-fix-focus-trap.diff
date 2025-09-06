@@ -1,0 +1,210 @@
+diff --git a/src/hooks/useFocusTrap.ts b/src/hooks/useFocusTrap.ts
+index abc1234..def5678 100644
+--- a/src/hooks/useFocusTrap.ts
++++ b/src/hooks/useFocusTrap.ts
+@@ -1,15 +1,20 @@
+-import { useEffect, useRef } from 'react'
++import { useEffect, useRef, useCallback } from 'react'
+ 
+ interface UseFocusTrapOptions {
+   active?: boolean
++  initialFocus?: boolean
++  returnFocus?: boolean
++  allowOutsideClick?: boolean
+ }
+ 
+ export function useFocusTrap({
+-  active = true
++  active = true,
++  initialFocus = true,
++  returnFocus = true,
++  allowOutsideClick = false
+ }: UseFocusTrapOptions = {}) {
+   const containerRef = useRef<HTMLElement>(null)
++  const previousActiveElement = useRef<HTMLElement | null>(null)
+ 
+   useEffect(() => {
+     if (!active || !containerRef.current) return
+@@ -22,17 +27,39 @@ export function useFocusTrap({
+     const firstElement = focusableElements[0]
+     const lastElement = focusableElements[focusableElements.length - 1]
+ 
+-    // Focus first element on mount
+-    firstElement?.focus()
++    // Save current focus
++    if (returnFocus) {
++      previousActiveElement.current = document.activeElement as HTMLElement
++    }
++
++    // Set initial focus
++    if (initialFocus && firstElement) {
++      firstElement.focus()
++    }
+ 
+     const handleTabKey = (e: KeyboardEvent) => {
+       if (e.key !== 'Tab') return
+ 
++      // Handle empty trap
++      if (focusableElements.length === 0) {
++        e.preventDefault()
++        return
++      }
++
++      // Trap focus within container
+       if (e.shiftKey) {
+         if (document.activeElement === firstElement) {
+           e.preventDefault()
+           lastElement?.focus()
+         }
+       } else {
+         if (document.activeElement === lastElement) {
+           e.preventDefault()
+           firstElement?.focus()
+         }
+       }
+     }
+ 
++    const handleEscapeKey = (e: KeyboardEvent) => {
++      if (e.key === 'Escape' && allowOutsideClick) {
++        previousActiveElement.current?.focus()
++      }
++    }
++
++    const handleClickOutside = (e: MouseEvent) => {
++      if (allowOutsideClick && !container.contains(e.target as Node)) {
++        previousActiveElement.current?.focus()
++      }
++    }
++
+     document.addEventListener('keydown', handleTabKey)
++    document.addEventListener('keydown', handleEscapeKey)
++    if (allowOutsideClick) {
++      document.addEventListener('mousedown', handleClickOutside)
++    }
+ 
+     return () => {
+       document.removeEventListener('keydown', handleTabKey)
++      document.removeEventListener('keydown', handleEscapeKey)
++      if (allowOutsideClick) {
++        document.removeEventListener('mousedown', handleClickOutside)
++      }
++
++      // Restore focus
++      if (returnFocus && previousActiveElement.current) {
++        previousActiveElement.current.focus()
++      }
+     }
+-  }, [active])
++  }, [active, initialFocus, returnFocus, allowOutsideClick])
+ 
+   return containerRef
+ }
+
+diff --git a/src/components/ui/InviteModal.tsx b/src/components/ui/InviteModal.tsx
+index abc1234..def5678 100644
+--- a/src/components/ui/InviteModal.tsx
++++ b/src/components/ui/InviteModal.tsx
+@@ -1,6 +1,7 @@
+ 'use client'
+ 
+ import { useState, useEffect } from 'react'
++import { useFocusTrap } from '@/hooks/useFocusTrap'
+ import { X } from 'lucide-react'
+ 
+ interface InviteModalProps {
+@@ -13,6 +14,11 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
+   const [email, setEmail] = useState('')
+   const [loading, setLoading] = useState(false)
+ 
++  const focusTrapRef = useFocusTrap({
++    active: isOpen,
++    returnFocus: true,
++    allowOutsideClick: true
++  })
++
+   useEffect(() => {
+     if (isOpen) {
+       document.body.style.overflow = 'hidden'
+@@ -40,13 +46,21 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
+   if (!isOpen) return null
+ 
+   return (
+-    <div className="fixed inset-0 z-50 overflow-y-auto">
++    <div 
++      className="fixed inset-0 z-50 overflow-y-auto"
++      role="dialog"
++      aria-modal="true"
++      aria-labelledby="modal-title"
++      aria-describedby="modal-description"
++    >
+       <div 
+         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+         onClick={onClose}
++        aria-hidden="true"
+       />
+       
+       <div className="flex min-h-full items-center justify-center p-4">
+         <div 
++          ref={focusTrapRef}
+           className="relative bg-white rounded-lg shadow-xl max-w-md w-full"
+         >
+           <div className="flex items-center justify-between p-6 border-b">
+-            <h2 className="text-xl font-semibold">
++            <h2 id="modal-title" className="text-xl font-semibold">
+               Inviter un athlète
+             </h2>
+             <button
+               onClick={onClose}
+               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
++              aria-label="Fermer la fenêtre"
+             >
+               <X className="w-5 h-5" />
+             </button>
+           </div>
+           
+           <div className="p-6">
++            <p id="modal-description" className="sr-only">
++              Utilisez ce formulaire pour inviter un athlète à rejoindre votre équipe
++            </p>
+             <form onSubmit={handleSubmit} className="space-y-4">
+               {/* Form content */}
+             </form>
+
+diff --git a/src/components/ui/HistoriqueEntrainementsModal.tsx b/src/components/ui/HistoriqueEntrainementsModal.tsx
+index abc1234..def5678 100644
+--- a/src/components/ui/HistoriqueEntrainementsModal.tsx
++++ b/src/components/ui/HistoriqueEntrainementsModal.tsx
+@@ -1,5 +1,6 @@
+ 'use client'
+ 
++import { useFocusTrap } from '@/hooks/useFocusTrap'
+ import { X } from 'lucide-react'
+ 
+ interface HistoriqueEntrainementsModalProps {
+@@ -10,10 +11,21 @@ interface HistoriqueEntrainementsModalProps {
+ export function HistoriqueEntrainementsModal({ 
+   isOpen, 
+   onClose 
+ }: HistoriqueEntrainementsModalProps) {
++  const focusTrapRef = useFocusTrap({
++    active: isOpen,
++    returnFocus: true
++  })
++
+   if (!isOpen) return null
+ 
+   return (
+-    <div className="fixed inset-0 z-50 overflow-y-auto">
++    <div 
++      className="fixed inset-0 z-50 overflow-y-auto"
++      role="dialog"
++      aria-modal="true"
++      aria-labelledby="historique-title"
++    >
+       {/* Similar structure with focus trap */}
++      <div ref={focusTrapRef}>
++        {/* Modal content */}
++      </div>
+     </div>
+   )
+ }
