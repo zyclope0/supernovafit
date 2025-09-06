@@ -1,0 +1,58 @@
+
+> supernovafit@1.9.4 build
+> next build
+
+   ▲ Next.js 15.5.2
+   - Experiments (use with caution):
+     · clientTraceMetadata
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 29.3s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/22) ...
+   Generating static pages (5/22) 
+   Generating static pages (10/22) 
+   Generating static pages (16/22) 
+ ✓ Generating static pages (22/22)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    7.55 kB         371 kB
+├ ○ /_not-found                          1.17 kB         222 kB
+├ ○ /admin                                 968 B         360 kB
+├ ○ /auth                                3.02 kB         362 kB
+├ ○ /coach                               6.22 kB         370 kB
+├ ○ /coach/all-athletes                   3.9 kB         368 kB
+├ ƒ /coach/athlete/[id]                   111 kB         471 kB
+├ ƒ /coach/athlete/[id]/diete            3.74 kB         363 kB
+├ ƒ /coach/athlete/[id]/entrainements    3.26 kB         363 kB
+├ ƒ /coach/athlete/[id]/journal          3.59 kB         363 kB
+├ ƒ /coach/athlete/[id]/mesures          3.38 kB         363 kB
+├ ƒ /coach/athlete/[id]/plan-diete       3.43 kB         360 kB
+├ ○ /coach/programmes                    2.32 kB         362 kB
+├ ○ /coach/rapports                       2.7 kB         362 kB
+├ ○ /create-coach                        2.76 kB         362 kB
+├ ○ /diete                               28.3 kB         407 kB
+├ ○ /entrainements                         11 kB         398 kB
+├ ○ /export                              16.8 kB         388 kB
+├ ○ /guide                               4.09 kB         363 kB
+├ ○ /journal                             14.7 kB         378 kB
+├ ○ /legal/cookies                         800 B         360 kB
+├ ○ /legal/privacy                         888 B         360 kB
+├ ○ /legal/terms                           818 B         360 kB
+├ ○ /mesures                             7.69 kB         372 kB
+├ ○ /nouveautes                          5.02 kB         364 kB
+└ ○ /profil                              4.88 kB         364 kB
++ First Load JS shared by all             221 kB
+  ├ chunks/1762-4ba73577a4e00eb1.js       126 kB
+  ├ chunks/4bd1b696-0b2531ccaad36885.js  54.4 kB
+  ├ chunks/52774a7f-b5ba0be9f002bb00.js  36.7 kB
+  └ other shared chunks (total)          4.11 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

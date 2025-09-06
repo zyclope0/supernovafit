@@ -1,0 +1,66 @@
+diff --git a/src/app/entrainements/page.tsx b/src/app/entrainements/page.tsx
+index abc1234..def5678 100644
+--- a/src/app/entrainements/page.tsx
++++ b/src/app/entrainements/page.tsx
+@@ -1,8 +1,16 @@
+ 'use client'
+ 
+-import { useState, useEffect } from 'react'
+-import { LineChart, BarChart, PieChart } from 'recharts'
+-import { useFirestore } from '@/hooks/useFirestore'
++import { useState, useEffect, Suspense, lazy } from 'react'
++import dynamic from 'next/dynamic'
++
++// Lazy load heavy chart components
++const LineChart = dynamic(
++  () => import('recharts').then(mod => ({ default: mod.LineChart })),
++  { ssr: false, loading: () => <div className="h-64 animate-pulse bg-gray-200 rounded" /> }
++)
++
++const BarChart = dynamic(
++  () => import('recharts').then(mod => ({ default: mod.BarChart })),
++  { ssr: false, loading: () => <div className="h-64 animate-pulse bg-gray-200 rounded" /> }
++)
+ 
+ export default function EntrainementsPage() {
+@@ -25,10 +33,15 @@ export default function EntrainementsPage() {
+ 
+   return (
+     <div className="container mx-auto p-4">
+-      <h1 className="text-3xl font-bold mb-6">Mes Entraînements</h1>
+-      
+-      {/* Charts section with lazy loading */}
+-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+-        {loading ? (
+-          <LoadingSkeleton />
+-        ) : (
+-          <>
+-            <LineChart data={trainings} />
+-            <BarChart data={statistics} />
+-          </>
+-        )}
++      <PageHeader title="Mes Entraînements" />
++      
++      <Suspense fallback={<LoadingSkeleton />}>
++        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
++          {!loading && (
++            <>
++              <LineChart data={trainings} />
++              <BarChart data={statistics} />
++            </>
++          )}
++        </div>
++      </Suspense>
+       </div>
+     </div>
+   )
+ }
++
++function LoadingSkeleton() {
++  return (
++    <>
++      <div className="h-64 animate-pulse bg-gray-200 rounded" />
++      <div className="h-64 animate-pulse bg-gray-200 rounded" />
++    </>
++  )
++}

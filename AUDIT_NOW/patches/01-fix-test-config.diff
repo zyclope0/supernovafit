@@ -1,0 +1,105 @@
+diff --git a/vitest.config.ts b/vitest.config.ts
+index abc1234..def5678 100644
+--- a/vitest.config.ts
++++ b/vitest.config.ts
+@@ -5,10 +5,28 @@ export default defineConfig({
+   plugins: [react()],
+   test: {
+     environment: 'jsdom',
++    globals: true,
+     setupFiles: ['./src/test/setup.ts'],
++    pool: 'forks',
++    poolOptions: {
++      forks: {
++        singleFork: false,
++        isolate: true,
++        maxForks: 2
++      }
++    },
++    testTimeout: 10000,
++    hookTimeout: 10000,
+     coverage: {
+       provider: 'v8',
+-      reporter: ['text', 'json', 'html']
++      reporter: ['text', 'json', 'html', 'lcov'],
++      exclude: [
++        'node_modules/',
++        'src/test/',
++        '**/*.d.ts',
++        '**/*.config.*',
++        '.next/',
++        'coverage/'
++      ]
+     }
+   },
+   resolve: {
+
+diff --git a/src/test/setup.ts b/src/test/setup.ts
+index abc1234..def5678 100644
+--- a/src/test/setup.ts
++++ b/src/test/setup.ts
+@@ -1,5 +1,45 @@
+ import '@testing-library/jest-dom'
+ import { vi } from 'vitest'
+ 
++// Mock Firebase globally to prevent memory leaks
++vi.mock('@/lib/firebase', () => ({
++  auth: {
++    onAuthStateChanged: vi.fn((callback) => {
++      callback(null)
++      return vi.fn() // unsubscribe function
++    }),
++    signInWithEmailAndPassword: vi.fn(),
++    createUserWithEmailAndPassword: vi.fn(),
++    signOut: vi.fn(),
++    currentUser: null
++  },
++  firestore: {
++    collection: vi.fn(() => ({
++      doc: vi.fn(() => ({
++        get: vi.fn(() => Promise.resolve({ exists: false })),
++        set: vi.fn(() => Promise.resolve()),
++        update: vi.fn(() => Promise.resolve()),
++        delete: vi.fn(() => Promise.resolve())
++      })),
++      where: vi.fn(() => ({
++        get: vi.fn(() => Promise.resolve({ docs: [] }))
++      })),
++      orderBy: vi.fn(() => ({
++        limit: vi.fn(() => ({
++          get: vi.fn(() => Promise.resolve({ docs: [] }))
++        }))
++      }))
++    }))
++  },
++  storage: {
++    ref: vi.fn(() => ({
++      put: vi.fn(() => Promise.resolve()),
++      getDownloadURL: vi.fn(() => Promise.resolve('mock-url'))
++    }))
++  }
++}))
++
++// Mock Next.js modules
+ vi.mock('next/navigation', () => ({
+   useRouter: () => ({
+     push: vi.fn(),
+@@ -10,4 +50,18 @@ vi.mock('next/navigation', () => ({
+   useSearchParams: () => new URLSearchParams(),
+   useParams: () => ({})
+ }))
++
++// Clean up after each test
++afterEach(() => {
++  vi.clearAllMocks()
++})
++
++// Global test utilities
++global.ResizeObserver = vi.fn().mockImplementation(() => ({
++  observe: vi.fn(),
++  unobserve: vi.fn(),
++  disconnect: vi.fn()
++}))
++
++// Suppress console errors in tests
++console.error = vi.fn()
