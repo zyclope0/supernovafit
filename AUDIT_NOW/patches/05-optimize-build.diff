@@ -1,0 +1,115 @@
+diff --git a/next.config.js b/next.config.js
+index abc1234..def5678 100644
+--- a/next.config.js
++++ b/next.config.js
+@@ -15,7 +15,29 @@ const nextConfig = {
+     formats: ['image/avif', 'image/webp'],
+   },
+   
++  // Enable SWC minifier for faster builds
++  swcMinify: true,
++  
++  // Optimize compilation
++  compiler: {
++    removeConsole: process.env.NODE_ENV === 'production',
++  },
++  
++  // Experimental features for better performance
+   experimental: {
+     optimizeCss: true,
++    optimizePackageImports: [
++      'lodash',
++      'date-fns',
++      '@firebase/app',
++      '@firebase/auth',
++      '@firebase/firestore',
++      'recharts',
++      'jspdf',
++      'exceljs'
++    ],
++    // Enable incremental compilation
++    incrementalCacheHandlerPath: require.resolve('./cache-handler.js'),
++    webpackBuildWorker: true,
+   },
+   
+   webpack: (config, { isServer }) => {
+@@ -25,6 +47,21 @@ const nextConfig = {
+       })
+     }
+     
++    // Add build optimizations
++    config.optimization = {
++      ...config.optimization,
++      moduleIds: 'deterministic',
++      splitChunks: {
++        chunks: 'all',
++        cacheGroups: {
++          default: false,
++          vendors: false,
++          framework: {
++            name: 'framework',
++            chunks: 'all',
++            test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
++            priority: 40,
++            enforce: true,
++          },
++          lib: {
++            test(module) {
++              return module.size() > 160000 && /node_modules[\\/]/.test(module.identifier())
++            },
++            name(module) {
++              const hash = crypto.createHash('sha1')
++              hash.update(module.identifier())
++              return hash.digest('hex').substring(0, 8)
++            },
++            priority: 30,
++            minChunks: 1,
++            reuseExistingChunk: true,
++          },
++          commons: {
++            name: 'commons',
++            chunks: 'all',
++            minChunks: 2,
++            priority: 20,
++          },
++          shared: {
++            name(module, chunks) {
++              return crypto.createHash('sha1')
++                .update(chunks.map(c => c.name).join('_'))
++                .digest('hex').substring(0, 8)
++            },
++            priority: 10,
++            minChunks: 2,
++            reuseExistingChunk: true,
++          },
++        },
++      },
++    }
++    
+     return config
+   },
+ }
+
+diff --git a/cache-handler.js b/cache-handler.js
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/cache-handler.js
+@@ -0,0 +1,20 @@
++// Custom cache handler for incremental builds
++const cache = new Map()
++
++module.exports = {
++  get: async (key) => {
++    return cache.get(key)
++  },
++  set: async (key, data) => {
++    cache.set(key, data)
++  },
++  delete: async (key) => {
++    cache.delete(key)
++  },
++  clear: async () => {
++    cache.clear()
++  }
++}

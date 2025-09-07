@@ -1,0 +1,162 @@
+diff --git a/src/components/ui/SkeletonLoader.tsx b/src/components/ui/SkeletonLoader.tsx
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/src/components/ui/SkeletonLoader.tsx
+@@ -0,0 +1,45 @@
++import { cn } from '@/lib/utils'
++
++interface SkeletonLoaderProps {
++  lines?: number
++  className?: string
++  variant?: 'text' | 'card' | 'avatar' | 'chart'
++}
++
++export function SkeletonLoader({ 
++  lines = 3, 
++  className,
++  variant = 'text' 
++}: SkeletonLoaderProps) {
++  if (variant === 'card') {
++    return (
++      <div className={cn('animate-pulse', className)} role="status" aria-live="polite">
++        <span className="sr-only">Chargement en cours...</span>
++        <div className="bg-gray-200 rounded-lg p-4">
++          <div className="h-6 bg-gray-300 rounded w-3/4 mb-4" />
++          <div className="h-4 bg-gray-300 rounded w-full mb-2" />
++          <div className="h-4 bg-gray-300 rounded w-5/6" />
++        </div>
++      </div>
++    )
++  }
++  
++  if (variant === 'avatar') {
++    return (
++      <div className={cn('animate-pulse', className)} role="status">
++        <div className="h-12 w-12 bg-gray-200 rounded-full" />
++      </div>
++    )
++  }
++  
++  if (variant === 'chart') {
++    return (
++      <div className={cn('animate-pulse h-64 bg-gray-200 rounded-lg', className)} role="status">
++        <span className="sr-only">Chargement du graphique...</span>
++      </div>
++    )
++  }
++  
++  return (
++    <div className={cn('animate-pulse space-y-2', className)} role="status" aria-live="polite">
++      <span className="sr-only">Chargement en cours...</span>
++      {[...Array(lines)].map((_, i) => (
++        <div key={i} className={cn(
++          'h-4 bg-gray-200 rounded',
++          i === lines - 1 && 'w-4/5'
++        )} />
++      ))}
++    </div>
++  )
++}
+
+diff --git a/src/app/diete/page.tsx b/src/app/diete/page.tsx
+index abc1234..def5678 100644
+--- a/src/app/diete/page.tsx
++++ b/src/app/diete/page.tsx
+@@ -1,6 +1,7 @@
+ 'use client'
+ 
+ import { useState, useEffect } from 'react'
++import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
+ import { useFirestore } from '@/hooks/useFirestore'
+ 
+ export default function DietePage() {
+@@ -20,7 +21,15 @@ export default function DietePage() {
+   }, [])
+ 
+   if (loading) {
+-    return <div>Chargement...</div>
++    return (
++      <div className="container mx-auto p-4">
++        <SkeletonLoader variant="text" lines={1} className="mb-6 w-48" />
++        <div className="grid gap-4">
++          <SkeletonLoader variant="card" />
++          <SkeletonLoader variant="card" />
++          <SkeletonLoader variant="card" />
++        </div>
++      </div>
++    )
+   }
+ 
+   return (
+
+diff --git a/src/app/export/page.tsx b/src/app/export/page.tsx
+index abc1234..def5678 100644
+--- a/src/app/export/page.tsx
++++ b/src/app/export/page.tsx
+@@ -1,6 +1,7 @@
+ 'use client'
+ 
+ import { useState, useEffect } from 'react'
++import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
+ import { useExportData } from '@/hooks/useExportData'
+ 
+ export default function ExportPage() {
+@@ -15,7 +16,18 @@ export default function ExportPage() {
+   }, [])
+ 
+   if (loading) {
+-    return <div>Préparation des données...</div>
++    return (
++      <div className="container mx-auto p-4">
++        <SkeletonLoader variant="text" lines={1} className="mb-6 w-64" />
++        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
++          <SkeletonLoader variant="chart" />
++          <SkeletonLoader variant="chart" />
++        </div>
++        <div className="mt-6">
++          <SkeletonLoader variant="card" />
++        </div>
++      </div>
++    )
+   }
+ 
+   return (
+
+diff --git a/src/app/coach/athlete/[id]/page.tsx b/src/app/coach/athlete/[id]/page.tsx
+index abc1234..def5678 100644
+--- a/src/app/coach/athlete/[id]/page.tsx
++++ b/src/app/coach/athlete/[id]/page.tsx
+@@ -1,6 +1,7 @@
+ 'use client'
+ 
+ import { useState, useEffect } from 'react'
++import { SkeletonLoader } from '@/components/ui/SkeletonLoader'
+ import { useParams } from 'next/navigation'
+ 
+ export default function CoachAthletePage() {
+@@ -20,7 +21,22 @@ export default function CoachAthletePage() {
+   }, [id])
+ 
+   if (loading) {
+-    return <div>Chargement de l'athlète...</div>
++    return (
++      <div className="container mx-auto p-4">
++        <div className="flex items-center gap-4 mb-6">
++          <SkeletonLoader variant="avatar" />
++          <div>
++            <SkeletonLoader variant="text" lines={1} className="w-48 mb-2" />
++            <SkeletonLoader variant="text" lines={1} className="w-32" />
++          </div>
++        </div>
++        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
++          <SkeletonLoader variant="chart" />
++          <SkeletonLoader variant="chart" />
++          <SkeletonLoader variant="card" />
++          <SkeletonLoader variant="card" />
++        </div>
++      </div>
++    )
+   }
+ 
+   if (!athlete) {

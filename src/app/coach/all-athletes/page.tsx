@@ -208,12 +208,18 @@ export default function AllAthletesPage() {
           <div className="space-y-4">
             {/* Recherche */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
+              <label htmlFor="all-athletes-search" className="sr-only">
+                Rechercher un athlète
+              </label>
               <input
+                id="all-athletes-search"
                 type="text"
                 placeholder="Rechercher un athlète..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                aria-label="Rechercher un athlète"
+                role="searchbox"
                 className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:outline-none focus:border-neon-purple"
               />
             </div>

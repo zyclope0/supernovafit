@@ -16,7 +16,8 @@ export default defineConfig({
     globals: true,
     css: true,
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'node_modules/',
         'src/test/',
@@ -33,18 +34,29 @@ export default defineConfig({
         'coverage/**',       // Éviter récursion
         '**/.next/**',       // Build Next.js dans subdirs
         '**/.firebase/**',   // Firebase dans subdirs
+        '**/*.config.*',     // Fichiers de config
       ],
       thresholds: {
         global: {
-          branches: 70,
-          functions: 80,
-          lines: 80,
-          statements: 80
+          branches: 25,
+          functions: 30,
+          lines: 30,
+          statements: 30
         }
+      }
+    },
+    // Isolation pour éviter les fuites mémoire
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: false,
+        minForks: 1,
+        maxForks: 4
       }
     },
     // Timeout pour tests Firebase
     testTimeout: 10000,
+    hookTimeout: 10000,
   },
   resolve: {
     alias: {

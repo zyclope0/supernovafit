@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { vi } from 'vitest'
+import { vi, beforeAll, afterAll, afterEach } from 'vitest'
 
 // Mock Firebase - Critique pour tests
 vi.mock('firebase/app', () => ({
@@ -131,4 +131,21 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
+})
+
+// Clean up after each test pour éviter les fuites mémoire
+afterEach(() => {
+  vi.clearAllMocks()
+  // Nettoyer les timers si utilisés
+  vi.clearAllTimers()
+})
+
+// Supprimer les console.error en tests pour réduire le bruit
+const originalError = console.error
+beforeAll(() => {
+  console.error = vi.fn()
+})
+
+afterAll(() => {
+  console.error = originalError
 })

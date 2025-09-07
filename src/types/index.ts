@@ -231,17 +231,7 @@ export interface PhotoLibre {
   created_at?: Date | string;
 }
 
-// Types pour les menus-type (coach)
-export interface MenuType {
-  id: string;
-  coach_id: string;
-  nom: string;
-  description?: string;
-  structure: {
-    [key in MealType]?: Aliment[];
-  };
-  macros_cibles?: Macros;
-}
+// Interface MenuType supprimée - non utilisée
 
 // Types pour les plans diète coach (indications nutritionnelles)
 export interface CoachDietPlan {
@@ -274,21 +264,7 @@ export interface OpenFoodFactsProduct {
   };
 }
 
-// Types pour les statistiques et graphiques
-export interface StatsPeriode {
-  debut: Date;
-  fin: Date;
-  moyennes: {
-    calories: number;
-    proteines: number;
-    glucides: number;
-    lipides: number;
-    poids?: number;
-  };
-  evolution_poids?: number;
-  nb_entrainements: number;
-  minutes_entrainement: number;
-} 
+// Interface StatsPeriode supprimée - non utilisée 
 
 // Types pour les commentaires coach
 export type CoachCommentModule = 'diete' | 'entrainements' | 'journal' | 'mesures'

@@ -175,11 +175,7 @@ export const mesureSchema = z.object({
 })
 
 // Types inférés pour TypeScript
-export type MacrosValidation = z.infer<typeof macrosSchema>
-export type AlimentValidation = z.infer<typeof alimentSchema>
-export type RepasValidation = z.infer<typeof repasSchema>
-export type EntrainementValidation = z.infer<typeof entrainementSchema>
-export type MesureValidation = z.infer<typeof mesureSchema>
+// Types de validation supprimés - non utilisés
 
 // Fonction helper pour formater les erreurs Zod
 export function formatZodError(error: z.ZodError): string[] {

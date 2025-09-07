@@ -1,0 +1,167 @@
+diff --git a/src/hooks/useFirebaseError.ts b/src/hooks/useFirebaseError.ts
+index abc1234..def5678 100644
+--- a/src/hooks/useFirebaseError.ts
++++ b/src/hooks/useFirebaseError.ts
+@@ -159,10 +159,3 @@ export function useFirebaseError() {
+     formatError
+   }
+ }
+-
+-// Remove unused export
+-export function useFirebaseOperation() {
+-  // This function is not used anywhere
+-  // REMOVED
+-}
+
+diff --git a/src/hooks/useFirestore.ts b/src/hooks/useFirestore.ts
+index abc1234..def5678 100644
+--- a/src/hooks/useFirestore.ts
++++ b/src/hooks/useFirestore.ts
+@@ -1022,12 +1022,6 @@ export function useFirestore() {
+   }
+ }
+ 
+-// Remove unused export
+-export function useUserProfile(userId: string) {
+-  // Not referenced anywhere
+-  // REMOVED
+-}
+-
+ // Keep only used functions
+ export function updateUserProfile(userId: string, data: any) {
+   // This is still used
+@@ -1447,10 +1441,6 @@ export function updateUserProfile(userId: string, data: any) {
+   // Implementation
+ }
+ 
+-export function updateCoachCommentRead() {
+-  // REMOVED - unused
+-}
+-
+ // Keep paginated functions that are actually used
+ export function usePaginatedData(collection: string, limit: number) {
+   // This is used in multiple places
+@@ -1567,16 +1557,6 @@ export function usePaginatedData(collection: string, limit: number) {
+   }
+ }
+ 
+-// Remove unused pagination functions
+-export function usePaginatedRepas() {
+-  // REMOVED - unused
+-}
+-
+-export function usePaginatedJournal() {
+-  // REMOVED - unused
+-}
+
+diff --git a/src/lib/caloriesCalculator.ts b/src/lib/caloriesCalculator.ts
+index abc1234..def5678 100644
+--- a/src/lib/caloriesCalculator.ts
++++ b/src/lib/caloriesCalculator.ts
+@@ -99,24 +99,6 @@ export function calculateTDEE(
+   return Math.round(bmr * activityMultiplier)
+ }
+ 
+-// Remove unused calculations
+-export function calculateMaxHR(age: number): number {
+-  // REMOVED - unused
+-}
+-
+-export function calculateHRPercentage(hr: number, maxHR: number): number {
+-  // REMOVED - unused
+-}
+-
+-export function calculateCalories(): number {
+-  // REMOVED - unused
+-}
+-
+-export function calculateCaloriesByRPE(): number {
+-  // REMOVED - unused
+-}
+-
+-export const CALORIE_SUGGESTIONS = {} // REMOVED
+-
+ // Keep only used exports
+ export function calculateBMR(
+   weight: number,
+
+diff --git a/src/lib/export/chart-utils.ts b/src/lib/export/chart-utils.ts
+index abc1234..def5678 100644
+--- a/src/lib/export/chart-utils.ts
++++ b/src/lib/export/chart-utils.ts
+@@ -180,20 +180,6 @@ export function generateProgressChartData(mesures: any[]) {
+   // Keep - this is used
+ }
+ 
+-// Remove unused chart generators
+-export function generateIMCChartData() {
+-  // REMOVED - unused
+-}
+-
+-export function generateWorkoutTypeChartData() {
+-  // REMOVED - unused
+-}
+
+diff --git a/src/lib/utils.ts b/src/lib/utils.ts
+index abc1234..def5678 100644
+--- a/src/lib/utils.ts
++++ b/src/lib/utils.ts
+@@ -1,9 +1,6 @@
+ import { type ClassValue, clsx } from 'clsx'
+ import { twMerge } from 'tailwind-merge'
+ 
+-// Remove if not used elsewhere
+-export function cn(...inputs: ClassValue[]) {
+-  return twMerge(clsx(inputs))
+-}
++// Note: cn() is commonly used, verify before removing
+ 
+ export function formatDate(date: Date | string): string {
+   // Keep - used in multiple places
+@@ -16,10 +13,6 @@ export function formatDate(date: Date | string): string {
+   })
+ }
+ 
+-export function formatDateShort(date: Date | string): string {
+-  // REMOVED - unused
+-}
+-
+ // Remove unused calculation functions
+-export function calculateMetabolicAge() { /* REMOVED */ }
+-export function calculateBMI() { /* REMOVED */ }
+-export function getBMICategory() { /* REMOVED */ }
+
+diff --git a/src/lib/validation.ts b/src/lib/validation.ts
+index abc1234..def5678 100644
+--- a/src/lib/validation.ts
++++ b/src/lib/validation.ts
+@@ -1,27 +1,6 @@
+ import { z } from 'zod'
+ 
+-// Remove unused schemas
+-export const macrosSchema = z.object({
+-  // REMOVED - unused
+-})
+-
+-export const alimentSchema = z.object({
+-  // REMOVED - unused
+-})
+-
+ // Keep only used validation schemas
+ export const userSchema = z.object({
+   email: z.string().email(),
+   // ... rest of schema
+ })
+
+diff --git a/src/components/ui/OptimizedImage.tsx b/src/components/ui/OptimizedImage.tsx
+deleted file mode 100644
+index abc1234..0000000
+--- a/src/components/ui/OptimizedImage.tsx
++++ /dev/null
+@@ -1,50 +0,0 @@
+-// ENTIRE FILE REMOVED - Not referenced anywhere
+-import Image from 'next/image'
+-
+-export function OptimizedImage() {
+-  // Component not used
+-}

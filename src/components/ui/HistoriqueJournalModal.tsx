@@ -1,9 +1,10 @@
 'use client'
 
 import { JournalEntry } from '@/types'
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { X, Calendar, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface HistoriqueJournalModalProps {
   isOpen: boolean
@@ -14,6 +15,7 @@ interface HistoriqueJournalModalProps {
 }
 
 export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, currentDate, onDateChange }: HistoriqueJournalModalProps) {
+  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: journalComments } = useCoachCommentsByModule('journal')
   const commentedEntryDates = useMemo(() => new Set((journalComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [journalComments])
@@ -56,13 +58,7 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
   const isToday = (d: string) => d === new Date().toISOString().split('T')[0]
   const isCurrent = (d: string) => d === currentDate
 
-  useEffect(() => {
-    if (!isOpen) return
-    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
-  }, [isOpen, onClose])
+  // Note: Focus trap et gestion Escape maintenant gérés par useFocusTrap
 
   const handleGridKey = (e: React.KeyboardEvent, idx: number) => {
     const cols = 7
@@ -80,11 +76,11 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
+      <div ref={focusTrapRef} className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <Calendar className="h-6 w-6 text-neon-green" />
-            <h2 className="text-xl font-semibold text-white">Historique Journal</h2>
+            <h1 className="text-xl font-semibold text-white">Historique Journal</h1>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex bg-white/5 rounded-lg p-1">
@@ -104,7 +100,7 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
           {viewMode === 'calendar' ? (
             <>
-              <h3 className="text-lg font-medium text-white mb-4">30 derniers jours</h3>
+              <h2 className="text-lg font-medium text-white mb-4">30 derniers jours</h2>
               <div className="grid grid-cols-7 gap-2 mb-6" role="grid" aria-label="Calendrier des 30 derniers jours">
                 {last30Days.map((date, idx) => {
                   const s = getStatsForDate(date)
@@ -135,10 +131,10 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
           ) : (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="glass-effect p-4 rounded-lg text-center"><div className="text-2xl font-bold text-neon-green">{globalStats.totalDays}</div><div className="text-sm text-muted-foreground">Jours actifs</div></div>
-                <div className="glass-effect p-4 rounded-lg text-center"><div className="text-2xl font-bold text-neon-cyan">{globalStats.totalEntries}</div><div className="text-sm text-muted-foreground">Entrées</div></div>
-                <div className="glass-effect p-4 rounded-lg text-center"><div className="text-2xl font-bold text-neon-purple">{globalStats.totalDays > 0 ? Math.round((globalStats.avgHumeurSum / globalStats.totalDays) * 10) / 10 : 0}</div><div className="text-sm text-muted-foreground">Humeur moy</div></div>
-                <div className="glass-effect p-4 rounded-lg text-center"><div className="text-2xl font-bold text-neon-pink">{globalStats.totalDays > 0 ? Math.round((globalStats.avgEnergieSum / globalStats.totalDays) * 10) / 10 : 0}</div><div className="text-sm text-muted-foreground">Énergie moy</div></div>
+                <div className="glass-effect-high p-4 rounded-lg text-center glass-hover"><div className="text-2xl font-bold text-neon-green">{globalStats.totalDays}</div><div className="text-sm text-accessible-secondary">Jours actifs</div></div>
+                <div className="glass-effect-high p-4 rounded-lg text-center glass-hover"><div className="text-2xl font-bold text-neon-cyan">{globalStats.totalEntries}</div><div className="text-sm text-accessible-secondary">Entrées</div></div>
+                <div className="glass-effect-high p-4 rounded-lg text-center glass-hover"><div className="text-2xl font-bold text-neon-purple">{globalStats.totalDays > 0 ? Math.round((globalStats.avgHumeurSum / globalStats.totalDays) * 10) / 10 : 0}</div><div className="text-sm text-accessible-secondary">Humeur moy</div></div>
+                <div className="glass-effect-high p-4 rounded-lg text-center glass-hover"><div className="text-2xl font-bold text-neon-pink">{globalStats.totalDays > 0 ? Math.round((globalStats.avgEnergieSum / globalStats.totalDays) * 10) / 10 : 0}</div><div className="text-sm text-accessible-secondary">Énergie moy</div></div>
               </div>
               <div className="space-y-2">
                 {last30Days.slice(-7).reverse().map(date => {

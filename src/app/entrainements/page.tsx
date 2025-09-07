@@ -6,18 +6,68 @@ import MainLayout from '@/components/layout/MainLayout'
 import TrainingForm from '@/components/ui/TrainingForm'
 import TrainingCard from '@/components/ui/TrainingCard'
 import dynamic from 'next/dynamic'
-const TrainingVolumeChart = dynamic(() => import('@/components/ui/TrainingVolumeChart'), { ssr: false })
-const HeartRateChart = dynamic(() => import('@/components/ui/HeartRateChart'), { ssr: false })
-const TrainingTypeChart = dynamic(() => import('@/components/ui/TrainingTypeChart'), { ssr: false })
-const PerformanceChart = dynamic(() => import('@/components/ui/PerformanceChart'), { ssr: false })
-const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), { ssr: false })
+
+// Skeleton loader optimisé pour les graphiques
+const ChartSkeleton = () => (
+  <div className="glass-effect p-4 rounded-lg border border-white/10 animate-pulse">
+    <div className="h-4 bg-white/20 rounded w-1/3 mb-4"></div>
+    <div className="h-48 bg-white/10 rounded flex items-center justify-center">
+      <div className="text-white/40 text-sm">Chargement du graphique...</div>
+    </div>
+  </div>
+)
+
+// Lazy loading optimisé avec skeleton personnalisé
+const TrainingVolumeChart = dynamic(() => import('@/components/ui/TrainingVolumeChart'), { 
+  ssr: false,
+  loading: () => <ChartSkeleton />
+})
+const HeartRateChart = dynamic(() => import('@/components/ui/HeartRateChart'), { 
+  ssr: false,
+  loading: () => <ChartSkeleton />
+})
+const TrainingTypeChart = dynamic(() => import('@/components/ui/TrainingTypeChart'), { 
+  ssr: false,
+  loading: () => <ChartSkeleton />
+})
+const PerformanceChart = dynamic(() => import('@/components/ui/PerformanceChart'), { 
+  ssr: false,
+  loading: () => <ChartSkeleton />
+})
+const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), { 
+  ssr: false,
+  loading: () => (
+    <div className="glass-effect p-6 rounded-xl border border-white/10 animate-pulse">
+      <div className="h-6 bg-white/20 rounded w-1/2 mb-4"></div>
+      <div className="space-y-3">
+        <div className="h-4 bg-white/10 rounded"></div>
+        <div className="h-4 bg-white/10 rounded w-3/4"></div>
+        <div className="h-10 bg-white/10 rounded"></div>
+      </div>
+    </div>
+  )
+})
 import { useAuth } from '@/hooks/useAuth'
 import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
 import { Plus, TrendingUp, Timer, Target, BarChart3, Upload } from 'lucide-react'
 // import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
-const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { ssr: false })
+const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { 
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="glass-effect p-6 rounded-xl border border-white/10 animate-pulse max-w-4xl w-full mx-4">
+        <div className="h-6 bg-white/20 rounded w-1/3 mb-4"></div>
+        <div className="space-y-3">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="h-16 bg-white/10 rounded"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+})
 
 function StatsCard({ title, value, unit, icon, color = "neon-green" }: {
   title: string
@@ -232,11 +282,12 @@ export default function EntrainementsPage() {
           </div>
         )}
 
-        {/* Graphiques */}
+        {/* Graphiques - Chargement conditionnel pour optimiser les performances */}
         {showCharts && user && entrainements.length > 0 && (
           <div className="space-y-6">
             <CollapsibleCard title="Analyse de vos entraînements" defaultOpen={false}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Les composants sont lazy loadés uniquement quand showCharts=true */}
                 <TrainingVolumeChart entrainements={entrainements} weeks={8} />
                 <TrainingTypeChart entrainements={entrainements} title="Répartition par type" />
                 <HeartRateChart entrainements={entrainements} />

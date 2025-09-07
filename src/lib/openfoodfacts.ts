@@ -6,8 +6,6 @@
 import { OpenFoodFactsProduct } from '@/types';
 import Fuse from 'fuse.js'
 
-const API_BASE_URL = 'https://world.openfoodfacts.org';
-
 // Configuration de l'API
 const API_CONFIG = {
   userAgent: 'SuperNovaFit/1.0 (https://supernovafit.com)',
@@ -236,32 +234,6 @@ export async function searchProducts(query: string, limit: number = 8): Promise<
   }
 }
 
-/**
- * Récupérer un produit par son code-barres
- */
-export async function getProductByBarcode(barcode: string): Promise<OpenFoodFactsProduct | null> {
-  if (!barcode) return null;
-
-  try {
-    const url = `${API_BASE_URL}/api/v0/product/${barcode}.json`;
-    
-    const response = await fetch(url, {
-      headers: { 'User-Agent': API_CONFIG.userAgent },
-      signal: AbortSignal.timeout(3000),
-    });
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
-    
-    if (data.status !== 1 || !data.product) return null;
-
-    return transformProduct(data.product);
-  } catch (error) {
-    console.error('Erreur récupération produit:', error);
-    return null;
-  }
-}
 
 /**
  * Transformer les données brutes Open Food Facts
@@ -283,19 +255,6 @@ function transformProduct(rawProduct: Record<string, unknown>): OpenFoodFactsPro
   };
 }
 
-/**
- * Calculer les macros pour une quantité donnée
- */
-export function calculateMacros(product: OpenFoodFactsProduct, quantity: number) {
-  const factor = quantity / 100;
-  
-  return {
-    kcal: Math.round(product.nutriments.energy_100g * factor),
-    prot: Math.round(product.nutriments.proteins_100g * factor * 10) / 10,
-    glucides: Math.round(product.nutriments.carbohydrates_100g * factor * 10) / 10,
-    lipides: Math.round(product.nutriments.fat_100g * factor * 10) / 10,
-  };
-}
 
 /**
  * Vérifier si un produit a des données nutritionnelles complètes
@@ -309,18 +268,3 @@ export function hasCompleteNutritionalData(product: OpenFoodFactsProduct): boole
     nutriments.fat_100g >= 0
   );
 }
-
-/**
- * Recherche de produits populaires pour suggestions
- */
-export async function getPopularProducts(): Promise<OpenFoodFactsProduct[]> {
-  const popularSearches = ['apple', 'chicken', 'rice', 'banana', 'yogurt', 'salmon'];
-  const randomSearch = popularSearches[Math.floor(Math.random() * popularSearches.length)];
-  
-  try {
-    return await searchProducts(randomSearch, 5);
-  } catch (error) {
-    console.error('Erreur produits populaires:', error);
-    return [];
-  }
-} 

@@ -1,0 +1,178 @@
+
+> supernovafit@1.9.4 test
+> vitest --coverage --reporter=verbose
+
+
+ DEV  v3.2.4 /workspace
+      Coverage enabled with v8
+
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should validate repas data structure 1ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should validate entrainement data structure 0ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should calculate total calories from repas 0ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should validate mesure data structure 0ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should calculate BMI correctly 0ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should validate journal entry structure 0ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should handle empty data arrays 1ms
+ ✓ src/hooks/__tests__/useFirestore.test.ts > Firestore Business Logic > should validate date formats 0ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should initialize with loading true and no user 11ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should set user when authenticated 54ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should handle signIn success 2ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should handle signIn error 2ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should handle signOut 1ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should handle magic link sending 2ms
+ ✓ src/hooks/__tests__/useAuth.test.ts > useAuth Hook > should verify magic link 1ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > BMR Calculation (Mifflin-St Jeor) > should calculate BMR for men 1ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > BMR Calculation (Mifflin-St Jeor) > should calculate BMR for women 0ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > TDEE Calculation > should calculate TDEE with different activity levels 0ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > MET Calories Calculation > should calculate calories burned correctly 0ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > MET Calories Calculation > should handle fractional hours 0ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > Macro Distribution > should calculate basic macro percentages 0ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > IMC Calculation > should calculate BMI correctly 0ms
+ ✓ src/lib/__tests__/calculations.test.ts > Basic Calculations > IMC Calculation > should classify BMI categories 0ms
+
+ Test Files  3 passed (3)
+      Tests  23 passed (23)
+   Start at  08:14:05
+   Duration  1.84s (transform 109ms, setup 208ms, collect 218ms, tests 81ms, environment 946ms, prepare 201ms)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |    2.16 |    76.06 |   79.61 |    2.16 |                   
+ workspace         |       0 |    85.71 |   85.71 |       0 |                   
+  ...ion-client.ts |       0 |      100 |     100 |       0 | 5-96              
+  ...umentation.ts |       0 |      100 |     100 |       0 | 5-29              
+  ...css.config.js |       0 |        0 |       0 |       0 | 1-6               
+  ...dge.config.ts |       0 |      100 |     100 |       0 | 5-49              
+  ...ver.config.ts |       0 |      100 |     100 |       0 | 5-59              
+  ...ind.config.ts |       0 |      100 |     100 |       0 | 3-105             
+  vitest.config.ts |       0 |      100 |     100 |       0 | 2-54              
+ workspace/src/app |       0 |      100 |     100 |       0 |                   
+  error.tsx        |       0 |      100 |     100 |       0 | 3-27              
+  global-error.tsx |       0 |      100 |     100 |       0 | 3-23              
+  page.tsx         |       0 |      100 |     100 |       0 | 4-384             
+ .../src/app/admin |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-51              
+ ...e/src/app/auth |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-212             
+ .../src/app/coach |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-285             
+ ...h/all-athletes |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-439             
+ ...h/athlete/[id] |       0 |        0 |       0 |       0 |                   
+  page.tsx         |       0 |        0 |       0 |       0 | 1-268             
+ ...ete/[id]/diete |       0 |        0 |       0 |       0 |                   
+  page.tsx         |       0 |        0 |       0 |       0 | 1-297             
+ .../entrainements |       0 |        0 |       0 |       0 |                   
+  page.tsx         |       0 |        0 |       0 |       0 | 1-277             
+ ...e/[id]/journal |       0 |        0 |       0 |       0 |                   
+  page.tsx         |       0 |        0 |       0 |       0 | 1-302             
+ ...e/[id]/mesures |       0 |        0 |       0 |       0 |                   
+  page.tsx         |       0 |        0 |       0 |       0 | 1-257             
+ ...id]/plan-diete |       0 |        0 |       0 |       0 |                   
+  page.tsx         |       0 |        0 |       0 |       0 | 1-309             
+ ...ach/programmes |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-124             
+ ...coach/rapports |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-167             
+ ...p/create-coach |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-207             
+ .../src/app/diete |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-599             
+ .../entrainements |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-480             
+ ...src/app/export |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 8-487             
+ .../src/app/guide |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-165             
+ ...rc/app/journal |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-763             
+ .../legal/cookies |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-21              
+ .../legal/privacy |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-22              
+ ...pp/legal/terms |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-21              
+ ...rc/app/mesures |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-590             
+ ...app/nouveautes |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-257             
+ ...src/app/profil |       0 |      100 |     100 |       0 |                   
+  page.tsx         |       0 |      100 |     100 |       0 | 3-168             
+ ...ents/analytics |       0 |      100 |     100 |       0 |                   
+  ...sReporter.tsx |       0 |      100 |     100 |       0 | 3-13              
+ ...omponents/auth |       0 |      100 |     100 |       0 |                   
+  AuthGuard.tsx    |       0 |      100 |     100 |       0 | 3-90              
+ ...ponents/charts |       0 |      100 |     100 |       0 |                   
+  ...resCharts.tsx |       0 |      100 |     100 |       0 | 3-362             
+ ...ponents/layout |       0 |      100 |     100 |       0 |                   
+  MainLayout.tsx   |       0 |      100 |     100 |       0 | 3-81              
+  Sidebar.tsx      |       0 |      100 |     100 |       0 | 3-368             
+ ...onents/runtime |       0 |      100 |     100 |       0 |                   
+  ChunkGuard.tsx   |       0 |      100 |     100 |       0 | 3-56              
+ .../components/ui |       0 |    96.66 |   96.66 |       0 |                   
+  ...riesChart.tsx |       0 |      100 |     100 |       0 | 3-120             
+  ...nOutChart.tsx |       0 |      100 |     100 |       0 | 3-95              
+  ...endations.tsx |       0 |      100 |     100 |       0 | 4-108             
+  ...sibleCard.tsx |       0 |      100 |     100 |       0 | 3-42              
+  ExportButton.tsx |       0 |      100 |     100 |       0 | 6-86              
+  ...sFoodList.tsx |       0 |      100 |     100 |       0 | 3-125             
+  ...orDisplay.tsx |       0 |      100 |     100 |       0 | 2-163             
+  FoodSearch.tsx   |       0 |      100 |     100 |       0 | 3-224             
+  GarminImport.tsx |       0 |      100 |     100 |       0 | 3-327             
+  ...RateChart.tsx |       0 |      100 |     100 |       0 | 3-149             
+  ...entsModal.tsx |       0 |      100 |     100 |       0 | 4-196             
+  ...rnalModal.tsx |       0 |      100 |     100 |       0 | 4-171             
+  ...iqueModal.tsx |       0 |      100 |     100 |       0 | 3-324             
+  ...CodeInput.tsx |       0 |      100 |     100 |       0 | 3-143             
+  InviteModal.tsx  |       0 |      100 |     100 |       0 | 3-202             
+  JournalForm.tsx  |       0 |      100 |     100 |       0 | 3-402             
+  MacrosChart.tsx  |       0 |      100 |     100 |       0 | 3-159             
+  ...lFoodForm.tsx |       0 |      100 |     100 |       0 | 3-219             
+  MealForm.tsx     |       0 |      100 |     100 |       0 | 3-439             
+  ...ypesModal.tsx |       0 |      100 |     100 |       0 | 3-666             
+  ...eComments.tsx |       0 |      100 |     100 |       0 | 3-126             
+  ...izedImage.tsx |       0 |        0 |       0 |       0 | 1-48              
+  ...anceChart.tsx |       0 |      100 |     100 |       0 | 3-165             
+  PhotoUpload.tsx  |       0 |      100 |     100 |       0 | 3-638             
+  ...esGallery.tsx |       0 |      100 |     100 |       0 | 3-542             
+  ProfileForm.tsx  |       0 |      100 |     100 |       0 | 3-323             
+  TrainingCard.tsx |       0 |      100 |     100 |       0 | 3-176             
+  TrainingForm.tsx |       0 |      100 |     100 |       0 | 3-563             
+  ...TypeChart.tsx |       0 |      100 |     100 |       0 | 3-136             
+  ...lumeChart.tsx |       0 |      100 |     100 |       0 | 3-102             
+ ...pace/src/hooks |    5.61 |    63.63 |   81.81 |    5.61 |                   
+  useAuth.ts       |   73.46 |    56.25 |     100 |   73.46 | ...,80-95,115-116 
+  useExportData.ts |       0 |      100 |     100 |       0 | 6-351             
+  ...ebaseError.ts |   26.51 |      100 |      50 |   26.51 | ...39-144,163-189 
+  useFirestore.ts  |       0 |      100 |     100 |       0 | 3-1591            
+  useFocusTrap.ts  |       0 |        0 |       0 |       0 | 1-50              
+  useInvites.ts    |       0 |      100 |     100 |       0 | 3-214             
+ workspace/src/lib |   18.74 |       40 |   35.29 |   18.74 |                   
+  analytics.ts     |       0 |        0 |       0 |       0 | 1-38              
+  badges.ts        |       0 |      100 |     100 |       0 | 15-140            
+  ...Calculator.ts |       0 |      100 |     100 |       0 | 39-277            
+  coachComments.ts |       0 |        0 |       0 |       0 | 1-6               
+  constants.ts     |       0 |      100 |     100 |       0 | 7-8               
+  ...ase-errors.ts |   77.07 |      100 |       0 |   77.07 | ...51-352,358-369 
+  firebase.ts      |    90.9 |       25 |     100 |    90.9 | 35-36,40          
+  garminParser.ts  |       0 |        0 |       0 |       0 | 1-266             
+  inviteUtils.ts   |       0 |      100 |     100 |       0 | 7-92              
+  openfoodfacts.ts |       0 |      100 |     100 |       0 | 7-326             
+  ...lculations.ts |       0 |      100 |     100 |       0 | 9-46              
+  utils.ts         |       0 |        0 |       0 |       0 | 1-76              
+  validation.ts    |       0 |        0 |       0 |       0 | 1-207             
+  vitals.ts        |       0 |        0 |       0 |       0 | 1-129             
+ ...src/lib/export |       0 |      100 |     100 |       0 |                   
+  chart-utils.ts   |       0 |      100 |     100 |       0 | 6-298             
+  csv-export.ts    |       0 |      100 |     100 |       0 | 6-291             
+  excel-export.ts  |       0 |      100 |     100 |       0 | 7-496             
+  json-export.ts   |       0 |      100 |     100 |       0 | 6-168             
+  pdf-export.ts    |       0 |      100 |     100 |       0 | 7-567             
+-------------------|---------|----------|---------|---------|-------------------
+ PASS  Waiting for file changes...
+       press h to show help, press q to quit
+Cancelling test run. Press CTRL+c again to exit forcefully.
+
+

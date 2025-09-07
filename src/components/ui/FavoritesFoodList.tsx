@@ -57,12 +57,18 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
       {/* Barre de recherche dans les favoris */}
       {favoris.length > 5 && (
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <label htmlFor="favorites-search" className="sr-only">
+            Rechercher dans vos favoris
+          </label>
           <input
+            id="favorites-search"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher dans vos favoris..."
+            aria-label="Rechercher dans vos favoris"
+            role="searchbox"
             className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
           />
         </div>

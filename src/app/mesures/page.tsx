@@ -8,6 +8,7 @@ import { useMesures, useCoachCommentsByModule, usePaginatedMesures } from '@/hoo
 import { Mesure } from '@/types'
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
+import { CardSkeleton, ChartSkeleton, ListSkeleton, TableSkeleton } from '@/components/ui/Skeletons'
 import { formatDate } from '@/lib/utils'
 import { Plus, TrendingUp, Scale, Target, Edit3, Trash2, Calculator, BarChart3, Camera } from 'lucide-react'
 import dynamic from 'next/dynamic'
@@ -332,10 +333,21 @@ export default function MesuresPage() {
           <>
             {/* Messages du Coach (Mesures) */}
             <CollapsibleCard title="Messages du Coach" defaultOpen={false} counter={mesureComments?.length || 0}>
-              <ModuleComments comments={mesureComments} loading={commentsLoading} />
+              {commentsLoading ? (
+                <ListSkeleton items={2} />
+              ) : (
+                <ModuleComments comments={mesureComments} loading={commentsLoading} />
+              )}
             </CollapsibleCard>
+            
             {/* Statistiques actuelles */}
-            {lastMesure && stats && (
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <CardSkeleton key={i} />
+                ))}
+              </div>
+            ) : lastMesure && stats ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatsCard
                   title="Poids actuel"
@@ -367,17 +379,21 @@ export default function MesuresPage() {
                   color="neon-purple"
                 />
               </div>
-            )}
+            ) : null}
 
             {/* Graphiques d'évolution */}
-            {showCharts && mesures.length > 0 && (
+            {showCharts && (loading ? (
+              <ChartSkeleton />
+            ) : mesures.length > 0 ? (
               <MesuresCharts mesures={mesures} />
-            )}
+            ) : null)}
 
             {/* Photos de progression */}
-            {showPhotos && (
+            {showPhotos && (loading ? (
+              <CardSkeleton />
+            ) : (
               <PhotoUpload mesures={mesures} />
-            )}
+            ))}
 
             {/* Formulaire d'ajout/modification */}
             {showForm && (
@@ -537,10 +553,7 @@ export default function MesuresPage() {
 
             {/* Liste des mesures */}
             {loading ? (
-              <div className="glass-effect p-6 rounded-xl border border-white/10 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-purple mx-auto mb-2"></div>
-                <p className="text-muted-foreground">Chargement des mesures...</p>
-              </div>
+              <TableSkeleton rows={6} cols={5} />
             ) : mesures.length === 0 ? (
               <div className="glass-effect p-6 rounded-xl border border-white/10 text-center">
                 <div className="text-6xl mb-4">📏</div>

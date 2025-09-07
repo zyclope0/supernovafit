@@ -11,13 +11,6 @@
  * en utilisant la formule Harris-Benedict pour calculer le RMR réel
  */
 
-export interface UserProfile {
-  age: number // années
-  poids: number // kg
-  sexe: 'M' | 'F'
-  niveau: 'debutant' | 'intermediaire' | 'avance' // facteur condition physique
-}
-
 export interface CalorieCalculationData {
   type: string
   duree: number // minutes
@@ -29,6 +22,8 @@ export interface CalorieCalculationData {
   age?: number
   sexe?: 'M' | 'F'
 }
+
+// UserProfile supprimé - non utilisé (différent du UserProfile des types/index.ts)
 
 /**
  * MET (Metabolic Equivalent of Task) par type d&apos;activité
@@ -99,14 +94,14 @@ const MET_VALUES = {
 /**
  * Calcule la FC max théorique selon l'âge
  */
-export function calculateMaxHR(age: number): number {
+function calculateMaxHR(age: number): number {
   return Math.round(220 - age)
 }
 
 /**
  * Calcule le pourcentage de FC max
  */
-export function calculateHRPercentage(fc_moyenne: number, fc_max: number): number {
+function calculateHRPercentage(fc_moyenne: number, fc_max: number): number {
   return Math.min(100, Math.max(50, (fc_moyenne / fc_max) * 100))
 }
 
@@ -142,7 +137,7 @@ function adjustMETBySpeed(baseMET: number, vitesse: number, type: string): numbe
  * Formule principale de calcul des calories
  * Calories = MET × Poids (kg) × Temps (heures)
  */
-export function calculateCalories(data: CalorieCalculationData): number {
+function calculateCalories(data: CalorieCalculationData): number {
   const { type, duree, fc_moyenne, distance, vitesse_moy, poids_utilisateur = 70, age = 30, sexe = 'M' } = data
   
   // 1. Récupérer le MET de base pour l'activité
@@ -182,27 +177,7 @@ export function calculateCalories(data: CalorieCalculationData): number {
   return Math.round(calories)
 }
 
-/**
- * Estime les calories selon l'effort perçu (RPE)
- */
-export function calculateCaloriesByRPE(
-  duree: number,
-  effortPercu: number,
-  poids: number = 70,
-  sexe: 'M' | 'F' = 'M'
-): number {
-  // Conversion RPE vers MET approximatif
-  // RPE 1-3: 2-4 MET, RPE 4-6: 4-8 MET, RPE 7-10: 8-15 MET
-  let met: number
-  if (effortPercu <= 3) met = 2 + (effortPercu * 0.7)
-  else if (effortPercu <= 6) met = 4 + ((effortPercu - 3) * 1.3)
-  else met = 8 + ((effortPercu - 6) * 1.75)
-  
-  const genderFactor = sexe === 'F' ? 0.9 : 1.0
-  const tempsHeures = duree / 60
-  
-  return Math.round(met * poids * tempsHeures * genderFactor)
-}
+// Fonction calculateCaloriesByRPE supprimée - non utilisée
 
 /**
  * Propose un calcul de calories intelligent
@@ -241,28 +216,6 @@ export function smartCalorieCalculation(data: CalorieCalculationData): {
   }
 }
 
-/**
- * Calculs pré-définis pour suggestions rapides
- */
-export const CALORIE_SUGGESTIONS = {
-  'course': {
-    '30min_moderee': 300,
-    '45min_moderee': 450,
-    '60min_moderee': 600
-  },
-  'musculation': {
-    '45min_generale': 270,
-    '60min_intense': 400
-  },
-  'cyclisme': {
-    '60min_loisir': 400,
-    '90min_moderee': 650
-  },
-  'natation': {
-    '30min_moderee': 350,
-    '45min_moderee': 525
-  }
-}
 
 /**
  * Retourne des estimations rapides pour l'UI

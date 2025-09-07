@@ -8,10 +8,7 @@ import jsPDF from 'jspdf'
 import autoTableImport from 'jspdf-autotable'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { APP_VERSION } from '@/lib/constants'
-
 import type { 
-  PDFConfig, 
   ExportConfig, 
   ExportMetadata
 } from '@/types/export'
@@ -47,29 +44,11 @@ declare function autoTable(doc: jsPDF, options: AutoTableOptions): void
 /**
  * Configuration par défaut pour les PDF
  */
-export const DEFAULT_PDF_CONFIG: PDFConfig = {
-  title: 'Rapport SuperNovaFit',
-  includeCharts: true,
-  includeSummary: true,
-  pageSize: 'A4',
-  orientation: 'portrait',
-  header: 'SuperNovaFit - Rapport personnel',
-  footer: `Généré le ${format(new Date(), 'dd/MM/yyyy à HH:mm', { locale: fr })} - Version ${APP_VERSION}`,
-  colors: {
-    primary: '#2980b9',
-    secondary: '#e74c3c',
-    success: '#27ae60',
-    warning: '#f39c12',
-    info: '#3498db',
-    light: '#ecf0f1',
-    dark: '#2c3e50'
-  }
-}
 
 /**
  * Génère et télécharge un PDF
  */
-export async function generateAndDownloadPDF(
+async function generateAndDownloadPDF(
   doc: jsPDF,
   fileName: string
 ): Promise<void> {
@@ -84,16 +63,6 @@ export async function generateAndDownloadPDF(
 /**
  * Obtient le label français de l'objectif
  */
-export function getObjectifLabel(objectif: string): string {
-  const labels: Record<string, string> = {
-    'maintien': 'Maintien du poids',
-    'prise_masse': 'Prise de masse',
-    'seche': 'Sèche',
-    'performance': 'Performance'
-  }
-  
-  return labels[objectif] || objectif
-}
 
 /**
  * Génère un PDF complet avec toutes les données

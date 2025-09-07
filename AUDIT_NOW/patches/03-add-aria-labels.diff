@@ -1,0 +1,131 @@
+diff --git a/src/components/ui/SearchBar.tsx b/src/components/ui/SearchBar.tsx
+index abc1234..def5678 100644
+--- a/src/components/ui/SearchBar.tsx
++++ b/src/components/ui/SearchBar.tsx
+@@ -12,7 +12,12 @@ export function SearchBar({ onSearch, placeholder = "Rechercher..." }: SearchBa
+   return (
+     <div className="relative">
+       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
++      <label htmlFor="search-input" className="sr-only">
++        {placeholder}
++      </label>
+       <input
++        id="search-input"
+         type="text"
+         placeholder={placeholder}
+         value={query}
+         onChange={(e) => setQuery(e.target.value)}
++        aria-label={placeholder}
++        role="searchbox"
+         className="pl-10 pr-4 py-2 w-full rounded-lg border"
+       />
+     </div>
+
+diff --git a/src/components/ui/InviteModal.tsx b/src/components/ui/InviteModal.tsx
+index abc1234..def5678 100644
+--- a/src/components/ui/InviteModal.tsx
++++ b/src/components/ui/InviteModal.tsx
+@@ -45,8 +45,15 @@ export function InviteModal({ isOpen, onClose }: InviteModalProps) {
+         <form onSubmit={handleSubmit} className="space-y-4">
+           <div>
+-            <label className="block text-sm font-medium mb-2">
++            <label 
++              htmlFor="athlete-email"
++              className="block text-sm font-medium mb-2"
++            >
+               Email de l'athlète
+             </label>
+             <input
++              id="athlete-email"
+               type="email"
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+               required
++              aria-required="true"
++              aria-describedby="email-help"
+               className="w-full px-3 py-2 border rounded-lg"
+             />
++            <span id="email-help" className="sr-only">
++              Entrez l'adresse email de l'athlète à inviter
++            </span>
+           </div>
+
+diff --git a/src/app/diete/page.tsx b/src/app/diete/page.tsx
+index abc1234..def5678 100644
+--- a/src/app/diete/page.tsx
++++ b/src/app/diete/page.tsx
+@@ -100,10 +100,15 @@ export default function DietePage() {
+             <div className="grid grid-cols-2 gap-4">
+               <div>
+-                <label className="block text-sm font-medium mb-1">
++                <label 
++                  htmlFor="food-name"
++                  className="block text-sm font-medium mb-1"
++                >
+                   Aliment
+                 </label>
+                 <input
++                  id="food-name"
+                   type="text"
+                   value={newFood.name}
+                   onChange={(e) => setNewFood({...newFood, name: e.target.value})}
++                  aria-label="Nom de l'aliment"
+                   className="w-full px-3 py-2 border rounded"
+                 />
+               </div>
+               <div>
+-                <label className="block text-sm font-medium mb-1">
++                <label 
++                  htmlFor="food-calories"
++                  className="block text-sm font-medium mb-1"
++                >
+                   Calories
+                 </label>
+                 <input
++                  id="food-calories"
+                   type="number"
+                   value={newFood.calories}
+                   onChange={(e) => setNewFood({...newFood, calories: parseInt(e.target.value)})}
++                  aria-label="Nombre de calories"
+                   className="w-full px-3 py-2 border rounded"
+                 />
+               </div>
+
+diff --git a/src/components/ui/IconButton.tsx b/src/components/ui/IconButton.tsx
+index abc1234..def5678 100644
+--- a/src/components/ui/IconButton.tsx
++++ b/src/components/ui/IconButton.tsx
+@@ -5,6 +5,7 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+   icon: React.ElementType
+   label?: string
++  ariaLabel: string
+   variant?: 'primary' | 'secondary' | 'ghost'
+   size?: 'sm' | 'md' | 'lg'
+ }
+ 
+ export function IconButton({
+   icon: Icon,
+   label,
++  ariaLabel,
+   variant = 'ghost',
+   size = 'md',
+   className,
+   ...props
+ }: IconButtonProps) {
+   return (
+     <button
+       className={cn(
+         'inline-flex items-center justify-center rounded-lg transition-colors',
+         variantStyles[variant],
+         sizeStyles[size],
+         className
+       )}
++      aria-label={ariaLabel}
+       {...props}
+     >
+-      <Icon className={cn('flex-shrink-0', label && 'mr-2')} />
++      <Icon className={cn('flex-shrink-0', label && 'mr-2')} aria-hidden="true" />
+       {label && <span>{label}</span>}
+     </button>
+   )
+ }

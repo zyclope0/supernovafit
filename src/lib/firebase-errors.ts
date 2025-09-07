@@ -367,3 +367,33 @@ export function logFirebaseError(error: unknown, context?: string): void {
     originalError: error
   })
 }
+
+// Types pour les tests
+export type FirebaseErrorCode = string
+
+/**
+ * Fonction simple pour obtenir le message d'erreur (pour compatibilité tests)
+ */
+export function getFirebaseErrorMessage(code: string): string {
+  if (!code) return 'Une erreur est survenue. Veuillez réessayer.'
+  
+  const authError = AUTH_ERRORS[code]
+  if (authError) return authError.userMessage
+  
+  const firestoreError = FIRESTORE_ERRORS[code]
+  if (firestoreError) return firestoreError.userMessage
+  
+  const storageError = STORAGE_ERRORS[code]
+  if (storageError) return storageError.userMessage
+  
+  return 'Une erreur est survenue. Veuillez réessayer.'
+}
+
+/**
+ * Vérifie si un objet est une erreur Firebase (pour compatibilité tests)
+ */
+export function isFirebaseError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  const firebaseError = error as { code?: string }
+  return typeof firebaseError.code === 'string' && firebaseError.code.length > 0
+}

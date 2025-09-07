@@ -17,22 +17,6 @@ import type { Repas, Entrainement, Mesure } from '@/types'
 /**
  * Génère les métadonnées d'export
  */
-export function generateExportMetadata(
-  config: ExportConfig,
-  totalRecords: number,
-  userId: string
-): ExportMetadata {
-  const periodDescription = getPeriodDescription(config.period, config.startDate, config.endDate)
-  
-  return {
-    exportedAt: new Date().toISOString(),
-    exportedBy: userId,
-    totalRecords,
-    period: periodDescription,
-    filters: config.filters || {},
-    version: '1.0.0' // Assuming a default version for now
-  }
-}
 
 /**
  * Génère un nom de fichier pour l'export
@@ -95,7 +79,7 @@ export function getPeriodDescription(period: ExportPeriod, startDate?: string, e
 /**
  * Formate les données de repas pour export CSV
  */
-export function formatRepasForCSV(repas: Repas[]): Record<string, unknown>[] {
+function formatRepasForCSV(repas: Repas[]): Record<string, unknown>[] {
   return repas.map(r => ({
     Date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
     Repas: r.repas,
@@ -111,7 +95,7 @@ export function formatRepasForCSV(repas: Repas[]): Record<string, unknown>[] {
 /**
  * Formate les données d'entraînements pour export CSV
  */
-export function formatEntrainementsForCSV(entrainements: Entrainement[]): Record<string, unknown>[] {
+function formatEntrainementsForCSV(entrainements: Entrainement[]): Record<string, unknown>[] {
   return entrainements.map(e => ({
     Date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
     Type: e.type,
@@ -125,7 +109,7 @@ export function formatEntrainementsForCSV(entrainements: Entrainement[]): Record
 /**
  * Formate les données de mesures pour export CSV
  */
-export function formatMesuresForCSV(mesures: Mesure[]): Record<string, unknown>[] {
+function formatMesuresForCSV(mesures: Mesure[]): Record<string, unknown>[] {
   return mesures.map(m => ({
     Date: format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
     Poids: `${m.poids} kg`,
@@ -197,47 +181,8 @@ export async function generateAndDownloadCSV(
 /**
  * Applique des filtres aux données
  */
-export function applyFilters<T extends Record<string, unknown>>(
-  data: T[],
-  filters: Record<string, unknown>
-): T[] {
-  let filteredData = data
 
-  // Filtrer par date si spécifié
-  if (filters.startDate && filters.endDate) {
-    const startDate = new Date(filters.startDate as string)
-    const endDate = new Date(filters.endDate as string)
-    
-    filteredData = filteredData.filter(item => {
-      const itemDate = new Date((item.date as string) || '')
-      return itemDate >= startDate && itemDate <= endDate
-    })
-  }
-
-  // Filtrer par calories si spécifié
-  if (filters.minCalories || filters.maxCalories) {
-    filteredData = filteredData.filter(item => {
-      const calories = (item.Calories as number) || 0
-      const minCalories = (filters.minCalories as number) || 0
-      const maxCalories = (filters.maxCalories as number) || Infinity
-      return calories >= minCalories && calories <= maxCalories
-    })
-  }
-
-  // Filtrer par durée si spécifié
-  if (filters.minDuration || filters.maxDuration) {
-    filteredData = filteredData.filter(item => {
-      const duration = parseInt((item.Durée as string)?.split(' ')[0] || '0')
-      const minDuration = (filters.minDuration as number) || 0
-      const maxDuration = (filters.maxDuration as number) || Infinity
-      return duration >= minDuration && duration <= maxDuration
-    })
-  }
-
-  return filteredData
-}
-
-export function formatAllDataForCSV(
+function formatAllDataForCSV(
   repas: Repas[], 
   entrainements: Entrainement[], 
   mesures: Mesure[]

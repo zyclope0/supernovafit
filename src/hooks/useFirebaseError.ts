@@ -158,32 +158,3 @@ export function useFirebaseError(options: UseFirebaseErrorOptions = {}) {
   return errorHandler
 }
 
-// Hook spécialisé pour les opérations CRUD avec retry automatique
-export function useFirebaseOperation<T>(
-  operation: () => Promise<T>,
-  options: UseFirebaseErrorOptions = {}
-) {
-  const errorHandler = useFirebaseError(options)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const execute = useCallback(async (): Promise<T | null> => {
-    setIsLoading(true)
-    errorHandler.clearError()
-
-    try {
-      const result = await operation()
-      setIsLoading(false)
-      return result
-    } catch (error) {
-      setIsLoading(false)
-      errorHandler.handleError(error)
-      return null
-    }
-  }, [operation, errorHandler])
-
-  return {
-    execute,
-    isLoading,
-    ...errorHandler
-  }
-}

@@ -131,7 +131,7 @@ export default function Sidebar() {
           className="fixed top-4 left-4 z-50 p-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white hover:bg-white/20 transition-all duration-200 focus-accessible"
           aria-label="Ouvrir le menu latéral"
           aria-expanded={sidebarOpen}
-          aria-controls="sidebar"
+          aria-controls="main-nav"
         >
           <Bars3Icon className="h-6 w-6" />
         </button>
@@ -148,7 +148,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <div
-        id="sidebar"
+        id="main-nav"
         className={`
           fixed top-0 left-0 h-full bg-space-900/95 backdrop-blur-xl border-r border-white/10 z-50
           transition-all duration-300 ease-in-out

@@ -19,13 +19,7 @@ export interface ChartData {
   }[]
 }
 
-export interface ChartConfig {
-  type: 'line' | 'bar' | 'doughnut' | 'pie'
-  title: string
-  width: number
-  height: number
-  colors: string[]
-}
+// ChartConfig supprimé - non utilisé (identifié par Knip)
 
 /**
  * Génère les données pour un graphique d'évolution du poids
@@ -177,77 +171,9 @@ export function generateWorkoutFrequencyChartData(entrainements: Entrainement[])
   }
 }
 
-/**
- * Génère les données pour un graphique d'évolution de l'IMC
- */
-export function generateIMCChartData(mesures: Mesure[]): ChartData {
-  if (mesures.length === 0) {
-    return {
-      labels: [],
-      datasets: [{
-        label: 'IMC',
-        data: [],
-        borderColor: '#9b59b6',
-        backgroundColor: 'rgba(155, 89, 182, 0.1)',
-        borderWidth: 2,
-        fill: true
-      }]
-    }
-  }
+// Fonction generateIMCChartData supprimée - non utilisée
 
-  const sortedMesures = mesures
-    .filter(m => m.imc !== undefined)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
-  return {
-    labels: sortedMesures.map(m => format(new Date(m.date), 'dd/MM', { locale: fr })),
-    datasets: [{
-      label: 'IMC',
-      data: sortedMesures.map(m => m.imc!),
-      borderColor: '#9b59b6',
-      backgroundColor: 'rgba(155, 89, 182, 0.1)',
-      borderWidth: 2,
-      fill: true
-    }]
-  }
-}
-
-/**
- * Génère les données pour un graphique de durée d'entraînement par type
- */
-export function generateWorkoutTypeChartData(entrainements: Entrainement[]): ChartData {
-  if (entrainements.length === 0) {
-    return {
-      labels: [],
-      datasets: [{
-        label: 'Durée (min)',
-        data: [],
-        backgroundColor: ['#e67e22', '#f39c12', '#f1c40f', '#2ecc71', '#3498db'],
-        borderWidth: 1
-      }]
-    }
-  }
-
-  // Grouper par type d'entraînement
-  const durationByType = new Map<string, number>()
-  
-  entrainements.forEach(e => {
-    const current = durationByType.get(e.type) || 0
-    durationByType.set(e.type, current + e.duree)
-  })
-
-  const colors = ['#e67e22', '#f39c12', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#e74c3c']
-
-  return {
-    labels: Array.from(durationByType.keys()),
-    datasets: [{
-      label: 'Durée (min)',
-      data: Array.from(durationByType.values()),
-      backgroundColor: colors.slice(0, durationByType.size),
-      borderWidth: 1
-    }]
-  }
-}
+// Fonction generateWorkoutTypeChartData supprimée - non utilisée
 
 /**
  * Calcule les statistiques pour les graphiques

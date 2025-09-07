@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Repas } from '@/types'
 import { X, Save, Copy, Trash2, Clock, Star, ChefHat, Edit3, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface MenuTypesModalProps {
   isOpen: boolean
@@ -22,6 +23,7 @@ interface MenuTemplate {
 }
 
 export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTemplate }: MenuTypesModalProps) {
+  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
   const [templates, setTemplates] = useState<MenuTemplate[]>([
     // Templates par défaut avec repas réels
     {
@@ -225,18 +227,7 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
 
   const todayTotalCalories = todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0)
 
-  // Accessibilité: focus initial + fermeture Esc
-  useEffect(() => {
-    if (!isOpen) return
-    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    }
-    document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
-  }, [isOpen, onClose])
+  // Note: Focus trap et gestion Escape maintenant gérés par useFocusTrap
 
   const handleSaveCurrentDay = () => {
     if (!newTemplateName.trim()) {
@@ -358,30 +349,40 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="menu-types-title"
+      aria-describedby="menu-types-description"
+    >
+      <div ref={focusTrapRef} className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <ChefHat className="h-6 w-6 text-neon-purple" />
-            <h2 className="text-xl font-semibold text-white">Menu-Types</h2>
+            <h1 id="menu-types-title" className="text-xl font-semibold text-white">Menu-Types</h1>
           </div>
           <button
             onClick={onClose}
             className="p-2 text-muted-foreground hover:text-white transition-colors"
             ref={closeBtnRef}
+            aria-label="Fermer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+          <p id="menu-types-description" className="text-sm text-muted-foreground mb-6">
+            Créez et gérez vos templates de repas. Sauvegardez votre journée actuelle ou appliquez un template existant.
+          </p>
           {/* Sauvegarder journée actuelle */}
           <div className="glass-effect p-4 rounded-lg border border-neon-purple/20 mb-6">
-            <h3 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
+            <h2 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
               <Save className="h-5 w-5 text-neon-purple" />
               Sauvegarder la journée actuelle
-            </h3>
+            </h2>
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-white mb-1">
@@ -425,10 +426,10 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
 
           {/* Liste des templates */}
           <div>
-            <h3 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
               <Star className="h-5 w-5 text-yellow-400" />
               Templates disponibles
-            </h3>
+            </h2>
             
             {templates.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
@@ -445,7 +446,7 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h4 className="font-medium text-white">{template.name}</h4>
+                        <h3 className="font-medium text-white">{template.name}</h3>
                         <p className="text-sm text-muted-foreground mt-1">{template.description}</p>
                       </div>
                       <div className="flex gap-1">

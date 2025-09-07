@@ -108,8 +108,12 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     <div className="relative w-full">
       {/* Champ de recherche */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" aria-hidden="true" />
+        <label htmlFor="food-search-input" className="sr-only">
+          {placeholder}
+        </label>
         <input
+          id="food-search-input"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -117,8 +121,18 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
           onFocus={() => query.length >= 2 && results.length > 0 && setIsOpen(true)}
           placeholder={placeholder}
           ref={inputRef}
+          aria-label={placeholder}
+          aria-describedby="food-search-help"
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-controls="food-search-listbox"
+          aria-autocomplete="list"
+          aria-activedescendant={selectedIndex >= 0 ? `food-option-${selectedIndex}` : undefined}
           className="w-full pl-10 pr-10 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none focus:glow-purple transition-all"
         />
+        <div id="food-search-help" className="sr-only">
+          Tapez au moins 2 caractères pour rechercher des aliments. Utilisez les flèches pour naviguer et Entrée pour sélectionner.
+        </div>
         {query && (
           <button
             onClick={() => {
@@ -126,9 +140,10 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
               setResults([])
               setIsOpen(false)
             }}
+            aria-label="Effacer la recherche"
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         )}
       </div>
@@ -142,7 +157,12 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
 
       {/* Résultats */}
       {isOpen && results.length > 0 && (
-        <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden max-h-96 overflow-y-auto shadow-2xl">
+        <div 
+          id="food-search-listbox"
+          className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden max-h-96 overflow-y-auto shadow-2xl"
+          role="listbox"
+          aria-label="Résultats de recherche d'aliments"
+        >
           {results.map((product, index) => {
             const isComplete = hasCompleteNutritionalData(product)
             const isSelected = index === selectedIndex
@@ -150,8 +170,11 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
             return (
               <div
                 key={product.code}
+                id={`food-option-${index}`}
                 onClick={() => handleSelect(product)}
                 onMouseEnter={() => setSelectedIndex(index)}
+                role="option"
+                aria-selected={isSelected}
                 className={`
                   px-4 py-3 cursor-pointer transition-all
                   ${isSelected 
@@ -168,8 +191,8 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
                         {highlight(product.product_name)}
                       </h4>
                       {!isComplete && (
-                        <span title="Données nutritionnelles incomplètes">
-                          <AlertCircle className="h-4 w-4 text-yellow-500" />
+                        <span title="Données nutritionnelles incomplètes" aria-label="Données nutritionnelles incomplètes">
+                          <AlertCircle className="h-4 w-4 text-yellow-500" aria-hidden="true" />
                         </span>
                       )}
                     </div>

@@ -61,7 +61,7 @@ export async function generateAndDownloadJSON(
 /**
  * Formate les données de repas pour export JSON
  */
-export function formatRepasForJSON(repas: Repas[]): Record<string, unknown> {
+function formatRepasForJSON(repas: Repas[]): Record<string, unknown> {
   return {
     repas: repas.map(repas => ({
       date: format(new Date(repas.date), 'yyyy-MM-dd', { locale: fr }),
@@ -84,7 +84,7 @@ export function formatRepasForJSON(repas: Repas[]): Record<string, unknown> {
 /**
  * Formate les données d'entraînements pour export JSON
  */
-export function formatEntrainementsForJSON(entrainements: Entrainement[]): Record<string, unknown> {
+function formatEntrainementsForJSON(entrainements: Entrainement[]): Record<string, unknown> {
   return {
     entrainements: entrainements.map(ent => ({
       date: format(new Date(ent.date), 'yyyy-MM-dd', { locale: fr }),
@@ -108,7 +108,7 @@ export function formatEntrainementsForJSON(entrainements: Entrainement[]): Recor
 /**
  * Formate les données de mesures pour export JSON
  */
-export function formatMesuresForJSON(mesures: Mesure[]): Record<string, unknown> {
+function formatMesuresForJSON(mesures: Mesure[]): Record<string, unknown> {
   const sortedMesures = mesures.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   const firstMesure = sortedMesures[0]
   const lastMesure = sortedMesures[sortedMesures.length - 1]

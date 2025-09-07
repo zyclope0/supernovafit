@@ -52,26 +52,7 @@ export interface CSVExportData {
   metadata: ExportMetadata
 }
 
-// Configuration PDF
-export interface PDFConfig {
-  title: string
-  subtitle?: string
-  includeCharts: boolean
-  includeSummary: boolean
-  pageSize: 'A4' | 'Letter'
-  orientation: 'portrait' | 'landscape'
-  header?: string
-  footer?: string
-  colors?: {
-    primary: string
-    secondary: string
-    success: string
-    warning: string
-    info: string
-    light: string
-    dark: string
-  }
-}
+// Interface PDFConfig supprimée - non utilisée
 
 // Données pour graphiques
 export interface ChartData {

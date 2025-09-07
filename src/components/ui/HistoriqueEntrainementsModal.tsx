@@ -1,9 +1,10 @@
 'use client'
 
 import { Entrainement } from '@/types'
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { X, Calendar, TrendingUp, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface HistoriqueEntrainementsModalProps {
   isOpen: boolean
@@ -14,6 +15,7 @@ interface HistoriqueEntrainementsModalProps {
 }
 
 export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrainings, currentDate, onDateChange }: HistoriqueEntrainementsModalProps) {
+  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: trainingComments } = useCoachCommentsByModule('entrainements')
   const commentedTrainingIds = useMemo(() => new Set((trainingComments || []).map((c) => (c as { training_id?: string }).training_id).filter(Boolean)), [trainingComments])
@@ -61,13 +63,7 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
   const isToday = (date: string) => date === new Date().toISOString().split('T')[0]
   const isCurrentDate = (date: string) => date === currentDate
 
-  useEffect(() => {
-    if (!isOpen) return
-    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
-  }, [isOpen, onClose])
+  // Note: Focus trap et gestion Escape maintenant gérés par useFocusTrap
 
   const handleGridKey = (e: React.KeyboardEvent, idx: number) => {
     const cols = 7
@@ -85,12 +81,12 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
+      <div ref={focusTrapRef} className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div className="flex items-center gap-3">
             <Calendar className="h-6 w-6 text-neon-cyan" />
-            <h2 className="text-xl font-semibold text-white">Historique Entraînements</h2>
+            <h1 className="text-xl font-semibold text-white">Historique Entraînements</h1>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex bg-white/5 rounded-lg p-1">
@@ -110,7 +106,7 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
           {viewMode === 'calendar' ? (
             <>
-              <h3 className="text-lg font-medium text-white mb-4">30 derniers jours</h3>
+              <h2 className="text-lg font-medium text-white mb-4">30 derniers jours</h2>
               <div className="grid grid-cols-7 gap-2 mb-6">
                 {last30Days.map((date, idx) => {
                   const stats = getStatsForDate(date)
@@ -148,7 +144,7 @@ export default function HistoriqueEntrainementsModal({ isOpen, onClose, allTrain
             </>
           ) : (
             <>
-              <h3 className="text-lg font-medium text-white mb-4 flex items-center gap-2"><TrendingUp className="h-5 w-5 text-neon-cyan" />Statistiques 30 jours</h3>
+              <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2"><TrendingUp className="h-5 w-5 text-neon-cyan" />Statistiques 30 jours</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="glass-effect p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold text-neon-green">{globalStats.totalDays}</div>

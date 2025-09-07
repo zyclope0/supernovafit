@@ -3,12 +3,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
+import { PageHeader } from '@/components/ui/PageHeader'
 import MealForm from '@/components/ui/MealForm'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useAthleteDietPlan, useCoachCommentsByModule } from '@/hooks/useFirestore'
 import { MealType, Aliment, Macros } from '@/types'
 // formatNumber removed - not used
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
+import { ChartBarIcon } from '@heroicons/react/24/outline'
+import { IconButton } from '@/components/ui/IconButton'
 import dynamic from 'next/dynamic'
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
 import MenuTypesModal from '@/components/ui/MenuTypesModal'
@@ -16,6 +19,7 @@ const HistoriqueModal = dynamic(() => import('@/components/ui/HistoriqueModal'),
 import CoachRecommendations from '@/components/ui/CoachRecommendations'
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
+import { CardSkeleton, ChartSkeleton, ListSkeleton } from '@/components/ui/Skeletons'
 
 import React from 'react'
 
@@ -47,13 +51,13 @@ function MealCard({
   const detailsId = `meal-details-${mealId || mealType}`
 
   return (
-    <div className="glass-effect p-4 rounded-lg border border-white/10 hover:glow-cyan transition-all">
+    <div className="glass-effect p-4 rounded-lg glass-hover hover:glow-cyan transition-all">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
           <span className="text-2xl">{mealIcon}</span>
           <div>
-            <h3 className="font-medium text-white">{mealName}</h3>
-            <p className="text-sm text-muted-foreground">{time}</p>
+            <h4 className="font-medium text-white">{mealName}</h4>
+            <p className="text-sm text-accessible-secondary">{time}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -84,12 +88,13 @@ function MealCard({
             </button>
           )}
           {hasFood && onDelete && mealId && (
-            <button 
+            <IconButton
+              icon={Trash2}
+              label="Supprimer le repas"
               onClick={() => onDelete(mealId)}
-              className="px-3 py-1 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium hover:bg-red-500/30 transition-colors"
-            >
-              Supprimer
-            </button>
+              variant="danger"
+              size="sm"
+            />
           )}
           <button 
             onClick={onAddMeal}
@@ -102,7 +107,7 @@ function MealCard({
       
       {/* Résumé compact toujours visible */}
       {macros && (
-        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground py-2 border-t border-white/5">
+        <div className="flex flex-wrap gap-4 text-xs text-accessible-tertiary py-2 border-t border-white/10">
           <span className="text-neon-green">{Math.round(macros.kcal)} kcal</span>
           <span>P: {macros.prot.toFixed(1)}g</span>
           <span>G: {macros.glucides.toFixed(1)}g</span>
@@ -117,12 +122,12 @@ function MealCard({
             <>
               <div className="space-y-1">
                 {aliments.slice(0, 6).map((aliment, index) => (
-                  <div key={index} className="text-sm text-muted-foreground">
+                  <div key={index} className="text-sm text-accessible-secondary">
                     • {aliment.nom} ({aliment.quantite}{aliment.unite})
                   </div>
                 ))}
                 {aliments.length > 6 && (
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-accessible-tertiary">
                     • +{aliments.length - 6} autres aliments
                   </div>
                 )}
@@ -173,8 +178,8 @@ function DailySummary({ todayMeals }: { todayMeals: Repas[] }) {
   }
 
   return (
-    <div className="glass-effect p-6 rounded-xl border border-white/10">
-      <h2 className="text-lg font-semibold text-white mb-4">Résumé du jour</h2>
+    <div className="glass-effect-high p-6 rounded-xl glass-hover">
+      <h3 className="text-lg font-semibold text-white mb-4">Résumé du jour</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="text-center">
@@ -351,7 +356,9 @@ export default function DietePage() {
           >
             Annuler
           </button>
-          <button
+          <IconButton
+            icon={Trash2}
+            label="Confirmer la suppression"
             onClick={async () => {
               toast.dismiss(t.id)
               const result = await deleteRepas(mealId)
@@ -361,10 +368,9 @@ export default function DietePage() {
                 toast.error(`Erreur lors de la suppression : ${result.error}`)
               }
             }}
-            className="px-3 py-1 text-sm bg-red-600 hover:bg-red-500 text-white rounded transition-colors"
-          >
-            Supprimer
-          </button>
+            variant="danger"
+            size="sm"
+          />
         </div>
       </div>
     ), {
@@ -415,12 +421,12 @@ export default function DietePage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-white">Diète</h1>
-            <p className="text-sm text-accessible">{today}</p>
-          </div>
-          <div className="flex space-x-3">
+        <PageHeader
+          title="Diète"
+          subtitle={`Suivi nutritionnel - ${today}`}
+          icon={ChartBarIcon}
+          actions={
+            <div className="flex space-x-3">
             <button 
               onClick={() => setShowMenuTypes(true)}
               className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors"
@@ -439,8 +445,9 @@ export default function DietePage() {
               onChange={(e) => setSelectedDate(e.target.value)}
               className="w-44 px-3 py-2 bg-white/5 border border-white/10 rounded text-white text-sm focus:border-neon-purple focus:outline-none"
             />
-          </div>
-        </div>
+            </div>
+          }
+        />
 
         {/* Message si non connecté */}
         {!user && (
@@ -452,26 +459,43 @@ export default function DietePage() {
         )}
 
         {/* Recommandations Coach */}
-        <CoachRecommendations plan={currentPlan} loading={planLoading} />
+        {planLoading ? (
+          <CardSkeleton />
+        ) : (
+          <CoachRecommendations plan={currentPlan} loading={planLoading} />
+        )}
 
         {/* Messages du Coach pour cette date (rétractable fermé par défaut) */}
         <CollapsibleCard title="Messages du Coach" defaultOpen={false} counter={dieteComments?.length || 0}>
-          <ModuleComments comments={dieteComments} loading={commentsLoading} />
+          {commentsLoading ? (
+            <ListSkeleton items={3} />
+          ) : (
+            <ModuleComments comments={dieteComments} loading={commentsLoading} />
+          )}
         </CollapsibleCard>
 
         {/* Résumé du jour */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <DailySummary todayMeals={todayMeals} />
-          {todayMeals.length > 0 && (
-          <MacrosChart 
-            macros={todayMeals.reduce((total: Macros, meal: Repas) => ({
-              kcal: total.kcal + (meal.macros?.kcal || 0),
-              prot: total.prot + (meal.macros?.prot || 0),
-              glucides: total.glucides + (meal.macros?.glucides || 0),
-              lipides: total.lipides + (meal.macros?.lipides || 0),
-            }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })}
-            title="Répartition du jour"
-          />
+          {repasLoading ? (
+            <>
+              <CardSkeleton />
+              <ChartSkeleton />
+            </>
+          ) : (
+            <>
+              <DailySummary todayMeals={todayMeals} />
+              {todayMeals.length > 0 && (
+              <MacrosChart 
+                macros={todayMeals.reduce((total: Macros, meal: Repas) => ({
+                  kcal: total.kcal + (meal.macros?.kcal || 0),
+                  prot: total.prot + (meal.macros?.prot || 0),
+                  glucides: total.glucides + (meal.macros?.glucides || 0),
+                  lipides: total.lipides + (meal.macros?.lipides || 0),
+                }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })}
+                title="Répartition du jour"
+              />
+              )}
+            </>
           )}
         </div>
 

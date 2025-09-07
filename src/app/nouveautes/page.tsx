@@ -18,7 +18,7 @@ export default function NouveautesPage() {
         <CollapsibleCard title={`v${APP_VERSION} — ⚡ Performance & Sécurité`} defaultOpen>
           <div className="space-y-3">
             <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-              <h4 className="font-semibold text-emerald-400 mb-2">⚡ Images Ultra-Rapides</h4>
+              <h2 className="font-semibold text-emerald-400 mb-2">⚡ Images Ultra-Rapides</h2>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>Chargement instantané</strong> : Images optimisées automatiquement en AVIF et WebP</li>
                 <li><strong>Économie de données</strong> : Réduction de 20 à 50% de la taille des images</li>
@@ -28,7 +28,7 @@ export default function NouveautesPage() {
             </div>
             
             <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
-              <h4 className="font-semibold text-blue-400 mb-2">🔒 Sécurité Renforcée</h4>
+              <h2 className="font-semibold text-blue-400 mb-2">🔒 Sécurité Renforcée</h2>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>0 vulnérabilité</strong> : Toutes les failles de sécurité corrigées</li>
                 <li><strong>Dépendances à jour</strong> : Bibliothèques mises à jour vers les versions sécurisées</li>
@@ -38,7 +38,7 @@ export default function NouveautesPage() {
             </div>
 
             <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
-              <h4 className="font-semibold text-purple-400 mb-2">🚀 Performance Générale</h4>
+              <h2 className="font-semibold text-purple-400 mb-2">🚀 Performance Générale</h2>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>Page Export 35% plus rapide</strong> : Chargement optimisé de 602KB à 388KB</li>
                 <li><strong>Application plus fluide</strong> : Suppression du code mort et optimisations</li>

@@ -95,35 +95,4 @@ export function reportWebVitals() {
   }
 }
 
-// Function pour track performance spécifique SuperNovaFit
-export const trackCustomPerformance = (name: string, startTime: number, context?: string) => {
-  const duration = performance.now() - startTime
-  
-  trackEvent('custom_performance', {
-    name,
-    duration: Math.round(duration),
-    context: context || 'unknown',
-    timestamp: Date.now()
-  })
-  
-  // Alert si > 1s
-  if (duration > 1000) {
-    Sentry.addBreadcrumb({
-      category: 'performance',
-      message: `Slow operation: ${name} (${Math.round(duration)}ms)`,
-      data: { duration, context },
-      level: 'warning'
-    })
-  }
-}
 
-// Hook pour mesurer temps de chargement composants
-export const usePerformanceTracker = (componentName: string) => {
-  const startTime = performance.now()
-  
-  return {
-    finish: (context?: string) => {
-      trackCustomPerformance(componentName, startTime, context)
-    }
-  }
-}

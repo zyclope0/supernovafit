@@ -15,42 +15,7 @@ export function formatDate(date: Date | string): string {
   }).format(d);
 }
 
-// Formater une date pour l'affichage court
-export function formatDateShort(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: 'numeric',
-    month: 'short'
-  }).format(d);
-}
-
-// Calculer l'âge métabolique (exemple simplifié)
-export function calculateMetabolicAge(weight: number, height: number, age: number, gender: 'M' | 'F'): number {
-  // Formule simplifiée - à améliorer avec de vraies données
-  const bmr = gender === 'M' 
-    ? 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
-    : 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
-  
-  // Convertir en âge métabolique (approximation)
-  const metabolicAge = age * (2000 / bmr);
-  return Math.round(metabolicAge);
-}
-
-// Calculer l'IMC
-export function calculateBMI(weight: number, height: number): number {
-  const heightInMeters = height / 100;
-  return Math.round((weight / (heightInMeters * heightInMeters)) * 10) / 10;
-}
-
-// Obtenir la catégorie IMC
-export function getBMICategory(bmi: number): string {
-  if (bmi < 18.5) return 'Insuffisance pondérale';
-  if (bmi < 25) return 'Corpulence normale';
-  if (bmi < 30) return 'Surpoids';
-  if (bmi < 35) return 'Obésité modérée';
-  if (bmi < 40) return 'Obésité sévère';
-  return 'Obésité morbide';
-}
+// Fonctions calculateMetabolicAge, formatDateShort, calculateBMI, getBMICategory supprimées - non utilisées
 
 // Formater un nombre avec des espaces pour les milliers
 export function formatNumber(num: number): string {

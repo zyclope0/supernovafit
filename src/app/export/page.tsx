@@ -8,10 +8,11 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useExportData } from '@/hooks/useExportData'
+
 import FirebaseErrorDisplay from '@/components/ui/FirebaseErrorDisplay'
 import MainLayout from '@/components/layout/MainLayout'
 
-// Lazy load du composant lourd ExportButton + icônes
+// Lazy load des composants lourds pour optimiser le bundle
 const ExportButton = dynamic(
   () => import('@/components/ui/ExportButton').then(mod => ({ default: mod.ExportButton })),
   {

@@ -34,5 +34,3 @@ export const trackEvent = (eventName: string, parameters?: Record<string, unknow
   }
 }
 
-// Export de l'analytics pour utilisation future
-export default analytics

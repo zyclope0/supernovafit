@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Sidebar from './Sidebar'
 import { useAuth } from '@/hooks/useAuth'
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -70,8 +71,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
         )}
         
-        <main className="h-full overflow-y-auto">
+        <main id="main-content" className="h-full overflow-y-auto">
           <div className="container mx-auto px-4 py-8 lg:px-8">
+            {/* Breadcrumbs Navigation */}
+            <Breadcrumbs />
             {children}
           </div>
         </main>

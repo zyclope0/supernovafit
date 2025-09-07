@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import * as Sentry from '@sentry/nextjs'
+import { captureException } from '@sentry/nextjs'
 import { 
   collection, 
   doc, 
@@ -651,7 +651,7 @@ export function useJournal() {
       },
       (error) => {
         // Handle error silently
-        Sentry.captureException(error)
+        captureException(error)
         setLoading(false)
       }
     )
@@ -675,7 +675,7 @@ export function useJournal() {
       const docRef = await addDoc(collection(db, 'journal'), filteredData)
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      Sentry.captureException(error)
+      captureException(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -927,7 +927,7 @@ export function useBadges() {
 
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      Sentry.captureException(error)
+      captureException(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -966,7 +966,7 @@ export function useObjectifs() {
       },
       (error) => {
         // Handle error silently
-        Sentry.captureException(error)
+        captureException(error)
         setLoading(false)
       }
     )
@@ -993,7 +993,7 @@ export function useObjectifs() {
 
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
-      Sentry.captureException(error)
+      captureException(error)
       return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
     }
   }
@@ -1022,56 +1022,6 @@ export function useObjectifs() {
 
 // Hook pour récupérer le profil utilisateur
 import type { User as UserProfile } from '@/types'
-export function useUserProfile() {
-  const { user } = useAuth()
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!user) {
-      setUserProfile(null)
-      setLoading(false)
-      return
-    }
-
-    const docRef = doc(db, 'users', user.uid)
-    
-    const unsubscribe = onSnapshot(docRef,
-      (snapshot) => {
-        if (snapshot.exists()) {
-          setUserProfile({ id: snapshot.id, ...(snapshot.data() as Partial<UserProfile>) } as UserProfile)
-        } else {
-          setUserProfile(null)
-        }
-        setLoading(false)
-      },
-      (error) => {
-        console.error('❌ FIRESTORE - Erreur profil utilisateur:', error)
-        setUserProfile(null)
-        setLoading(false)
-      }
-    )
-
-    return () => unsubscribe()
-  }, [user])
-
-  const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
-    try {
-      const docRef = doc(db, 'users', userId)
-      const docSnap = await getDoc(docRef)
-      
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...(docSnap.data() as Partial<UserProfile>) } as UserProfile
-      }
-      return null
-    } catch (error) {
-      console.error('❌ FIRESTORE - Erreur récupération profil:', error)
-      return null
-    }
-  }
-
-  return { userProfile, loading, getUserProfile }
-}
 
 // Hook pour récupérer tous les athlètes (pour la page "Tous les Athlètes")
 export function useAllAthletes() {
@@ -1447,15 +1397,6 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
 } 
 
 // Utilitaire: marquer un commentaire coach comme lu
-export async function updateCoachCommentRead(commentId: string, read: boolean) {
-  try {
-    await updateDoc(doc(db, 'coach_comments', commentId), { read_by_athlete: read })
-    return { success: true }
-  } catch (error: unknown) {
-    console.error('Erreur update read_by_athlete:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
-  }
-}
 
 // Hook générique pour la pagination Firestore
 function usePaginatedData<T>(
@@ -1567,11 +1508,6 @@ function usePaginatedData<T>(
 }
 
 // Hook paginé pour les repas
-export function usePaginatedRepas(pageSize: number = 20) {
-  const { user } = useAuth()
-  return usePaginatedData<Repas>('repas', user?.uid || '', pageSize, 'date', 'desc')
-}
-
 // Hook paginé pour les entraînements
 export function usePaginatedEntrainements(pageSize: number = 20) {
   const { user } = useAuth()
@@ -1582,10 +1518,4 @@ export function usePaginatedEntrainements(pageSize: number = 20) {
 export function usePaginatedMesures(pageSize: number = 20) {
   const { user } = useAuth()
   return usePaginatedData<Mesure>('mesures', user?.uid || '', pageSize, 'date', 'desc')
-}
-
-// Hook paginé pour le journal
-export function usePaginatedJournal(pageSize: number = 20) {
-  const { user } = useAuth()
-  return usePaginatedData<JournalEntry>('journal', user?.uid || '', pageSize, 'date', 'desc')
 }

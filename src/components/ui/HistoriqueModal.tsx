@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback } from 'react'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { X, Calendar, TrendingUp, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule, useRepas } from '@/hooks/useFirestore'
@@ -26,7 +26,7 @@ export default function HistoriqueModal({ isOpen, onClose, currentDate, onDateCh
   const commentedDates = useMemo(() => new Set((dieteComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [dieteComments])
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
-  const focusTrapRef = useFocusTrap(isOpen)
+  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
 
   const { repas: allRepas, loading: repasLoading } = useRepas() // Charger tous les repas
 
@@ -105,13 +105,7 @@ export default function HistoriqueModal({ isOpen, onClose, currentDate, onDateCh
   }
 
   // Accessibilité: focus initial + Esc pour fermer
-  useEffect(() => {
-    if (!isOpen) return
-    const t = setTimeout(() => closeBtnRef.current?.focus(), 0)
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    return () => { document.removeEventListener('keydown', onKey); clearTimeout(t) }
-  }, [isOpen, onClose])
+  // Note: Focus trap et gestion Escape maintenant gérés par useFocusTrap
 
   const handleGridKey = (e: React.KeyboardEvent, idx: number) => {
     const cols = 7

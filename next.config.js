@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const { withSentryConfig } = require('@sentry/nextjs')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
+  enabled: false, // Désactivé pour améliorer build time
 })
 
 const nextConfig = {
@@ -10,18 +10,25 @@ const nextConfig = {
   //   ignoreDuringBuilds: true,
   // },
   images: {
-    // ✅ Issue #13 - Formats modernes pour réduire la taille
+    // ✅ Issue #12 - Formats modernes pour réduire la taille (AVIF → WebP → fallback)
     formats: ['image/avif', 'image/webp'],
-    // Tailles optimisées pour différents devices
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Tailles optimisées pour différents devices (mobile-first)
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512],
+    // Cache des images optimisé (7 jours)
+    minimumCacheTTL: 604800,
     // Domaines autorisés pour les images externes
     remotePatterns: [
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
       { protocol: 'https', hostname: 'images.openfoodfacts.org' },
       { protocol: 'https', hostname: 'static.openfoodfacts.org' },
       { protocol: 'https', hostname: 'world.openfoodfacts.org' },
+      // Ajout d'autres CDN populaires pour flexibilité future
+      { protocol: 'https', hostname: 'cdn.jsdelivr.net' },
+      { protocol: 'https', hostname: 'unpkg.com' },
     ],
+    // Désactiver les images non optimisées en production
+    unoptimized: false,
   },
   webpack: (config, { isServer }) => {
     // Nettoyage: limiter les fallbacks au strict nécessaire
@@ -30,6 +37,36 @@ const nextConfig = {
       fs: false,
       net: false,
       tls: false,
+    }
+    
+    // Optimisations bundle - approche plus conservative
+    if (!isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization.splitChunks,
+          maxInitialRequests: 25,
+          maxAsyncRequests: 25,
+          cacheGroups: {
+            ...config.optimization.splitChunks.cacheGroups,
+            // Séparer Firebase en chunk dédié
+            firebase: {
+              test: /[\\/]node_modules[\\/]firebase[\\/]/,
+              name: 'firebase',
+              priority: 30,
+              chunks: 'all',
+              enforce: true,
+            },
+            // Séparer les gros libs d'export
+            export: {
+              test: /[\\/]node_modules[\\/](jspdf|exceljs|recharts)[\\/]/,
+              name: 'export-libs',
+              priority: 25,
+              chunks: 'async', // Seulement pour les chunks async
+            },
+          },
+        },
+      }
     }
     
     // Supprimer warnings Prisma/OpenTelemetry spécifiques
@@ -47,13 +84,21 @@ const nextConfig = {
     
     return config
   },
-  // Next.js 15: Nouvelles optimisations
+  // Next.js 15: Optimisations build time ciblées
   bundlePagesRouterDependencies: true,
-  transpilePackages: ['recharts'],
+  transpilePackages: ['recharts', 'date-fns'],
   
-  // Tree shaking optimisé
+  // Tree shaking optimisé - packages les plus utilisés seulement
   experimental: {
-    optimizePackageImports: ['recharts', 'lucide-react', '@heroicons/react'],
+    optimizePackageImports: [
+      'lucide-react',
+      'react-hot-toast', 
+      'date-fns',
+      'clsx'
+    ],
+    // Optimisations webpack légères
+    webpackBuildWorker: true,
+    parallelServerCompiles: true,
   },
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

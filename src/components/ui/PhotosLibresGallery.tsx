@@ -239,6 +239,7 @@ export default function PhotosLibresGallery({ date }: PhotosLibresGalleryProps) 
                   alt={photo.titre || 'Photo'}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  quality={85}
                   className="object-cover"
                 />
                 {photo.favoris && (
@@ -431,6 +432,8 @@ export default function PhotosLibresGallery({ date }: PhotosLibresGalleryProps) 
                   alt={selectedPhoto.titre || 'Photo'}
                   fill
                   sizes="100vw"
+                  quality={95}
+                  priority
                   className="object-contain"
                 />
               </div>

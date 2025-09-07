@@ -484,13 +484,3 @@ function addFormulasToWorksheet(worksheet: Worksheet, rows: number, type: string
 /**
  * Génère et télécharge un fichier Excel multi-feuilles
  */
-export async function generateAndDownloadMultiSheetExcel(
-  repas: Repas[],
-  entrainements: Entrainement[],
-  mesures: Mesure[],
-  config: ExportConfig,
-  metadata: ExportMetadata,
-  fileName: string
-): Promise<void> {
-  await generateAndDownloadExcel(repas, entrainements, mesures, config, metadata, fileName)
-}

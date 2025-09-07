@@ -1,16 +1,30 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter, useParams } from 'next/navigation'
-import MainLayout from '@/components/layout/MainLayout'
+import { CoachLayout } from '@/components/layout/CoachLayout'
 import { ArrowLeft, TrendingUp, TrendingDown, Calendar, Activity, Scale, Camera } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { 
-  LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
-} from 'recharts'
+
+// Dynamic imports pour réduire le bundle initial
+const DynamicLineChart = dynamic(
+  () => import('@/components/charts/DynamicLineChart'),
+  { 
+    ssr: false,
+    loading: () => <div className="h-64 animate-pulse bg-gray-800 rounded-lg" />
+  }
+)
+
+const DynamicBarChart = dynamic(
+  () => import('@/components/charts/DynamicBarChart'),
+  { 
+    ssr: false,
+    loading: () => <div className="h-64 animate-pulse bg-gray-800 rounded-lg" />
+  }
+)
 
 // Données mockées pour l'exemple
 const MOCK_ATHLETE_DATA = {
@@ -80,16 +94,20 @@ export default function AthleteDetailPage() {
 
   if (loading || !athleteData) {
     return (
-      <MainLayout>
+      <CoachLayout athleteId={athleteId} showBreadcrumbs={false}>
         <div className="flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neon-purple"></div>
         </div>
-      </MainLayout>
+      </CoachLayout>
     )
   }
 
   return (
-    <MainLayout>
+    <CoachLayout 
+      athleteId={athleteId} 
+      athleteName={athleteData.nom}
+      currentPage="overview"
+    >
       <div className="space-y-6">
         {/* Header avec retour */}
         <div className="flex items-center justify-between">
@@ -164,39 +182,29 @@ export default function AthleteDetailPage() {
 
         {/* Contenu selon l'onglet actif */}
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Évolution du poids */}
-            <div className="glass-effect rounded-xl p-6 border border-white/10">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Scale className="w-5 h-5 text-neon-purple" />
-                Évolution du poids
-              </h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={athleteData.evolution_poids}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="date" stroke="#9CA3AF" />
-                  <YAxis stroke="#9CA3AF" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px' }}
-                    labelStyle={{ color: '#9CA3AF' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="poids" 
-                    stroke="#10b981" 
-                    strokeWidth={2}
-                    dot={{ fill: '#10b981' }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+          <Suspense fallback={
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {[1, 2].map(i => (
+                <div key={i} className="h-64 animate-pulse bg-gray-800 rounded-lg" />
+              ))}
+            </div>
+          }>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Évolution du poids */}
+              <div className="glass-effect rounded-xl p-6 border border-white/10">
+                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-neon-purple" />
+                  Évolution du poids
+                </h2>
+                <DynamicLineChart data={athleteData.evolution_poids} />
             </div>
 
             {/* Activités récentes */}
             <div className="glass-effect rounded-xl p-6 border border-white/10">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-neon-cyan" />
                 Activités récentes
-              </h3>
+              </h2>
               <div className="space-y-3">
                 {athleteData.activites_recentes.map((activite: { date: string; type: string; duree: number; calories: number }, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -215,28 +223,18 @@ export default function AthleteDetailPage() {
               </div>
             </div>
           </div>
+          </Suspense>
         )}
 
         {activeTab === 'nutrition' && (
-          <div className="glass-effect rounded-xl p-6 border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Suivi nutritionnel hebdomadaire
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={athleteData.nutrition_semaine}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="jour" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px' }}
-                  labelStyle={{ color: '#9CA3AF' }}
-                />
-                <Legend />
-                <Bar dataKey="calories" fill="#a855f7" name="Calories" />
-                <Bar dataKey="proteines" fill="#06b6d4" name="Protéines (g)" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <Suspense fallback={<div className="h-64 animate-pulse bg-gray-800 rounded-lg" />}>
+            <div className="glass-effect rounded-xl p-6 border border-white/10">
+              <h2 className="text-lg font-semibold text-white mb-4">
+                Suivi nutritionnel hebdomadaire
+              </h2>
+              <DynamicBarChart data={athleteData.nutrition_semaine} />
+            </div>
+          </Suspense>
         )}
 
         {/* Actions rapides */}
@@ -244,25 +242,25 @@ export default function AthleteDetailPage() {
           <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-neon-purple/50 
                            transition-all text-left group">
             <Calendar className="w-8 h-8 text-neon-purple mb-2 group-hover:scale-110 transition-transform" />
-            <h4 className="text-white font-medium">Créer un programme</h4>
+            <h3 className="text-white font-medium">Créer un programme</h3>
             <p className="text-xs text-gray-400">Personnalisé pour cet athlète</p>
           </button>
 
           <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-neon-cyan/50 
                            transition-all text-left group">
             <TrendingUp className="w-8 h-8 text-neon-cyan mb-2 group-hover:scale-110 transition-transform" />
-            <h4 className="text-white font-medium">Générer un rapport</h4>
+            <h3 className="text-white font-medium">Générer un rapport</h3>
             <p className="text-xs text-gray-400">Analyse détaillée</p>
           </button>
 
           <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-neon-green/50 
                            transition-all text-left group">
             <Camera className="w-8 h-8 text-neon-green mb-2 group-hover:scale-110 transition-transform" />
-            <h4 className="text-white font-medium">Voir les photos</h4>
+            <h3 className="text-white font-medium">Voir les photos</h3>
             <p className="text-xs text-gray-400">Progression visuelle</p>
           </button>
         </div>
       </div>
-    </MainLayout>
+    </CoachLayout>
   )
 }

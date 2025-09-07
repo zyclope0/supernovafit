@@ -41,19 +41,7 @@ export function calculateExpirationDate(): Date {
   return new Date(now.getTime() + 72 * 60 * 60 * 1000) // +72 heures
 }
 
-/**
- * Vérifie si une invitation est expirée
- */
-export function isInviteExpired(invite: Invite): boolean {
-  return new Date() > new Date(invite.expiresAt)
-}
 
-/**
- * Vérifie si une invitation peut être utilisée
- */
-export function canUseInvite(invite: Invite): boolean {
-  return invite.status === 'active' && !isInviteExpired(invite)
-}
 
 /**
  * Formate la date d'expiration pour l'affichage

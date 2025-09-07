@@ -4,9 +4,9 @@ import { User } from '@/types'
  * Calcule le métabolisme de base (BMR) selon la formule Mifflin-St Jeor
  * Formule validée comme la plus précise selon les études récentes (2020-2024)
  * Précision : ±10% pour 71% des individus selon Thom et al. 2020
- * NOTE: Version dupliquée dans ProfileForm.tsx - cet export est supprimé car non utilisé
+ * NOTE: Exporté pour les tests
  */
-function calculateBMR(user: User): number | null {
+export function calculateBMR(user: User): number | null {
   if (!user.age || !user.taille || !user.poids_initial || !user.sexe) {
     return null
   }

@@ -67,7 +67,26 @@
   }
   
   .glass-effect {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* Amélioration contraste : 5% → 8% bg, 10% → 15% border */
+  }
+
+  /* Variante glass avec contraste élevé pour éléments critiques */
+  .glass-effect-high {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    /* Contraste élevé : 12% bg, 20% border pour WCAG AA */
+  }
+
+  /* Variante glass pour texte sur fond sombre */
+  .glass-effect-dark {
+    background: rgba(0, 0, 0, 0.20);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    /* Fond sombre avec bordure claire pour meilleur contraste */
   }
   
   .neon-text {
@@ -85,17 +104,17 @@
     padding: 8px 12px;
   }
 
-  /* Classes d'accessibilité améliorées */
+  /* Classes d'accessibilité améliorées - WCAG AA compliance */
   .text-accessible {
-    @apply text-white/90; /* Contraste amélioré pour text-muted-foreground */
+    @apply text-white/95; /* Contraste très élevé : 90% → 95% */
   }
 
   .text-accessible-secondary {
-    @apply text-white/75; /* Contraste moyen pour textes secondaires */
+    @apply text-white/80; /* Contraste bon : 75% → 80% */
   }
 
   .text-accessible-tertiary {
-    @apply text-white/60; /* Contraste minimum acceptable */
+    @apply text-white/65; /* Contraste minimum WCAG : 60% → 65% */
   }
 
   /* Focus amélioré pour l'accessibilité */
@@ -117,19 +136,42 @@
   .link-accessible {
     @apply focus-accessible underline decoration-dotted underline-offset-4;
   }
+
+  /* Boutons disabled avec contraste amélioré */
+  .btn-disabled {
+    @apply opacity-60 cursor-not-allowed; /* 60% au lieu de 30-40% standard */
+  }
+
+  /* États hover avec contraste préservé */
+  .glass-hover {
+    transition: all 0.2s ease;
+    /* Hover plus visible : +4% bg, +10% border */
+  }
+  
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+  }
 }
 
 /* Accessibilité: anneau de focus néon et scrollbar fine utilitaire */
 :root { 
-  --focus-ring: 0 0 0 3px rgba(6, 182, 212, 0.5); /* Contraste amélioré */
-  --focus-ring-purple: 0 0 0 3px rgba(147, 51, 234, 0.5); /* Focus alternatif */
+  --focus-ring: 0 0 0 3px rgba(6, 182, 212, 0.7); /* Contraste renforcé : 0.5 → 0.7 */
+  --focus-ring-purple: 0 0 0 3px rgba(147, 51, 234, 0.7); /* Focus alternatif renforcé */
+  --focus-ring-high: 0 0 0 4px rgba(6, 182, 212, 0.8); /* Focus très visible */
 }
 
-/* Focus visible amélioré */
+/* Focus visible amélioré avec contraste WCAG AA */
 *:focus-visible { 
   outline: none !important; 
   box-shadow: var(--focus-ring) !important; 
-  border-color: rgba(6,182,212,.7) !important; /* Contraste amélioré */
+  border-color: rgba(6,182,212,.8) !important; /* Contraste renforcé : .7 → .8 */
+}
+
+/* Focus critique pour éléments interactifs importants */
+.focus-critical:focus-visible {
+  box-shadow: var(--focus-ring-high) !important;
+  border-color: rgba(6,182,212,.9) !important;
 }
 
 /* Focus pour éléments avec couleurs néon */

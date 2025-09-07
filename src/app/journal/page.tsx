@@ -12,6 +12,7 @@ import dynamic from 'next/dynamic'
 const PhotosLibresGallery = dynamic(() => import('@/components/ui/PhotosLibresGallery'), { ssr: false })
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
+import { CardSkeleton, ListSkeleton, ProfileSkeleton } from '@/components/ui/Skeletons'
 const HistoriqueJournalModal = dynamic(() => import('@/components/ui/HistoriqueJournalModal'), { ssr: false })
 import { calculateUserData, checkNewBadges } from '@/lib/badges'
 import type { PhotoProgression } from '@/types'
@@ -403,9 +404,24 @@ export default function JournalPage() {
     return (
       <MainLayout>
         <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-white/20 rounded w-1/3 mb-2"></div>
-            <div className="h-4 bg-white/20 rounded w-1/4"></div>
+          {/* Header skeleton */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="h-8 bg-white/20 rounded w-64"></div>
+              <div className="h-4 bg-white/20 rounded w-48"></div>
+            </div>
+            <div className="h-10 bg-white/20 rounded w-32"></div>
+          </div>
+          
+          {/* Content skeletons */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              <ListSkeleton items={3} />
+            </div>
+            <div className="space-y-4">
+              <ProfileSkeleton />
+              <CardSkeleton />
+            </div>
           </div>
         </div>
       </MainLayout>
@@ -491,7 +507,9 @@ export default function JournalPage() {
             </div>
 
             {/* Badges obtenus */}
-    {badges.length > 0 && (
+            {badgesLoading ? (
+              <CardSkeleton />
+            ) : badges.length > 0 && (
               <div className="glass-effect p-6 rounded-lg border border-white/10">
                 <div className="flex items-center gap-2 mb-4">
                   <Award className="h-5 w-5 text-neon-purple" />
@@ -516,14 +534,17 @@ export default function JournalPage() {
             )}
 
             {/* Objectifs */}
-            <div className="glass-effect p-6 rounded-lg border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-neon-cyan" />
-                  <h3 className="text-lg font-semibold text-white">Mes Objectifs</h3>
-                  <span className="text-sm text-muted-foreground">({objectifs.filter(o => o.statut === 'actif').length} actifs)</span>
+            {objectifsLoading ? (
+              <CardSkeleton />
+            ) : (
+              <div className="glass-effect p-6 rounded-lg border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-neon-cyan" />
+                    <h3 className="text-lg font-semibold text-white">Mes Objectifs</h3>
+                    <span className="text-sm text-muted-foreground">({objectifs.filter(o => o.statut === 'actif').length} actifs)</span>
+                  </div>
                 </div>
-              </div>
 
               {/* Objectifs actifs */}
               <div className="space-y-3 mb-4">
@@ -583,7 +604,8 @@ export default function JournalPage() {
                   </div>
                 </div>
               )}
-            </div>
+              </div>
+            )}
 
             {/* Corrélations simples */}
             {entries.length >= 3 && (
