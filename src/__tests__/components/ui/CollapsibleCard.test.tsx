@@ -54,15 +54,16 @@ describe('CollapsibleCard Component', () => {
     // Le contenu peut être masqué ou visible selon l'implémentation
   })
 
-  it('should render with custom className', () => {
+  it('should render with right content', () => {
     render(
-      <CollapsibleCard title="Test Card" className="custom-class">
+      <CollapsibleCard title="Test Card" right={<button>Action</button>}>
         <div>Test Content</div>
       </CollapsibleCard>
     )
     
-    // Vérifier que le composant se rend sans erreur
+    // Vérifier que le composant se rend sans erreur avec right content
     expect(screen.getByText('Test Card')).toBeInTheDocument()
+    expect(screen.getByText('Action')).toBeInTheDocument()
   })
 
   it('should handle empty counter', () => {

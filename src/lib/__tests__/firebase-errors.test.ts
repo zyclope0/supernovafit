@@ -33,7 +33,7 @@ describe('firebase-errors', () => {
     })
 
     it('devrait retourner un message par défaut pour undefined', () => {
-      const message = getFirebaseErrorMessage(undefined as string)
+      const message = getFirebaseErrorMessage(undefined as FirebaseErrorCode)
       expect(message).toBe('Une erreur est survenue. Veuillez réessayer.')
     })
   })

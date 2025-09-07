@@ -39,21 +39,20 @@ describe('inviteUtils', () => {
       expect(expirationDate.getTime()).toBeGreaterThan(Date.now())
     })
 
-    it('devrait calculer une date d\'expiration avec des jours personnalisés', () => {
-      const customDays = 3
-      const expirationDate = calculateExpirationDate(customDays)
-      const expectedTime = Date.now() + (customDays * 24 * 60 * 60 * 1000)
+    it('devrait calculer une date d\'expiration (72h)', () => {
+      const expirationDate = calculateExpirationDate()
+      const expectedTime = Date.now() + (72 * 60 * 60 * 1000)
       
       // Tolérance de 1 seconde pour les différences de timing
       expect(Math.abs(expirationDate.getTime() - expectedTime)).toBeLessThan(1000)
     })
 
-    it('devrait utiliser 7 jours par défaut', () => {
+    it('devrait utiliser 72 heures par défaut', () => {
       const defaultExpiration = calculateExpirationDate()
-      const customExpiration = calculateExpirationDate(7)
+      const secondExpiration = calculateExpirationDate()
       
       // Les deux devraient être similaires (à quelques millisecondes près)
-      expect(Math.abs(defaultExpiration.getTime() - customExpiration.getTime())).toBeLessThan(1000)
+      expect(Math.abs(defaultExpiration.getTime() - secondExpiration.getTime())).toBeLessThan(1000)
     })
   })
 

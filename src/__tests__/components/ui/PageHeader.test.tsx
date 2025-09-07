@@ -26,24 +26,28 @@ describe('PageHeader Component', () => {
     expect(screen.getByText('Test Subtitle')).toBeInTheDocument()
   })
 
-  it('should render action button when provided', () => {
+  it('should render actions when provided', () => {
     const mockAction = vi.fn()
     render(
       <PageHeader 
         title="Test Title" 
-        action={<button onClick={mockAction}>Test Action</button>}
+        actions={<button onClick={mockAction}>Test Action</button>}
       />
     )
     
-    // Vérifier que le composant se rend sans erreur
     expect(screen.getByText('Test Title')).toBeInTheDocument()
+    expect(screen.getByText('Test Action')).toBeInTheDocument()
   })
 
-  it('should render breadcrumb when showBreadcrumb is true', () => {
-    render(<PageHeader title="Test Title" showBreadcrumb={true} />)
+  it('should render with children', () => {
+    render(
+      <PageHeader title="Test Title">
+        <div>Child content</div>
+      </PageHeader>
+    )
     
-    // Vérifier que le composant se rend sans erreur
     expect(screen.getByText('Test Title')).toBeInTheDocument()
+    expect(screen.getByText('Child content')).toBeInTheDocument()
   })
 
   it('should render with custom className', () => {

@@ -17,8 +17,8 @@ describe('Skeleton Components', () => {
       expect(skeleton).toBeInTheDocument()
     })
 
-    it('should render card skeleton with custom height', () => {
-      render(<CardSkeleton height="200px" />)
+    it('should render card skeleton with custom className', () => {
+      render(<CardSkeleton className="h-48" />)
       
       const skeleton = document.querySelector('.animate-pulse')
       expect(skeleton).toBeInTheDocument()
@@ -40,8 +40,8 @@ describe('Skeleton Components', () => {
       expect(skeleton).toBeInTheDocument()
     })
 
-    it('should render with custom height', () => {
-      render(<ChartSkeleton height="400px" />)
+    it('should render with custom className', () => {
+      render(<ChartSkeleton className="h-96" />)
       
       const skeleton = document.querySelector('.animate-pulse')
       expect(skeleton).toBeInTheDocument()
