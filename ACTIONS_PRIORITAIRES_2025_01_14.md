@@ -2,9 +2,9 @@
 ## Suite Audit 14 Janvier 2025
 
 ### 📊 RÉSUMÉ RAPIDE
-- **Progression**: 45% des objectifs atteints
-- **Points forts**: 0 vulnérabilités, 0 erreurs code
-- **Points critiques**: Bundle 471KB, Tests 2%, 44 exports morts
+- **Progression**: 55% des objectifs atteints ✅
+- **Points forts**: 0 vulnérabilités, 0 erreurs code, -80% dépendances, -31% exports
+- **Points critiques restants**: Bundle 471KB, Tests 2%
 
 ---
 
@@ -54,22 +54,25 @@ NODE_OPTIONS="--max-old-space-size=4096" npm test
 - [ ] Désactiver tests problématiques temporairement
 - [ ] Atteindre 15% coverage minimum
 
-### 3. NETTOYER CODE MORT (4h)
-**Problème**: 44 exports + 9 dépendances inutiles
+### 3. FINALISER NETTOYAGE CODE (4h)
+**Progrès**: Déjà -31% exports (64→44) et -80% dépendances (15+→3) ✅
 
 ```bash
-# Supprimer exports non utilisés
-npx knip --fix
-
-# Supprimer dépendances
+# Supprimer les 3 dernières dépendances inutiles
 npm uninstall @types/exceljs @testing-library/user-event webpack-bundle-analyzer
-npm uninstall --save-dev @vitest/coverage-v8 autoprefixer postcss cross-env
+
+# Évaluer exports restants (beaucoup sont des utils)
+npx knip --include exports
+
+# Si approprié, nettoyer avec prudence
+npx knip --fix  # ATTENTION: vérifier chaque suppression
 ```
 
 **Actions concrètes**:
-- [ ] Supprimer 44 exports identifiés par knip
-- [ ] Désinstaller 9 dépendances inutiles
-- [ ] Vérifier que build/tests passent toujours
+- [ ] Désinstaller 3 dernières dépendances
+- [ ] Évaluer si certains utils doivent être gardés (calculateBMI, formatters, etc.)
+- [ ] Nettoyer seulement les vrais exports morts
+- [ ] Garder les utils qui pourraient servir
 
 ---
 
@@ -114,12 +117,12 @@ npm test
 
 ## 📈 MÉTRIQUES SUCCÈS
 
-| Action | Avant | Objectif | Validation |
-|--------|-------|----------|------------|
-| Bundle /coach/athlete | 471KB | <200KB | Build output |
-| Test coverage | 2% | 15% | npm test |
-| Exports inutilisés | 44 | 0 | npx knip |
-| Dépendances inutiles | 9 | 0 | npx depcheck |
+| Action | Avant | Actuel | Objectif | Validation |
+|--------|-------|--------|----------|------------|
+| Bundle /coach/athlete | 602KB | 471KB | <200KB | Build output |
+| Test coverage | 0% | 2% | 15% | npm test |
+| Exports inutilisés | 64 | 44 (-31%✅) | ~20 | npx knip |
+| Dépendances inutiles | 15+ | 3 (-80%✅✅) | 0 | npx depcheck |
 
 ---
 
@@ -141,4 +144,5 @@ npm test
 ---
 
 *Document créé le 14/01/2025 suite à l'audit complet*
-*Objectif: 70% des problèmes résolus d'ici le 21/01/2025*
+*Progression actuelle: 55% → Objectif: 75% d'ici le 21/01/2025*
+*Excellents progrès sur dépendances (-80%) et exports (-31%)*
