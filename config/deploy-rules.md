@@ -31,8 +31,20 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-RV0RK8JWN4
 #### Sur autres plateformes
 Consultez la documentation de votre plateforme pour configurer les variables d'environnement.
 
-### 🔧 Correction appliquée dans le code
-Le fichier `src/lib/firebase.ts` a été mis à jour avec une meilleure gestion d'erreur et validation.
+### 🔧 Corrections appliquées
+
+#### 1. Code Firebase (`src/lib/firebase.ts`)
+Le fichier a été mis à jour avec une meilleure gestion d'erreur et validation.
+
+#### 2. Workflows GitHub Actions (✅ CORRIGÉ)
+**Problème identifié** : Firebase Hosting faisait un second build sans les variables d'environnement.
+
+**Solution appliquée** :
+- ✅ Ajout d'un fichier `.env` temporaire avant le déploiement
+- ✅ Variables d'environnement injectées dans l'étape `firebase deploy`
+- ✅ Correction appliquée aux 2 workflows (`merge` et `pull-request`)
+
+Les workflows créent maintenant un fichier `.env` avec toutes les variables Firebase avant le déploiement.
 
 ## 📋 Étapes pour déployer les règles de sécurité
 
