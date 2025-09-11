@@ -73,7 +73,8 @@ jobs:
         
       - name: Deploy to Firebase Hosting (Production)
         id: deploy
-        run: npx firebase-tools@latest deploy --only hosting --project supernovafit-a6fe7 --config firebase.production.json
+        run: npx firebase-tools@latest deploy --only hosting --project supernovafit-a6fe7 --config firebase.production.json --force
+        continue-on-error: false
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}

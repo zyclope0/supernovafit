@@ -15,10 +15,75 @@ export default function NouveautesPage() {
         </div>
 
         {/* NOUVELLES FONCTIONNALITÉS UTILISATEUR */}
-        <CollapsibleCard title={`v${APP_VERSION} — ⚡ Performance & Sécurité`} defaultOpen>
+        <CollapsibleCard title={`v${APP_VERSION} — 🎨 Interface Athlète Révolutionnée`} defaultOpen>
+          <div className="space-y-3">
+            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
+              <h2 className="font-semibold text-neon-purple mb-2">🎨 Interface Athlète Modernisée</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Dashboards compacts</strong> : Statistiques clés visibles en un coup d&apos;œil sur toutes les pages</li>
+                <li><strong>Boutons flottants</strong> : Actions principales accessibles en un clic depuis n&apos;importe où</li>
+                <li><strong>Navigation simplifiée</strong> : Headers épurés, actions déplacées dans l&apos;interface</li>
+                <li><strong>Design cohérent</strong> : Même philosophie UX appliquée sur Journal, Diète, Entraînements et Mesures</li>
+              </ul>
+            </div>
+            
+            <div className="bg-neon-cyan/10 p-3 rounded-lg border border-neon-cyan/20">
+              <h2 className="font-semibold text-neon-cyan mb-2">📊 Journal de Progression Révolutionné</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Dashboard motivationnel</strong> : Humeur, énergie, jours de suivi et objectifs avec barres de progression</li>
+                <li><strong>Cartes d&apos;entrées modernisées</strong> : Design épuré avec actions cachées au survol</li>
+                <li><strong>Barre d&apos;outils optimisée</strong> : Navigation par date avec bouton &quot;Aujourd&apos;hui&quot; rapide</li>
+                <li><strong>Raccourcis clavier</strong> : Ctrl+N pour nouvelle entrée, avec aide contextuelle dismissible</li>
+              </ul>
+            </div>
+
+            <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
+              <h2 className="font-semibold text-emerald-400 mb-2">🍽️ Diète & Nutrition Améliorée</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Dashboard nutritionnel</strong> : Calories, protéines, repas et objectif avec indicateurs visuels</li>
+                <li><strong>Ajout de repas simplifié</strong> : Bouton flottant pour saisie rapide</li>
+                <li><strong>Historique optimisé</strong> : Navigation par date avec accès direct à aujourd&apos;hui</li>
+                <li><strong>Interface épurée</strong> : Menu-type déplacé en version desktop uniquement</li>
+              </ul>
+            </div>
+
+            <div className="bg-orange-500/10 p-3 rounded-lg border border-orange-500/20">
+              <h2 className="font-semibold text-orange-400 mb-2">🏃‍♂️ Entraînements & Performance</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Dashboard performance</strong> : Séances, durée, calories et durée moyenne avec métriques claires</li>
+                <li><strong>Import Garmin accessible</strong> : Bouton dédié dans la barre d&apos;outils</li>
+                <li><strong>Historique complet</strong> : Navigation temporelle avec vue d&apos;ensemble</li>
+                <li><strong>Actions centralisées</strong> : Graphiques et import regroupés logiquement</li>
+              </ul>
+            </div>
+
+            <div className="bg-pink-500/10 p-3 rounded-lg border border-pink-500/20">
+              <h2 className="font-semibold text-pink-400 mb-2">📏 Mesures Corporelles Optimisées</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Dashboard toujours visible</strong> : Statistiques corporelles accessibles en permanence</li>
+                <li><strong>Validation intelligente</strong> : Protection contre les mesures vides (sauf tour de taille)</li>
+                <li><strong>Graphiques contextuels</strong> : Titre &quot;Graphiques d&apos;évolution&quot; affiché uniquement quand nécessaire</li>
+                <li><strong>Interface cohérente</strong> : Même logique UX que les autres pages athlète</li>
+              </ul>
+            </div>
+
+            <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+              <h2 className="font-semibold text-blue-400 mb-2">🎯 Expérience Utilisateur Unifiée</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Philosophie UX cohérente</strong> : Même approche ergonomique sur toutes les pages</li>
+                <li><strong>Raccourcis clavier</strong> : Ctrl+N disponible partout avec aide contextuelle</li>
+                <li><strong>Navigation intuitive</strong> : Actions principales toujours accessibles</li>
+                <li><strong>Design responsive</strong> : Adaptation parfaite mobile et desktop</li>
+              </ul>
+            </div>
+          </div>
+        </CollapsibleCard>
+
+        {/* VERSION PRÉCÉDENTE */}
+        <CollapsibleCard title="v1.9.4 — ⚡ Performance & Sécurité" defaultOpen={false}>
           <div className="space-y-3">
             <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-              <h2 className="font-semibold text-emerald-400 mb-2">⚡ Images Ultra-Rapides</h2>
+              <h4 className="font-semibold text-emerald-400 mb-2">⚡ Images Ultra-Rapides</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>Chargement instantané</strong> : Images optimisées automatiquement en AVIF et WebP</li>
                 <li><strong>Économie de données</strong> : Réduction de 20 à 50% de la taille des images</li>
@@ -28,7 +93,7 @@ export default function NouveautesPage() {
             </div>
             
             <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
-              <h2 className="font-semibold text-blue-400 mb-2">🔒 Sécurité Renforcée</h2>
+              <h4 className="font-semibold text-blue-400 mb-2">🔒 Sécurité Renforcée</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>0 vulnérabilité</strong> : Toutes les failles de sécurité corrigées</li>
                 <li><strong>Dépendances à jour</strong> : Bibliothèques mises à jour vers les versions sécurisées</li>
@@ -38,26 +103,12 @@ export default function NouveautesPage() {
             </div>
 
             <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
-              <h2 className="font-semibold text-purple-400 mb-2">🚀 Performance Générale</h2>
+              <h4 className="font-semibold text-purple-400 mb-2">🚀 Performance Générale</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>Page Export 35% plus rapide</strong> : Chargement optimisé de 602KB à 388KB</li>
                 <li><strong>Application plus fluide</strong> : Suppression du code mort et optimisations</li>
                 <li><strong>Maintenance améliorée</strong> : Code plus propre pour de futures mises à jour</li>
                 <li><strong>Stabilité accrue</strong> : Tests renforcés et détection d&apos;erreurs améliorée</li>
-              </ul>
-            </div>
-          </div>
-        </CollapsibleCard>
-
-        {/* VERSION PRÉCÉDENTE */}
-        <CollapsibleCard title="v1.9.3 — 🎨 Interface Améliorée" defaultOpen={false}>
-          <div className="space-y-3">
-            <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20">
-              <h4 className="font-semibold text-purple-400 mb-2">🎨 Interface Améliorée</h4>
-              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Navigation déconnectée</strong> : Lien &quot;Accueil&quot; ajouté pour les utilisateurs non connectés</li>
-                <li><strong>Footer simplifié</strong> : Suppression des liens redondants et de la date</li>
-                <li><strong>Interface plus claire</strong> : Navigation optimisée selon le statut de connexion</li>
               </ul>
             </div>
           </div>
