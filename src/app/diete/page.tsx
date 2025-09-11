@@ -3,18 +3,16 @@
 import { useState, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
-import { PageHeader } from '@/components/ui/PageHeader'
-import MealForm from '@/components/ui/MealForm'
+const MealForm = dynamic(() => import('@/components/ui/MealForm'), { ssr: false })
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useAthleteDietPlan, useCoachCommentsByModule } from '@/hooks/useFirestore'
 import { MealType, Aliment, Macros } from '@/types'
 // formatNumber removed - not used
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
-import { ChartBarIcon } from '@heroicons/react/24/outline'
 import { IconButton } from '@/components/ui/IconButton'
 import dynamic from 'next/dynamic'
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
-import MenuTypesModal from '@/components/ui/MenuTypesModal'
+const MenuTypesModal = dynamic(() => import('@/components/ui/MenuTypesModal'), { ssr: false })
 const HistoriqueModal = dynamic(() => import('@/components/ui/HistoriqueModal'), { ssr: false })
 import CoachRecommendations from '@/components/ui/CoachRecommendations'
 import ModuleComments from '@/components/ui/ModuleComments'
@@ -145,119 +143,6 @@ function MealCard({
 const MealCardMemo = React.memo(MealCard)
 
 import type { Repas } from '@/types'
-function DailySummary({ todayMeals }: { todayMeals: Repas[] }) {
-  // Calculer les totaux du jour
-  const totals = todayMeals.reduce((acc, meal) => {
-    if (meal.macros) {
-      return {
-        kcal: acc.kcal + meal.macros.kcal,
-        prot: acc.prot + meal.macros.prot,
-        glucides: acc.glucides + meal.macros.glucides,
-        lipides: acc.lipides + meal.macros.lipides
-      }
-    }
-    return acc
-  }, { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
-
-  // Objectifs (à personnaliser plus tard)
-  const objectives = {
-    kcal: 2200,
-    prot: 150,
-    glucides: 275,
-    lipides: 98
-  }
-
-  const getPercentage = (value: number, objective: number) => 
-    Math.min(Math.round((value / objective) * 100), 100)
-
-  const remaining = {
-    kcal: Math.max(0, objectives.kcal - Math.round(totals.kcal)),
-    prot: Math.max(0, objectives.prot - totals.prot),
-    glucides: Math.max(0, objectives.glucides - totals.glucides),
-    lipides: Math.max(0, objectives.lipides - totals.lipides),
-  }
-
-  return (
-    <div className="glass-effect-high p-6 rounded-xl glass-hover">
-      <h3 className="text-lg font-semibold text-white mb-4">Résumé du jour</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="text-center">
-          <div className="text-2xl font-bold text-neon-green">{totals.kcal}</div>
-          <div className="text-sm text-muted-foreground">Calories</div>
-          <div className="text-xs text-muted-foreground">/ {objectives.kcal} objectif</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-neon-cyan">{totals.prot.toFixed(1)}g</div>
-          <div className="text-sm text-muted-foreground">Protéines</div>
-          <div className="text-xs text-muted-foreground">/ {objectives.prot}g objectif</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-neon-pink">{totals.glucides.toFixed(1)}g</div>
-          <div className="text-sm text-muted-foreground">Glucides</div>
-          <div className="text-xs text-muted-foreground">/ {objectives.glucides}g objectif</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold text-neon-purple">{totals.lipides.toFixed(1)}g</div>
-          <div className="text-sm text-muted-foreground">Lipides</div>
-          <div className="text-xs text-muted-foreground">/ {objectives.lipides}g objectif</div>
-        </div>
-      </div>
-
-      {/* Barres de progression */}
-      <div className="space-y-3">
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-muted-foreground">Calories</span>
-            <span className="text-neon-green">{getPercentage(totals.kcal, objectives.kcal)}% • reste {remaining.kcal} kcal</span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-neon-green to-neon-cyan h-2 rounded-full transition-all duration-500" 
-              style={{width: `${getPercentage(totals.kcal, objectives.kcal)}%`}}
-            />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-muted-foreground">Protéines</span>
-            <span className="text-neon-cyan">{getPercentage(totals.prot, objectives.prot)}% • reste {Math.max(0, (objectives.prot - totals.prot)).toFixed(1)}g</span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-neon-cyan to-neon-purple h-2 rounded-full transition-all duration-500" 
-              style={{width: `${getPercentage(totals.prot, objectives.prot)}%`}}
-            />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-muted-foreground">Glucides</span>
-            <span className="text-neon-pink">{getPercentage(totals.glucides, objectives.glucides)}% • reste {Math.max(0, (objectives.glucides - totals.glucides)).toFixed(1)}g</span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-neon-pink to-neon-purple h-2 rounded-full transition-all duration-500" 
-              style={{width: `${getPercentage(totals.glucides, objectives.glucides)}%`}}
-            />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-muted-foreground">Lipides</span>
-            <span className="text-neon-purple">{getPercentage(totals.lipides, objectives.lipides)}% • reste {Math.max(0, (objectives.lipides - totals.lipides)).toFixed(1)}g</span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-2">
-            <div 
-              className="bg-gradient-to-r from-neon-purple to-neon-cyan h-2 rounded-full transition-all duration-500" 
-              style={{width: `${getPercentage(totals.lipides, objectives.lipides)}%`}}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export default function DietePage() {
   const { user } = useAuth()
@@ -285,14 +170,14 @@ export default function DietePage() {
     day: 'numeric' 
   })
 
-  const meals: { type: MealType; name: string; icon: string; time: string }[] = [
+  const meals: { type: MealType; name: string; icon: string; time: string }[] = useMemo(() => [
     { type: 'petit_dej', name: 'Petit-déjeuner', icon: '🌅', time: '7h30' },
     { type: 'collation_matin', name: 'Collation matin', icon: '☕', time: '10h00' },
     { type: 'dejeuner', name: 'Déjeuner', icon: '🍽️', time: '12h30' },
     { type: 'collation_apres_midi', name: 'Collation après-midi', icon: '🍎', time: '16h00' },
     { type: 'diner', name: 'Dîner', icon: '🌙', time: '19h30' },
     { type: 'collation_soir', name: 'Collation soir', icon: '🌃', time: '21h30' }
-  ]
+  ], [])
 
   // Filtrer les repas du jour sélectionné
   const todayMeals = useMemo(() => repas.filter((r: Repas) => r.date === selectedDate), [repas, selectedDate])
@@ -406,6 +291,27 @@ export default function DietePage() {
     }
   }
 
+  // Raccourcis clavier pour améliorer l'UX
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'n' && !showMealForm) {
+        e.preventDefault()
+        // Ouvrir le formulaire pour le prochain repas manquant
+        const nextMeal = meals.find(meal => !todayMeals.some(tm => tm.repas === meal.type))
+        if (nextMeal) {
+          setShowMealForm(nextMeal.type)
+        }
+      }
+      if (e.key === 'Escape' && showMealForm) {
+        setShowMealForm(null)
+        setEditingMeal(null)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showMealForm, todayMeals, meals])
+
   // Loading state pendant initialisation selectedDate
   if (!selectedDate) {
     return (
@@ -420,34 +326,109 @@ export default function DietePage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <PageHeader
-          title="Diète"
-          subtitle={`Suivi nutritionnel - ${today}`}
-          icon={ChartBarIcon}
-          actions={
-            <div className="flex space-x-3">
-            <button 
-              onClick={() => setShowMenuTypes(true)}
-              className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors"
-            >
-              Menu-type
-            </button>
-            <button 
-              onClick={() => setShowHistorique(true)}
-              className="px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors"
-            >
-              Historique
-            </button>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-44 px-3 py-2 bg-white/5 border border-white/10 rounded text-white text-sm focus:border-neon-purple focus:outline-none"
-            />
+        {/* Header simplifié */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold neon-text">Diète & Nutrition</h1>
+            <p className="text-muted-foreground">Suivi nutritionnel - {today}</p>
+          </div>
+          {/* Bouton compact pour desktop */}
+          <button
+            onClick={() => setShowMenuTypes(true)}
+            className="hidden md:flex px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 items-center gap-2"
+            title="Appliquer un menu-type prédéfini"
+          >
+            <span>📋</span>
+            Menu-type
+          </button>
+        </div>
+
+        {/* Dashboard compact avec stats nutritionnelles */}
+        {user && (
+          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {/* Calories */}
+              <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+                <div className="text-2xl font-bold text-neon-green">
+                  {todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0)}
+                </div>
+                <div className="text-xs text-muted-foreground">Calories</div>
+                <div className="w-full bg-space-700 rounded-full h-1 mt-2">
+                  <div 
+                    className="bg-neon-green h-1 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              {/* Protéines */}
+              <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+                <div className="text-2xl font-bold text-neon-cyan">
+                  {Math.round(todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0))}g
+                </div>
+                <div className="text-xs text-muted-foreground">Protéines</div>
+                <div className="w-full bg-space-700 rounded-full h-1 mt-2">
+                  <div 
+                    className="bg-neon-cyan h-1 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0) / 150) * 100, 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              {/* Repas */}
+              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+                <div className="text-2xl font-bold text-neon-purple">{todayMeals.length}</div>
+                <div className="text-xs text-muted-foreground">Repas</div>
+                <div className="text-xs text-neon-purple mt-1">Aujourd&apos;hui</div>
+              </div>
+              
+              {/* Objectif */}
+              <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
+                <div className="text-2xl font-bold text-neon-pink">
+                  {Math.round((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100)}%
+                </div>
+                <div className="text-xs text-muted-foreground">Objectif</div>
+                <div className="text-xs text-neon-pink mt-1">Calories</div>
+              </div>
             </div>
-          }
-        />
+            
+            {/* Hint compact */}
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
+              <span>💡 Cliquez sur un repas pour ajouter des aliments</span>
+            </div>
+          </div>
+        )}
+
+        {/* Barre d'outils pour actions secondaires */}
+        {user && (
+          <div className="glass-effect p-4 rounded-lg border border-white/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-muted-foreground">📅 Date sélectionnée :</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium"
+                >
+                  Aujourd&apos;hui
+                </button>
+                <button
+                  onClick={() => setShowHistorique(true)}
+                  className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium"
+                >
+                  📊 Historique
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Message si non connecté */}
         {!user && (
@@ -483,7 +464,6 @@ export default function DietePage() {
             </>
           ) : (
             <>
-              <DailySummary todayMeals={todayMeals} />
               {todayMeals.length > 0 && (
               <MacrosChart 
                 macros={todayMeals.reduce((total: Macros, meal: Repas) => ({
@@ -578,6 +558,17 @@ export default function DietePage() {
 
         <HistoriqueSection allRepas={repas} loading={repasLoading} />
       </div>
+      
+      {/* FAB (Floating Action Button) pour ajouter un repas */}
+      <button
+        onClick={() => setShowMealForm('petit_dej')}
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+        title="Ajouter un repas (raccourci: Ctrl+N)"
+      >
+        <span className="text-2xl md:text-3xl group-hover:rotate-90 transition-transform duration-300">🍽️</span>
+        {/* Ripple effect */}
+        <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+      </button>
     </MainLayout>
   )
 } 

@@ -1,15 +1,15 @@
 import xml2js from 'xml2js'
 import { Entrainement } from '@/types'
 
+// Types pour les activités Garmin
 export interface GarminActivity {
   id: string
-  name: string
-  sport: string
   startTime: Date
   totalTimeSeconds: number
-  distanceMeters?: number
+  sport: string
   calories?: number
-  averageHeartRate?: number
+  distanceMeters?: number
+  avgHeartRate?: number
   maxHeartRate?: number
   minHeartRate?: number
   trackPoints?: TrackPoint[]
@@ -18,25 +18,23 @@ export interface GarminActivity {
 export interface TrackPoint {
   time: Date
   heartRate?: number
-  distanceMeters?: number
-  latitudeDegrees?: number
-  longitudeDegrees?: number
-  altitudeMeters?: number
+  latitude?: number
+  longitude?: number
+  altitude?: number
 }
 
 // Mapping des sports Garmin vers nos types
 const SPORT_MAPPING: Record<string, string> = {
-  'Other': 'cardio',        // Par défaut "Other" → cardio
-  'strength_training': 'musculation',
   'Running': 'course',
-  'Cycling': 'cyclisme',
+  'Cycling': 'velo',
   'Swimming': 'natation',
-  'Cardio': 'cardio',
-  'HIIT': 'hiit',
+  'Strength_Training': 'musculation',
   'Yoga': 'yoga',
-  
-  // Mapping supplémentaires Garmin
-  'Generic': 'cardio',
+  'Walking': 'marche',
+  'Hiking': 'randonnee',
+  'Tennis': 'tennis',
+  'Basketball': 'basketball',
+  'Soccer': 'football',
   'Fitness_Equipment': 'cardio',
   'Weight_Training': 'musculation',
   'Strength': 'musculation'
@@ -61,191 +59,183 @@ export class GarminParser {
   private async parseTCX(xmlContent: string): Promise<GarminActivity> {
     try {
       const result = await this.parser.parseStringPromise(xmlContent)
-      const activity = result.TrainingCenterDatabase.Activities.Activity
-      
+      const activity = result.TrainingCenterDatabase?.Activities?.Activity
+
       if (!activity) {
         throw new Error('Aucune activité trouvée dans le fichier TCX')
       }
 
-      // Extraire les données principales
-      const lap = activity.Lap
-      const startTime = new Date(activity.Id)
-      const totalTimeSeconds = parseFloat(lap.TotalTimeSeconds || '0')
-      const distanceMeters = parseFloat(lap.DistanceMeters || '0')
-      const calories = parseInt(lap.Calories || '0')
-      
-      // Fréquence cardiaque
-      const avgHR = lap.AverageHeartRateBpm?.Value ? parseInt(lap.AverageHeartRateBpm.Value) : undefined
-      const maxHR = lap.MaximumHeartRateBpm?.Value ? parseInt(lap.MaximumHeartRateBpm.Value) : undefined
+      const lap = Array.isArray(activity.Lap) ? activity.Lap[0] : activity.Lap
+      const startTime = new Date(activity.$.StartTime || activity.Id)
+      const totalTimeSeconds = parseFloat(lap?.TotalTimeSeconds || '0')
+      const sport = SPORT_MAPPING[activity.$.Sport] || 'autre'
+      const calories = parseInt(lap?.Calories || '0')
+      const distanceMeters = parseFloat(lap?.DistanceMeters || '0')
+      const avgHeartRate = parseInt(lap?.AverageHeartRateBpm?.Value || '0')
+      const maxHeartRate = parseInt(lap?.MaximumHeartRateBpm?.Value || '0')
 
       // Parser les trackpoints pour FC min et détails
       const trackPoints: TrackPoint[] = []
       let minHR: number | undefined
 
-      if (lap.Track?.Trackpoint) {
+      if (lap?.Track?.Trackpoint) {
         const points = Array.isArray(lap.Track.Trackpoint) ? lap.Track.Trackpoint : [lap.Track.Trackpoint]
         
         for (const point of points) {
           const trackPoint: TrackPoint = {
             time: new Date(point.Time),
-            distanceMeters: parseFloat(point.DistanceMeters || '0')
+            heartRate: point.HeartRateBpm?.Value ? parseInt(point.HeartRateBpm.Value) : undefined,
+            latitude: point.Position?.LatitudeDegrees ? parseFloat(point.Position.LatitudeDegrees) : undefined,
+            longitude: point.Position?.LongitudeDegrees ? parseFloat(point.Position.LongitudeDegrees) : undefined,
+            altitude: point.AltitudeMeters ? parseFloat(point.AltitudeMeters) : undefined
           }
-
-          if (point.HeartRateBpm?.Value) {
-            const hr = parseInt(point.HeartRateBpm.Value)
-            trackPoint.heartRate = hr
-            
-            // Calculer FC min
-            if (!minHR || hr < minHR) {
-              minHR = hr
-            }
-          }
-
-          if (point.Position) {
-            trackPoint.latitudeDegrees = parseFloat(point.Position.LatitudeDegrees || '0')
-            trackPoint.longitudeDegrees = parseFloat(point.Position.LongitudeDegrees || '0')
-          }
-
-          if (point.AltitudeMeters) {
-            trackPoint.altitudeMeters = parseFloat(point.AltitudeMeters)
-          }
-
+          
           trackPoints.push(trackPoint)
-        }
-      }
-
-      // Détection intelligente du type d&apos;activité
-      let detectedSport = SPORT_MAPPING[activity.$.Sport] || 'cardio'
-      
-      // Si "Other", essayer de deviner selon les caractéristiques
-      if (activity.$.Sport === 'Other') {
-        if (distanceMeters === 0 && avgHR && avgHR < 130) {
-          detectedSport = 'musculation'  // Pas de distance + FC basse = muscu
-        } else if (distanceMeters > 0) {
-          detectedSport = 'course'       // Distance > 0 = course/vélo
+          
+          if (trackPoint.heartRate && (!minHR || trackPoint.heartRate < minHR)) {
+            minHR = trackPoint.heartRate
+          }
         }
       }
 
       return {
-        id: activity.Id,
-        name: activity.$.Sport || 'Entraînement',
-        sport: detectedSport,
+        id: this.generateUniqueId({ startTime, totalTimeSeconds, sport, calories, distanceMeters }, 'temp'),
         startTime,
         totalTimeSeconds,
-        distanceMeters: distanceMeters > 0 ? distanceMeters : undefined,
-        calories: calories > 0 ? calories : undefined,
-        averageHeartRate: avgHR,
-        maxHeartRate: maxHR,
+        sport,
+        calories,
+        distanceMeters,
+        avgHeartRate: avgHeartRate || undefined,
+        maxHeartRate: maxHeartRate || undefined,
         minHeartRate: minHR,
-        trackPoints
+        trackPoints: trackPoints.length > 0 ? trackPoints : undefined
       }
     } catch (error) {
-      console.error('Erreur parsing TCX:', error)
-      throw new Error('Impossible de parser le fichier TCX')
+      throw new Error(`Erreur lors du parsing TCX: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
     }
   }
 
   private async parseGPX(xmlContent: string): Promise<GarminActivity> {
     try {
       const result = await this.parser.parseStringPromise(xmlContent)
-      const track = result.gpx.trk
-      
+      const track = result.gpx?.trk
+
       if (!track) {
-        throw new Error('Aucune track trouvée dans le fichier GPX')
+        throw new Error('Aucune piste trouvée dans le fichier GPX')
       }
 
-      const startTime = new Date(result.gpx.metadata.time)
-      const trackName = track.name || 'Entraînement'
-      const sport = SPORT_MAPPING[track.type] || 'autre'
+      const startTime = new Date(track.time || track.metadata?.time || new Date())
+      const name = track.name || 'Activité GPX'
+      const sport = this.detectSportFromName(name)
+      
+      let totalTimeSeconds = 0
+      const calories = 0
+      const distanceMeters = 0
+      let avgHeartRate = 0
+      let maxHeartRate = 0
+      let minHeartRate = 0
+      const trackPoints: TrackPoint[] = []
+
+      if (track.trkseg?.trkpt) {
+        const points = Array.isArray(track.trkseg.trkpt) ? track.trkseg.trkpt : [track.trkseg.trkpt]
+        
+        for (let i = 0; i < points.length; i++) {
+          const point = points[i]
+          const time = new Date(point.time || startTime.getTime() + (i * 1000))
+          
+          const trackPoint: TrackPoint = {
+            time,
+            heartRate: point.extensions?.['ns3:TrackPointExtension']?.['ns3:hr'] ? 
+              parseInt(point.extensions['ns3:TrackPointExtension']['ns3:hr']) : undefined,
+            latitude: point.$.lat ? parseFloat(point.$.lat) : undefined,
+            longitude: point.$.lon ? parseFloat(point.$.lon) : undefined,
+            altitude: point.ele ? parseFloat(point.ele) : undefined
+          }
+          
+          trackPoints.push(trackPoint)
+          
+          if (trackPoint.heartRate) {
+            avgHeartRate += trackPoint.heartRate
+            if (trackPoint.heartRate > maxHeartRate) maxHeartRate = trackPoint.heartRate
+            if (minHeartRate === 0 || trackPoint.heartRate < minHeartRate) minHeartRate = trackPoint.heartRate
+          }
+        }
+        
+        if (trackPoints.length > 0) {
+          totalTimeSeconds = (trackPoints[trackPoints.length - 1].time.getTime() - trackPoints[0].time.getTime()) / 1000
+          avgHeartRate = Math.round(avgHeartRate / trackPoints.filter(p => p.heartRate).length)
+        }
+      }
 
       return {
-        id: startTime.toISOString(),
-        name: trackName,
-        sport,
+        id: this.generateUniqueId({ startTime, totalTimeSeconds, sport, calories, distanceMeters }, 'temp'),
         startTime,
-        totalTimeSeconds: 0, // GPX n'a pas toujours la durée
-        trackPoints: []
+        totalTimeSeconds,
+        sport,
+        calories,
+        distanceMeters,
+        avgHeartRate: avgHeartRate || undefined,
+        maxHeartRate: maxHeartRate || undefined,
+        minHeartRate: minHeartRate || undefined,
+        trackPoints: trackPoints.length > 0 ? trackPoints : undefined
       }
     } catch (error) {
-      console.error('Erreur parsing GPX:', error)
-      throw new Error('Impossible de parser le fichier GPX')
+      throw new Error(`Erreur lors du parsing GPX: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
     }
+  }
+
+  private detectSportFromName(name: string): string {
+    const lowerName = name.toLowerCase()
+    if (lowerName.includes('run') || lowerName.includes('course')) return 'course'
+    if (lowerName.includes('bike') || lowerName.includes('vélo') || lowerName.includes('velo')) return 'velo'
+    if (lowerName.includes('swim') || lowerName.includes('natation')) return 'natation'
+    if (lowerName.includes('strength') || lowerName.includes('musculation')) return 'musculation'
+    if (lowerName.includes('yoga')) return 'yoga'
+    return 'autre'
   }
 
   // Convertir une activité Garmin vers notre format Entrainement
   toEntrainement(activity: GarminActivity, userId: string): Omit<Entrainement, 'id' | 'created_at'> {
-    // Debug: conversion activité Garmin (retiré en production)
-    // Calculer vitesse moyenne si on a distance et temps
-    let vitesseMoy: number | undefined
-    if (activity.distanceMeters && activity.totalTimeSeconds > 0) {
-      const distanceKm = activity.distanceMeters / 1000
-      const tempsHours = activity.totalTimeSeconds / 3600
-      vitesseMoy = Math.round((distanceKm / tempsHours) * 100) / 100
-    }
-
-    // Calculer dénivelé si on a des trackpoints avec altitude
-    let elevationGain: number | undefined
-    if (activity.trackPoints && activity.trackPoints.length > 0) {
-      const altitudes = activity.trackPoints
-        .map(tp => tp.altitudeMeters)
-        .filter(alt => alt !== undefined) as number[]
-      
-      if (altitudes.length > 1) {
-        let gain = 0
-        for (let i = 1; i < altitudes.length; i++) {
-          const diff = altitudes[i] - altitudes[i - 1]
-          if (diff > 0) gain += diff
-        }
-        elevationGain = Math.round(gain)
-      }
-    }
-
-    // Vérifier que le type est valide, sinon utiliser 'cardio'
-    const validTypes = ['cardio', 'musculation', 'course', 'cyclisme', 'natation', 'hiit', 'yoga']
-    const finalType = validTypes.includes(activity.sport) ? activity.sport : 'cardio'
-
-    // Créer un identifiant unique pour détecter les doublons
-    const uniqueId = this.generateUniqueId(activity, userId)
-
-    const baseResult = {
+    const result: Omit<Entrainement, 'id' | 'created_at'> = {
       user_id: userId,
       date: activity.startTime.toISOString().split('T')[0],
-      type: finalType,
+      type: activity.sport,
       duree: Math.round(activity.totalTimeSeconds / 60), // Convertir en minutes
-      source: 'garmin' as const,
-      commentaire: `Importé: ${activity.name}`,
-      fichier_original: activity.name,
-      device: 'Garmin',
-      garmin_id: uniqueId // Identifiant unique pour éviter les doublons
+      calories: activity.calories || 0,
+      commentaire: `Importé depuis Garmin - ${activity.startTime.toLocaleDateString('fr-FR')}`,
+      source: 'garmin'
     }
 
-    // Ajouter seulement les champs qui ont une valeur (pas undefined)
-    const result: Record<string, unknown> = { ...baseResult }
-    
-    if (activity.calories) result.calories = activity.calories
-    if (activity.averageHeartRate) result.fc_moyenne = activity.averageHeartRate
-    if (activity.maxHeartRate) result.fc_max = activity.maxHeartRate
-    if (activity.minHeartRate) result.fc_min = activity.minHeartRate
+    // Ajouter les champs optionnels seulement s'ils ont une valeur
     if (activity.distanceMeters && activity.distanceMeters > 0) {
-      result.distance = Math.round(activity.distanceMeters / 10) / 100 // Convertir en km
+      result.distance = Math.round(activity.distanceMeters / 1000 * 100) / 100 // Convertir en km
     }
-    if (vitesseMoy) result.vitesse_moy = vitesseMoy
-    if (elevationGain) result.elevation_gain = elevationGain
+    
+    if (activity.avgHeartRate && activity.avgHeartRate > 0) {
+      result.fc_moyenne = activity.avgHeartRate
+    }
+    
+    if (activity.maxHeartRate && activity.maxHeartRate > 0) {
+      result.fc_max = activity.maxHeartRate
+    }
+    
+    if (activity.minHeartRate && activity.minHeartRate > 0) {
+      result.fc_min = activity.minHeartRate
+    }
 
-    // Debug: entraînement converti (retiré en production)
-    return result as Omit<Entrainement, 'id' | 'created_at'>
+    return result
   }
 
   /**
    * Génère un identifiant unique basé sur les caractéristiques de l'activité
    * pour détecter les doublons lors d'imports multiples
    */
-  private generateUniqueId(activity: GarminActivity, userId: string): string {
+  private generateUniqueId(activity: Partial<GarminActivity>, userId: string): string {
     const components = [
       userId,
-      activity.startTime.toISOString(),
-      activity.totalTimeSeconds.toString(),
-      activity.sport,
+      activity.startTime?.toISOString() || '',
+      activity.totalTimeSeconds?.toString() || '0',
+      activity.sport || 'autre',
       activity.calories?.toString() || '0',
       activity.distanceMeters?.toString() || '0'
     ]

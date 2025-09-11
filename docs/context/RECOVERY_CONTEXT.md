@@ -1,5 +1,5 @@
 # 🔄 RECOVERY CONTEXT - POST AUDIT D'IMPACT
-**Date**: 06 Janvier 2025 | **Version**: 1.9.4 | **Statut**: AUDIT COMPLET
+**Date**: 15 Janvier 2025 | **Version**: 1.9.4 | **Statut**: AUDIT COMPLET + CORRECTIONS
 
 ## 📍 SITUATION ACTUELLE
 
@@ -14,6 +14,13 @@
 3. **20 issues documentées** avec priorisation et patches
 4. **8 patches créés** et prêts à appliquer
 5. **Roadmap 30-60-90 jours** établie avec métriques
+
+### ✅ Corrections Récentes (15.01.2025)
+6. **PATCH #10 Dashboard Calories** : Bug critique résolu ✅
+   - Problème : Dashboard affichait des calories fantômes (126 kcal, 20g protéines)
+   - Cause : Logique défaillante utilisant la "dernière date avec des repas"
+   - Solution : Affichage cohérent des vraies données d'aujourd'hui
+   - Impact : UX Dashboard athlète parfaitement cohérente
 
 ### 📊 État des Métriques
 | Métrique | Valeur Actuelle | Delta vs 13.01 | Statut |

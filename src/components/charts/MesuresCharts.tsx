@@ -15,8 +15,7 @@ import {
 } from 'recharts'
 import { Mesure } from '@/types'
 import { formatDate } from '@/lib/utils'
-import { TrendingUp, TrendingDown, Minus, Scale, Ruler, Heart, Target } from 'lucide-react'
-import type { ComponentType } from 'react'
+import { Scale, Ruler, Heart } from 'lucide-react'
 
 interface MesuresChartsProps {
   mesures: Mesure[]
@@ -47,55 +46,11 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
   return null
 }
 
-// Composant de statistique avec tendance
-function StatCard({ title, value, unit, trend, icon: Icon, color = 'neon-cyan' }: {
-  title: string
-  value: number | string
-  unit?: string
-  trend?: number
-  icon: ComponentType<{ className?: string }>
-  color?: string
-}) {
-  const getTrendIcon = () => {
-    if (!trend || trend === 0) return <Minus className="h-4 w-4 text-gray-400" />
-    if (trend > 0) return <TrendingUp className="h-4 w-4 text-green-400" />
-    return <TrendingDown className="h-4 w-4 text-red-400" />
-  }
-
-  const getTrendColor = () => {
-    if (!trend || trend === 0) return 'text-gray-400'
-    if (trend > 0) return 'text-green-400'
-    return 'text-red-400'
-  }
-
-  return (
-    <div className="glass-effect p-4 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
-      <div className="flex items-center justify-between mb-2">
-        <div className={`p-2 rounded-lg bg-${color}/20`}>
-          <Icon className={`h-5 w-5 text-${color}`} />
-        </div>
-        <div className="flex items-center gap-1">
-          {getTrendIcon()}
-          {trend !== undefined && (
-            <span className={`text-sm ${getTrendColor()}`}>
-              {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
-            </span>
-          )}
-        </div>
-      </div>
-      <div>
-        <h3 className="text-sm text-muted-foreground">{title}</h3>
-        <p className="text-xl font-bold text-white">
-          {value} {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
-        </p>
-      </div>
-    </div>
-  )
-}
 
 export default function MesuresCharts({ mesures }: MesuresChartsProps) {
   const chartData = useMemo(() => {
-    return mesures
+    // Prendre toutes les mesures (pas de filtre temporel pour éviter les problèmes de dates)
+    const data = mesures
       .slice()
       .reverse() // Du plus ancien au plus récent pour les graphiques
       .map(mesure => ({
@@ -111,28 +66,11 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
         tour_cou: mesure.tour_cou || null,
         tour_poitrine: mesure.tour_poitrine || null
       }))
+    
+    
+    return data
   }, [mesures])
 
-  // Calcul des tendances (dernières 2 mesures)
-  const tendances = useMemo(() => {
-    if (mesures.length < 2) return {}
-    
-    const derniere = mesures[0]
-    const precedente = mesures[1]
-    
-    const calculerTendance = (nouvelleValeur?: number, ancienneValeur?: number) => {
-      if (!nouvelleValeur || !ancienneValeur) return undefined
-      return ((nouvelleValeur - ancienneValeur) / ancienneValeur) * 100
-    }
-
-    return {
-      poids: calculerTendance(derniere.poids, precedente.poids),
-      imc: calculerTendance(derniere.imc, precedente.imc),
-      masse_grasse: calculerTendance(derniere.masse_grasse, precedente.masse_grasse),
-      masse_musculaire: calculerTendance(derniere.masse_musculaire, precedente.masse_musculaire),
-      tour_taille: calculerTendance(derniere.tour_taille, precedente.tour_taille)
-    }
-  }, [mesures])
 
   // IMC data removed - was unused
 
@@ -145,45 +83,9 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
     )
   }
 
-  const dernieresMesures = mesures[0]
 
   return (
     <div className="space-y-6">
-      {/* Statistiques rapides */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          title="Poids actuel"
-          value={dernieresMesures.poids || 'N/A'}
-          unit="kg"
-          trend={tendances.poids}
-          icon={Scale}
-          color="neon-cyan"
-        />
-        <StatCard
-          title="IMC"
-          value={dernieresMesures.imc?.toFixed(1) || 'N/A'}
-          trend={tendances.imc}
-          icon={Target}
-          color="neon-green"
-        />
-        <StatCard
-          title="Masse grasse"
-          value={dernieresMesures.masse_grasse || 'N/A'}
-          unit="%"
-          trend={tendances.masse_grasse}
-          icon={Heart}
-          color="neon-purple"
-        />
-        <StatCard
-          title="Tour de taille"
-          value={dernieresMesures.tour_taille || 'N/A'}
-          unit="cm"
-          trend={tendances.tour_taille}
-          icon={Ruler}
-          color="neon-pink"
-        />
-      </div>
-
       {/* Graphique Poids et IMC */}
       <div className="glass-effect p-6 rounded-lg border border-white/10">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -204,6 +106,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               stroke="#06b6d4"
               tick={{ fill: '#06b6d4', fontSize: 12 }}
               width={50}
+              domain={[25, 'dataMax']}
               tickFormatter={(v: number) => String(Math.round(v as number))}
               label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#06b6d4' } }}
             />

@@ -18,9 +18,10 @@
     "frameworksBackend": {
       "region": "europe-west1",
       "memory": "1024MiB",
-      "maxInstances": 3,
+      "maxInstances": 5,
       "minInstances": 1,
       "concurrency": 100
     }
   }
 }
+

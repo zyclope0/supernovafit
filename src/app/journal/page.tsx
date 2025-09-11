@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { useJournal, useBadges, usePhotosLibres, useObjectifs, useCoachCommentsByModule } from '@/hooks/useFirestore'
-import { Plus, Edit3, Trash2, TrendingUp, Calendar, Heart, Zap, Award, Target } from 'lucide-react'
+import { Plus, Edit3, Trash2, Award, Target } from 'lucide-react'
 import { JournalEntry } from '@/types'
 import toast from 'react-hot-toast'
 import JournalForm from '@/components/ui/JournalForm'
@@ -31,26 +31,6 @@ const METEO_EMOJI = {
   neige: '❄️'
 }
 
-function StatsCard({ title, value, icon, color = "neon-green" }: {
-  title: string
-  value: string | number
-  icon: React.ReactNode
-  color?: string
-}) {
-  return (
-    <div className="glass-effect p-4 rounded-lg border border-white/10">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{title}</p>
-          <p className={`text-lg font-semibold text-${color}`}>{value}</p>
-        </div>
-        <div className={`p-2 rounded-lg bg-${color}/20`}>
-          {icon}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 import React from 'react'
 
@@ -136,85 +116,89 @@ function EntryCard({ entry, onEdit, onDelete }: {
   }
 
   return (
-    <div className="glass-effect p-4 rounded-lg border border-white/10 hover:border-neon-cyan/30 transition-all duration-200 hover:shadow-lg hover:shadow-neon-cyan/10">
-      {/* Header compact */}
-      <div className="flex items-start justify-between mb-3">
+    <div className="glass-effect p-5 rounded-xl border border-white/10 hover:border-neon-cyan/40 transition-all duration-300 hover:shadow-xl hover:shadow-neon-cyan/20 group">
+      {/* Header avec date et météo */}
+      <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
-            <span className="font-medium text-white text-sm">{formatDate(entry.date)}</span>
+            <span className="font-semibold text-white text-base">{formatDate(entry.date)}</span>
             {entry.meteo && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <span className="text-sm text-muted-foreground flex items-center gap-1">
                 {METEO_EMOJI[entry.meteo]} <span className="capitalize">{entry.meteo}</span>
               </span>
             )}
           </div>
-          
-          {/* Indicateurs horizontaux compacts */}
-          <div className="flex items-center gap-2">
-            {entry.humeur && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-white/5 rounded-full">
-                <span className="text-sm">{EMOJI_LEVELS[entry.humeur]}</span>
-                <span className="text-xs text-neon-green font-medium">{entry.humeur}</span>
-              </div>
-            )}
-            {entry.energie && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-white/5 rounded-full">
-                <span className="text-sm">⚡</span>
-                <span className="text-xs text-neon-cyan font-medium">{entry.energie}</span>
-              </div>
-            )}
-            {entry.sommeil_qualite && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-white/5 rounded-full">
-                <span className="text-sm">😴</span>
-                <span className="text-xs text-neon-purple font-medium">{entry.sommeil_qualite}</span>
-              </div>
-            )}
-            {entry.stress && (
-              <div className="flex items-center gap-1 px-2 py-1 bg-white/5 rounded-full">
-                <span className="text-sm">😰</span>
-                <span className="text-xs text-orange-400 font-medium">{entry.stress}</span>
-              </div>
-            )}
-          </div>
         </div>
         
-        {/* Actions compactes */}
-        <div className="flex gap-1 opacity-60 hover:opacity-100 transition-opacity">
+        {/* Actions avec meilleur design */}
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             onClick={() => onEdit(entry)}
-            className="p-1.5 hover:bg-neon-cyan/20 rounded-md transition-colors group"
+            className="p-2 hover:bg-neon-cyan/20 rounded-lg transition-all duration-200 group/btn"
             title="Modifier"
           >
-            <Edit3 className="h-3.5 w-3.5 text-neon-cyan group-hover:scale-110 transition-transform" />
+            <Edit3 className="h-4 w-4 text-neon-cyan group-hover/btn:scale-110 transition-transform" />
           </button>
           <button
             onClick={() => onDelete(entry)}
-            className="p-1.5 hover:bg-red-500/20 rounded-md transition-colors group"
+            className="p-2 hover:bg-red-500/20 rounded-lg transition-all duration-200 group/btn"
             title="Supprimer"
           >
-            <Trash2 className="h-3.5 w-3.5 text-red-400 group-hover:scale-110 transition-transform" />
+            <Trash2 className="h-4 w-4 text-red-400 group-hover/btn:scale-110 transition-transform" />
           </button>
         </div>
       </div>
 
-      {/* Note compacte */}
+      {/* Indicateurs avec design amélioré */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {entry.humeur && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-neon-green/10 rounded-lg border border-neon-green/20">
+            <span className="text-lg">{EMOJI_LEVELS[entry.humeur]}</span>
+            <span className="text-sm text-neon-green font-semibold">{entry.humeur}/10</span>
+            <span className="text-xs text-muted-foreground">Humeur</span>
+          </div>
+        )}
+        {entry.energie && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-neon-cyan/10 rounded-lg border border-neon-cyan/20">
+            <span className="text-lg">⚡</span>
+            <span className="text-sm text-neon-cyan font-semibold">{entry.energie}/10</span>
+            <span className="text-xs text-muted-foreground">Énergie</span>
+          </div>
+        )}
+        {entry.sommeil_qualite && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-neon-purple/10 rounded-lg border border-neon-purple/20">
+            <span className="text-lg">😴</span>
+            <span className="text-sm text-neon-purple font-semibold">{entry.sommeil_qualite}/10</span>
+            <span className="text-xs text-muted-foreground">Sommeil</span>
+          </div>
+        )}
+        {entry.stress && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-orange-500/10 rounded-lg border border-orange-500/20">
+            <span className="text-lg">😰</span>
+            <span className="text-sm text-orange-400 font-semibold">{entry.stress}/10</span>
+            <span className="text-xs text-muted-foreground">Stress</span>
+          </div>
+        )}
+      </div>
+
+      {/* Note avec design amélioré */}
       {entry.note && (
-        <div className="bg-white/3 rounded-md p-2 mb-2 border-l-2 border-neon-cyan/30">
-          <p className="text-xs text-white/90 line-clamp-2 leading-relaxed">{entry.note}</p>
+        <div className="bg-gradient-to-r from-neon-cyan/5 to-neon-purple/5 rounded-lg p-4 mb-4 border-l-4 border-neon-cyan/50">
+          <p className="text-sm text-white/95 leading-relaxed line-clamp-3">{entry.note}</p>
         </div>
       )}
 
-      {/* Activités compactes */}
+      {/* Activités avec design amélioré */}
       {entry.activites_annexes && entry.activites_annexes.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {entry.activites_annexes.slice(0, 3).map((activite, index) => (
-            <span key={index} className="px-2 py-0.5 bg-neon-purple/15 text-neon-purple text-xs rounded-full border border-neon-purple/20">
+        <div className="flex flex-wrap gap-2 mb-4">
+          {entry.activites_annexes.slice(0, 4).map((activite, index) => (
+            <span key={index} className="px-3 py-1.5 bg-neon-purple/15 text-neon-purple text-sm rounded-full border border-neon-purple/30 font-medium">
               {activite}
             </span>
           ))}
-          {entry.activites_annexes.length > 3 && (
-            <span className="px-2 py-0.5 bg-white/10 text-white/60 text-xs rounded-full">
-              +{entry.activites_annexes.length - 3}
+          {entry.activites_annexes.length > 4 && (
+            <span className="px-3 py-1.5 bg-white/10 text-white/70 text-sm rounded-full border border-white/20">
+              +{entry.activites_annexes.length - 4}
             </span>
           )}
         </div>
@@ -240,6 +224,7 @@ export default function JournalPage() {
   const [showPhotos, setShowPhotos] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const [showHistory, setShowHistory] = useState(false)
+  const [showHint, setShowHint] = useState(true)
   const { comments: journalComments, loading: journalCommentsLoading } = useCoachCommentsByModule('journal', selectedDate)
 
   // Objectifs prédéfinis simples
@@ -368,6 +353,23 @@ export default function JournalPage() {
     }
   }
 
+  // Raccourcis clavier pour améliorer l'UX
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'n' && !showForm) {
+        e.preventDefault()
+        handleNewEntry()
+      }
+      if (e.key === 'Escape' && showForm) {
+        setShowForm(false)
+        setEditingEntry(null)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showForm])
+
   const handleSubmit = async (entryData: Omit<JournalEntry, 'id'>) => {
     if (!user || isSubmitting) return { success: false, error: 'Non connecté' }
 
@@ -437,29 +439,102 @@ export default function JournalPage() {
             <h1 className="text-2xl font-bold neon-text">Journal & Motivation</h1>
             <p className="text-muted-foreground">Votre espace personnel de suivi</p>
           </div>
+          {/* Bouton compact pour desktop */}
           <button
             onClick={handleNewEntry}
-            className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors flex items-center gap-2"
+            className="hidden md:flex px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 items-center gap-2"
+            title="Ajouter une nouvelle entrée (raccourci: Ctrl+N)"
           >
             <Plus className="h-4 w-4" />
             {todayEntry ? 'Modifier aujourd\'hui' : 'Nouvelle entrée'}
           </button>
         </div>
 
-        {/* Barre outils date */}
-        <div className="flex items-center gap-3">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-44 px-3 py-1 bg-white/5 border border-white/10 rounded text-white text-sm focus:border-neon-purple focus:outline-none"
-          />
-          <button
-            onClick={() => setShowHistory(true)}
-            className="px-3 py-1 bg-white/10 text-white rounded text-sm hover:bg-white/20"
-          >
-            Historique
-          </button>
+        {/* Dashboard compact avec stats essentielles */}
+        {user && entries.length > 0 && (
+          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {avgHumeur > 0 && (
+                <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+                  <div className="text-2xl font-bold text-neon-green">{avgHumeur}</div>
+                  <div className="text-xs text-muted-foreground">Humeur</div>
+                  <div className="w-full bg-space-700 rounded-full h-1 mt-2">
+                    <div 
+                      className="bg-neon-green h-1 rounded-full transition-all duration-500"
+                      style={{ width: `${(avgHumeur / 10) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+              {avgEnergie > 0 && (
+                <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+                  <div className="text-2xl font-bold text-neon-cyan">{avgEnergie}</div>
+                  <div className="text-xs text-muted-foreground">Énergie</div>
+                  <div className="w-full bg-space-700 rounded-full h-1 mt-2">
+                    <div 
+                      className="bg-neon-cyan h-1 rounded-full transition-all duration-500"
+                      style={{ width: `${(avgEnergie / 10) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+                <div className="text-2xl font-bold text-neon-purple">{entries.length}</div>
+                <div className="text-xs text-muted-foreground">Jours</div>
+                <div className="text-xs text-neon-purple mt-1">Streak actuel</div>
+              </div>
+              {objectifsActifs.length > 0 && (
+                <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
+                  <div className="text-2xl font-bold text-neon-pink">{objectifsActifs.length}</div>
+                  <div className="text-xs text-muted-foreground">Objectifs</div>
+                  <div className="text-xs text-neon-pink mt-1">En cours</div>
+                </div>
+              )}
+            </div>
+            
+            {/* Hint compact */}
+            {showHint && (
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
+                <span>💡 Raccourci: Ctrl+N pour ajouter une entrée</span>
+                <button
+                  onClick={() => setShowHint(false)}
+                  className="text-muted-foreground hover:text-white transition-colors ml-2"
+                  title="Masquer ce hint"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Barre outils date améliorée */}
+        <div className="glass-effect p-4 rounded-lg border border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-muted-foreground">📅 Date sélectionnée :</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedDate(today)}
+                className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium"
+              >
+                Aujourd&apos;hui
+              </button>
+              <button
+                onClick={() => setShowHistory(true)}
+                className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium"
+              >
+                📊 Historique complet
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Message si pas connecté */}
@@ -478,33 +553,6 @@ export default function JournalPage() {
               <ModuleComments comments={journalComments} loading={journalCommentsLoading} />
             </CollapsibleCard>
 
-            {/* Stats rapides */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <StatsCard 
-                title="Humeur moyenne"
-                value={avgHumeur > 0 ? `${avgHumeur}/10` : '-'}
-                icon={<Heart className="h-4 w-4" />}
-                color="neon-pink"
-              />
-              <StatsCard 
-                title="Énergie moyenne"
-                value={avgEnergie > 0 ? `${avgEnergie}/10` : '-'}
-                icon={<Zap className="h-4 w-4" />}
-                color="neon-green"
-              />
-              <StatsCard 
-                title="Entrées ce mois"
-                value={entries.filter(e => e.date.startsWith(today.substring(0, 7))).length}
-                icon={<Calendar className="h-4 w-4" />}
-                color="neon-cyan"
-              />
-              <StatsCard 
-                title="Progression"
-                value={`${entries.length} jours`}
-                icon={<TrendingUp className="h-4 w-4" />}
-                color="neon-purple"
-              />
-            </div>
 
             {/* Badges obtenus */}
             {badgesLoading ? (
@@ -780,6 +828,17 @@ export default function JournalPage() {
         currentDate={selectedDate}
         onDateChange={setSelectedDate}
       />
+      
+      {/* FAB (Floating Action Button) pour mobile et desktop */}
+      <button
+        onClick={handleNewEntry}
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+        title="Ajouter une nouvelle entrée (raccourci: Ctrl+N)"
+      >
+        <Plus className="h-6 w-6 md:h-7 md:w-7 group-hover:rotate-90 transition-transform duration-300" />
+        {/* Ripple effect */}
+        <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+      </button>
     </MainLayout>
   )
 } 

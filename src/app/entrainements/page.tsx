@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
-import TrainingForm from '@/components/ui/TrainingForm'
-import TrainingCard from '@/components/ui/TrainingCard'
+const TrainingForm = dynamic(() => import('@/components/ui/TrainingForm'), { ssr: false })
+const TrainingCard = dynamic(() => import('@/components/ui/TrainingCard'), { ssr: false })
 import dynamic from 'next/dynamic'
 
 // Skeleton loader optimisé pour les graphiques
@@ -50,7 +50,7 @@ const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), {
 import { useAuth } from '@/hooks/useAuth'
 import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
-import { Plus, TrendingUp, Timer, Target, BarChart3, Upload } from 'lucide-react'
+import { Plus, BarChart3 } from 'lucide-react'
 // import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { 
@@ -69,26 +69,6 @@ const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/Histo
   )
 })
 
-function StatsCard({ title, value, unit, icon, color = "neon-green" }: {
-  title: string
-  value: string | number
-  unit?: string
-  icon: React.ReactNode
-  color?: string
-}) {
-  return (
-    <div className="glass-effect p-4 rounded-lg border border-white/10">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        <div className={`text-${color}`}>{icon}</div>
-      </div>
-      <div className="flex items-baseline">
-        <span className={`text-2xl font-bold text-${color}`}>{value}</span>
-        {unit && <span className="text-sm text-muted-foreground ml-1">{unit}</span>}
-      </div>
-    </div>
-  )
-}
 
 export default function EntrainementsPage() {
   const { user } = useAuth()
@@ -194,50 +174,81 @@ export default function EntrainementsPage() {
     setEditingTraining(null)
   }
 
+  // Raccourcis clavier pour améliorer l'UX
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'n' && !showForm) {
+        e.preventDefault()
+        setShowForm(true)
+      }
+      if (e.key === 'Escape' && showForm) {
+        handleCancel()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showForm])
+
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* En-tête */}
+        {/* Header simplifié */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold neon-text">Entraînements</h1>
+            <h1 className="text-2xl font-bold neon-text">Entraînements & Performance</h1>
             <p className="text-muted-foreground">Suivez vos séances et progressez</p>
           </div>
-          {!showForm && (
-            <div className="flex gap-3 items-center">
-              <button
-                onClick={() => setShowCharts(!showCharts)}
-                className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors"
-              >
-                <BarChart3 className="h-5 w-5" />
-                {showCharts ? 'Masquer graphiques' : 'Voir graphiques'}
-              </button>
-              <div className="text-sm text-muted-foreground hidden md:block">
-                {new Date(selectedDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
-              </div>
-              <button
-                onClick={() => setShowHistory(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
-              >
-                Historique
-              </button>
-              <button
-                onClick={() => setShowGarminImport(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors"
-              >
-                <Upload className="h-5 w-5" />
-                Import Garmin
-              </button>
-              <button
-                onClick={() => setShowForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg font-medium hover:bg-neon-green/30 transition-colors"
-              >
-                <Plus className="h-5 w-5" />
-                Ajouter un entraînement
-              </button>
-            </div>
-          )}
+          {/* Bouton compact pour desktop */}
+          <button
+            onClick={() => setShowCharts(!showCharts)}
+            className="hidden md:flex px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 items-center gap-2"
+            title="Afficher/masquer les graphiques"
+          >
+            <BarChart3 className="h-4 w-4" />
+            {showCharts ? 'Masquer' : 'Graphiques'}
+          </button>
         </div>
+
+        {/* Dashboard compact avec stats performance */}
+        {user && (
+          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {/* Séances cette semaine */}
+              <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+                <div className="text-2xl font-bold text-neon-green">{thisWeekTrainings.length}</div>
+                <div className="text-xs text-muted-foreground">Séances</div>
+                <div className="text-xs text-neon-green mt-1">Cette semaine</div>
+              </div>
+              
+              {/* Durée totale */}
+              <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+                <div className="text-2xl font-bold text-neon-cyan">{Math.round(totalMinutes / 60)}h</div>
+                <div className="text-xs text-muted-foreground">Durée</div>
+                <div className="text-xs text-neon-cyan mt-1">{totalMinutes % 60}min</div>
+              </div>
+              
+              {/* Calories brûlées */}
+              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+                <div className="text-2xl font-bold text-neon-purple">{totalCalories}</div>
+                <div className="text-xs text-muted-foreground">Calories</div>
+                <div className="text-xs text-neon-purple mt-1">Brûlées</div>
+              </div>
+              
+              {/* Durée moyenne */}
+              <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
+                <div className="text-2xl font-bold text-neon-pink">{averageDuration}</div>
+                <div className="text-xs text-muted-foreground">Durée moy.</div>
+                <div className="text-xs text-neon-pink mt-1">Minutes</div>
+              </div>
+            </div>
+            
+            {/* Hint compact */}
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
+              <span>💡 Cliquez sur le bouton flottant pour ajouter un entraînement</span>
+            </div>
+          </div>
+        )}
 
         {/* Message si pas connecté */}
         {!user && (
@@ -248,37 +259,40 @@ export default function EntrainementsPage() {
           </div>
         )}
 
-        {/* Statistiques */}
+        {/* Barre d'outils pour actions secondaires */}
         {user && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <StatsCard
-              title="Cette semaine"
-              value={thisWeekTrainings.length}
-              unit="séances"
-              icon={<TrendingUp className="h-5 w-5" />}
-              color="neon-green"
-            />
-            <StatsCard
-              title="Temps total"
-              value={Math.floor(totalMinutes / 60)}
-              unit={`h ${totalMinutes % 60}min`}
-              icon={<Timer className="h-5 w-5" />}
-              color="neon-cyan"
-            />
-            <StatsCard
-              title="Calories brûlées"
-              value={totalCalories}
-              unit="kcal"
-              icon={<Target className="h-5 w-5" />}
-              color="neon-pink"
-            />
-            <StatsCard
-              title="Durée moyenne"
-              value={averageDuration}
-              unit="min"
-              icon={<Timer className="h-5 w-5" />}
-              color="neon-purple"
-            />
+          <div className="glass-effect p-4 rounded-lg border border-white/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-muted-foreground">📅 Date sélectionnée :</label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium"
+                >
+                  Aujourd&apos;hui
+                </button>
+                <button
+                  onClick={() => setShowHistory(true)}
+                  className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium"
+                >
+                  📊 Historique
+                </button>
+                <button
+                  onClick={() => setShowGarminImport(true)}
+                  className="px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-colors font-medium"
+                >
+                  📤 Import Garmin
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -430,6 +444,17 @@ export default function EntrainementsPage() {
           </CollapsibleCard>
         )}
       </div>
+      
+      {/* FAB (Floating Action Button) pour nouvel entraînement */}
+      <button
+        onClick={() => setShowForm(true)}
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+        title="Ajouter un nouvel entraînement (raccourci: Ctrl+N)"
+      >
+        <Plus className="h-6 w-6 md:h-7 md:w-7 group-hover:rotate-90 transition-transform duration-300" />
+        {/* Ripple effect */}
+        <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+      </button>
     </MainLayout>
   )
 }

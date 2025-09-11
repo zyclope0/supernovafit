@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import dynamic from 'next/dynamic'
 import { useAuth } from '@/hooks/useAuth'
+import { useAthleteRealData } from '@/hooks/useFirestore'
 import { useRouter, useParams } from 'next/navigation'
 import { CoachLayout } from '@/components/layout/CoachLayout'
 import { ArrowLeft, TrendingUp, TrendingDown, Calendar, Activity, Scale, Camera } from 'lucide-react'
@@ -26,37 +27,7 @@ const DynamicBarChart = dynamic(
   }
 )
 
-// Données mockées pour l'exemple
-const MOCK_ATHLETE_DATA = {
-  stats: {
-    calories_jour: 2150,
-    proteines_jour: 165,
-    entrainements_semaine: 4,
-    poids_actuel: 78.5,
-    variation_poids: -2.3,
-    variation_perf: 15
-  },
-  evolution_poids: [
-    { date: '01/01', poids: 80.8 },
-    { date: '08/01', poids: 80.2 },
-    { date: '15/01', poids: 79.5 },
-    { date: '22/01', poids: 78.5 }
-  ],
-  activites_recentes: [
-    { date: '2025-01-17', type: 'Musculation', duree: 75, calories: 450 },
-    { date: '2025-01-16', type: 'Course', duree: 45, calories: 520 },
-    { date: '2025-01-14', type: 'HIIT', duree: 30, calories: 380 }
-  ],
-  nutrition_semaine: [
-    { jour: 'Lun', calories: 2100, proteines: 160 },
-    { jour: 'Mar', calories: 2250, proteines: 175 },
-    { jour: 'Mer', calories: 2050, proteines: 155 },
-    { jour: 'Jeu', calories: 2300, proteines: 180 },
-    { jour: 'Ven', calories: 2150, proteines: 165 },
-    { jour: 'Sam', calories: 2400, proteines: 170 },
-    { jour: 'Dim', calories: 2100, proteines: 160 }
-  ]
-}
+// ✅ Données réelles récupérées via useAthleteRealData
 
 export default function AthleteDetailPage() {
   const { userProfile } = useAuth()
@@ -64,9 +35,8 @@ export default function AthleteDetailPage() {
   const params = useParams()
   const athleteId = params.id as string
   
-  const [loading, setLoading] = useState(true)
-  type AthleteDashboard = typeof MOCK_ATHLETE_DATA & { id: string; nom: string; email: string; objectif: string }
-  const [athleteData, setAthleteData] = useState<AthleteDashboard | null>(null)
+  // ✅ Utiliser les vraies données de l'athlète
+  const { athleteData, loading } = useAthleteRealData(athleteId)
   const [activeTab, setActiveTab] = useState<'overview' | 'nutrition' | 'training' | 'measures'>('overview')
 
   useEffect(() => {
@@ -76,21 +46,7 @@ export default function AthleteDetailPage() {
       router.push('/')
       return
     }
-
-    // Simuler le chargement des données
-    if (userProfile) {
-      setTimeout(() => {
-        setAthleteData({
-          id: athleteId,
-          nom: 'Jean Dupont',
-          email: 'jean@example.com',
-          objectif: 'Perte de poids',
-          ...MOCK_ATHLETE_DATA
-        })
-        setLoading(false)
-      }, 500)
-    }
-  }, [userProfile, router, athleteId])
+  }, [userProfile, router])
 
   if (loading || !athleteData) {
     return (

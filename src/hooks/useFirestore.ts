@@ -192,8 +192,13 @@ export function useEntrainements() {
         }
       }
 
+      // Nettoyer les données pour éviter les valeurs undefined
+      const cleanData = Object.fromEntries(
+        Object.entries(entrainementData).filter(([, value]) => value !== undefined)
+      )
+
       const docRef = await addDoc(collection(db, 'entrainements'), {
-        ...entrainementData,
+        ...cleanData,
         user_id: user.uid,
         created_at: serverTimestamp()
       })
@@ -1198,6 +1203,234 @@ export function useCoachAthletes() {
   return { athletes, loading, sendInvitation, getAthleteData }
 }
 
+// Types pour le dashboard coach athlète
+interface AthleteStats {
+  calories_jour: number
+  proteines_jour: number
+  entrainements_semaine: number
+  poids_actuel: number
+  variation_poids: number
+  variation_perf: number
+}
+
+interface EvolutionPoids {
+  date: string
+  poids: number
+}
+
+interface ActiviteRecente {
+  date: string
+  type: string
+  duree: number
+  calories: number
+}
+
+interface NutritionSemaine {
+  jour: string
+  calories: number
+  proteines: number
+}
+
+interface AthleteDashboardData {
+  id: string
+  nom: string
+  email: string
+  objectif: string
+  stats: AthleteStats
+  evolution_poids: EvolutionPoids[]
+  activites_recentes: ActiviteRecente[]
+  nutrition_semaine: NutritionSemaine[]
+}
+
+// Types pour les données Firestore avec id
+type FirestoreRepas = { id: string } & Partial<Repas>
+type FirestoreEntrainement = { id: string } & Partial<Entrainement>
+type FirestoreMesure = { id: string } & Partial<Mesure>
+type FirestoreAthlete = { id: string } & Partial<UserProfile>
+
+// Types pour les données avec propriétés garanties après filtrage
+type MesureAvecPoids = FirestoreMesure & { poids: number; date: string }
+type EntrainementAvecCalories = FirestoreEntrainement & { calories_brulees?: number }
+
+// Hook spécialisé pour le dashboard coach athlète
+export function useAthleteRealData(athleteId: string) {
+  const [athleteData, setAthleteData] = useState<AthleteDashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (!athleteId || !user) {
+      setLoading(false)
+      return
+    }
+
+    const fetchAthleteRealData = async () => {
+      try {
+        setLoading(true)
+        
+        // Récupérer les données brutes de l'athlète directement
+        const rawData = await getAthleteDataDirect(athleteId, user.uid)
+        
+        if (!rawData) {
+          setAthleteData(null)
+          setLoading(false)
+          return
+        }
+
+        const { athlete, repas, entrainements, mesures } = rawData
+        
+        // Calculer les statistiques réelles
+        const today = new Date().toISOString().split('T')[0]
+        const weekStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        
+        // Calories et protéines du jour
+        const todayMeals = repas.filter((r: FirestoreRepas) => r.date === today)
+        const calories_jour = todayMeals.reduce((sum: number, meal: FirestoreRepas) => sum + (meal.macros?.kcal || 0), 0)
+        const proteines_jour = todayMeals.reduce((sum: number, meal: FirestoreRepas) => sum + (meal.macros?.prot || 0), 0)
+        
+        // Entraînements de la semaine
+        const entrainements_semaine = entrainements.filter((e: FirestoreEntrainement) => e.date && e.date >= weekStart).length
+        
+        // Poids actuel et variation
+        const mesuresAvecPoids = mesures.filter((m: FirestoreMesure) => m.poids && m.date).sort((a: FirestoreMesure, b: FirestoreMesure) => new Date(b.date!).getTime() - new Date(a.date!).getTime()) as MesureAvecPoids[]
+        const poids_actuel = mesuresAvecPoids[0]?.poids || 0
+        
+        // Calculer la variation de poids (dernière vs avant-dernière)
+        let variation_poids = 0
+        if (mesuresAvecPoids.length >= 2) {
+          const dernier = mesuresAvecPoids[0].poids || 0
+          const avantDernier = mesuresAvecPoids[1].poids || 0
+          variation_poids = ((dernier - avantDernier) / avantDernier) * 100
+        }
+        
+        // Calculer la variation de performance (simplifié)
+        const entrainementsMois = entrainements.filter((e: FirestoreEntrainement) => {
+          const dateEntrainement = new Date(e.date || '')
+          const moisDernier = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          return dateEntrainement >= moisDernier
+        })
+        const variation_perf = entrainementsMois.length > 0 ? Math.min(entrainementsMois.length * 5, 50) : 0
+        
+        // Évolution du poids (7 derniers points)
+        const evolution_poids = mesuresAvecPoids.slice(0, 7).map((m: FirestoreMesure) => ({
+          date: new Date(m.date || '').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
+          poids: m.poids || 0
+        })).reverse()
+        
+        // Activités récentes (5 dernières)
+        const activites_recentes = entrainements.slice(0, 5).map((e: FirestoreEntrainement) => ({
+          date: e.date || '',
+          type: e.type || 'Entraînement',
+          duree: e.duree || 0,
+          calories: (e as EntrainementAvecCalories).calories_brulees || 0
+        }))
+        
+        // Nutrition de la semaine (7 derniers jours)
+        const nutrition_semaine: NutritionSemaine[] = []
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          const repasDuJour = repas.filter((r: FirestoreRepas) => r.date === date)
+          const calories = repasDuJour.reduce((sum: number, meal: FirestoreRepas) => sum + (meal.macros?.kcal || 0), 0)
+          const proteines = repasDuJour.reduce((sum: number, meal: FirestoreRepas) => sum + (meal.macros?.prot || 0), 0)
+          
+          nutrition_semaine.push({
+            jour: new Date(date).toLocaleDateString('fr-FR', { weekday: 'short' }),
+            calories: Math.round(calories),
+            proteines: Math.round(proteines)
+          })
+        }
+        
+        // Construire l'objet de données final
+        const realAthleteData: AthleteDashboardData = {
+          id: athleteId,
+          nom: (athlete as FirestoreAthlete).nom || 'Athlète',
+          email: (athlete as FirestoreAthlete).email || '',
+          objectif: (athlete as FirestoreAthlete).objectif || 'Maintien',
+          stats: {
+            calories_jour: Math.round(calories_jour),
+            proteines_jour: Math.round(proteines_jour),
+            entrainements_semaine,
+            poids_actuel: Math.round(poids_actuel * 10) / 10,
+            variation_poids: Math.round(variation_poids * 10) / 10,
+            variation_perf: Math.round(variation_perf)
+          },
+          evolution_poids,
+          activites_recentes,
+          nutrition_semaine
+        }
+        
+        setAthleteData(realAthleteData)
+        setLoading(false)
+        
+      } catch (error) {
+        console.error('❌ COACH - Erreur récupération données athlète:', error)
+        setAthleteData(null)
+        setLoading(false)
+      }
+    }
+
+    fetchAthleteRealData()
+  }, [athleteId, user])
+
+  return { athleteData, loading }
+}
+
+// Fonction utilitaire pour récupérer les données d'un athlète
+async function getAthleteDataDirect(athleteId: string, coachId: string) {
+  try {
+    // Vérifier que l'athlète est bien lié au coach
+    const athleteDoc = await getDoc(doc(db, 'users', athleteId))
+    
+    if (athleteDoc.exists() && athleteDoc.data().ownerCoachId === coachId) {
+      // Récupérer les données récentes de l'athlète
+      const now = new Date()
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+      // Récupérer les repas récents
+      const repasQuery = query(
+        collection(db, 'repas'),
+        where('user_id', '==', athleteId),
+        where('date', '>=', thirtyDaysAgo.toISOString().split('T')[0]),
+        orderBy('date', 'desc')
+      )
+      const repasSnapshot = await getDocs(repasQuery)
+      const repas = repasSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+      // Récupérer les entraînements récents
+      const entrainementsQuery = query(
+        collection(db, 'entrainements'),
+        where('user_id', '==', athleteId),
+        where('date', '>=', thirtyDaysAgo.toISOString().split('T')[0]),
+        orderBy('date', 'desc')
+      )
+      const entrainementsSnapshot = await getDocs(entrainementsQuery)
+      const entrainements = entrainementsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+      // Récupérer les mesures récentes
+      const mesuresQuery = query(
+        collection(db, 'mesures'),
+        where('user_id', '==', athleteId),
+        orderBy('date', 'desc'),
+        limit(30)
+      )
+      const mesuresSnapshot = await getDocs(mesuresQuery)
+      const mesures = mesuresSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+      return {
+        athlete: { id: athleteDoc.id, ...athleteDoc.data() },
+        repas,
+        entrainements,
+        mesures
+      }
+    }
+    
+    return null
+  } catch (error) {
+    console.error('❌ COACH - Erreur récupération données athlète:', error)
+    return null
+  }
+}
+
 // Hook pour gérer les plans diète coach
 export function useCoachDietPlans(athleteId: string) {
   const [dietPlans, setDietPlans] = useState<CoachDietPlan[]>([])
@@ -1398,57 +1631,81 @@ export function useCoachCommentsByModule(module: string, date?: string, itemId?:
 
 // Utilitaire: marquer un commentaire coach comme lu
 
-// Hook générique pour la pagination Firestore
-function usePaginatedData<T>(
-  collectionName: string,
-  userId: string,
-  pageSize: number = 20,
-  orderByField: string = 'date',
-  orderDirection: 'asc' | 'desc' = 'desc'
-) {
-  const [data, setData] = useState<T[]>([])
+// Fonction usePaginatedData supprimée - remplacée par des hooks optimisés avec synchronisation temps réel
+
+// Hook paginé pour les repas
+// Hook paginé pour les entraînements avec synchronisation temps réel
+export function usePaginatedEntrainements(pageSize: number = 20) {
+  const { user } = useAuth()
+  const [data, setData] = useState<Entrainement[]>([])
   const [loading, setLoading] = useState(true)
   const [hasMore, setHasMore] = useState(true)
   const [lastDoc, setLastDoc] = useState<DocumentData | null>(null)
 
+  // Écouter les changements temps réel
+  useEffect(() => {
+    if (!user) {
+      setData([])
+      setLoading(false)
+      return
+    }
+
+    const q = query(
+      collection(db, 'entrainements'),
+      where('user_id', '==', user.uid),
+      orderBy('date', 'desc'),
+      limit(pageSize)
+    )
+
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const entrainementsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Entrainement[]
+        setData(entrainementsData)
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
+        setHasMore(snapshot.docs.length === pageSize)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('Erreur snapshot entraînements paginés:', error)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [user, pageSize])
+
   const loadMore = useCallback(async () => {
-    if (!userId || loading || !hasMore) return
+    if (!user || loading || !hasMore || !lastDoc) return
 
     try {
       setLoading(true)
       
-      const constraints: QueryConstraint[] = [
-        where('user_id', '==', userId),
-        orderBy(orderByField, orderDirection),
+      const q = query(
+        collection(db, 'entrainements'),
+        where('user_id', '==', user.uid),
+        orderBy('date', 'desc'),
+        startAfter(lastDoc),
         limit(pageSize)
-      ]
-
-      if (lastDoc) {
-        constraints.push(startAfter(lastDoc))
-      }
-
-      const q = query(collection(db, collectionName), ...constraints)
-      const snapshot = await getDocs(q)
+      )
       
+      const snapshot = await getDocs(q)
       const newData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      })) as T[]
+      })) as Entrainement[]
 
-      if (lastDoc) {
-        setData(prev => [...prev, ...newData])
-      } else {
-        setData(newData)
-      }
-
+      setData(prev => [...prev, ...newData])
       setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
       setHasMore(snapshot.docs.length === pageSize)
     } catch (error) {
-      console.error(`Erreur pagination ${collectionName}:`, error)
+      console.error('Erreur loadMore entraînements:', error)
     } finally {
       setLoading(false)
     }
-  }, [userId, loading, hasMore, lastDoc, collectionName, orderByField, orderDirection, pageSize])
+  }, [user, loading, hasMore, lastDoc, pageSize])
 
   const reset = useCallback(() => {
     setData([])
@@ -1457,65 +1714,88 @@ function usePaginatedData<T>(
     setLoading(true)
   }, [])
 
-  useEffect(() => {
-    if (userId) {
-      setData([])
-      setLastDoc(null)
-      setHasMore(true)
-      setLoading(true)
-      // Charger les premières données
-      const loadInitialData = async () => {
-        try {
-          const constraints: QueryConstraint[] = [
-            where('user_id', '==', userId),
-            orderBy(orderByField, orderDirection),
-            limit(pageSize)
-          ]
-
-          const q = query(collection(db, collectionName), ...constraints)
-          const snapshot = await getDocs(q)
-          
-          const newData = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          })) as T[]
-
-          setData(newData)
-          setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
-          setHasMore(snapshot.docs.length === pageSize)
-        } catch (error) {
-          console.error(`Erreur pagination ${collectionName}:`, error)
-        } finally {
-          setLoading(false)
-        }
-      }
-      
-      loadInitialData()
-    } else {
-      setData([])
-      setLoading(false)
-      setHasMore(false)
-    }
-  }, [userId, collectionName, orderByField, orderDirection, pageSize])
-
-  return {
-    data,
-    loading,
-    hasMore,
-    loadMore,
-    reset
-  }
+  return { data, loading, hasMore, loadMore, reset }
 }
 
-// Hook paginé pour les repas
-// Hook paginé pour les entraînements
-export function usePaginatedEntrainements(pageSize: number = 20) {
-  const { user } = useAuth()
-  return usePaginatedData<Entrainement>('entrainements', user?.uid || '', pageSize, 'date', 'desc')
-}
-
-// Hook paginé pour les mesures
+// Hook paginé pour les mesures avec synchronisation temps réel
 export function usePaginatedMesures(pageSize: number = 20) {
   const { user } = useAuth()
-  return usePaginatedData<Mesure>('mesures', user?.uid || '', pageSize, 'date', 'desc')
+  const [data, setData] = useState<Mesure[]>([])
+  const [loading, setLoading] = useState(true)
+  const [hasMore, setHasMore] = useState(true)
+  const [lastDoc, setLastDoc] = useState<DocumentData | null>(null)
+
+  // Écouter les changements temps réel
+  useEffect(() => {
+    if (!user) {
+      setData([])
+      setLoading(false)
+      return
+    }
+
+    const q = query(
+      collection(db, 'mesures'),
+      where('user_id', '==', user.uid),
+      orderBy('date', 'desc'),
+      limit(pageSize)
+    )
+
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const mesuresData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Mesure[]
+        setData(mesuresData)
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
+        setHasMore(snapshot.docs.length === pageSize)
+        setLoading(false)
+      },
+      (error) => {
+        console.error('Erreur snapshot mesures paginées:', error)
+        setLoading(false)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [user, pageSize])
+
+  const loadMore = useCallback(async () => {
+    if (!user || loading || !hasMore || !lastDoc) return
+
+    try {
+      setLoading(true)
+      
+      const q = query(
+        collection(db, 'mesures'),
+        where('user_id', '==', user.uid),
+        orderBy('date', 'desc'),
+        startAfter(lastDoc),
+        limit(pageSize)
+      )
+      
+      const snapshot = await getDocs(q)
+      const newData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Mesure[]
+
+      setData(prev => [...prev, ...newData])
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1] || null)
+      setHasMore(snapshot.docs.length === pageSize)
+    } catch (error) {
+      console.error('Erreur loadMore mesures:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [user, loading, hasMore, lastDoc, pageSize])
+
+  const reset = useCallback(() => {
+    setData([])
+    setLastDoc(null)
+    setHasMore(true)
+    setLoading(true)
+  }, [])
+
+  return { data, loading, hasMore, loadMore, reset }
 }

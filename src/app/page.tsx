@@ -231,23 +231,18 @@ export default function Dashboard() {
   const { entrainements, loading: trainingsLoading } = useEntrainements()
   const { mesures, loading: measuresLoading } = useMesures()
   
-  // Date d'aujourd&apos;hui (ou dernière date avec des repas)
+  // Date d'aujourd'hui
   const today = new Date().toISOString().split('T')[0]
-  const latestMealDate = repas.length > 0 
-    ? repas.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].date
-    : today
   
-  // Utiliser la dernière date avec des repas pour afficher des stats
-  const displayDate = repas.some(r => r.date === today) ? today : latestMealDate
-  
-  // Calculer les stats du jour (ou du dernier jour avec des données)
-  const todayMeals = repas.filter(r => r.date === displayDate)
+  // Calculer les stats du jour (uniquement les repas d'aujourd'hui)
+  const todayMeals = repas.filter(r => r.date === today)
   const todayStats = todayMeals.reduce((total, meal) => ({
     kcal: total.kcal + (meal.macros?.kcal || 0),
     prot: total.prot + (meal.macros?.prot || 0),
     glucides: total.glucides + (meal.macros?.glucides || 0),
     lipides: total.lipides + (meal.macros?.lipides || 0),
   }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
+  
   
   // Calculer les entraînements de la semaine
   const weekStart = new Date()

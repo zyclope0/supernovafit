@@ -208,13 +208,14 @@ export function Breadcrumbs({
 
 /**
  * Hook pour générer des breadcrumbs personnalisés
+ * Supprimé - non utilisé dans le projet
  */
-export function useBreadcrumbs(customItems?: BreadcrumbItem[]) {
-  return useMemo(() => {
-    if (customItems) return customItems
-    
-    // Logique de génération basée sur le pathname
-    // Peut être étendue selon les besoins
-    return []
-  }, [customItems])
-}
+// export function useBreadcrumbs(customItems?: BreadcrumbItem[]) {
+//   return useMemo(() => {
+//     if (customItems) return customItems
+//     
+//     // Logique de génération basée sur le pathname
+//     // Peut être étendue selon les besoins
+//     return []
+//   }, [customItems])
+// }

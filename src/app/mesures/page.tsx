@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
@@ -10,51 +10,11 @@ import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 import { CardSkeleton, ChartSkeleton, ListSkeleton, TableSkeleton } from '@/components/ui/Skeletons'
 import { formatDate } from '@/lib/utils'
-import { Plus, TrendingUp, Scale, Target, Edit3, Trash2, Calculator, BarChart3, Camera } from 'lucide-react'
+import { Plus, Edit3, Trash2, BarChart3, Camera } from 'lucide-react'
 import dynamic from 'next/dynamic'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
-import type { ComponentType } from 'react'
-function StatsCard({ 
-  title, 
-  value, 
-  unit, 
-  icon: Icon, 
-  evolution,
-  color = 'neon-cyan'
-}: {
-  title: string
-  value: string | number
-  unit?: string
-  icon: ComponentType<{ className?: string }>
-  evolution?: number
-  color?: string
-}) {
-  return (
-    <div className="glass-effect p-4 rounded-xl border border-white/10">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Icon className={`h-5 w-5 text-${color}`} />
-          <span className="text-sm font-medium text-white">{title}</span>
-        </div>
-        {evolution !== undefined && (
-          <div className={`text-xs px-2 py-1 rounded-full ${
-            evolution > 0 ? 'bg-red-500/20 text-red-400' :
-            evolution < 0 ? 'bg-green-500/20 text-green-400' :
-            'bg-gray-500/20 text-gray-400'
-          }`}>
-            {evolution > 0 ? '+' : ''}{evolution.toFixed(1)}%
-          </div>
-        )}
-      </div>
-      <div className="flex items-end gap-1">
-        <span className={`text-2xl font-bold text-${color}`}>{value}</span>
-        {unit && <span className="text-sm text-muted-foreground mb-1">{unit}</span>}
-      </div>
-    </div>
-  )
-}
 
 function MesureCard({ 
   mesure, 
@@ -159,20 +119,27 @@ export default function MesuresPage() {
     commentaire: ''
   })
 
-  const today = new Date().toLocaleDateString('fr-FR', { 
-    weekday: 'long',
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  })
 
-  // Mesure la plus récente pour les stats
-  const lastMesure = mesures[0]
+  // Mesure la plus récente avec des données valides pour les stats
+  const lastMesure = mesures.find(m => m.poids || m.taille || m.masse_grasse || m.masse_musculaire || 
+                                      m.tour_hanches || m.tour_bras || m.tour_cuisses || 
+                                      m.tour_cou || m.tour_poitrine || m.commentaire) || mesures[0]
   const stats = lastMesure ? getStats(lastMesure) : null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+
+    // Validation : au moins une mesure importante doit être remplie (sauf tour de taille)
+    const hasImportantData = formData.poids || formData.taille || formData.masse_grasse || 
+                            formData.masse_musculaire || formData.tour_hanches || 
+                            formData.tour_bras || formData.tour_cuisses || 
+                            formData.tour_cou || formData.tour_poitrine || formData.commentaire
+
+    if (!hasImportantData) {
+      toast.error('Veuillez remplir au moins une mesure importante (poids, taille, masse grasse, etc.)')
+      return
+    }
 
     setIsSubmitting(true)
     
@@ -274,6 +241,24 @@ export default function MesuresPage() {
     })
   }
 
+  // Raccourcis clavier pour améliorer l'UX
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'n' && !showForm) {
+        e.preventDefault()
+        setEditingMesure(null)
+        setShowForm(true)
+      }
+      if (e.key === 'Escape' && showForm) {
+        setShowForm(false)
+        setEditingMesure(null)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showForm])
+
   const confirmDelete = async (id: string) => {
     const result = await deleteMesure(id)
     if (result.success) {
@@ -286,39 +271,81 @@ export default function MesuresPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header */}
+        {/* Header simplifié */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold neon-text">Mesures Corporelles</h1>
-            <p className="text-muted-foreground">{today}</p>
+            <h1 className="text-2xl font-bold neon-text">Mesures & Progression</h1>
+            <p className="text-muted-foreground">Suivez votre évolution corporelle</p>
           </div>
-          <div className="flex gap-3">
+          {/* Boutons compacts pour desktop */}
+          <div className="hidden md:flex gap-2">
             <button 
               onClick={() => setShowCharts(!showCharts)}
-              className="px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors flex items-center gap-2"
+              className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm"
+              title="Voir les graphiques d'évolution"
             >
               <BarChart3 className="h-4 w-4" />
               {showCharts ? 'Masquer' : 'Graphiques'}
             </button>
             <button 
               onClick={() => setShowPhotos(!showPhotos)}
-              className="px-4 py-2 bg-neon-pink/20 text-neon-pink rounded-lg font-medium hover:bg-neon-pink/30 transition-colors flex items-center gap-2"
+              className="px-3 py-2 bg-neon-pink/20 text-neon-pink rounded-lg font-medium hover:bg-neon-pink/30 transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm"
+              title="Voir les photos de progression"
             >
               <Camera className="h-4 w-4" />
               {showPhotos ? 'Masquer' : 'Photos'}
             </button>
-            <button 
-              onClick={() => {
-                setEditingMesure(null)
-                setShowForm(true)
-              }}
-              className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Nouvelle mesure
-            </button>
           </div>
         </div>
+
+        {/* Dashboard compact avec stats corporelles */}
+        {user && (
+          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {/* Nombre de mesures */}
+              <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+                <div className="text-2xl font-bold text-neon-cyan">
+                  {mesures.length > 0 ? mesures.length : '0'}
+                </div>
+                <div className="text-xs text-muted-foreground">Mesures</div>
+                <div className="text-xs text-neon-cyan mt-1">Total</div>
+              </div>
+              
+              {/* IMC actuel */}
+              <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+                <div className="text-2xl font-bold text-neon-green">
+                  {stats ? stats.imc.toFixed(1) : '--'}
+                </div>
+                <div className="text-xs text-muted-foreground">IMC</div>
+                <div className="text-xs text-neon-green mt-1">Actuel</div>
+              </div>
+              
+              {/* Évolution poids */}
+              <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
+                <div className="text-2xl font-bold text-neon-pink">
+                  {stats ? `${stats.evolution_poids > 0 ? '+' : ''}${stats.evolution_poids.toFixed(1)}kg` : '--'}
+                </div>
+                <div className="text-xs text-muted-foreground">Évolution</div>
+                <div className="text-xs text-neon-pink mt-1">Poids</div>
+              </div>
+              
+              {/* Dernier poids */}
+              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+                <div className="text-2xl font-bold text-neon-purple">
+                  {mesures.length > 0 ? `${mesures[0].poids?.toFixed(1) || 'N/A'}kg` : '--'}
+                </div>
+                <div className="text-xs text-muted-foreground">Dernier poids</div>
+                <div className="text-xs text-neon-purple mt-1">Récent</div>
+              </div>
+            </div>
+            
+            {/* Hint compact */}
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
+              <span>💡 Cliquez sur le bouton flottant pour ajouter une mesure</span>
+            </div>
+          </div>
+        )}
+
 
         {/* Message si non connecté */}
         {!user && (
@@ -340,53 +367,36 @@ export default function MesuresPage() {
               )}
             </CollapsibleCard>
             
-            {/* Statistiques actuelles */}
+            {/* Statistiques actuelles - toujours affichées si connecté */}
             {loading ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <CardSkeleton key={i} />
                 ))}
               </div>
-            ) : lastMesure && stats ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatsCard
-                  title="Poids actuel"
-                  value={lastMesure.poids || 0}
-                  unit="kg"
-                  icon={Scale}
-                  evolution={stats.evolution_poids}
-                  color="neon-green"
-                />
-                <StatsCard
-                  title="IMC"
-                  value={stats.imc}
-                  icon={Calculator}
-                  color="neon-cyan"
-                />
-                <StatsCard
-                  title="Masse grasse"
-                  value={lastMesure.masse_grasse || 0}
-                  unit="%"
-                  icon={TrendingUp}
-                  evolution={stats.evolution_masse_grasse}
-                  color="neon-pink"
-                />
-                <StatsCard
-                  title="Objectif"
-                  value={`${stats.poids_ideal_min}-${stats.poids_ideal_max}`}
-                  unit="kg"
-                  icon={Target}
-                  color="neon-purple"
-                />
-              </div>
             ) : null}
 
             {/* Graphiques d'évolution */}
-            {showCharts && (loading ? (
-              <ChartSkeleton />
-            ) : mesures.length > 0 ? (
-              <MesuresCharts mesures={mesures} />
-            ) : null)}
+            {showCharts && (
+              <div className="space-y-4">
+                <div className="text-center py-4">
+                  <div className="text-4xl mb-2">📊</div>
+                  <h2 className="text-xl font-semibold text-white mb-2">Graphiques d&apos;évolution</h2>
+                  <p className="text-muted-foreground">Visualisez vos progrès avec des graphiques détaillés</p>
+                </div>
+                {loading ? (
+                  <ChartSkeleton />
+                ) : mesures.length > 0 ? (
+                  <MesuresCharts mesures={mesures} />
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-6xl mb-4">📊</div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Aucune donnée</h3>
+                    <p className="text-muted-foreground">Ajoutez des mesures pour voir vos graphiques d&apos;évolution</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Photos de progression */}
             {showPhotos && (loading ? (
@@ -598,6 +608,20 @@ export default function MesuresPage() {
           </>
         )}
       </div>
+      
+      {/* FAB (Floating Action Button) pour nouvelle mesure */}
+      <button
+        onClick={() => {
+          setEditingMesure(null)
+          setShowForm(true)
+        }}
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+        title="Ajouter une nouvelle mesure (raccourci: Ctrl+N)"
+      >
+        <Plus className="h-6 w-6 md:h-7 md:w-7 group-hover:rotate-90 transition-transform duration-300" />
+        {/* Ripple effect */}
+        <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+      </button>
     </MainLayout>
   )
 } 
