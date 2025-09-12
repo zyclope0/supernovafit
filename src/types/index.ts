@@ -201,6 +201,59 @@ export interface Badge {
   created_at?: Date | string;
 }
 
+// Types pour le système de Challenges & Gamification
+export interface Challenge {
+  id: string;
+  user_id: string;
+  type: 'nutrition' | 'training' | 'streak' | 'social' | 'special';
+  title: string;
+  description: string;
+  icon: string;
+  category: 'daily' | 'weekly' | 'monthly' | 'special';
+  target: number;
+  current: number;
+  unit: string; // 'jours', 'repas', 'calories', 'km', etc.
+  startDate: string;
+  endDate: string;
+  status: 'active' | 'completed' | 'expired' | 'paused';
+  xpReward: number;
+  badgeReward?: string; // ID du badge à débloquer
+  isRepeatable: boolean;
+  difficulty: 'easy' | 'medium' | 'hard' | 'legendary';
+  created_at?: Date | string;
+  completed_at?: string;
+}
+
+export interface Achievement {
+  id: string;
+  user_id: string;
+  type: 'milestone' | 'streak' | 'performance' | 'social' | 'special';
+  name: string;
+  description: string;
+  icon: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  xpReward: number;
+  condition: string;
+  unlockedAt?: string;
+  created_at?: Date | string;
+}
+
+export interface UserProgress {
+  id: string;
+  user_id: string;
+  totalXP: number;
+  level: number;
+  currentLevelXP: number;
+  nextLevelXP: number;
+  badgesCount: number;
+  challengesCompleted: number;
+  achievementsUnlocked: number;
+  streakDays: number;
+  lastActivity: string;
+  created_at?: Date | string;
+  updated_at?: Date | string;
+}
+
 export interface Objectif {
   id: string;
   user_id: string;

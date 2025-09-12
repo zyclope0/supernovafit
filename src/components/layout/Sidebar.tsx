@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { APP_VERSION } from '@/lib/constants'
 import { 
   Bars3Icon, 
   XMarkIcon,
@@ -21,7 +22,8 @@ import {
   ClipboardDocumentListIcon,
   ChartPieIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -30,6 +32,7 @@ const navigation = [
   { name: 'Entraînements', href: '/entrainements', icon: CalendarIcon },
   { name: 'Mesures', href: '/mesures', icon: ScaleIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
+  { name: 'Challenges', href: '/challenges', icon: TrophyIcon },
   { name: 'Export', href: '/export', icon: DocumentTextIcon },
 ]
 
@@ -342,7 +345,7 @@ export default function Sidebar() {
             {!sidebarCollapsed && (
               <div className="mt-6 pt-4 border-t border-white/10">
                 <div className="text-xs text-accessible text-center space-y-2">
-                  <div>Version 1.9.3</div>
+                  <div>Version {APP_VERSION}</div>
                   <div className="flex flex-wrap justify-center gap-2 text-xs">
                     <Link href="/legal/privacy" className="text-accessible hover:text-neon-cyan transition-colors">
                       Confidentialité

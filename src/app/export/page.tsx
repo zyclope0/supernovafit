@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { useExportData } from '@/hooks/useExportData'
 
@@ -34,7 +34,10 @@ import {
   Calendar,
   Download,
   CheckCircle,
-  Loader2
+  Loader2,
+  Settings,
+  History,
+  TrendingUp
 } from 'lucide-react'
 
 import type { ExportFormat, ExportDataType, ExportPeriod } from '@/types/export'
@@ -53,6 +56,7 @@ export default function ExportPage() {
   const [includeCharts, setIncludeCharts] = useState(true)
   const [customStartDate, setCustomStartDate] = useState('')
   const [customEndDate, setCustomEndDate] = useState('')
+  const [showHint, setShowHint] = useState(true)
 
   const formats = [
     { 
@@ -161,20 +165,78 @@ export default function ExportPage() {
     await exportData(config)
   }
 
+  // Stats d'export simulées (à remplacer par de vraies données)
+  const exportStats = {
+    totalExports: 12,
+    lastExport: '2025-01-14',
+    favoriteFormat: 'PDF',
+    dataExported: '2.3 MB'
+  }
+
+  // Raccourci clavier Ctrl+E pour export rapide
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'e') {
+        event.preventDefault()
+        handleQuickExport(selectedFormat, 'week')
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [selectedFormat, handleQuickExport])
+
   return (
     <MainLayout>
       <div className="max-w-7xl mx-auto">
-        {/* Header avec effet glassmorphism */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center gap-3 mb-4 p-3 rounded-full bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30">
-            <FileText className="h-6 w-6 text-neon-purple animate-pulse" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-neon-purple to-neon-cyan bg-clip-text text-transparent">
-              Export de Données
-            </h1>
+        {/* Header Simplifié */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
+                <FileText className="h-6 w-6 text-neon-purple" />
+              </div>
+              <h1 className="text-2xl font-bold text-white">Export de Données</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleQuickExport('pdf', 'week')}
+                className="px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors flex items-center gap-2"
+                disabled={loading}
+              >
+                <Download className="h-4 w-4" />
+                Export Rapide
+              </button>
+            </div>
           </div>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Exportez vos données de fitness dans différents formats pour analyse et partage professionnel
-          </p>
+        </div>
+
+        {/* Dashboard Compact */}
+        <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+              <div className="text-2xl font-bold text-neon-purple">{exportStats.totalExports}</div>
+              <div className="text-xs text-muted-foreground">Exports totaux</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+              <div className="text-2xl font-bold text-neon-cyan">{exportStats.favoriteFormat}</div>
+              <div className="text-xs text-muted-foreground">Format préféré</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+              <div className="text-2xl font-bold text-neon-green">{exportStats.dataExported}</div>
+              <div className="text-xs text-muted-foreground">Données exportées</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+              <div className="text-2xl font-bold text-orange-400">{exportStats.lastExport}</div>
+              <div className="text-xs text-muted-foreground">Dernier export</div>
+            </div>
+          </div>
+          {showHint && (
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
+              <span>💡 Utilisez le bouton flottant pour un export rapide</span>
+              <button onClick={() => setShowHint(false)} className="text-muted-foreground hover:text-white transition-colors ml-2" title="Masquer ce hint">✕</button>
+            </div>
+          )}
         </div>
 
         {/* Affichage des erreurs */}
@@ -224,16 +286,70 @@ export default function ExportPage() {
           </div>
         )}
 
+        {/* Barre d'Outils Optimisée */}
+        <div className="glass-effect p-4 rounded-lg border border-white/10 mb-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-muted-foreground">📊 Format sélectionné :</label>
+              <div className="px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm font-medium">
+                {formats.find(f => f.value === selectedFormat)?.label}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedFormat('pdf')}
+                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                  selectedFormat === 'pdf' 
+                    ? 'bg-neon-purple/20 text-neon-purple' 
+                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                }`}
+              >
+                PDF
+              </button>
+              <button
+                onClick={() => setSelectedFormat('excel')}
+                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                  selectedFormat === 'excel' 
+                    ? 'bg-neon-purple/20 text-neon-purple' 
+                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                }`}
+              >
+                Excel
+              </button>
+              <button
+                onClick={() => setSelectedFormat('csv')}
+                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                  selectedFormat === 'csv' 
+                    ? 'bg-neon-purple/20 text-neon-purple' 
+                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                }`}
+              >
+                CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Export rapide */}
-          <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-purple/30 transition-all duration-300">
+          <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-purple/30 transition-all duration-300 group">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
-                  <Download className="h-5 w-5 text-neon-purple" />
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl font-semibold flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
+                    <Download className="h-5 w-5 text-neon-purple" />
+                  </div>
+                  Export Rapide
+                </h2>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button className="p-2 hover:bg-neon-purple/20 rounded-lg" title="Paramètres">
+                    <Settings className="h-4 w-4 text-neon-purple" />
+                  </button>
+                  <button className="p-2 hover:bg-neon-cyan/20 rounded-lg" title="Historique">
+                    <History className="h-4 w-4 text-neon-cyan" />
+                  </button>
                 </div>
-                Export Rapide
-              </h2>
+              </div>
               <p className="text-gray-300">
                 Exportez rapidement vos données avec des configurations prédéfinies
               </p>
@@ -318,14 +434,24 @@ export default function ExportPage() {
           </div>
 
           {/* Export personnalisé */}
-          <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-cyan/30 transition-all duration-300">
+          <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-cyan/30 transition-all duration-300 group">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-neon-cyan/20 to-neon-purple/20">
-                  <BarChart3 className="h-5 w-5 text-neon-cyan" />
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xl font-semibold flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-neon-cyan/20 to-neon-purple/20">
+                    <BarChart3 className="h-5 w-5 text-neon-cyan" />
+                  </div>
+                  Export Personnalisé
+                </h2>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button className="p-2 hover:bg-neon-cyan/20 rounded-lg" title="Aide">
+                    <TrendingUp className="h-4 w-4 text-neon-cyan" />
+                  </button>
+                  <button className="p-2 hover:bg-neon-purple/20 rounded-lg" title="Prévisualiser">
+                    <FileText className="h-4 w-4 text-neon-purple" />
+                  </button>
                 </div>
-                Export Personnalisé
-              </h2>
+              </div>
               <p className="text-gray-300">
                 Configurez précisément votre export avec des options avancées
               </p>
@@ -482,6 +608,17 @@ export default function ExportPage() {
             })}
           </div>
         </div>
+
+        {/* FAB - Floating Action Button */}
+        <button
+          onClick={() => handleQuickExport(selectedFormat, 'week')}
+          disabled={loading}
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+          title="Export rapide (raccourci: Ctrl+E)"
+        >
+          <Download className="h-6 w-6 md:h-7 md:w-7 group-hover:scale-110 transition-transform duration-300" />
+          <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+        </button>
       </div>
     </MainLayout>
   )

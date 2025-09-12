@@ -260,5 +260,53 @@ service cloud.firestore {
       
       allow delete: if false; // Pas de suppression
     }
+
+    // Règles pour la collection 'challenges'
+    match /challenges/{challengeId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+
+    // Règles pour la collection 'achievements'
+    match /achievements/{achievementId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
+
+    // Règles pour la collection 'user_progress'
+    match /user_progress/{progressId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid;
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid;
+    }
   }
 }

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import VitalsReporter from '@/components/analytics/VitalsReporter'
 import ChunkGuard from '@/components/runtime/ChunkGuard'
+import InstallBanner from '@/components/pwa/InstallBanner'
 import '../styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -10,13 +11,30 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'SuperNovaFit - Plateforme Diète & Entraînement',
   description: 'Suivez votre diète, vos entraînements et votre progression physique',
-  icons: [{ rel: 'icon', url: '/favicon.ico' }],
+  icons: [
+    { rel: 'icon', url: '/favicon.ico' },
+    { rel: 'apple-touch-icon', url: '/icons/icon-192x192.png' },
+  ],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'SuperNovaFit',
+  },
   openGraph: {
     title: 'SuperNovaFit',
     description: 'Suivez votre diète, vos entraînements et votre progression physique',
     siteName: 'SuperNovaFit',
     type: 'website',
   },
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#3b82f6',
 }
 
 export default function RootLayout({
@@ -83,6 +101,9 @@ export default function RootLayout({
             },
           }}
         />
+        
+        {/* PWA Install Banner */}
+        <InstallBanner />
       </body>
     </html>
   )

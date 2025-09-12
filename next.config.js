@@ -3,6 +3,48 @@ const { withSentryConfig } = require('@sentry/nextjs')
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: false, // Désactivé pour améliorer build time
 })
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/middleware-manifest\.json$/],
+  runtimeCaching: [
+    {
+      urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'firebase-storage',
+        expiration: {
+          maxEntries: 100,
+          maxAgeSeconds: 60 * 60 * 24 * 7, // 7 jours
+        },
+      },
+    },
+    {
+      urlPattern: /^https:\/\/images\.openfoodfacts\.org\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'openfoodfacts-images',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jours
+        },
+      },
+    },
+    {
+      urlPattern: /^https:\/\/static\.openfoodfacts\.org\/.*/i,
+      handler: 'CacheFirst',
+      options: {
+        cacheName: 'openfoodfacts-static',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60 * 24 * 7, // 7 jours
+        },
+      },
+    },
+  ],
+})
 
 const nextConfig = {
   // ✅ Issue #12 - ESLint activé en production pour détecter les erreurs
@@ -111,9 +153,11 @@ const nextConfig = {
   }
 }
 
-// Export with Sentry + Bundle Analyzer
+// Export with Sentry + Bundle Analyzer + PWA
 module.exports = withSentryConfig(
-  withBundleAnalyzer(nextConfig),
+  withBundleAnalyzer(
+    withPWA(nextConfig) // Ajouter withPWA ici
+  ),
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
