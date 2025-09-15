@@ -6,7 +6,7 @@ import { Download, X, Smartphone } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function InstallBanner() {
-  const { isInstallable, isInstalled, installApp } = usePWA()
+  const { isInstallable, isInstalled, isOnline, isServiceWorkerReady, installApp } = usePWA()
   const [isDismissed, setIsDismissed] = useState(false)
 
   useEffect(() => {
@@ -17,8 +17,8 @@ export default function InstallBanner() {
     }
   }, [])
 
-  // Ne pas afficher si déjà installé ou dismissé
-  if (isInstalled || isDismissed || !isInstallable) {
+  // Ne pas afficher si déjà installé, dismissé, ou pas installable
+  if (isInstalled || isDismissed || !isInstallable || !isServiceWorkerReady) {
     return null
   }
 
@@ -51,6 +51,7 @@ export default function InstallBanner() {
             </h3>
             <p className="text-xs text-white/70 mb-3">
               Accédez rapidement à votre app depuis votre écran d&apos;accueil
+              {!isOnline && <span className="block text-yellow-400 mt-1">⚠️ Mode hors ligne disponible</span>}
             </p>
             <div className="flex gap-2">
               <button

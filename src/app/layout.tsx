@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: 'Suivez votre diète, vos entraînements et votre progression physique',
   icons: [
     { rel: 'icon', url: '/favicon.ico' },
-    { rel: 'apple-touch-icon', url: '/icons/icon-192x192.png' },
+    { rel: 'apple-touch-icon', url: '/icons/icon-192x192.svg' },
   ],
   manifest: '/manifest.json',
   appleWebApp: {

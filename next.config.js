@@ -7,9 +7,12 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: false, // Temporairement activé pour les tests
+  disable: false, // PWA activée pour la production
   buildExcludes: [/middleware-manifest\.json$/],
+  reloadOnOnline: true,
+  sw: 'sw.js',
   runtimeCaching: [
+    // Cache pour les images Firebase Storage
     {
       urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
       handler: 'CacheFirst',
@@ -21,6 +24,7 @@ const withPWA = require('next-pwa')({
         },
       },
     },
+    // Cache pour les images OpenFoodFacts
     {
       urlPattern: /^https:\/\/images\.openfoodfacts\.org\/.*/i,
       handler: 'CacheFirst',
@@ -41,6 +45,44 @@ const withPWA = require('next-pwa')({
           maxEntries: 50,
           maxAgeSeconds: 60 * 60 * 24 * 7, // 7 jours
         },
+      },
+    },
+    // Cache pour les API Firestore (lecture seule)
+    {
+      urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'firestore-api',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 5, // 5 minutes
+        },
+        networkTimeoutSeconds: 3,
+      },
+    },
+    // Cache pour les assets statiques
+    {
+      urlPattern: /\.(?:js|css|woff2?|png|jpg|jpeg|svg|gif|webp|avif)$/i,
+      handler: 'StaleWhileRevalidate',
+      options: {
+        cacheName: 'static-assets',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jours
+        },
+      },
+    },
+    // Cache pour les pages (fallback)
+    {
+      urlPattern: /^https?:\/\/.*$/i,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'pages',
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: 60 * 60 * 24, // 1 jour
+        },
+        networkTimeoutSeconds: 3,
       },
     },
   ],
