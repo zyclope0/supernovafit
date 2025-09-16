@@ -18,6 +18,8 @@ import CoachRecommendations from '@/components/ui/CoachRecommendations'
 import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 import { CardSkeleton, ChartSkeleton, ListSkeleton } from '@/components/ui/Skeletons'
+import SmartSuggestions from '@/components/diete/SmartSuggestions'
+import type { SmartSuggestion } from '@/lib/nutritional-database'
 
 import React from 'react'
 
@@ -291,6 +293,45 @@ export default function DietePage() {
     }
   }
 
+  // Calculer les macros actuels et cibles pour les suggestions intelligentes
+  const currentMacros = useMemo(() => {
+    const total = todayMeals.reduce((acc: Macros, meal: Repas) => ({
+      kcal: acc.kcal + (meal.macros?.kcal || 0),
+      prot: acc.prot + (meal.macros?.prot || 0),
+      glucides: acc.glucides + (meal.macros?.glucides || 0),
+      lipides: acc.lipides + (meal.macros?.lipides || 0),
+    }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
+
+    return {
+      calories: total.kcal,
+      protein: total.prot,
+      carbs: total.glucides,
+      fat: total.lipides
+    }
+  }, [todayMeals])
+
+  // Objectifs nutritionnels par défaut (à adapter selon le profil utilisateur)
+  const targetMacros = useMemo(() => {
+    // TODO: Récupérer les objectifs depuis le profil utilisateur
+    // Pour l'instant, objectifs par défaut pour un adulte actif
+    return {
+      calories: 2000,
+      protein: 150, // 1.8g/kg pour 80kg
+      carbs: 250,   // 50% des calories
+      fat: 67       // 30% des calories
+    }
+  }, [])
+
+  // Objectif utilisateur par défaut (à récupérer depuis le profil)
+  const userGoal: 'weight_loss' | 'muscle_gain' | 'maintenance' = 'maintenance'
+
+  // Gérer l'ajout d'un aliment suggéré
+  const handleAddSuggestedFood = (suggestion: SmartSuggestion) => {
+    // Ouvrir le formulaire de repas avec l'aliment pré-rempli
+    setShowMealForm('collation_apres_midi') // Par défaut, ajouter comme collation
+    toast.success(`${suggestion.food.name} ajouté à vos suggestions !`)
+  }
+
   // Raccourcis clavier pour améliorer l'UX
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -474,6 +515,16 @@ export default function DietePage() {
                 }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })}
                 title="Répartition du jour"
               />
+              )}
+              
+              {/* Suggestions Intelligentes */}
+              {user && (
+                <SmartSuggestions
+                  currentMacros={currentMacros}
+                  targetMacros={targetMacros}
+                  userGoal={userGoal}
+                  onAddFood={handleAddSuggestedFood}
+                />
               )}
             </>
           )}
