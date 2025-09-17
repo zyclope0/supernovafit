@@ -8,9 +8,18 @@ const withPWA = require('next-pwa')({
   register: true,
   skipWaiting: true,
   disable: false, // PWA activée pour la production
-  buildExcludes: [/middleware-manifest\.json$/],
+  buildExcludes: [
+    /middleware-manifest\.json$/,
+    /app-build-manifest\.json$/,
+    /build-manifest\.json$/,
+    /server-reference-manifest\.json$/,
+    /react-loadable-manifest\.json$/
+  ],
   reloadOnOnline: true,
   sw: 'sw.js',
+  fallbacks: {
+    document: '/offline.html',
+  },
   runtimeCaching: [
     // Cache pour les images Firebase Storage
     {

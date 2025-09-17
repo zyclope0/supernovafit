@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperNovaFit - Mode Hors Ligne</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1e1e3f 100%);
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: #3b82f6;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            opacity: 0.9;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            margin-top: 32px;
+            text-align: left;
+        }
+        
+        .feature {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feature-icon {
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📱</div>
+        <h1>SuperNovaFit</h1>
+        <p>Vous êtes actuellement hors ligne, mais ne vous inquiétez pas !</p>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>Vos données sont sauvegardées</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>L'app fonctionne en mode hors ligne</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>Synchronisation automatique au retour</span>
+            </div>
+        </div>
+        
+        <button class="retry-btn" onclick="window.location.reload()">
+            🔄 Réessayer
+        </button>
+    </div>
+    
+    <script>
+        // Auto-retry when online
+        window.addEventListener('online', function() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+        
+        // Check connection status
+        function checkConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }
+        
+        // Check every 30 seconds
+        setInterval(checkConnection, 30000);
+    </script>
+</body>
+</html>
