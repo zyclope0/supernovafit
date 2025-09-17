@@ -1,8 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Sidebar from './Sidebar'
+import BottomNavigation from '../mobile/BottomNavigation'
+import QuickActionModal from '../mobile/QuickActionModal'
+import QuickMealModal from '../mobile/QuickMealModal'
+import QuickTrainingModal from '../mobile/QuickTrainingModal'
+import QuickWeightModal from '../mobile/QuickWeightModal'
+import QuickMoodModal from '../mobile/QuickMoodModal'
 import { useAuth } from '@/hooks/useAuth'
+import { useQuickActions } from '@/hooks/useQuickActions'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
 
 interface MainLayoutProps {
@@ -13,6 +21,21 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const { user, userProfile, loading } = useAuth()
+  const { 
+    isModalOpen, 
+    quickMealModalOpen,
+    quickTrainingModalOpen,
+    quickWeightModalOpen,
+    quickMoodModalOpen,
+    openQuickActions, 
+    closeQuickActions,
+    closeAllModals,
+    setQuickMealModalOpen,
+    setQuickTrainingModalOpen,
+    setQuickWeightModalOpen,
+    setQuickMoodModalOpen
+  } = useQuickActions()
+  const pathname = usePathname()
   const isCoach = userProfile?.role === 'coach'
 
   // Synchroniser avec l'état de la sidebar
@@ -71,7 +94,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
         )}
         
-        <main id="main-content" className="h-full overflow-y-auto">
+        <main id="main-content" className="h-full overflow-y-auto pb-20 md:pb-0">
           <div className="container mx-auto px-4 py-8 lg:px-8">
             {/* Breadcrumbs Navigation */}
             <Breadcrumbs />
@@ -79,6 +102,48 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
         </main>
       </div>
+      
+      {/* Bottom Navigation Mobile */}
+      {user && (
+        <BottomNavigation 
+          onFabClick={openQuickActions}
+        />
+      )}
+      
+      {/* Quick Action Modal */}
+      <QuickActionModal 
+        isOpen={isModalOpen}
+        onClose={closeQuickActions}
+      />
+      
+      {/* Quick Modals */}
+      <QuickMealModal 
+        isOpen={quickMealModalOpen}
+        onClose={() => setQuickMealModalOpen(false)}
+        onSelectTemplate={(template) => {
+          // TODO: Intégrer avec le formulaire de repas
+          console.log('Template sélectionné:', template)
+        }}
+      />
+      
+      <QuickTrainingModal 
+        isOpen={quickTrainingModalOpen}
+        onClose={() => setQuickTrainingModalOpen(false)}
+        onSelectTemplate={(template) => {
+          // TODO: Intégrer avec le formulaire d'entraînement
+          console.log('Template entraînement sélectionné:', template)
+        }}
+      />
+      
+      <QuickWeightModal 
+        isOpen={quickWeightModalOpen}
+        onClose={() => setQuickWeightModalOpen(false)}
+      />
+      
+      <QuickMoodModal 
+        isOpen={quickMoodModalOpen}
+        onClose={() => setQuickMoodModalOpen(false)}
+      />
     </div>
   )
 } 

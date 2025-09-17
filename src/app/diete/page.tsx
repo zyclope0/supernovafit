@@ -12,6 +12,7 @@ import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
 import { IconButton } from '@/components/ui/IconButton'
 import dynamic from 'next/dynamic'
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
+import SwipeableMealCard from '@/components/mobile/SwipeableMealCard'
 const MenuTypesModal = dynamic(() => import('@/components/ui/MenuTypesModal'), { ssr: false })
 const HistoriqueModal = dynamic(() => import('@/components/ui/HistoriqueModal'), { ssr: false })
 import CoachRecommendations from '@/components/ui/CoachRecommendations'

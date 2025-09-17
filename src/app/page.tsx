@@ -14,6 +14,7 @@ import { Users, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
+const MobileDashboard = dynamic(() => import('@/components/mobile/MobileDashboard'), { ssr: false })
 
 // Composants du dashboard
 function WelcomeCard({ username }: { username?: string }) {
@@ -281,8 +282,15 @@ export default function Dashboard() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Carte de bienvenue */}
-        <WelcomeCard username={userProfile?.nom || user?.email?.split('@')[0]} />
+        {/* Mobile Dashboard */}
+        <div className="block md:hidden">
+          <MobileDashboard />
+        </div>
+        
+        {/* Desktop Dashboard */}
+        <div className="hidden md:block space-y-6">
+          {/* Carte de bienvenue */}
+          <WelcomeCard username={userProfile?.nom || user?.email?.split('@')[0]} />
 
         {/* Message si pas connecté */}
         {!user && (
@@ -372,6 +380,7 @@ export default function Dashboard() {
               Hydratez-vous et visez des protéines à chaque repas pour optimiser la récupération.
             </p>
           </div>
+        </div>
         </div>
       </div>
     </MainLayout>
