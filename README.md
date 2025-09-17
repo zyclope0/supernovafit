@@ -1,28 +1,40 @@
 # 🚀 SuperNovaFit — Plateforme Diète & Entraînement
 
-> Application moderne pour suivre sa diète, ses entraînements, ses mesures et sa motivation, avec un Mode Coach 1:1. Stack: Next.js 14, TypeScript, Firebase, Tailwind.
+> Application moderne **mobile-first** pour suivre sa diète, ses entraînements, ses mesures et sa motivation, avec un Mode Coach 1:1. Interface révolutionnaire avec navigation tactile, templates ultra-rapides et dashboard adaptatif. Stack: Next.js 15, TypeScript, Firebase, PWA.
 
-![Next.js](https://img.shields.io/badge/Next.js-14.2.31-black)
+![Next.js](https://img.shields.io/badge/Next.js-15.5.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-Firestore%20|%20Auth%20|%20Storage-orange)
+![PWA](https://img.shields.io/badge/PWA-Ready-purple)
+![Mobile](https://img.shields.io/badge/Mobile-First-green)
 ![CI](https://github.com/<owner>/<repo>/actions/workflows/quality.yml/badge.svg)
 
 ## ✨ Modules livrés
 
-- Dashboard temps réel (calories, protéines jour, séances semaine, poids récent)
-- Diète & Nutrition: recherche Open Food Facts, saisie manuelle, CRUD repas, favoris, historiques 30j, macros, portions rapides (1/2, +25, 2x), templates repas
-- Entraînements: CRUD complet, calcul calories (MET + FC), import Garmin (TCX/GPX) avec détection doublons, 4 graphiques, historique 30j, liste “Tous les entraînements” cliquable
-- Mesures & Photos: mesures complètes, IMC, 4 graphiques, upload photos (Storage), galerie, comparaisons, commentaires coach sur mesures
-- Journal & Motivation: humeur/énergie/sommeil/stress/météo, notes, badges, objectifs simples, corrélations, photos libres, historique 30j
-- Profil Utilisateur: âge/sexe/taille/poids/objectif/niveau activité; calculs BMR/TDEE/IMC; recommandations macros
-- Mode Coach (1:1 simplifié): dashboard coach, commentaires contextualisés (diète/entrainements/journal/mesures), plan diète (texte), sections rétractables, badges “nouveaux coms”, “Marquer comme lu”
+### 📱 **Interface Mobile-First Révolutionnaire (v1.11)**
+- **Bottom Navigation** : Navigation principale toujours accessible en bas d'écran
+- **FAB Contextuel** : Bouton flottant intelligent qui s'adapte à chaque page
+- **Templates Ultra-Rapides** : Repas en 30s, entraînements en 45s, poids instantané
+- **Dashboard Adaptatif** : Widgets mobiles avec interactions tactiles (zoom, swipe)
+- **Quick Actions** : Actions contextuelles selon la page visitée
+
+### 🏃‍♂️ **Modules Core**
+- **Dashboard temps réel** : Calories, protéines jour, séances semaine, poids récent avec widgets interactifs
+- **Diète & Nutrition** : Recherche Open Food Facts, saisie manuelle, CRUD repas, favoris, historiques 30j, macros, portions rapides, suggestions intelligentes
+- **Entraînements** : CRUD complet, calcul calories (MET + FC), import Garmin (TCX/GPX), 4 graphiques, templates rapides
+- **Mesures & Photos** : Mesures complètes, IMC, 4 graphiques, upload photos (Storage), galerie, comparaisons
+- **Journal & Motivation** : Humeur/énergie/sommeil/stress, notes, badges, objectifs, corrélations, saisie tactile
+- **Profil Utilisateur** : Calculs BMR/TDEE/IMC, recommandations macros personnalisées
+- **Mode Coach** : Dashboard coach, commentaires contextualisés, plan diète, sections rétractables
 
 ## 🧱 Stack technique
 
-- Frontend: Next.js (App Router), TypeScript, Tailwind CSS
-- Firebase: Auth (Email/Password), Firestore, Storage, Analytics
-- Charts: Recharts; Form/Validation: React Hook Form + Zod; Dates: date-fns
-- Optimisations: next/dynamic pour charts/modales, next/image (WebP), preconnect images
+- **Frontend** : Next.js 15 (App Router), TypeScript, Tailwind CSS
+- **Firebase** : Auth (Email/Password), Firestore, Storage, Analytics
+- **PWA** : Service Worker, Manifest, Offline support, Installation
+- **Mobile** : Bottom Navigation, FAB, Touch gestures, Responsive design
+- **Charts** : Recharts avec interactions tactiles; Form/Validation: React Hook Form + Zod
+- **Optimisations** : next/dynamic, next/image (AVIF/WebP), bundle splitting, lazy loading
 
 ## ⚙️ Démarrage
 

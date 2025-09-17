@@ -34,9 +34,9 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍳',
     mealType: 'petit_dej',
     aliments: [
-      { nom: 'Œufs entiers', quantite: 2, unite: 'unités', kcal_100g: 155, prot_100g: 13, glucides_100g: 1.1, lipides_100g: 11 },
-      { nom: 'Flocons d\'avoine', quantite: 50, unite: 'g', kcal_100g: 389, prot_100g: 17, glucides_100g: 66, lipides_100g: 7 },
-      { nom: 'Banane', quantite: 1, unite: 'unité', kcal_100g: 89, prot_100g: 1.1, glucides_100g: 23, lipides_100g: 0.3 }
+      { id: '1', nom: 'Œufs entiers', quantite: 2, unite: 'unités', macros_base: { kcal: 155, prot: 13, glucides: 1.1, lipides: 11 } },
+      { id: '2', nom: 'Flocons d\'avoine', quantite: 50, unite: 'g', macros_base: { kcal: 389, prot: 17, glucides: 66, lipides: 7 } },
+      { id: '3', nom: 'Banane', quantite: 1, unite: 'unité', macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 } }
     ],
     macros: { kcal: 504, prot: 28, glucides: 45, lipides: 18 },
     prepTime: '10 min',
@@ -49,9 +49,9 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🥣',
     mealType: 'petit_dej',
     aliments: [
-      { nom: 'Yaourt grec 0%', quantite: 150, unite: 'g', kcal_100g: 59, prot_100g: 10, glucides_100g: 3.6, lipides_100g: 0.4 },
-      { nom: 'Granola maison', quantite: 30, unite: 'g', kcal_100g: 471, prot_100g: 11, glucides_100g: 48, lipides_100g: 26 },
-      { nom: 'Miel', quantite: 15, unite: 'g', kcal_100g: 304, prot_100g: 0.3, glucides_100g: 82, lipides_100g: 0 }
+      { id: '4', nom: 'Yaourt grec 0%', quantite: 150, unite: 'g', macros_base: { kcal: 59, prot: 10, glucides: 3.6, lipides: 0.4 } },
+      { id: '5', nom: 'Granola maison', quantite: 30, unite: 'g', macros_base: { kcal: 471, prot: 11, glucides: 48, lipides: 26 } },
+      { id: '6', nom: 'Miel', quantite: 15, unite: 'g', macros_base: { kcal: 304, prot: 0.3, glucides: 82, lipides: 0 } }
     ],
     macros: { kcal: 275, prot: 18, glucides: 31, lipides: 8 },
     prepTime: '2 min',
@@ -66,8 +66,8 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🥜',
     mealType: 'collation_matin',
     aliments: [
-      { nom: 'Fromage blanc 0%', quantite: 100, unite: 'g', kcal_100g: 47, prot_100g: 8, glucides_100g: 4, lipides_100g: 0.2 },
-      { nom: 'Amandes', quantite: 20, unite: 'g', kcal_100g: 579, prot_100g: 21, glucides_100g: 22, lipides_100g: 50 }
+      { id: '7', nom: 'Fromage blanc 0%', quantite: 100, unite: 'g', macros_base: { kcal: 47, prot: 8, glucides: 4, lipides: 0.2 } },
+      { id: '8', nom: 'Amandes', quantite: 20, unite: 'g', macros_base: { kcal: 579, prot: 21, glucides: 22, lipides: 50 } }
     ],
     macros: { kcal: 163, prot: 12, glucides: 8, lipides: 10 },
     prepTime: '1 min',
@@ -80,8 +80,8 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍎',
     mealType: 'collation_apres_midi',
     aliments: [
-      { nom: 'Pomme', quantite: 150, unite: 'g', kcal_100g: 52, prot_100g: 0.3, glucides_100g: 14, lipides_100g: 0.2 },
-      { nom: 'Beurre d\'amande', quantite: 15, unite: 'g', kcal_100g: 614, prot_100g: 25, glucides_100g: 6, lipides_100g: 56 }
+      { id: '9', nom: 'Pomme', quantite: 150, unite: 'g', macros_base: { kcal: 52, prot: 0.3, glucides: 14, lipides: 0.2 } },
+      { id: '10', nom: 'Beurre d\'amande', quantite: 15, unite: 'g', macros_base: { kcal: 614, prot: 25, glucides: 6, lipides: 56 } }
     ],
     macros: { kcal: 170, prot: 4, glucides: 22, lipides: 9 },
     prepTime: '1 min',
@@ -96,9 +96,9 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍗',
     mealType: 'dejeuner',
     aliments: [
-      { nom: 'Blanc de poulet', quantite: 150, unite: 'g', kcal_100g: 165, prot_100g: 31, glucides_100g: 0, lipides_100g: 3.6 },
-      { nom: 'Riz complet cuit', quantite: 100, unite: 'g', kcal_100g: 111, prot_100g: 2.6, glucides_100g: 23, lipides_100g: 0.9 },
-      { nom: 'Brocolis', quantite: 100, unite: 'g', kcal_100g: 25, prot_100g: 3, glucides_100g: 4, lipides_100g: 0.4 }
+      { id: '11', nom: 'Blanc de poulet', quantite: 150, unite: 'g', macros_base: { kcal: 165, prot: 31, glucides: 0, lipides: 3.6 } },
+      { id: '12', nom: 'Riz complet cuit', quantite: 100, unite: 'g', macros_base: { kcal: 111, prot: 2.6, glucides: 23, lipides: 0.9 } },
+      { id: '13', nom: 'Brocolis', quantite: 100, unite: 'g', macros_base: { kcal: 25, prot: 3, glucides: 4, lipides: 0.4 } }
     ],
     macros: { kcal: 384, prot: 50, glucides: 27, lipides: 7 },
     prepTime: '15 min',
@@ -111,9 +111,9 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🐟',
     mealType: 'diner',
     aliments: [
-      { nom: 'Saumon', quantite: 120, unite: 'g', kcal_100g: 208, prot_100g: 25, glucides_100g: 0, lipides_100g: 12 },
-      { nom: 'Quinoa cuit', quantite: 80, unite: 'g', kcal_100g: 120, prot_100g: 4.4, glucides_100g: 22, lipides_100g: 1.9 },
-      { nom: 'Salade verte', quantite: 50, unite: 'g', kcal_100g: 15, prot_100g: 1.4, glucides_100g: 2.9, lipides_100g: 0.2 }
+      { id: '14', nom: 'Saumon', quantite: 120, unite: 'g', macros_base: { kcal: 208, prot: 25, glucides: 0, lipides: 12 } },
+      { id: '15', nom: 'Quinoa cuit', quantite: 80, unite: 'g', macros_base: { kcal: 120, prot: 4.4, glucides: 22, lipides: 1.9 } },
+      { id: '16', nom: 'Salade verte', quantite: 50, unite: 'g', macros_base: { kcal: 15, prot: 1.4, glucides: 2.9, lipides: 0.2 } }
     ],
     macros: { kcal: 353, prot: 34, glucides: 20, lipides: 16 },
     prepTime: '20 min',
@@ -128,9 +128,9 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '💪',
     mealType: 'collation_apres_midi',
     aliments: [
-      { nom: 'Whey protéine', quantite: 30, unite: 'g', kcal_100g: 380, prot_100g: 80, glucides_100g: 5, lipides_100g: 2 },
-      { nom: 'Banane', quantite: 120, unite: 'g', kcal_100g: 89, prot_100g: 1.1, glucides_100g: 23, lipides_100g: 0.3 },
-      { nom: 'Lait d\'amande', quantite: 200, unite: 'ml', kcal_100g: 17, prot_100g: 0.6, glucides_100g: 0.3, lipides_100g: 1.1 }
+      { id: '17', nom: 'Whey protéine', quantite: 30, unite: 'g', macros_base: { kcal: 380, prot: 80, glucides: 5, lipides: 2 } },
+      { id: '18', nom: 'Banane', quantite: 120, unite: 'g', macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 } },
+      { id: '19', nom: 'Lait d\'amande', quantite: 200, unite: 'ml', macros_base: { kcal: 17, prot: 0.6, glucides: 0.3, lipides: 1.1 } }
     ],
     macros: { kcal: 255, prot: 26, glucides: 30, lipides: 3 },
     prepTime: '2 min',

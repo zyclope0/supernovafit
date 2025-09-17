@@ -104,10 +104,10 @@ export default function QuickMoodModal({
       const entryData = {
         user_id: user.uid,
         date: today,
-        humeur: values.humeur,
-        energie: values.energie,
-        sommeil: values.sommeil,
-        stress: values.stress,
+        humeur: values.humeur as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | undefined,
+        energie: values.energie as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | undefined,
+        sommeil: values.sommeil as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | undefined,
+        stress: values.stress as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | undefined,
         note: values.note || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

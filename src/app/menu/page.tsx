@@ -7,7 +7,6 @@ import {
   BookOpen, 
   Trophy, 
   User, 
-  Settings, 
   Download, 
   HelpCircle,
   LogOut,
@@ -39,17 +38,17 @@ interface MenuItem {
 
 export default function MenuPage() {
   const router = useRouter()
-  const { user, userProfile, logout } = useAuth()
+  const { userProfile, signOut } = useAuth()
   const { isInstallable, installApp } = usePWA()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {
     setIsLoggingOut(true)
     try {
-      await logout()
+      await signOut()
       toast.success('Déconnexion réussie')
       router.push('/')
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors de la déconnexion')
     } finally {
       setIsLoggingOut(false)
@@ -60,8 +59,8 @@ export default function MenuPage() {
     try {
       await installApp()
       toast.success('Application installée ! 🎉')
-    } catch (error) {
-      toast.error('Erreur lors de l\'installation')
+    } catch {
+      toast.error('Erreur lors de l&apos;installation')
     }
   }
 
@@ -269,9 +268,9 @@ export default function MenuPage() {
                   <HelpCircle className="w-5 h-5 text-white/80" />
                 </div>
                 <div className="flex-1 text-left">
-                  <span className="font-medium text-white">Guide d'utilisation</span>
+                  <span className="font-medium text-white">Guide d&apos;utilisation</span>
                   <p className="text-sm text-white/60 mt-1">
-                    Comment utiliser l'application
+                    Comment utiliser l&apos;application
                   </p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-white/40" />

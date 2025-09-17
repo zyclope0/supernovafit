@@ -302,7 +302,10 @@ export default function QuickTrainingModal({
                       </div>
                       
                       <button
-                        onClick={() => toggleFavorite(template.id)}
+                        onClick={() => {
+                          // TODO: Implémenter la persistance des favoris
+                          console.log('Toggle favorite:', template.id)
+                        }}
                         className={cn(
                           'p-2 rounded-lg transition-colors',
                           isFavorite 

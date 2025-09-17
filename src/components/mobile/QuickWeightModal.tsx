@@ -70,7 +70,7 @@ export default function QuickWeightModal({
       const result = await addMesure(mesureData)
       
       if (result.success) {
-        const variation = lastWeight ? weightValue - lastWeight.poids : 0
+        const variation = lastWeight && lastWeight.poids ? weightValue - lastWeight.poids : 0
         const variationText = variation > 0 
           ? `+${variation.toFixed(1)}kg` 
           : variation < 0 
@@ -194,7 +194,7 @@ export default function QuickWeightModal({
                     const newWeight = parseFloat(weight.replace(',', '.'))
                     if (isNaN(newWeight)) return null
                     
-                    const variation = newWeight - lastWeight.poids
+                    const variation = newWeight - (lastWeight.poids || 0)
                     const isPositive = variation > 0
                     const isNeutral = Math.abs(variation) < 0.1
                     
@@ -248,9 +248,9 @@ export default function QuickWeightModal({
             {/* Quick Actions */}
             <div className="grid grid-cols-3 gap-2">
               {lastWeight && [
-                { label: '-0.5kg', value: (lastWeight.poids - 0.5).toFixed(1) },
-                { label: 'Identique', value: lastWeight.poids.toString() },
-                { label: '+0.5kg', value: (lastWeight.poids + 0.5).toFixed(1) }
+                { label: '-0.5kg', value: ((lastWeight.poids || 0) - 0.5).toFixed(1) },
+                { label: 'Identique', value: (lastWeight.poids || 0).toString() },
+                { label: '+0.5kg', value: ((lastWeight.poids || 0) + 0.5).toFixed(1) }
               ].map((quick) => (
                 <button
                   key={quick.label}

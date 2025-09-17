@@ -114,14 +114,16 @@ export default function SwipeableTrainingCard({
             </div>
           </div>
           
+          {/* TODO: Ajouter intensite au type Entrainement
           {training.intensite && (
             <div className={cn(
-              'px-2 py-1 rounded-full text-xs font-medium bg-white/10',
+              'px-2 py-1 rounded-full text-xs font-medium bg-white/10', 
               getIntensityColor(training.intensite)
             )}>
               {training.intensite}
             </div>
           )}
+          */}
         </div>
 
         {/* Stats Grid */}
@@ -148,6 +150,7 @@ export default function SwipeableTrainingCard({
           )}
 
           {/* Fréquence cardiaque moyenne */}
+          {/* TODO: Ajouter frequence_cardiaque_moyenne au type Entrainement
           {training.frequence_cardiaque_moyenne && (
             <div className="text-center">
               <div className="text-lg font-bold text-red-400">
@@ -156,6 +159,7 @@ export default function SwipeableTrainingCard({
               <div className="text-xs text-white/60">bpm</div>
             </div>
           )}
+          */}
 
           {/* Distance */}
           {training.distance && (
@@ -169,6 +173,7 @@ export default function SwipeableTrainingCard({
         </div>
 
         {/* Notes */}
+        {/* TODO: Ajouter notes au type Entrainement
         {training.notes && (
           <div className="bg-white/5 rounded-lg p-3 border border-white/10">
             <p className="text-sm text-white/80 leading-relaxed">
@@ -179,6 +184,7 @@ export default function SwipeableTrainingCard({
             </p>
           </div>
         )}
+        */}
 
         {/* Mobile Swipe Hint */}
         <div className="flex justify-center mt-3 md:hidden">

@@ -140,7 +140,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <div 
               className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-500"
               style={{ 
-                width: `${Math.min(100, (todayStats.kcal / estimatedTDEE) * 100)}%` 
+                width: `${Math.min(100, (todayStats.kcal / (estimatedTDEE || 2000)) * 100)}%` 
               }}
             />
           </div>
@@ -220,13 +220,13 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             </div>
             <div className="text-right">
               <div className="text-lg font-bold text-orange-400">
-                {Math.round((todayStats.kcal / estimatedTDEE) * 100)}%
+                {Math.round((todayStats.kcal / (estimatedTDEE || 2000)) * 100)}%
               </div>
               <div className="w-16 bg-white/10 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-500"
                   style={{ 
-                    width: `${Math.min(100, (todayStats.kcal / estimatedTDEE) * 100)}%` 
+                    width: `${Math.min(100, (todayStats.kcal / (estimatedTDEE || 2000)) * 100)}%` 
                   }}
                 />
               </div>
@@ -390,7 +390,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
         <div className="text-center">
           <div className="text-3xl mb-2">🚀</div>
           <p className="text-white/80 text-sm leading-relaxed">
-            {todayStats.kcal > estimatedTDEE * 0.8 
+            {todayStats.kcal > (estimatedTDEE || 2000) * 0.8 
               ? "Excellent ! Vous êtes sur la bonne voie aujourd'hui !"
               : todayMeals.length > 0
                 ? "Continuez comme ça ! Quelques repas de plus pour atteindre vos objectifs."
