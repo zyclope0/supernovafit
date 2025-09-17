@@ -1,7 +1,6 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
-import MobileChart from '../mobile/MobileChart'
 import type { TooltipProps, LegendProps } from 'recharts'
 import { Macros } from '@/types'
 
@@ -84,18 +83,19 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
   }
 
   return (
-    <MobileChart 
-      title={title}
-      subtitle={`${Math.round(totalCalories)} kcal total`}
-      allowZoom={true}
-      allowFullscreen={true}
-      showLegendToggle={true}
-      height={320}
-      className={className}
-    >
+    <div className="glass-effect p-6 rounded-xl border border-white/10">
+      <div className="text-center mb-4">
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        <p className="text-sm text-muted-foreground">
+          {Math.round(totalCalories)} kcal total
+        </p>
+      </div>
+
       {totalCalories > 0 ? (
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+        <>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
                 <Pie
                   data={data}
                   cx="50%"
@@ -113,6 +113,9 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
                 <Legend content={<CustomLegend />} />
               </PieChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* Détails des macros */}
           <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-white/10">
             <div className="text-center">
               <div className="text-lg font-bold text-neon-cyan">
@@ -142,7 +145,7 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
               </div>
             </div>
           </div>
-        </ResponsiveContainer>
+        </>
       ) : (
         <div className="flex items-center justify-center h-48">
           <p className="text-muted-foreground text-center">
@@ -151,6 +154,6 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
           </p>
         </div>
       )}
-    </MobileChart>
+    </div>
   )
 }
