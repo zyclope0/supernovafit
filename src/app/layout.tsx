@@ -47,6 +47,23 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
         <link rel="preconnect" href="https://images.openfoodfacts.org" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js', {
+                    scope: '/'
+                  }).then(function(registration) {
+                    console.log('Service Worker registered successfully:', registration);
+                  }).catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.className} bg-gradient-space min-h-screen`}>
         {/* Skip Links for Accessibility */}
