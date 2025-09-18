@@ -53,22 +53,22 @@ function MealCard({
 
   return (
     <div className="glass-effect p-4 rounded-lg glass-hover hover:glow-cyan transition-all">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-3">
-          <span className="text-2xl">{mealIcon}</span>
-          <div>
-            <h4 className="font-medium text-white">{mealName}</h4>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+        <div className="flex items-center space-x-3 flex-1 min-w-0">
+          <span className="text-2xl flex-shrink-0">{mealIcon}</span>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-medium text-white truncate">{mealName}</h4>
             <p className="text-sm text-accessible-secondary">{time}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {macros && (
-            <span className="px-2 py-1 bg-white/10 text-white/80 rounded text-xs">
+            <span className="px-2 py-1 bg-white/10 text-white/80 rounded text-xs whitespace-nowrap">
               {Math.round(macros.kcal)} kcal
             </span>
           )}
           {hasFood && (
-            <span className="px-2 py-1 bg-white/5 text-white/70 rounded text-xs">
+            <span className="px-2 py-1 bg-white/5 text-white/70 rounded text-xs whitespace-nowrap">
               {aliments.length} aliments
             </span>
           )}
@@ -76,7 +76,7 @@ function MealCard({
             <button
               type="button"
               onClick={() => setOpen(!open)}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
               title={open ? 'Réduire' : 'Développer'}
               aria-expanded={open}
               aria-controls={detailsId}
@@ -99,7 +99,7 @@ function MealCard({
           )}
           <button 
             onClick={onAddMeal}
-            className="px-3 py-1 bg-neon-purple/20 text-neon-purple rounded-lg text-sm font-medium hover:bg-neon-purple/30 transition-colors"
+            className="px-3 py-1 bg-neon-purple/20 text-neon-purple rounded-lg text-sm font-medium hover:bg-neon-purple/30 transition-colors whitespace-nowrap"
           >
             {hasFood ? 'Modifier' : 'Ajouter'}
           </button>
@@ -369,15 +369,15 @@ export default function DietePage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header simplifié */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold neon-text">Diète & Nutrition</h1>
-            <p className="text-muted-foreground">Suivi nutritionnel - {today}</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold neon-text">Diète & Nutrition</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Suivi nutritionnel - {today}</p>
           </div>
           {/* Bouton compact pour desktop */}
           <button
             onClick={() => setShowMenuTypes(true)}
-            className="hidden md:flex px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 items-center gap-2"
+            className="hidden md:flex px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 items-center gap-2 whitespace-nowrap"
             title="Appliquer un menu-type prédéfini"
           >
             <span>📋</span>
@@ -387,10 +387,10 @@ export default function DietePage() {
 
         {/* Dashboard compact avec stats nutritionnelles */}
         {user && (
-          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4">
               {/* Calories */}
-              <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
                 <div className="text-2xl font-bold text-neon-green">
                   {todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0)}
                 </div>
@@ -404,7 +404,7 @@ export default function DietePage() {
               </div>
               
               {/* Protéines */}
-              <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
                 <div className="text-2xl font-bold text-neon-cyan">
                   {Math.round(todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0))}g
                 </div>
@@ -418,14 +418,14 @@ export default function DietePage() {
               </div>
               
               {/* Repas */}
-              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
                 <div className="text-2xl font-bold text-neon-purple">{todayMeals.length}</div>
                 <div className="text-xs text-muted-foreground">Repas</div>
                 <div className="text-xs text-neon-purple mt-1">Aujourd&apos;hui</div>
               </div>
               
               {/* Objectif */}
-              <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
                 <div className="text-2xl font-bold text-neon-pink">
                   {Math.round((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100)}%
                 </div>
@@ -444,26 +444,26 @@ export default function DietePage() {
         {/* Barre d'outils pour actions secondaires */}
         {user && (
           <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-muted-foreground">📅 Date sélectionnée :</label>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <label className="text-sm text-muted-foreground whitespace-nowrap">📅 Date :</label>
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200"
+                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200 flex-1 sm:flex-none"
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium"
+                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
                 >
                   Aujourd&apos;hui
                 </button>
                 <button
                   onClick={() => setShowHistorique(true)}
-                  className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium"
+                  className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
                 >
                   📊 Historique
                 </button>
