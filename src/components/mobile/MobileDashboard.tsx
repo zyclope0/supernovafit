@@ -1,6 +1,6 @@
 'use client'
 
-// import { useState } from 'react' // TODO: À utiliser pour widgets configurables
+import { useState } from 'react'
 import { 
   TrendingUp, 
   Calendar, 
@@ -12,13 +12,12 @@ import {
   Trophy,
   Zap,
 } from 'lucide-react'
+import DashboardWidget from './DashboardWidget'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures, useJournal } from '@/hooks/useFirestore'
 import { calculateTDEE } from '@/lib/userCalculations'
 import { cn } from '@/lib/utils'
 
-// Interface pour configuration des widgets - à réimplémenter
-/*
 interface WidgetConfig {
   id: string
   title: string
@@ -28,7 +27,6 @@ interface WidgetConfig {
   priority: number
   enabled: boolean
 }
-*/
 
 interface MobileDashboardProps {
   className?: string
@@ -41,8 +39,6 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   const { mesures } = useMesures()
   const { entries: journalEntries } = useJournal()
 
-  // Configuration des tailles de widgets - à réimplémenter si nécessaire
-  /*
   const [widgetSizes, setWidgetSizes] = useState<Record<string, 'small' | 'medium' | 'large'>>({
     'calories-today': 'medium',
     'weight-trend': 'medium', 
@@ -51,7 +47,6 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
     'goals-progress': 'large',
     'quick-stats': 'medium'
   })
-  */
 
   // Données du jour
   const today = new Date().toISOString().split('T')[0]
@@ -80,17 +75,14 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   // TDEE calculé
   const estimatedTDEE = userProfile ? calculateTDEE(userProfile) : (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 2000)
 
-  // Widget size toggle functionality - à implémenter si nécessaire
-  // const handleToggleSize = (widgetId: string) => {
-  //   setWidgetSizes(prev => {
-  //     const current = prev[widgetId] || 'medium'
-  //     const next = current === 'small' ? 'medium' : current === 'medium' ? 'large' : 'small'
-  //     return { ...prev, [widgetId]: next }
-  //   })
-  // }
+  const handleToggleSize = (widgetId: string) => {
+    setWidgetSizes(prev => {
+      const current = prev[widgetId] || 'medium'
+      const next = current === 'small' ? 'medium' : current === 'medium' ? 'large' : 'small'
+      return { ...prev, [widgetId]: next }
+    })
+  }
 
-  // Configuration widgets - à implémenter si nécessaire
-  /*
   const widgets: WidgetConfig[] = [
     {
       id: 'calories-today',
@@ -129,7 +121,6 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
       enabled: true
     }
   ]
-  */
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -441,6 +432,38 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <div className="text-xs text-white/60">Journal rapide</div>
           </div>
         </button>
+      </div>
+
+      {/* Widgets Configurables */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-white">Widgets Personnalisés</h3>
+          <button className="text-xs text-white/60 hover:text-white transition-colors">
+            Configurer
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {widgets.filter(w => w.enabled).map(widget => (
+            <DashboardWidget
+              key={widget.id}
+              id={widget.id}
+              title={widget.title}
+              subtitle={widget.subtitle}
+              icon={widget.icon}
+              size={widget.size}
+              onToggleSize={() => handleToggleSize(widget.id)}
+              className="glass-effect border border-white/10"
+            >
+              <div className="text-center py-4">
+                <widget.icon className="w-12 h-12 text-neon-cyan mx-auto mb-2" />
+                <div className="text-sm text-white/80">
+                  Widget personnalisé à développer
+                </div>
+              </div>
+            </DashboardWidget>
+          ))}
+        </div>
       </div>
     </div>
   )

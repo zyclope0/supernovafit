@@ -19,6 +19,7 @@ export async function onRequestError(error: unknown) {
     // Prefer the dedicated helper when available
     // Fallback to captureException for older SDKs
     if ('captureRequestError' in Sentry && typeof Sentry.captureRequestError === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Sentry.captureRequestError(error, {} as any, {} as any)
     } else if (typeof Sentry.captureException === 'function') {
       Sentry.captureException(error)
