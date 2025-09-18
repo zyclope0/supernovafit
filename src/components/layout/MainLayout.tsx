@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+// import { usePathname } from 'next/navigation' // TODO: À utiliser si nécessaire
 import Sidebar from './Sidebar'
 import BottomNavigation from '../mobile/BottomNavigation'
 import QuickActionModal from '../mobile/QuickActionModal'
@@ -29,13 +29,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
     quickMoodModalOpen,
     openQuickActions, 
     closeQuickActions,
-    closeAllModals,
     setQuickMealModalOpen,
     setQuickTrainingModalOpen,
     setQuickWeightModalOpen,
     setQuickMoodModalOpen
   } = useQuickActions()
-  const pathname = usePathname()
+  // const pathname = usePathname() // TODO: À utiliser si nécessaire
   const isCoach = userProfile?.role === 'coach'
 
   // Synchroniser avec l'état de la sidebar

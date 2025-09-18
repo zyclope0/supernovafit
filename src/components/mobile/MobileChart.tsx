@@ -6,7 +6,6 @@ import {
   ZoomOut, 
   RotateCcw, 
   Maximize2,
-  TrendingUp,
   Eye,
   EyeOff,
   X
@@ -37,7 +36,7 @@ export default function MobileChart({
   const [isZoomed, setIsZoomed] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showLegend, setShowLegend] = useState(true)
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
+  // const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null) // TODO: Implémenter gestures
   const chartRef = useRef<HTMLDivElement>(null)
 
   // Gestion du zoom par pinch (mobile)
@@ -57,10 +56,11 @@ export default function MobileChart({
           touch1.clientY - touch2.clientY
         )
       } else if (e.touches.length === 1) {
-        setTouchStart({
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY
-        })
+        // TODO: Implémenter gesture single touch
+        // setTouchStart({
+        //   x: e.touches[0].clientX,
+        //   y: e.touches[0].clientY
+        // })
       }
     }
 
@@ -87,7 +87,7 @@ export default function MobileChart({
 
     const handleTouchEnd = () => {
       initialDistance = 0
-      setTouchStart(null)
+      // setTouchStart(null) // TODO: Implémenter gesture tracking
     }
 
     element.addEventListener('touchstart', handleTouchStart, { passive: false })

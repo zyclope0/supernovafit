@@ -98,10 +98,10 @@ const withPWA = require('next-pwa')({
 })
 
 const nextConfig = {
-  // ✅ Issue #12 - ESLint temporairement désactivé pour déploiement mobile-first
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // ✅ Issue #12 - ESLint activé en production pour détecter les erreurs
+  // eslint: {
+  //   ignoreDuringBuilds: true,
+  // },
   images: {
     // ✅ Issue #12 - Formats modernes pour réduire la taille (AVIF → WebP → fallback)
     formats: ['image/avif', 'image/webp'],

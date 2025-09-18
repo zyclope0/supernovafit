@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { X, Timer, Star, Play, Dumbbell, Target } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast' // TODO: À utiliser pour feedback utilisateur
 
 interface QuickTrainingTemplate {
   id: string
@@ -166,7 +166,7 @@ export default function QuickTrainingModal({
   className 
 }: QuickTrainingModalProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [favorites] = useState<Set<string>>(new Set()) // setFavorites TODO: Implémenter persistance
 
   const categories = [
     { id: 'all', label: 'Tous', emoji: '🏋️' },
@@ -189,11 +189,14 @@ export default function QuickTrainingModal({
     }
   }
 
+  // Template selection - TODO: À implémenter si nécessaire
+  /*
   const handleSelectTemplate = (template: QuickTrainingTemplate) => {
     onSelectTemplate(template)
     toast.success(`Entraînement "${template.name}" démarré !`)
     onClose()
   }
+  */
 
   if (!isOpen) return null
 

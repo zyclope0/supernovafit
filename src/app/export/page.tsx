@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { useExportData } from '@/hooks/useExportData'
 
@@ -135,7 +135,7 @@ export default function ExportPage() {
     { value: 'custom', label: 'Période personnalisée', icon: Calendar }
   ]
 
-  const handleQuickExport = async (format: ExportFormat, period: ExportPeriod) => {
+  const handleQuickExport = useCallback(async (format: ExportFormat, period: ExportPeriod) => {
     const config = {
       format,
       dataType: selectedDataType,
@@ -148,7 +148,7 @@ export default function ExportPage() {
     }
 
     await exportData(config)
-  }
+  }, [selectedDataType, customStartDate, customEndDate, includeCharts, exportData])
 
   const handleCustomExport = async () => {
     const config = {

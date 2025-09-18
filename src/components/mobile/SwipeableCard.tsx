@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, ReactNode } from 'react'
-import { Trash2, Edit, Star, Archive, Eye } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SwipeAction {
@@ -172,7 +172,7 @@ export default function SwipeableCard({
       {/* Left Actions */}
       {leftActions.length > 0 && (
         <div className="absolute left-0 top-0 bottom-0 flex items-center">
-          {leftActions.map((action, index) => {
+          {leftActions.map((action) => {
             const Icon = action.icon
             const isVisible = swipeDirection === 'right' && Math.abs(translateX) > 40
             
@@ -199,7 +199,7 @@ export default function SwipeableCard({
       {/* Right Actions */}
       {rightActions.length > 0 && (
         <div className="absolute right-0 top-0 bottom-0 flex items-center">
-          {rightActions.map((action, index) => {
+          {rightActions.map((action) => {
             const Icon = action.icon
             const isVisible = swipeDirection === 'left' && Math.abs(translateX) > 40
             

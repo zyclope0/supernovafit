@@ -48,7 +48,7 @@ export function useQuickActions() {
   }, [pathname, userProfile])
 
   const executeQuickAction = useCallback((actionId: string) => {
-    const context = getContext()
+    // const context = getContext() // TODO: À utiliser pour actions contextuelles
     
     switch (actionId) {
       // Actions Diète
@@ -124,7 +124,7 @@ export function useQuickActions() {
     }
     
     setIsModalOpen(false)
-  }, [getContext, router])
+  }, [router])
 
   const openQuickActions = useCallback(() => {
     setIsModalOpen(true)

@@ -1,9 +1,9 @@
 'use client'
 
-import { Edit, Trash2, Copy, Star, Play, Timer } from 'lucide-react'
+import { Edit, Trash2, Copy, Play, Timer } from 'lucide-react'
 import SwipeableCard from './SwipeableCard'
 import { Entrainement } from '@/types'
-import { cn } from '@/lib/utils'
+// import { cn } from '@/lib/utils' // TODO: À utiliser si nécessaire
 
 interface SwipeableTrainingCardProps {
   training: Entrainement
@@ -73,6 +73,8 @@ export default function SwipeableTrainingCard({
     return typeMap[type.toLowerCase()] || '🏋️'
   }
 
+  // Fonction pour couleur intensité - TODO: À utiliser si nécessaire
+  /*
   const getIntensityColor = (intensite?: string) => {
     switch (intensite?.toLowerCase()) {
       case 'faible': return 'text-green-400'
@@ -81,6 +83,7 @@ export default function SwipeableTrainingCard({
       default: return 'text-white/60'
     }
   }
+  */
 
   const formatDuration = (minutes: number) => {
     if (minutes < 60) return `${minutes}min`

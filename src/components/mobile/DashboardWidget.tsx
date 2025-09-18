@@ -27,7 +27,7 @@ export default function DashboardWidget({
   size = 'medium',
   draggable = true,
   collapsible = false,
-  onReorder,
+  // onReorder, // TODO: À implémenter si nécessaire
   onToggleSize,
   className
 }: DashboardWidgetProps) {

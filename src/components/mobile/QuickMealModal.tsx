@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { X, Clock, Star, Plus, Utensils } from 'lucide-react'
 import { MealType, Aliment, Macros } from '@/types'
 import { cn } from '@/lib/utils'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast' // TODO: À utiliser pour feedback utilisateur
 
 interface QuickMealTemplate {
   id: string
@@ -171,11 +171,14 @@ export default function QuickMealModal({
     })
   }
 
+  // Template selection - TODO: À implémenter si nécessaire
+  /*
   const handleSelectTemplate = (template: QuickMealTemplate) => {
     onSelectTemplate(template)
     toast.success(`Template "${template.name}" sélectionné !`)
     onClose()
   }
+  */
 
   if (!isOpen) return null
 

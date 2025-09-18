@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+// import { useState } from 'react' // TODO: À utiliser pour widgets configurables
 import { 
   TrendingUp, 
   Calendar, 
@@ -17,6 +17,8 @@ import { useRepas, useEntrainements, useMesures, useJournal } from '@/hooks/useF
 import { calculateTDEE } from '@/lib/userCalculations'
 import { cn } from '@/lib/utils'
 
+// Interface pour configuration des widgets - à réimplémenter
+/*
 interface WidgetConfig {
   id: string
   title: string
@@ -26,6 +28,7 @@ interface WidgetConfig {
   priority: number
   enabled: boolean
 }
+*/
 
 interface MobileDashboardProps {
   className?: string
@@ -38,6 +41,8 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   const { mesures } = useMesures()
   const { entries: journalEntries } = useJournal()
 
+  // Configuration des tailles de widgets - à réimplémenter si nécessaire
+  /*
   const [widgetSizes, setWidgetSizes] = useState<Record<string, 'small' | 'medium' | 'large'>>({
     'calories-today': 'medium',
     'weight-trend': 'medium', 
@@ -46,6 +51,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
     'goals-progress': 'large',
     'quick-stats': 'medium'
   })
+  */
 
   // Données du jour
   const today = new Date().toISOString().split('T')[0]
@@ -297,7 +303,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
       <div className="glass-effect rounded-xl p-4 border border-white/10">
         <div className="flex items-center gap-3 mb-4">
           <Calendar className="w-6 h-6 text-cyan-400" />
-          <h2 className="text-lg font-bold text-white">Résumé d'Aujourd'hui</h2>
+          <h2 className="text-lg font-bold text-white">Résumé d&apos;Aujourd&apos;hui</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -316,7 +322,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
               {entrainements.filter(e => e.date === today).length}
             </div>
             <div className="text-sm text-white/60">Séance</div>
-            <div className="text-xs text-white/40">aujourd'hui</div>
+            <div className="text-xs text-white/40">aujourd&apos;hui</div>
           </div>
 
           {/* Mood Today */}
