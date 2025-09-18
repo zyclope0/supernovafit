@@ -116,7 +116,7 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
           </div>
 
           {/* Détails des macros */}
-          <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-white/10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-white/10">
             <div className="text-center">
               <div className="text-lg font-bold text-neon-cyan">
                 {macros.prot.toFixed(1)}g

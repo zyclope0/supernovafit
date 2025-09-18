@@ -98,7 +98,7 @@ export default function SwipeableMealCard({
 
         {/* Macros Summary */}
         {hasAliments && macros && (
-          <div className="grid grid-cols-4 gap-3 mb-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-3">
             <div className="text-center">
               <div className="text-lg font-bold text-orange-400">
                 {Math.round(totalCalories)}

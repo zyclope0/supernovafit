@@ -163,14 +163,14 @@ function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/auth"
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
+              className="inline-flex items-center px-4 sm:px-6 lg:px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
             >
               Commencer gratuitement
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
             <Link
               href="/guide"
-              className="inline-flex items-center px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-all duration-200 border border-white/20"
+              className="inline-flex items-center px-4 sm:px-6 lg:px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-all duration-200 border border-white/20"
             >
               Découvrir le guide
             </Link>
@@ -208,14 +208,14 @@ function LandingPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="glass-effect p-8 rounded-xl border border-neon-cyan/20 bg-gradient-to-r from-neon-cyan/5 to-neon-purple/5 text-center">
+        <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-neon-cyan/20 bg-gradient-to-r from-neon-cyan/5 to-neon-purple/5 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Prêt à transformer votre vie ?</h2>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
             Rejoignez des milliers d&apos;utilisateurs qui ont déjà atteint leurs objectifs avec SuperNovaFit
           </p>
           <Link
             href="/auth"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
+            className="inline-flex items-center px-4 sm:px-6 lg:px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-semibold rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
           >
             Créer mon compte gratuitement
             <ArrowRight className="ml-2 h-5 w-5" />

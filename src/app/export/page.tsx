@@ -589,7 +589,7 @@ export default function ExportPage() {
         </div>
 
         {/* Informations sur les formats */}
-        <div className="mt-12 glass-effect border border-white/10 rounded-xl p-8">
+        <div className="mt-12 glass-effect border border-white/10 rounded-xl p-4 sm:p-6 lg:p-8">
           <h2 className="text-2xl font-semibold mb-6 text-center text-white">Informations sur les formats</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {formats.map((format) => {

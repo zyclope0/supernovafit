@@ -290,7 +290,7 @@ export default function QuickMealModal({
                     </div>
 
                     {/* Macros Summary */}
-                    <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
                       <div className="text-center">
                         <div className="text-lg font-bold text-blue-400">
                           {template.macros.prot}g

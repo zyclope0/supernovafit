@@ -380,7 +380,7 @@ export default function EntrainementsPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
+                  <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-white/10 text-center">
                     <div className="text-4xl mb-4">💪</div>
                     <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement ce jour</h3>
                     <p className="text-muted-foreground mb-4">Sélectionnez une autre date ou effacez le filtre pour voir les dernières séances.</p>
@@ -416,7 +416,7 @@ export default function EntrainementsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
+                <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-white/10 text-center">
                   <div className="text-4xl mb-4">💪</div>
                   <h3 className="text-lg font-semibold text-white mb-2">Aucun entraînement pour l&apos;instant</h3>
                   <button

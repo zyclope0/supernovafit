@@ -177,7 +177,7 @@ export function Breadcrumbs({
                   itemProp="name"
                 >
                   {Icon && <Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />}
-                  <span className="truncate max-w-[200px]">{item.label}</span>
+                  <span className="truncate max-w-[120px] sm:max-w-[200px]">{item.label}</span>
                 </span>
               ) : (
                 <Link
@@ -192,7 +192,7 @@ export function Breadcrumbs({
                   itemProp="item"
                 >
                   {Icon && <Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />}
-                  <span itemProp="name" className="truncate max-w-[150px]">{item.label}</span>
+                  <span itemProp="name" className="truncate max-w-[100px] sm:max-w-[150px]">{item.label}</span>
                 </Link>
               )}
               

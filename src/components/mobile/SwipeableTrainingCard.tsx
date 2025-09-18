@@ -130,7 +130,7 @@ export default function SwipeableTrainingCard({
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3">
           {/* Durée */}
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
