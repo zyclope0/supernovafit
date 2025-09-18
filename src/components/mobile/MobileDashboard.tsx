@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { 
   TrendingUp, 
   Calendar, 
@@ -11,9 +11,7 @@ import {
   Heart,
   Trophy,
   Zap,
-  Clock
 } from 'lucide-react'
-import DashboardWidget from './DashboardWidget'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures, useJournal } from '@/hooks/useFirestore'
 import { calculateTDEE } from '@/lib/userCalculations'
@@ -34,11 +32,11 @@ interface MobileDashboardProps {
 }
 
 export default function MobileDashboard({ className }: MobileDashboardProps) {
-  const { user, userProfile } = useAuth()
-  const { repas, loading: repasLoading } = useRepas()
-  const { entrainements, loading: trainingsLoading } = useEntrainements()
-  const { mesures, loading: measuresLoading } = useMesures()
-  const { entries: journalEntries, loading: journalLoading } = useJournal()
+  const { userProfile } = useAuth()
+  const { repas } = useRepas()
+  const { entrainements } = useEntrainements()
+  const { mesures } = useMesures()
+  const { entries: journalEntries } = useJournal()
 
   const [widgetSizes, setWidgetSizes] = useState<Record<string, 'small' | 'medium' | 'large'>>({
     'calories-today': 'medium',
@@ -76,14 +74,17 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   // TDEE calculé
   const estimatedTDEE = userProfile ? calculateTDEE(userProfile) : (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 2000)
 
-  const handleToggleSize = (widgetId: string) => {
-    setWidgetSizes(prev => {
-      const current = prev[widgetId] || 'medium'
-      const next = current === 'small' ? 'medium' : current === 'medium' ? 'large' : 'small'
-      return { ...prev, [widgetId]: next }
-    })
-  }
+  // Widget size toggle functionality - à implémenter si nécessaire
+  // const handleToggleSize = (widgetId: string) => {
+  //   setWidgetSizes(prev => {
+  //     const current = prev[widgetId] || 'medium'
+  //     const next = current === 'small' ? 'medium' : current === 'medium' ? 'large' : 'small'
+  //     return { ...prev, [widgetId]: next }
+  //   })
+  // }
 
+  // Configuration widgets - à implémenter si nécessaire
+  /*
   const widgets: WidgetConfig[] = [
     {
       id: 'calories-today',
@@ -122,6 +123,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
       enabled: true
     }
   ]
+  */
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -391,10 +393,10 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
           <div className="text-3xl mb-2">🚀</div>
           <p className="text-white/80 text-sm leading-relaxed">
             {todayStats.kcal > (estimatedTDEE || 2000) * 0.8 
-              ? "Excellent ! Vous êtes sur la bonne voie aujourd'hui !"
+              ? "Excellent ! Vous êtes sur la bonne voie aujourd&apos;hui !"
               : todayMeals.length > 0
                 ? "Continuez comme ça ! Quelques repas de plus pour atteindre vos objectifs."
-                : "C'est le moment parfait pour commencer votre journée nutritionnelle !"
+                : "C&apos;est le moment parfait pour commencer votre journée nutritionnelle !"
             }
           </p>
         </div>

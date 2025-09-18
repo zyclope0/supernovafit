@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+// import { useState } from 'react' // TODO: À utiliser si nécessaire
 import { useRouter, usePathname } from 'next/navigation'
 import { 
   X, 
@@ -8,8 +8,6 @@ import {
   Dumbbell, 
   Scale, 
   BookOpen, 
-  Camera,
-  Plus,
   Clock,
   Target
 } from 'lucide-react'

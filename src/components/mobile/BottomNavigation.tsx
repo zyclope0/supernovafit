@@ -7,8 +7,6 @@ import {
   Utensils, 
   Dumbbell, 
   Scale, 
-  BookOpen,
-  Trophy,
   Plus,
   MoreHorizontal
 } from 'lucide-react'
@@ -35,7 +33,7 @@ export default function BottomNavigation({
 }: BottomNavigationProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, userProfile } = useAuth()
+  const { user } = useAuth()
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
 

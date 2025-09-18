@@ -29,7 +29,6 @@ interface MobileResponsiveChartProps {
   type: 'line' | 'bar' | 'area' | 'pie'
   dataKey: string
   xAxisKey?: string
-  title: string
   color?: string
   gradient?: boolean
   showGrid?: boolean
@@ -50,12 +49,18 @@ const MOBILE_COLORS = {
 }
 
 // Tooltip personnalisé pour mobile
-const MobileTooltip = ({ active, payload, label }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number; color: string; name: string }>;
+  label?: string;
+}
+
+const MobileTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass-effect rounded-lg p-3 border border-white/20 shadow-xl">
         <p className="text-sm font-medium text-white mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <div key={index} className="flex items-center gap-2">
             <div 
               className="w-3 h-3 rounded-full"
@@ -77,7 +82,6 @@ export default function MobileResponsiveChart({
   type,
   dataKey,
   xAxisKey = 'name',
-  title,
   color = MOBILE_COLORS.primary,
   gradient = false,
   showGrid = true,
