@@ -191,7 +191,7 @@ export default function ChallengesPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 flex-wrap">
           <button
             onClick={() => setActiveTab('challenges')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
@@ -231,7 +231,7 @@ export default function ChallengesPage() {
         {activeTab === 'challenges' && (
           <div className="space-y-6">
             {/* Filters */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {(['all', 'active', 'completed', 'expired'] as const).map((filterType) => (
                 <button
                   key={filterType}
@@ -326,14 +326,14 @@ export default function ChallengesPage() {
         {showAddChallenge && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="glass-effect rounded-xl p-6 border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white">Ajouter un challenge</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-white flex-1 min-w-0">Ajouter un challenge</h2>
                 <button
                   onClick={() => {
                     setShowAddChallenge(false)
                     resetFilters()
                   }}
-                  className="text-white/70 hover:text-white transition-colors"
+                  className="text-white/70 hover:text-white transition-colors flex-shrink-0"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -354,7 +354,7 @@ export default function ChallengesPage() {
                 </div>
 
                 {/* Bouton filtres */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-wrap">
                   <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
