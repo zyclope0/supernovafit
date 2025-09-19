@@ -194,10 +194,10 @@ export default function EntrainementsPage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header simplifié */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold neon-text">Entraînements & Performance</h1>
-            <p className="text-muted-foreground">Suivez vos séances et progressez</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold neon-text">Entraînements & Performance</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Suivez vos séances et progressez</p>
           </div>
           {/* Bouton compact pour desktop */}
           <button
@@ -212,31 +212,31 @@ export default function EntrainementsPage() {
 
         {/* Dashboard compact avec stats performance */}
         {user && (
-          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4">
               {/* Séances cette semaine */}
-              <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
                 <div className="text-2xl font-bold text-neon-green">{thisWeekTrainings.length}</div>
                 <div className="text-xs text-muted-foreground">Séances</div>
                 <div className="text-xs text-neon-green mt-1">Cette semaine</div>
               </div>
               
               {/* Durée totale */}
-              <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
                 <div className="text-2xl font-bold text-neon-cyan">{Math.round(totalMinutes / 60)}h</div>
                 <div className="text-xs text-muted-foreground">Durée</div>
                 <div className="text-xs text-neon-cyan mt-1">{totalMinutes % 60}min</div>
               </div>
               
               {/* Calories brûlées */}
-              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
                 <div className="text-2xl font-bold text-neon-purple">{totalCalories}</div>
                 <div className="text-xs text-muted-foreground">Calories</div>
                 <div className="text-xs text-neon-purple mt-1">Brûlées</div>
               </div>
               
               {/* Durée moyenne */}
-              <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
+              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
                 <div className="text-2xl font-bold text-neon-pink">{averageDuration}</div>
                 <div className="text-xs text-muted-foreground">Durée moy.</div>
                 <div className="text-xs text-neon-pink mt-1">Minutes</div>

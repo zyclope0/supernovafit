@@ -138,20 +138,20 @@ export default function AllAthletesPage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Tous les Athlètes</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Tous les Athlètes</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
               Gérez et invitez des athlètes à rejoindre votre équipe
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Users className="w-8 h-8 text-neon-purple" />
           </div>
         </div>
 
         {/* Statistiques */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
           <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>

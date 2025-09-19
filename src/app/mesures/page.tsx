@@ -272,10 +272,10 @@ export default function MesuresPage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header simplifié */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold neon-text">Mesures & Progression</h1>
-            <p className="text-muted-foreground">Suivez votre évolution corporelle</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold neon-text">Mesures & Progression</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Suivez votre évolution corporelle</p>
           </div>
           {/* Boutons compacts pour desktop */}
           <div className="hidden md:flex gap-2">
@@ -300,7 +300,7 @@ export default function MesuresPage() {
 
         {/* Dashboard compact avec stats corporelles */}
         {user && (
-          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
+          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               {/* Nombre de mesures */}
               <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">

@@ -35,18 +35,18 @@ export default function ProfilPage() {
       <MainLayout>
         <div className="container mx-auto p-4 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Mon Profil</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Mon Profil</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
               Configurez vos informations personnelles pour des recommandations personnalisées
             </p>
           </div>
           
           {/* Indicateur de complétude */}
-          <div className="text-right">
+          <div className="text-center sm:text-right">
             <div className="text-sm text-muted-foreground mb-1">Profil complété</div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-center sm:justify-end">
               <div className="w-20 bg-space-700 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-neon-cyan to-neon-green h-2 rounded-full transition-all duration-500"

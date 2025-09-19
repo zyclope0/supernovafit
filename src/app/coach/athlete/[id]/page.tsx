@@ -115,23 +115,24 @@ export default function AthleteDetailPage() {
         </div>
 
         {/* Tabs de navigation */}
-        <div className="flex gap-2 p-1 bg-white/5 rounded-lg">
+        <div className="flex gap-1 sm:gap-2 p-1 bg-white/5 rounded-lg overflow-x-auto">
           {[
-            { id: 'overview', label: 'Vue d\'ensemble' },
-            { id: 'nutrition', label: 'Nutrition' },
-            { id: 'training', label: 'Entraînements' },
-            { id: 'measures', label: 'Mesures' }
+            { id: 'overview', label: 'Vue d\'ensemble', short: 'Vue' },
+            { id: 'nutrition', label: 'Nutrition', short: 'Nutrition' },
+            { id: 'training', label: 'Entraînements', short: 'Training' },
+            { id: 'measures', label: 'Mesures', short: 'Mesures' }
           ].map((tab) => (
               <button
               key={tab.id}
                 onClick={() => setActiveTab(tab.id as 'overview' | 'nutrition' | 'training' | 'measures')}
-              className={`flex-1 py-2 px-4 rounded-lg transition-all ${
+              className={`flex-1 py-2 px-2 sm:px-4 rounded-lg transition-all text-sm whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              {tab.label}
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.short}</span>
             </button>
           ))}
         </div>

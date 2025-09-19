@@ -169,11 +169,11 @@ export default function ChallengesPage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="glass-effect rounded-xl p-6 border border-white/20">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">🏆 Challenges & Gamification</h1>
-              <p className="text-white/70">Défiez-vous et débloquez des récompenses !</p>
+          <div className="glass-effect rounded-xl p-4 sm:p-5 lg:p-6 border border-white/20">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">🏆 Challenges & Gamification</h1>
+              <p className="text-white/70 text-sm sm:text-base">Défiez-vous et débloquez des récompenses !</p>
             </div>
             <button
               onClick={() => setShowAddChallenge(true)}

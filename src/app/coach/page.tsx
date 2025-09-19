@@ -73,14 +73,14 @@ export default function CoachDashboard() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Mes Athlètes</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Mes Athlètes</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
               Gérez vos athlètes et suivez leurs progressions
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Users className="w-8 h-8 text-neon-purple" />
           </div>
         </div>

@@ -191,29 +191,30 @@ export default function ExportPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header Simplifié */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
                 <FileText className="h-6 w-6 text-neon-purple" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Export de Données</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-white">Export de Données</h1>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleQuickExport('pdf', 'week')}
-                className="px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors flex items-center gap-2"
+                className="px-3 sm:px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors flex items-center gap-2 whitespace-nowrap"
                 disabled={loading}
               >
                 <Download className="h-4 w-4" />
-                Export Rapide
+                <span className="hidden sm:inline">Export Rapide</span>
+                <span className="sm:hidden">Export</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Dashboard Compact */}
-        <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5 mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4">
             <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
               <div className="text-2xl font-bold text-neon-purple">{exportStats.totalExports}</div>
               <div className="text-xs text-muted-foreground">Exports totaux</div>
