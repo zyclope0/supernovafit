@@ -21,6 +21,7 @@ import ProgressBar from '@/components/ui/ProgressBar'
 import { CardSkeleton } from '@/components/ui/Skeletons'
 import { Plus, Trophy, Target, Star, Search, Filter, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+import PageHeader from '@/components/ui/PageHeader'
 
 export default function ChallengesPage() {
   const { user } = useAuth()
@@ -168,27 +169,24 @@ export default function ChallengesPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header */}
-          <div className="glass-effect rounded-xl p-4 sm:p-5 lg:p-6 border border-white/20">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">🏆 Challenges & Gamification</h1>
-              <p className="text-white/70 text-sm sm:text-base">Défiez-vous et débloquez des récompenses !</p>
-            </div>
-            <button
-              onClick={() => setShowAddChallenge(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300"
-            >
-              <Plus className="w-4 h-4" />
-              Nouveau Challenge
-            </button>
-          </div>
+        {/* Header standardisé */}
+        <PageHeader
+          title="🏆 Challenges & Gamification"
+          description="Défiez-vous et débloquez des récompenses !"
+          action={{
+            label: 'Nouveau Challenge',
+            onClick: () => setShowAddChallenge(true),
+            icon: Plus,
+            color: 'purple'
+          }}
+        />
 
-          {/* Progress Bar Compact */}
-          {progress && (
+        {/* Progress Bar Compact */}
+        {progress && (
+          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10">
             <ProgressBar progress={progress} compact />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2 mb-6 flex-wrap">
@@ -196,7 +194,7 @@ export default function ChallengesPage() {
             onClick={() => setActiveTab('challenges')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
               activeTab === 'challenges'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
@@ -207,7 +205,7 @@ export default function ChallengesPage() {
             onClick={() => setActiveTab('achievements')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
               activeTab === 'achievements'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
@@ -218,7 +216,7 @@ export default function ChallengesPage() {
             onClick={() => setActiveTab('progress')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
               activeTab === 'progress'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-neon-green/20 text-neon-green border border-neon-green/30'
                 : 'bg-white/10 text-white/70 hover:bg-white/20'
             }`}
           >
@@ -238,7 +236,7 @@ export default function ChallengesPage() {
                   onClick={() => setFilter(filterType)}
                   className={`px-3 py-1 rounded-lg text-sm transition-all ${
                     filter === filterType
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'
                       : 'bg-white/10 text-white/70 hover:bg-white/20'
                   }`}
                 >
