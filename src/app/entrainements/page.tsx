@@ -262,34 +262,36 @@ export default function EntrainementsPage() {
         {/* Barre d'outils pour actions secondaires */}
         {user && (
           <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-muted-foreground">📅 Date sélectionnée :</label>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <label className="text-sm text-muted-foreground whitespace-nowrap">📅 Date :</label>
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200"
+                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200 flex-1 sm:flex-none"
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium"
+                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
                 >
                   Aujourd&apos;hui
                 </button>
                 <button
                   onClick={() => setShowHistory(true)}
-                  className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium"
+                  className="px-2 sm:px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
                 >
-                  📊 Historique
+                  <span className="hidden sm:inline">📊 Historique</span>
+                  <span className="sm:hidden">📊</span>
                 </button>
                 <button
                   onClick={() => setShowGarminImport(true)}
-                  className="px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-colors font-medium"
+                  className="px-2 sm:px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-colors font-medium whitespace-nowrap"
                 >
-                  📤 Import Garmin
+                  <span className="hidden sm:inline">📤 Import Garmin</span>
+                  <span className="sm:hidden">📤</span>
                 </button>
               </div>
             </div>
@@ -518,21 +520,21 @@ function SimpleAllTrainingsList({
         ))}
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 whitespace-nowrap"
             >
               Précédent
             </button>
-            <span className="text-xs text-muted-foreground">{start + 1}–{Math.min(sorted.length, start + pageSize)}</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{start + 1}–{Math.min(sorted.length, start + pageSize)}</span>
           </div>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 whitespace-nowrap"
           >
             Suivant
           </button>

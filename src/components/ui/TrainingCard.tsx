@@ -39,8 +39,8 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
 
   return (
     <div className="glass-effect p-4 rounded-lg border border-white/10 hover:glow-cyan transition-all">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex-1 min-w-0">
           {/* En-tête */}
           <div className="flex items-center gap-3 mb-3">
             <span className="text-2xl">{trainingType.icon}</span>
@@ -94,7 +94,7 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
 
           {/* Données avancées (si présentes) */}
           {(training.vitesse_moy || training.elevation_gain || training.puissance_moy) && (
-            <div className="flex items-center gap-4 mb-3 text-xs">
+            <div className="flex items-center gap-2 sm:gap-4 mb-3 text-xs flex-wrap">
               {training.vitesse_moy && (
                 <div className="flex items-center gap-1 text-muted-foreground">
                   <TrendingUp className="h-3 w-3" />
@@ -118,7 +118,7 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
 
           {/* Ressenti (si présent) */}
           {(training.effort_percu || training.fatigue_avant || training.fatigue_apres) && (
-            <div className="flex items-center gap-3 mb-3 text-xs">
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 text-xs flex-wrap">
               {training.effort_percu && (
                 <div className="text-muted-foreground">
                   <span className="text-neon-purple">Effort:</span> {training.effort_percu}/10
@@ -146,7 +146,7 @@ function TrainingCardComponent({ training, onEdit, onDelete }: TrainingCardProps
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 ml-4">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={onEdit}
             className="p-2 text-muted-foreground hover:text-neon-cyan transition-colors"
