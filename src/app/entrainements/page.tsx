@@ -51,6 +51,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
 import { Plus, BarChart3 } from 'lucide-react'
+import PageHeader from '@/components/ui/PageHeader'
 // import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { 
@@ -193,22 +194,17 @@ export default function EntrainementsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header simplifié */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold neon-text">Entraînements & Performance</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Suivez vos séances et progressez</p>
-          </div>
-          {/* Bouton compact pour desktop */}
-          <button
-            onClick={() => setShowCharts(!showCharts)}
-            className="hidden md:flex px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 items-center gap-2"
-            title="Afficher/masquer les graphiques"
-          >
-            <BarChart3 className="h-4 w-4" />
-            {showCharts ? 'Masquer' : 'Graphiques'}
-          </button>
-        </div>
+        {/* Header standardisé */}
+        <PageHeader
+          title="Entraînements & Performance"
+          description="Suivez vos séances et progressez"
+          action={{
+            label: showCharts ? 'Masquer' : 'Graphiques',
+            onClick: () => setShowCharts(!showCharts),
+            icon: BarChart3,
+            color: 'cyan'
+          }}
+        />
 
         {/* Dashboard compact avec stats performance */}
         {user && (

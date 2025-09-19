@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useJournal, useBadges, usePhotosLibres, useObjectifs, useCoachCommentsByModule } from '@/hooks/useFirestore'
 import { Plus, Edit3, Trash2, Award, Target } from 'lucide-react'
 import { JournalEntry } from '@/types'
+import PageHeader from '@/components/ui/PageHeader'
 import toast from 'react-hot-toast'
 import JournalForm from '@/components/ui/JournalForm'
 import dynamic from 'next/dynamic'
@@ -433,22 +434,17 @@ export default function JournalPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold neon-text">Journal & Motivation</h1>
-            <p className="text-muted-foreground">Votre espace personnel de suivi</p>
-          </div>
-          {/* Bouton compact pour desktop */}
-          <button
-            onClick={handleNewEntry}
-            className="hidden md:flex px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 items-center gap-2"
-            title="Ajouter une nouvelle entrée (raccourci: Ctrl+N)"
-          >
-            <Plus className="h-4 w-4" />
-            {todayEntry ? 'Modifier aujourd\'hui' : 'Nouvelle entrée'}
-          </button>
-        </div>
+        {/* Header standardisé */}
+        <PageHeader
+          title="Journal & Motivation"
+          description="Votre espace personnel de suivi"
+          action={{
+            label: todayEntry ? 'Modifier aujourd\'hui' : 'Nouvelle entrée',
+            onClick: handleNewEntry,
+            icon: Plus,
+            color: 'purple'
+          }}
+        />
 
         {/* Dashboard compact avec stats essentielles */}
         {user && entries.length > 0 && (

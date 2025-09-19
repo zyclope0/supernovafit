@@ -41,6 +41,8 @@ import {
 } from 'lucide-react'
 
 import type { ExportFormat, ExportDataType, ExportPeriod } from '@/types/export'
+import PageHeader from '@/components/ui/PageHeader'
+import StatsDashboard from '@/components/ui/StatsDashboard'
 
 export default function ExportPage() {
   const {
@@ -189,56 +191,38 @@ export default function ExportPage() {
   return (
     <MainLayout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Simplifié */}
-        <div className="mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
-                <FileText className="h-6 w-6 text-neon-purple" />
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white">Export de Données</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handleQuickExport('pdf', 'week')}
-                className="px-3 sm:px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors flex items-center gap-2 whitespace-nowrap"
-                disabled={loading}
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Export Rapide</span>
-                <span className="sm:hidden">Export</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Header standardisé */}
+        <PageHeader
+          title="Export de Données"
+          description="Exportez vos données de fitness et nutrition dans différents formats"
+          icon={FileText}
+          action={{
+            label: 'Export Rapide',
+            onClick: () => handleQuickExport('pdf', 'week'),
+            icon: Download,
+            color: 'cyan'
+          }}
+        />
 
-        {/* Dashboard Compact */}
-        <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5 mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4">
-            <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
-              <div className="text-2xl font-bold text-neon-purple">{exportStats.totalExports}</div>
-              <div className="text-xs text-muted-foreground">Exports totaux</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
-              <div className="text-2xl font-bold text-neon-cyan">{exportStats.favoriteFormat}</div>
-              <div className="text-xs text-muted-foreground">Format préféré</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
-              <div className="text-2xl font-bold text-neon-green">{exportStats.dataExported}</div>
-              <div className="text-xs text-muted-foreground">Données exportées</div>
-            </div>
-            <div className="text-center p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-              <div className="text-2xl font-bold text-orange-400">{exportStats.lastExport}</div>
-              <div className="text-xs text-muted-foreground">Dernier export</div>
-            </div>
-          </div>
-          {showHint && (
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
+        {/* Dashboard standardisé */}
+        <StatsDashboard
+          stats={[
+            { label: 'Exports totaux', value: exportStats.totalExports, color: 'purple' },
+            { label: 'Format préféré', value: exportStats.favoriteFormat, color: 'cyan' },
+            { label: 'Données exportées', value: exportStats.dataExported, color: 'green' },
+            { label: 'Dernier export', value: exportStats.lastExport, color: 'pink' }
+          ]}
+          className="mb-6"
+        />
+        
+        {showHint && (
+          <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
               <span>💡 Utilisez le bouton flottant pour un export rapide</span>
               <button onClick={() => setShowHint(false)} className="text-muted-foreground hover:text-white transition-colors ml-2" title="Masquer ce hint">✕</button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Affichage des erreurs */}
         {error && (

@@ -21,6 +21,7 @@ import CollapsibleCard from '@/components/ui/CollapsibleCard'
 import { CardSkeleton, ChartSkeleton, ListSkeleton } from '@/components/ui/Skeletons'
 import SmartSuggestions from '@/components/diete/SmartSuggestions'
 import type { SmartSuggestion } from '@/lib/nutritional-database'
+import PageHeader from '@/components/ui/PageHeader'
 
 import React from 'react'
 
@@ -368,22 +369,16 @@ export default function DietePage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header simplifié */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold neon-text">Diète & Nutrition</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Suivi nutritionnel - {today}</p>
-          </div>
-          {/* Bouton compact pour desktop */}
-          <button
-            onClick={() => setShowMenuTypes(true)}
-            className="hidden md:flex px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 items-center gap-2 whitespace-nowrap"
-            title="Appliquer un menu-type prédéfini"
-          >
-            <span>📋</span>
-            Menu-type
-          </button>
-        </div>
+        {/* Header standardisé */}
+        <PageHeader
+          title="Diète & Nutrition"
+          description={`Suivi nutritionnel - ${today}`}
+          action={{
+            label: 'Menu-type',
+            onClick: () => setShowMenuTypes(true),
+            color: 'purple'
+          }}
+        />
 
         {/* Dashboard compact avec stats nutritionnelles */}
         {user && (

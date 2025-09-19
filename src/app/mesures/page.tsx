@@ -12,6 +12,7 @@ import { CardSkeleton, ChartSkeleton, ListSkeleton, TableSkeleton } from '@/comp
 import { formatDate } from '@/lib/utils'
 import { Plus, Edit3, Trash2, BarChart3, Camera } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import PageHeader from '@/components/ui/PageHeader'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
@@ -271,32 +272,27 @@ export default function MesuresPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header simplifié */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold neon-text">Mesures & Progression</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Suivez votre évolution corporelle</p>
-          </div>
-          {/* Boutons compacts pour desktop */}
-          <div className="hidden md:flex gap-2">
-            <button 
-              onClick={() => setShowCharts(!showCharts)}
-              className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm"
-              title="Voir les graphiques d'évolution"
-            >
-              <BarChart3 className="h-4 w-4" />
-              {showCharts ? 'Masquer' : 'Graphiques'}
-            </button>
-            <button 
-              onClick={() => setShowPhotos(!showPhotos)}
-              className="px-3 py-2 bg-neon-pink/20 text-neon-pink rounded-lg font-medium hover:bg-neon-pink/30 transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm"
-              title="Voir les photos de progression"
-            >
-              <Camera className="h-4 w-4" />
-              {showPhotos ? 'Masquer' : 'Photos'}
-            </button>
-          </div>
-        </div>
+        {/* Header standardisé */}
+        <PageHeader
+          title="Mesures & Progression"
+          description="Suivez votre évolution corporelle"
+          actions={[
+            {
+              label: 'Graphiques',
+              shortLabel: showCharts ? 'Masquer' : 'Graphiques',
+              onClick: () => setShowCharts(!showCharts),
+              icon: BarChart3,
+              color: 'cyan'
+            },
+            {
+              label: 'Photos',
+              shortLabel: showPhotos ? 'Masquer' : 'Photos',
+              onClick: () => setShowPhotos(!showPhotos),
+              icon: Camera,
+              color: 'pink'
+            }
+          ]}
+        />
 
         {/* Dashboard compact avec stats corporelles */}
         {user && (
