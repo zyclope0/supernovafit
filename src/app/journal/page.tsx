@@ -48,7 +48,7 @@ function PaginatedEntries({ entries, onEdit, onDelete }: { entries: JournalEntry
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div className="text-xs text-muted-foreground">{entries.length} entrées • Page {page}/{totalPages}</div>
         <label className="text-xs text-muted-foreground flex items-center gap-2">
           Par page
@@ -70,21 +70,21 @@ function PaginatedEntries({ entries, onEdit, onDelete }: { entries: JournalEntry
         ))}
       </div>
       {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 whitespace-nowrap"
             >
               Précédent
             </button>
-            <span className="text-xs text-muted-foreground">{start + 1}–{Math.min(entries.length, start + pageSize)}</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{start + 1}–{Math.min(entries.length, start + pageSize)}</span>
           </div>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50"
+            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 whitespace-nowrap"
           >
             Suivant
           </button>
@@ -118,8 +118,8 @@ function EntryCard({ entry, onEdit, onDelete }: {
   return (
     <div className="glass-effect p-5 rounded-xl border border-white/10 hover:border-neon-cyan/40 transition-all duration-300 hover:shadow-xl hover:shadow-neon-cyan/20 group">
       {/* Header avec date et météo */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="flex flex-col">
             <span className="font-semibold text-white text-base">{formatDate(entry.date)}</span>
             {entry.meteo && (
@@ -131,7 +131,7 @@ function EntryCard({ entry, onEdit, onDelete }: {
         </div>
         
         {/* Actions avec meilleur design */}
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
           <button
             onClick={() => onEdit(entry)}
             className="p-2 hover:bg-neon-cyan/20 rounded-lg transition-all duration-200 group/btn"
@@ -407,7 +407,7 @@ export default function JournalPage() {
       <MainLayout>
         <div className="space-y-6">
           {/* Header skeleton */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-2">
               <div className="h-8 bg-white/20 rounded w-64"></div>
               <div className="h-4 bg-white/20 rounded w-48"></div>
@@ -510,28 +510,29 @@ export default function JournalPage() {
 
         {/* Barre outils date améliorée */}
         <div className="glass-effect p-4 rounded-lg border border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <label className="text-sm text-muted-foreground">📅 Date sélectionnée :</label>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="text-sm text-muted-foreground whitespace-nowrap">📅 Date :</label>
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200"
+                className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200 flex-1 sm:flex-none"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedDate(today)}
-                className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium"
+                className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
               >
                 Aujourd&apos;hui
               </button>
               <button
                 onClick={() => setShowHistory(true)}
-                className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium"
+                className="px-2 sm:px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
               >
-                📊 Historique complet
+                <span className="hidden sm:inline">📊 Historique complet</span>
+                <span className="sm:hidden">📊</span>
               </button>
             </div>
           </div>
@@ -618,8 +619,8 @@ export default function JournalPage() {
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground mb-3">Commencez avec ces objectifs :</p>
                   {OBJECTIFS_PREDEFINIS.map((obj, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-space-700/50 border border-white/10">
-                      <div>
+                    <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-lg bg-space-700/50 border border-white/10">
+                      <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-white">{obj.titre}</h4>
                         <p className="text-xs text-muted-foreground">{obj.description}</p>
                       </div>
@@ -630,7 +631,7 @@ export default function JournalPage() {
                             toast.success(`Objectif "${obj.titre}" ajouté !`)
                           }
                         }}
-                        className="px-3 py-1 bg-neon-cyan/20 text-neon-cyan rounded text-xs hover:bg-neon-cyan/30 transition-colors"
+                        className="px-3 py-1 bg-neon-cyan/20 text-neon-cyan rounded text-xs hover:bg-neon-cyan/30 transition-colors flex-shrink-0 whitespace-nowrap"
                       >
                         Ajouter
                       </button>
