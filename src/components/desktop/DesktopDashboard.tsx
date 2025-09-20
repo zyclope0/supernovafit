@@ -293,16 +293,16 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       </div>
 
       {/* Grille principale 12 colonnes */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-4 lg:gap-6">
         {/* Colonne principale (8 colonnes) */}
-        <div className="col-span-12 xl:col-span-8 space-y-6">
+        <div className="col-span-12 xl:col-span-8 space-y-4 lg:space-y-6">
           {/* Stats rapides - 6 colonnes sur desktop */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4">
             {quickStats.map((stat, index) => (
               <div
                 key={index}
                 className={cn(
-                  "glass-effect p-4 rounded-xl border transition-all duration-200 hover:scale-105 cursor-pointer",
+                  "glass-effect p-3 lg:p-4 rounded-lg lg:rounded-xl border transition-all duration-200 hover:scale-105 cursor-pointer",
                   stat.color === 'purple' && 'border-neon-purple/20 bg-neon-purple/5',
                   stat.color === 'cyan' && 'border-neon-cyan/20 bg-neon-cyan/5',
                   stat.color === 'green' && 'border-neon-green/20 bg-neon-green/5',
@@ -332,7 +332,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                   )}
                 </div>
                 <div className={cn(
-                  "text-xl font-bold mb-1",
+                  "text-lg lg:text-xl font-bold mb-1",
                   stat.color === 'purple' && 'text-neon-purple',
                   stat.color === 'cyan' && 'text-neon-cyan',
                   stat.color === 'green' && 'text-neon-green',
@@ -350,52 +350,72 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
           </div>
 
           {/* Section graphiques */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
             {/* Graphique calories */}
-            <div className="glass-effect p-6 rounded-xl border border-white/10">
+            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Calories & Objectifs</h3>
                 <BarChart3 className="h-5 w-5 text-neon-green" />
               </div>
-              <div className="h-64">
-                <CaloriesChart repas={repas} days={7} />
+              <div className="h-48 lg:h-64">
+                {repas.length > 0 ? (
+                  <CaloriesChart repas={repas} days={7} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground mb-2">Aucune donnée nutritionnelle</p>
+                    <p className="text-sm text-muted-foreground">
+                      Commencez à ajouter des repas pour suivre vos calories
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Graphique mesures */}
-            <div className="glass-effect p-6 rounded-xl border border-white/10">
+            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Évolution Mesures</h3>
                 <TrendingUp className="h-5 w-5 text-neon-purple" />
               </div>
-              <div className="h-64">
+              <div className="h-48 lg:h-64">
                 <MesuresCharts mesures={mesures} />
               </div>
             </div>
 
             {/* Graphique macros */}
-            <div className="glass-effect p-6 rounded-xl border border-white/10">
+            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Répartition Macros</h3>
                 <PieChart className="h-5 w-5 text-neon-cyan" />
               </div>
-              <div className="h-64">
-                <MacrosChart macros={{
-                  kcal: todayStats.calories,
-                  prot: todayStats.proteins,
-                  glucides: todayStats.carbs,
-                  lipides: todayStats.fats
-                }} />
+              <div className="h-48 lg:h-64">
+                {todayStats.calories > 0 ? (
+                  <MacrosChart macros={{
+                    kcal: todayStats.calories,
+                    prot: todayStats.proteins,
+                    glucides: todayStats.carbs,
+                    lipides: todayStats.fats
+                  }} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <PieChart className="h-12 w-12 text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground mb-2">Aucun repas aujourd&apos;hui</p>
+                    <p className="text-sm text-muted-foreground">
+                      Ajoutez des repas pour voir la répartition des macros
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Graphique calories in/out */}
-            <div className="glass-effect p-6 rounded-xl border border-white/10">
+            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Balance Énergétique</h3>
                 <Activity className="h-5 w-5 text-neon-pink" />
               </div>
-              <div className="h-64">
+              <div className="h-48 lg:h-64">
                 <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE || 2000} />
               </div>
             </div>
@@ -403,9 +423,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
         </div>
 
         {/* Sidebar droite (4 colonnes) */}
-        <div className="col-span-12 xl:col-span-4 space-y-6">
+        <div className="col-span-12 xl:col-span-4 space-y-4 lg:space-y-6">
           {/* Actions rapides */}
-          <div className="glass-effect p-6 rounded-xl border border-white/10">
+          <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Actions Rapides</h3>
               <Plus className="h-5 w-5 text-neon-purple" />
@@ -435,7 +455,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
           </div>
 
           {/* Activité récente */}
-          <div className="glass-effect p-6 rounded-xl border border-white/10">
+          <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Activité Récente</h3>
               <Clock className="h-5 w-5 text-neon-cyan" />
@@ -472,7 +492,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
           </div>
 
           {/* Objectifs du jour */}
-          <div className="glass-effect p-6 rounded-xl border border-white/10">
+          <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Objectifs du Jour</h3>
               <Target className="h-5 w-5 text-neon-green" />
@@ -529,7 +549,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
           </div>
 
           {/* Notifications/Alertes */}
-          <div className="glass-effect p-6 rounded-xl border border-white/10">
+          <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Notifications</h3>
               <Bell className="h-5 w-5 text-neon-pink" />
