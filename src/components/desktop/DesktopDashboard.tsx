@@ -33,7 +33,7 @@ import {
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
 const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
 const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
-const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
+const WeightIMCChart = dynamic(() => import('@/components/charts/WeightIMCChart'), { ssr: false })
 
 interface DesktopDashboardProps {
   className?: string
@@ -293,10 +293,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
         </div>
       </div>
 
-      {/* Layout responsive avec colonnes bien définies */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6">
-        {/* Colonne principale */}
-        <div className="xl:col-span-8 space-y-4 lg:space-y-6">
+      {/* Layout flexbox plus robuste */}
+      <div className="flex flex-col xl:flex-row gap-6">
+        {/* Colonne principale - 70% sur desktop */}
+        <div className="xl:flex-1 xl:w-0 space-y-6">
           {/* Stats rapides - 6 colonnes sur desktop */}
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4">
             {quickStats.map((stat, index) => (
@@ -350,81 +350,103 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
             ))}
           </div>
 
-          {/* Section graphiques - 2 colonnes mais plus petites */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-            {/* Graphique calories */}
-            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
+          {/* Section graphiques - Layout hybride optimisé */}
+          <div className="space-y-6">
+            {/* Graphique principal - Pleine largeur */}
+            <div className="glass-effect p-6 rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Calories & Objectifs</h3>
-                <BarChart3 className="h-5 w-5 text-neon-green" />
-              </div>
-              <div className="h-40 lg:h-48">
-                {repas.length > 0 ? (
-                  <CaloriesChart repas={repas} days={7} />
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center">
-                    <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground mb-2">Aucune donnée nutritionnelle</p>
-                    <p className="text-sm text-muted-foreground">
-                      Commencez à ajouter des repas pour suivre vos calories
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Graphique mesures */}
-            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Évolution Mesures</h3>
-                <TrendingUp className="h-5 w-5 text-neon-purple" />
-              </div>
-              <div className="h-40 lg:h-48">
-                <MesuresCharts mesures={mesures} />
-              </div>
-            </div>
-
-            {/* Graphique macros */}
-            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Répartition Macros</h3>
-                <PieChart className="h-5 w-5 text-neon-cyan" />
-              </div>
-              <div className="h-40 lg:h-48">
-                {todayStats.calories > 0 ? (
-                  <MacrosChart macros={{
-                    kcal: todayStats.calories,
-                    prot: todayStats.proteins,
-                    glucides: todayStats.carbs,
-                    lipides: todayStats.fats
-                  }} />
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center">
-                    <PieChart className="h-12 w-12 text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground mb-2">Aucun repas aujourd&apos;hui</p>
-                    <p className="text-sm text-muted-foreground">
-                      Ajoutez des repas pour voir la répartition des macros
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Graphique calories in/out */}
-            <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Balance Énergétique</h3>
+                <h3 className="text-lg font-semibold text-white">Balance Énergétique (7 jours)</h3>
                 <Activity className="h-5 w-5 text-neon-pink" />
               </div>
-              <div className="h-40 lg:h-48">
+              <div className="h-96">
                 <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE || 2000} />
+              </div>
+            </div>
+
+            {/* Graphiques secondaires - 2 colonnes */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Graphique calories */}
+              <div className="glass-effect p-6 rounded-xl border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Évolution Calories</h3>
+                  <BarChart3 className="h-5 w-5 text-neon-green" />
+                </div>
+                <div className="h-96">
+                  {repas.length > 0 ? (
+                    <CaloriesChart repas={repas} days={7} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-center">
+                      <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground mb-2">Aucune donnée nutritionnelle</p>
+                      <p className="text-sm text-muted-foreground">
+                        Commencez à ajouter des repas pour suivre vos calories
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Graphique macros */}
+              <div className="glass-effect p-6 rounded-xl border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Répartition Macros</h3>
+                  <PieChart className="h-5 w-5 text-neon-cyan" />
+                </div>
+                <div className="h-72">
+                  {todayStats.calories > 0 ? (
+                    <MacrosChart macros={{
+                      kcal: todayStats.calories,
+                      prot: todayStats.proteins,
+                      glucides: todayStats.carbs,
+                      lipides: todayStats.fats
+                    }} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-center">
+                      <PieChart className="h-12 w-12 text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground mb-2">Aucun repas aujourd&apos;hui</p>
+                      <p className="text-sm text-muted-foreground">
+                        Ajoutez des repas pour voir la répartition des macros
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Graphique poids & IMC - Optimisé pour desktop */}
+            <div className="glass-effect p-6 rounded-xl border border-white/10">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Évolution Poids & IMC</h3>
+                <TrendingUp className="h-5 w-5 text-neon-purple" />
+              </div>
+              <div className="h-80">
+                <WeightIMCChart mesures={mesures} />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sidebar droite */}
-        <div className="xl:col-span-4 space-y-4 lg:space-y-6">
+        {/* Sidebar droite - 30% sur desktop */}
+        <div className="xl:w-80 xl:flex-shrink-0 space-y-6">
+          {/* Section coach en haut de la sidebar */}
+          {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
+            <div className="glass-effect p-4 rounded-lg border border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Users className="h-4 w-4 text-neon-green" />
+                <span className="text-sm text-white">
+                  Lié à un coach
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  console.log('Changer de coach demandé')
+                }}
+                className="text-xs text-muted-foreground hover:text-white transition-colors"
+              >
+                Changer
+              </button>
+            </div>
+          )}
           {/* Actions rapides */}
           <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
@@ -604,26 +626,6 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
         </div>
       </div>
 
-      {/* Section coach intégrée dans le dashboard */}
-      {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
-        <div className="mt-6 glass-effect p-4 rounded-lg border border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Users className="h-5 w-5 text-neon-green" />
-            <span className="text-sm text-white">
-              Vous êtes lié à un coach
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              // Toast pour changer de coach
-              console.log('Changer de coach demandé')
-            }}
-            className="text-xs text-muted-foreground hover:text-white transition-colors"
-          >
-            Changer de coach
-          </button>
-        </div>
-      )}
     </div>
   )
 }

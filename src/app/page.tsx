@@ -268,7 +268,7 @@ export default function Dashboard() {
           <DesktopDashboard />
         </div>
 
-        {/* Section invitation coach - Seulement sur mobile/tablette */}
+        {/* Section invitation coach - Seulement mobile/tablette */}
         <div className="xl:hidden">
           {user && userProfile?.role === 'sportif' && !userProfile?.ownerCoachId && (
             <div className="glass-effect p-6 rounded-xl border border-neon-purple/20 bg-neon-purple/5">
@@ -287,7 +287,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Affichage discret si déjà un coach */}
+          {/* Affichage discret si déjà un coach - Mobile seulement */}
           {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
             <div className="glass-effect p-3 rounded-lg border border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-3">
