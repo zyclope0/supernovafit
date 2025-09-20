@@ -52,11 +52,11 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   const today = new Date().toISOString().split('T')[0]
   const todayMeals = repas.filter(r => r.date === today)
   const todayStats = todayMeals.reduce((total, meal) => ({
-    kcal: total.kcal + (meal.macros?.kcal || 0),
-    prot: total.prot + (meal.macros?.prot || 0),
-    glucides: total.glucides + (meal.macros?.glucides || 0),
-    lipides: total.lipides + (meal.macros?.lipides || 0),
-  }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
+    calories: total.calories + (meal.macros?.kcal || 0),
+    proteins: total.proteins + (meal.macros?.prot || 0),
+    carbs: total.carbs + (meal.macros?.glucides || 0),
+    fats: total.fats + (meal.macros?.lipides || 0),
+  }), { calories: 0, proteins: 0, carbs: 0, fats: 0 })
 
   // Entraînements de la semaine
   const weekStart = new Date()
@@ -87,7 +87,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
     {
       id: 'calories-today',
       title: 'Calories Aujourd\'hui',
-      subtitle: `${Math.round(todayStats.kcal)} / ${estimatedTDEE} kcal`,
+      subtitle: `${Math.round(todayStats.calories)} / ${estimatedTDEE} kcal`,
       icon: Utensils,
       size: widgetSizes['calories-today'],
       priority: 1,
@@ -133,13 +133,13 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <span className="text-xs text-white/60">Calories</span>
           </div>
           <div className="text-xl font-bold text-white mb-1">
-            {Math.round(todayStats.kcal)}
+            {Math.round(todayStats.calories)}
           </div>
           <div className="w-full bg-white/10 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-500"
               style={{ 
-                width: `${Math.min(100, (todayStats.kcal / (estimatedTDEE || 2000)) * 100)}%` 
+                width: `${Math.min(100, (todayStats.calories / (estimatedTDEE || 2000)) * 100)}%` 
               }}
             />
           </div>
@@ -152,13 +152,13 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <span className="text-xs text-white/60">Protéines</span>
           </div>
           <div className="text-xl font-bold text-white mb-1">
-            {Math.round(todayStats.prot)}g
+            {Math.round(todayStats.proteins)}g
           </div>
           <div className="w-full bg-white/10 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500"
               style={{ 
-                width: `${Math.min(100, (todayStats.prot / 150) * 100)}%` 
+                width: `${Math.min(100, (todayStats.proteins / 150) * 100)}%` 
               }}
             />
           </div>
@@ -213,19 +213,19 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
               <div>
                 <div className="font-medium text-white">Calories</div>
                 <div className="text-sm text-white/60">
-                  {Math.round(todayStats.kcal)} / {estimatedTDEE} kcal
+                  {Math.round(todayStats.calories)} / {estimatedTDEE} kcal
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-lg font-bold text-orange-400">
-                {Math.round((todayStats.kcal / (estimatedTDEE || 2000)) * 100)}%
+                {Math.round((todayStats.calories / (estimatedTDEE || 2000)) * 100)}%
               </div>
               <div className="w-16 bg-white/10 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-500"
                   style={{ 
-                    width: `${Math.min(100, (todayStats.kcal / (estimatedTDEE || 2000)) * 100)}%` 
+                    width: `${Math.min(100, (todayStats.calories / (estimatedTDEE || 2000)) * 100)}%` 
                   }}
                 />
               </div>
@@ -241,19 +241,19 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
               <div>
                 <div className="font-medium text-white">Protéines</div>
                 <div className="text-sm text-white/60">
-                  {Math.round(todayStats.prot)} / 150g
+                  {Math.round(todayStats.proteins)} / 150g
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-lg font-bold text-blue-400">
-                {Math.round((todayStats.prot / 150) * 100)}%
+                {Math.round((todayStats.proteins / 150) * 100)}%
               </div>
               <div className="w-16 bg-white/10 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500"
                   style={{ 
-                    width: `${Math.min(100, (todayStats.prot / 150) * 100)}%` 
+                    width: `${Math.min(100, (todayStats.proteins / 150) * 100)}%` 
                   }}
                 />
               </div>
@@ -389,7 +389,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
         <div className="text-center">
           <div className="text-3xl mb-2">🚀</div>
           <p className="text-white/80 text-sm leading-relaxed">
-            {todayStats.kcal > (estimatedTDEE || 2000) * 0.8 
+            {todayStats.calories > (estimatedTDEE || 2000) * 0.8 
               ? "Excellent ! Vous êtes sur la bonne voie aujourd&apos;hui !"
               : todayMeals.length > 0
                 ? "Continuez comme ça ! Quelques repas de plus pour atteindre vos objectifs."
