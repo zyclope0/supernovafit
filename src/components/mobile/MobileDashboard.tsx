@@ -437,7 +437,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
       {/* Widgets Configurables */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-white">Widgets Personnalisés</h3>
+          <h3 className="text-lg font-semibold text-white">Widgets Configurables</h3>
           <button className="text-xs text-white/60 hover:text-white transition-colors">
             Configurer
           </button>
@@ -455,12 +455,100 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
               onToggleSize={() => handleToggleSize(widget.id)}
               className="glass-effect border border-white/10"
             >
-              <div className="text-center py-4">
-                <widget.icon className="w-12 h-12 text-neon-cyan mx-auto mb-2" />
-                <div className="text-sm text-white/80">
-                  Widget personnalisé à développer
+              {/* Contenu fonctionnel selon le widget */}
+              {widget.id === 'calories-today' && (
+                <div className="p-4">
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-neon-green mb-2">
+                      {Math.round(todayStats.calories)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">kcal consommées</div>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div 
+                      className="bg-neon-green h-2 rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${Math.min(100, (todayStats.calories / (estimatedTDEE || 2000)) * 100)}%` 
+                      }}
+                    />
+                  </div>
+                  <div className="text-xs text-center mt-2 text-white/60">
+                    {Math.round((todayStats.calories / (estimatedTDEE || 2000)) * 100)}% de l&apos;objectif
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {widget.id === 'training-week' && (
+                <div className="p-4">
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-neon-orange mb-2">
+                      {thisWeekTrainings.length}
+                    </div>
+                    <div className="text-sm text-muted-foreground">séances cette semaine</div>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div 
+                      className="bg-neon-orange h-2 rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${Math.min(100, (thisWeekTrainings.length / 4) * 100)}%` 
+                      }}
+                    />
+                  </div>
+                  <div className="text-xs text-center mt-2 text-white/60">
+                    Objectif : 4 séances/semaine
+                  </div>
+                </div>
+              )}
+
+              {widget.id === 'weight-trend' && (
+                <div className="p-4">
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-neon-purple mb-2">
+                      {latestWeight?.poids || '--'}
+                    </div>
+                    <div className="text-sm text-muted-foreground">kg actuel</div>
+                  </div>
+                  {latestWeight && (
+                    <div className="text-xs text-center text-white/60">
+                      Dernière mesure : {new Date(latestWeight.date).toLocaleDateString('fr-FR')}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {widget.id === 'mood-today' && (
+                <div className="p-4">
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-neon-pink mb-2">
+                      {todayMood?.humeur || '--'}
+                    </div>
+                    <div className="text-sm text-muted-foreground">/5 humeur</div>
+                  </div>
+                  {todayMood && (
+                    <div className="w-full bg-white/10 rounded-full h-2">
+                      <div 
+                        className="bg-neon-pink h-2 rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${((todayMood.humeur || 0) / 5) * 100}%` 
+                        }}
+                      />
+                    </div>
+                  )}
+                  <div className="text-xs text-center mt-2 text-white/60">
+                    {todayMood ? 'Renseigné aujourd&apos;hui' : 'Non renseigné'}
+                  </div>
+                </div>
+              )}
+
+              {/* Widget par défaut pour les autres */}
+              {!['calories-today', 'training-week', 'weight-trend', 'mood-today'].includes(widget.id) && (
+                <div className="text-center py-4">
+                  <widget.icon className="w-12 h-12 text-neon-cyan mx-auto mb-2" />
+                  <div className="text-sm text-white/80">
+                    Widget {widget.title}
+                  </div>
+                </div>
+              )}
             </DashboardWidget>
           ))}
         </div>
