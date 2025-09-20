@@ -77,17 +77,51 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
 
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today')
 
-  // Calculs des données
+  // Calculs des données selon la période sélectionnée
   const today = new Date().toISOString().split('T')[0]
   const weekStart = new Date()
   weekStart.setDate(weekStart.getDate() - weekStart.getDay())
   const weekStartStr = weekStart.toISOString().split('T')[0]
   
-  // const monthStart = new Date()
-  // monthStart.setDate(1)
-  // const monthStartStr = monthStart.toISOString().split('T')[0]
+  const monthStart = new Date()
+  monthStart.setDate(1)
+  const monthStartStr = monthStart.toISOString().split('T')[0]
 
-  // Données du jour
+  // Calculer les dates selon la période
+  const getDateRange = () => {
+    switch (selectedPeriod) {
+      case 'today':
+        return { start: today, label: 'aujourd\'hui' }
+      case 'week':
+        return { start: weekStartStr, label: 'cette semaine' }
+      case 'month':
+        return { start: monthStartStr, label: 'ce mois' }
+      default:
+        return { start: today, label: 'aujourd\'hui' }
+    }
+  }
+
+  const { start: periodStart, label: periodLabel } = getDateRange()
+
+  // Données selon la période sélectionnée
+  const periodMeals = selectedPeriod === 'today' 
+    ? repas.filter(r => r.date === today)
+    : repas.filter(r => r.date >= periodStart)
+    
+  const periodStats = periodMeals.reduce((total, meal) => ({
+    calories: total.calories + (meal.macros?.kcal || 0),
+    proteins: total.proteins + (meal.macros?.prot || 0),
+    carbs: total.carbs + (meal.macros?.glucides || 0),
+    fats: total.fats + (meal.macros?.lipides || 0),
+  }), { calories: 0, proteins: 0, carbs: 0, fats: 0 })
+
+  // Entraînements selon la période
+  const periodTrainings = selectedPeriod === 'today'
+    ? entrainements.filter(e => e.date === today)
+    : entrainements.filter(e => e.date >= periodStart)
+  const periodCaloriesBurned = periodTrainings.reduce((total, t) => total + (t.calories || 0), 0)
+
+  // Garder aussi les données du jour pour certains calculs
   const todayMeals = repas.filter(r => r.date === today)
   const todayStats = todayMeals.reduce((total, meal) => ({
     calories: total.calories + (meal.macros?.kcal || 0),
@@ -96,9 +130,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
     fats: total.fats + (meal.macros?.lipides || 0),
   }), { calories: 0, proteins: 0, carbs: 0, fats: 0 })
 
-  // Entraînements de la semaine
   const thisWeekTrainings = entrainements.filter(e => e.date >= weekStartStr)
-  const thisWeekCaloriesBurned = thisWeekTrainings.reduce((total, t) => total + (t.calories || 0), 0)
 
   // Dernier poids et tendance
   const sortedMeasures = mesures
@@ -124,17 +156,19 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
   // Stats rapides pour la grille principale
   const quickStats: QuickStat[] = [
     {
-      label: 'Calories aujourd&apos;hui',
-      value: formatNumber(todayStats.calories),
+      label: `Calories ${periodLabel}`,
+      value: formatNumber(periodStats.calories),
       unit: 'kcal',
-      trend: todayStats.calories > (estimatedTDEE || 2000) * 0.8 ? 'up' : 'down',
-      trendValue: `${Math.round((todayStats.calories / (estimatedTDEE || 2000)) * 100)}%`,
+      trend: periodStats.calories > (estimatedTDEE || 2000) * 0.8 ? 'up' : 'down',
+      trendValue: selectedPeriod === 'today' 
+        ? `${Math.round((periodStats.calories / (estimatedTDEE || 2000)) * 100)}%`
+        : `${formatNumber(periodStats.calories)} total`,
       color: 'green',
       icon: Zap
     },
     {
-      label: 'Protéines',
-      value: formatNumber(todayStats.proteins),
+      label: `Protéines ${periodLabel}`,
+      value: formatNumber(periodStats.proteins),
       unit: 'g',
       trend: 'stable',
       color: 'cyan',
@@ -150,16 +184,16 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       icon: Scale
     },
     {
-      label: 'Séances semaine',
-      value: thisWeekTrainings.length,
-      unit: '/7',
-      trend: thisWeekTrainings.length >= 3 ? 'up' : 'down',
+      label: selectedPeriod === 'today' ? 'Séances aujourd\'hui' : `Séances ${periodLabel}`,
+      value: periodTrainings.length,
+      unit: selectedPeriod === 'today' ? '' : selectedPeriod === 'week' ? '/7' : '',
+      trend: periodTrainings.length >= (selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 3 : 8) ? 'up' : 'down',
       color: 'orange',
       icon: Dumbbell
     },
     {
-      label: 'Calories brûlées',
-      value: formatNumber(thisWeekCaloriesBurned),
+      label: `Calories brûlées ${periodLabel}`,
+      value: formatNumber(periodCaloriesBurned),
       unit: 'kcal',
       trend: 'up',
       color: 'pink',
@@ -355,11 +389,11 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
             {/* Graphique principal - Pleine largeur */}
             <div className="glass-effect p-6 rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Balance Énergétique (7 jours)</h3>
+                <h3 className="text-lg font-semibold text-white">Balance Énergétique ({periodLabel})</h3>
                 <Activity className="h-5 w-5 text-neon-pink" />
               </div>
               <div className="h-96">
-                <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE || 2000} />
+                <CaloriesInOutChart repas={periodMeals} entrainements={periodTrainings} days={selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 7 : 30} tdee={estimatedTDEE || 2000} />
               </div>
             </div>
 
@@ -372,9 +406,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                   <BarChart3 className="h-5 w-5 text-neon-green" />
                 </div>
                 <div className="h-96">
-                  {repas.length > 0 ? (
-                    <CaloriesChart repas={repas} days={7} />
-                  ) : (
+                {periodMeals.length > 0 ? (
+                  <CaloriesChart repas={periodMeals} days={selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 7 : 30} />
+                ) : (
                     <div className="flex flex-col items-center justify-center h-full text-center">
                       <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
                       <p className="text-muted-foreground mb-2">Aucune donnée nutritionnelle</p>
@@ -393,14 +427,14 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                   <PieChart className="h-5 w-5 text-neon-cyan" />
                 </div>
                 <div className="h-72">
-                  {todayStats.calories > 0 ? (
-                    <MacrosChart macros={{
-                      kcal: todayStats.calories,
-                      prot: todayStats.proteins,
-                      glucides: todayStats.carbs,
-                      lipides: todayStats.fats
-                    }} />
-                  ) : (
+                {periodStats.calories > 0 ? (
+                  <MacrosChart macros={{
+                    kcal: periodStats.calories,
+                    prot: periodStats.proteins,
+                    glucides: periodStats.carbs,
+                    lipides: periodStats.fats
+                  }} />
+                ) : (
                     <div className="flex flex-col items-center justify-center h-full text-center">
                       <PieChart className="h-12 w-12 text-muted-foreground mb-4" />
                       <p className="text-muted-foreground mb-2">Aucun repas aujourd&apos;hui</p>
