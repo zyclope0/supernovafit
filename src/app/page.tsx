@@ -268,46 +268,48 @@ export default function Dashboard() {
           <DesktopDashboard />
         </div>
 
-        {/* Section invitation coach (pour les athlètes) - Visible sur toutes les tailles */}
-        {user && userProfile?.role === 'sportif' && !userProfile?.ownerCoachId && (
-          <div className="glass-effect p-6 rounded-xl border border-neon-purple/20 bg-neon-purple/5">
-            <div className="mb-4">
-              <h3 className="text-xl font-semibold text-neon-purple mb-2">Rejoindre un Coach</h3>
-              <p className="text-muted-foreground">
-                Entrez le code d&apos;invitation de votre coach pour bénéficier d&apos;un suivi personnalisé
-              </p>
+        {/* Section invitation coach - Seulement sur mobile/tablette */}
+        <div className="xl:hidden">
+          {user && userProfile?.role === 'sportif' && !userProfile?.ownerCoachId && (
+            <div className="glass-effect p-6 rounded-xl border border-neon-purple/20 bg-neon-purple/5">
+              <div className="mb-4">
+                <h3 className="text-xl font-semibold text-neon-purple mb-2">Rejoindre un Coach</h3>
+                <p className="text-muted-foreground">
+                  Entrez le code d&apos;invitation de votre coach pour bénéficier d&apos;un suivi personnalisé
+                </p>
+              </div>
+              <InviteCodeInput 
+                onSuccess={() => {
+                  toast.success('Vous êtes maintenant connecté à votre coach !')
+                  window.location.reload()
+                }}
+              />
             </div>
-            <InviteCodeInput 
-              onSuccess={() => {
-                toast.success('Vous êtes maintenant connecté à votre coach !')
-                window.location.reload()
-              }}
-            />
-          </div>
-        )}
+          )}
 
-        {/* Affichage discret si déjà un coach */}
-        {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
-          <div className="glass-effect p-3 rounded-lg border border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Users className="h-4 w-4 text-neon-green" />
-              <span className="text-sm text-white">
-                Vous êtes lié à un coach
-              </span>
+          {/* Affichage discret si déjà un coach */}
+          {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
+            <div className="glass-effect p-3 rounded-lg border border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Users className="h-4 w-4 text-neon-green" />
+                <span className="text-sm text-white">
+                  Vous êtes lié à un coach
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  toast('Pour changer de coach, contactez votre coach actuel', {
+                    icon: '💡',
+                    duration: 4000
+                  })
+                }}
+                className="text-xs text-muted-foreground hover:text-white transition-colors"
+              >
+                Changer de coach
+              </button>
             </div>
-            <button
-              onClick={() => {
-                toast('Pour changer de coach, contactez votre coach actuel', {
-                  icon: '💡',
-                  duration: 4000
-                })
-              }}
-              className="text-xs text-muted-foreground hover:text-white transition-colors"
-            >
-              Changer de coach
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </MainLayout>
   )

@@ -25,7 +25,8 @@ import {
   PieChart,
   Bell,
   Star,
-  Timer
+  Timer,
+  Users
 } from 'lucide-react'
 
 // Lazy load des graphiques pour optimiser le bundle
@@ -292,10 +293,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
         </div>
       </div>
 
-      {/* Grille principale 12 colonnes */}
-      <div className="grid grid-cols-12 gap-4 lg:gap-6">
-        {/* Colonne principale (8 colonnes) */}
-        <div className="col-span-12 xl:col-span-8 space-y-4 lg:space-y-6">
+      {/* Layout responsive avec colonnes bien définies */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6">
+        {/* Colonne principale */}
+        <div className="xl:col-span-8 space-y-4 lg:space-y-6">
           {/* Stats rapides - 6 colonnes sur desktop */}
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4">
             {quickStats.map((stat, index) => (
@@ -422,8 +423,8 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
           </div>
         </div>
 
-        {/* Sidebar droite (4 colonnes) */}
-        <div className="col-span-12 xl:col-span-4 space-y-4 lg:space-y-6">
+        {/* Sidebar droite */}
+        <div className="xl:col-span-4 space-y-4 lg:space-y-6">
           {/* Actions rapides */}
           <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
@@ -602,6 +603,27 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
           </div>
         </div>
       </div>
+
+      {/* Section coach intégrée dans le dashboard */}
+      {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
+        <div className="mt-6 glass-effect p-4 rounded-lg border border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Users className="h-5 w-5 text-neon-green" />
+            <span className="text-sm text-white">
+              Vous êtes lié à un coach
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              // Toast pour changer de coach
+              console.log('Changer de coach demandé')
+            }}
+            className="text-xs text-muted-foreground hover:text-white transition-colors"
+          >
+            Changer de coach
+          </button>
+        </div>
+      )}
     </div>
   )
 }
