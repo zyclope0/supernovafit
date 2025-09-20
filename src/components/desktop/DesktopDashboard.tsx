@@ -350,15 +350,15 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
             ))}
           </div>
 
-          {/* Section graphiques */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          {/* Section graphiques - 2 colonnes mais plus petites */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {/* Graphique calories */}
             <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">Calories & Objectifs</h3>
                 <BarChart3 className="h-5 w-5 text-neon-green" />
               </div>
-              <div className="h-48 lg:h-64">
+              <div className="h-40 lg:h-48">
                 {repas.length > 0 ? (
                   <CaloriesChart repas={repas} days={7} />
                 ) : (
@@ -379,7 +379,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                 <h3 className="text-lg font-semibold text-white">Évolution Mesures</h3>
                 <TrendingUp className="h-5 w-5 text-neon-purple" />
               </div>
-              <div className="h-48 lg:h-64">
+              <div className="h-40 lg:h-48">
                 <MesuresCharts mesures={mesures} />
               </div>
             </div>
@@ -390,7 +390,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                 <h3 className="text-lg font-semibold text-white">Répartition Macros</h3>
                 <PieChart className="h-5 w-5 text-neon-cyan" />
               </div>
-              <div className="h-48 lg:h-64">
+              <div className="h-40 lg:h-48">
                 {todayStats.calories > 0 ? (
                   <MacrosChart macros={{
                     kcal: todayStats.calories,
@@ -416,7 +416,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                 <h3 className="text-lg font-semibold text-white">Balance Énergétique</h3>
                 <Activity className="h-5 w-5 text-neon-pink" />
               </div>
-              <div className="h-48 lg:h-64">
+              <div className="h-40 lg:h-48">
                 <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE || 2000} />
               </div>
             </div>
