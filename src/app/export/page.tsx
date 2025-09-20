@@ -17,7 +17,7 @@ const ExportButton = dynamic(
   () => import('@/components/ui/ExportButton').then(mod => ({ default: mod.ExportButton })),
   {
     loading: () => (
-      <div className="h-12 w-32 bg-blue-500/20 animate-pulse rounded-lg flex items-center justify-center text-sm text-blue-400">
+      <div className="h-12 w-32 bg-neon-cyan/20 animate-pulse rounded-lg flex items-center justify-center text-sm text-neon-cyan">
         Chargement...
       </div>
     ),
@@ -84,9 +84,9 @@ export default function ExportPage() {
       label: 'CSV', 
       icon: FileText, 
       description: 'Données brutes pour analyse',
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-500/10',
-      borderColor: 'border-blue-500/20'
+      color: 'from-neon-cyan to-neon-green',
+      bgColor: 'bg-neon-cyan/10',
+      borderColor: 'border-neon-cyan/20'
     },
     { 
       value: 'json', 
@@ -112,7 +112,7 @@ export default function ExportPage() {
       label: 'Repas uniquement', 
       description: 'Données nutritionnelles',
       icon: BarChart3,
-      color: 'from-orange-500 to-red-500'
+      color: 'from-neon-pink to-neon-purple'
     },
     { 
       value: 'entrainements', 
@@ -126,7 +126,7 @@ export default function ExportPage() {
       label: 'Mesures uniquement', 
       description: 'Données de progression',
       icon: Download,
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-neon-cyan to-neon-green'
     }
   ]
 

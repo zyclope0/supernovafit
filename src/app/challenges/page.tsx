@@ -255,7 +255,7 @@ export default function ChallengesPage() {
                 <p className="text-white/70 mb-4">Commencez votre aventure en ajoutant votre premier challenge !</p>
                 <button
                   onClick={() => setShowAddChallenge(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300"
+                  className="px-4 py-2 bg-gradient-to-r from-neon-cyan to-neon-purple text-white rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
                 >
                   Ajouter un challenge
                 </button>
@@ -357,7 +357,7 @@ export default function ChallengesPage() {
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                       showFilters 
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-400/30' 
+                        ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30' 
                         : 'bg-white/10 text-white/70 border border-white/20 hover:bg-white/15'
                     }`}
                   >
