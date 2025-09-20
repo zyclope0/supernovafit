@@ -4,19 +4,16 @@ import React from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
-import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
-import { formatNumber } from '@/lib/utils'
-import { calculateTDEE } from '@/lib/userCalculations'
+// import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import dynamic from 'next/dynamic'
-import type { Repas } from '@/types'
 import InviteCodeInput from '@/components/ui/InviteCodeInput'
 import { Users, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
-const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), { ssr: false })
-const CaloriesInOutChart = dynamic(() => import('@/components/ui/CaloriesInOutChart'), { ssr: false })
 const MobileDashboard = dynamic(() => import('@/components/mobile/MobileDashboard'), { ssr: false })
+const DesktopDashboard = dynamic(() => import('@/components/desktop/DesktopDashboard'), { ssr: false })
 
-// Composants du dashboard
+// Composants du dashboard (non utilisés avec DesktopDashboard)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function WelcomeCard({ username }: { username?: string }) {
   const today = new Date().toLocaleDateString('fr-FR', { 
     weekday: 'long',
@@ -44,6 +41,7 @@ function WelcomeCard({ username }: { username?: string }) {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function StatsCard({ title, value, unit, icon, color = "neon-purple" }: {
   title: string
   value: string | number
@@ -65,6 +63,7 @@ function StatsCard({ title, value, unit, icon, color = "neon-purple" }: {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function QuickActions() {
   const actions = [
     { name: 'Ajouter un repas', href: '/diete', icon: '🍽️', color: 'neon-green' },
@@ -95,8 +94,9 @@ function QuickActions() {
   )
 }
 
-function ProgressChart({ repas }: { repas: Repas[] }) {
-  return <CaloriesChart repas={repas} days={7} />
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function ProgressChart() {
+  return null
 }
 
 // Page d'accueil pour les utilisateurs non connectés
@@ -228,38 +228,14 @@ function LandingPage() {
 
 export default function Dashboard() {
   const { user, userProfile, loading } = useAuth()
-  const { repas, loading: repasLoading } = useRepas()
-  const { entrainements, loading: trainingsLoading } = useEntrainements()
-  const { mesures, loading: measuresLoading } = useMesures()
-  
-  // Date d'aujourd'hui
-  const today = new Date().toISOString().split('T')[0]
-  
-  // Calculer les stats du jour (uniquement les repas d'aujourd'hui)
-  const todayMeals = repas.filter(r => r.date === today)
-  const todayStats = todayMeals.reduce((total, meal) => ({
-    kcal: total.kcal + (meal.macros?.kcal || 0),
-    prot: total.prot + (meal.macros?.prot || 0),
-    glucides: total.glucides + (meal.macros?.glucides || 0),
-    lipides: total.lipides + (meal.macros?.lipides || 0),
-  }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
-  
-  
-  // Calculer les entraînements de la semaine
-  const weekStart = new Date()
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay())
-  const weekStartStr = weekStart.toISOString().split('T')[0]
-  
-  const thisWeekTrainings = entrainements.filter(e => e.date >= weekStartStr).length
-  
-  // Poids le plus récent
-  const latestWeight = mesures
-    .filter(m => m.poids)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
-
-  // Calcul TDEE précis si profil complet disponible, sinon estimation basique
-  const preciseTDEE = userProfile ? calculateTDEE(userProfile) : null
-  const estimatedTDEE = preciseTDEE || (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 0)
+  // Variables non utilisées avec DesktopDashboard (données gérées dans le composant)
+  // const { repas, loading: repasLoading } = useRepas()
+  // const { entrainements, loading: trainingsLoading } = useEntrainements()
+  // const { mesures, loading: measuresLoading } = useMesures()
+  // const today = new Date().toISOString().split('T')[0]
+  // const todayStats = { kcal: 0, prot: 0, glucides: 0, lipides: 0 }
+  // const thisWeekTrainings = 0
+  // const estimatedTDEE = 2000
 
   // Si pas d'utilisateur connecté, afficher la page d'accueil
   if (!loading && !user) {
@@ -287,101 +263,51 @@ export default function Dashboard() {
           <MobileDashboard />
         </div>
         
-        {/* Desktop Dashboard */}
-        <div className="hidden md:block space-y-6">
-          {/* Carte de bienvenue */}
-          <WelcomeCard username={userProfile?.nom || user?.email?.split('@')[0]} />
+        {/* Desktop Dashboard - Nouveau composant optimisé */}
+        <div className="hidden xl:block">
+          <DesktopDashboard />
+        </div>
 
-        {/* Message si pas connecté */}
-        {!user && (
-          <div className="glass-effect p-6 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
-            <p className="text-yellow-400">
-              Connectez-vous pour voir vos statistiques personnalisées !
-            </p>
+        {/* Section invitation coach (pour les athlètes) - Visible sur toutes les tailles */}
+        {user && userProfile?.role === 'sportif' && !userProfile?.ownerCoachId && (
+          <div className="glass-effect p-6 rounded-xl border border-neon-purple/20 bg-neon-purple/5">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold text-neon-purple mb-2">Rejoindre un Coach</h3>
+              <p className="text-muted-foreground">
+                Entrez le code d&apos;invitation de votre coach pour bénéficier d&apos;un suivi personnalisé
+              </p>
+            </div>
+            <InviteCodeInput 
+              onSuccess={() => {
+                toast.success('Vous êtes maintenant connecté à votre coach !')
+                window.location.reload()
+              }}
+            />
           </div>
         )}
 
-        {/* Statistiques du jour */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatsCard 
-            title="Calories aujourd&apos;hui" 
-            value={repasLoading ? '...' : formatNumber(todayStats.kcal)} 
-            unit="kcal" 
-            icon="🔥" 
-            color="neon-green"
-          />
-          <StatsCard 
-            title="Protéines" 
-            value={repasLoading ? '...' : formatNumber(todayStats.prot)} 
-            unit="g" 
-            icon="🥩" 
-            color="neon-cyan"
-          />
-          <StatsCard 
-            title="Entraînements" 
-            value={trainingsLoading ? '...' : thisWeekTrainings} 
-            unit="cette semaine" 
-            icon="💪" 
-            color="neon-pink"
-          />
-          <StatsCard 
-            title="Poids actuel" 
-            value={measuresLoading ? '...' : (latestWeight?.poids ? formatNumber(latestWeight.poids) : '--')} 
-            unit="kg" 
-            icon="⚖️" 
-            color="neon-purple"
-          />
-        </div>
-
-        {/* Contenu principal */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <QuickActions />
-          <ProgressChart repas={repas} />
-        </div>
-
-        {/* Section invitation coach (pour les athlètes) */}
-        {user && userProfile?.role === 'sportif' && (
-          <div>
-            {!userProfile?.ownerCoachId ? (
-              // Affichage principal si pas de coach
-              <InviteCodeInput />
-            ) : (
-              // Affichage discret si déjà un coach
-              <div className="glass-effect p-3 rounded-lg border border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Users className="h-4 w-4 text-neon-green" />
-                  <span className="text-sm text-white">
-                    Vous êtes lié à un coach
-                  </span>
-                </div>
-                <button
-                  onClick={() => {
-                    // Option pour changer de coach (à implémenter si nécessaire)
-                    toast('Pour changer de coach, contactez votre coach actuel', {
-                      icon: '💡',
-                      duration: 4000
-                    })
-                  }}
-                  className="text-xs text-muted-foreground hover:text-white transition-colors"
-                >
-                  Changer de coach
-                </button>
-              </div>
-            )}
+        {/* Affichage discret si déjà un coach */}
+        {user && userProfile?.role === 'sportif' && userProfile?.ownerCoachId && (
+          <div className="glass-effect p-3 rounded-lg border border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Users className="h-4 w-4 text-neon-green" />
+              <span className="text-sm text-white">
+                Vous êtes lié à un coach
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                toast('Pour changer de coach, contactez votre coach actuel', {
+                  icon: '💡',
+                  duration: 4000
+                })
+              }}
+              className="text-xs text-muted-foreground hover:text-white transition-colors"
+            >
+              Changer de coach
+            </button>
           </div>
         )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CaloriesInOutChart repas={repas} entrainements={entrainements} days={7} tdee={estimatedTDEE} />
-          {/* Placeholder pour futur: humeur/énergie 7j ou objectifs */}
-          <div className="glass-effect p-6 rounded-xl border border-white/10">
-            <h3 className="text-lg font-semibold text-white mb-4">Conseil du jour</h3>
-            <p className="text-sm text-muted-foreground">
-              Hydratez-vous et visez des protéines à chaque repas pour optimiser la récupération.
-            </p>
-          </div>
-        </div>
-        </div>
       </div>
     </MainLayout>
   )
