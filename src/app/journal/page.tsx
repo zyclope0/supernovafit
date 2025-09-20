@@ -7,6 +7,7 @@ import { useJournal, useBadges, usePhotosLibres, useObjectifs, useCoachCommentsB
 import { Plus, Edit3, Trash2, Award, Target } from 'lucide-react'
 import { JournalEntry } from '@/types'
 import PageHeader from '@/components/ui/PageHeader'
+import StatsDashboard from '@/components/ui/StatsDashboard'
 import toast from 'react-hot-toast'
 import JournalForm from '@/components/ui/JournalForm'
 import dynamic from 'next/dynamic'
@@ -446,62 +447,52 @@ export default function JournalPage() {
           }}
         />
 
-        {/* Dashboard compact avec stats essentielles */}
+        {/* Dashboard standardisé */}
         {user && entries.length > 0 && (
-          <div className="glass-effect p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              {avgHumeur > 0 && (
-                <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
-                  <div className="text-2xl font-bold text-neon-green">{avgHumeur}</div>
-                  <div className="text-xs text-muted-foreground">Humeur</div>
-                  <div className="w-full bg-space-700 rounded-full h-1 mt-2">
-                    <div 
-                      className="bg-neon-green h-1 rounded-full transition-all duration-500"
-                      style={{ width: `${(avgHumeur / 10) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-              {avgEnergie > 0 && (
-                <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
-                  <div className="text-2xl font-bold text-neon-cyan">{avgEnergie}</div>
-                  <div className="text-xs text-muted-foreground">Énergie</div>
-                  <div className="w-full bg-space-700 rounded-full h-1 mt-2">
-                    <div 
-                      className="bg-neon-cyan h-1 rounded-full transition-all duration-500"
-                      style={{ width: `${(avgEnergie / 10) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
-                <div className="text-2xl font-bold text-neon-purple">{entries.length}</div>
-                <div className="text-xs text-muted-foreground">Jours</div>
-                <div className="text-xs text-neon-purple mt-1">Streak actuel</div>
-              </div>
-              {objectifsActifs.length > 0 && (
-                <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
-                  <div className="text-2xl font-bold text-neon-pink">{objectifsActifs.length}</div>
-                  <div className="text-xs text-muted-foreground">Objectifs</div>
-                  <div className="text-xs text-neon-pink mt-1">En cours</div>
-                </div>
-              )}
-            </div>
+          <>
+            <StatsDashboard
+              stats={[
+                ...(avgHumeur > 0 ? [{ 
+                  label: 'Humeur', 
+                  value: avgHumeur, 
+                  color: 'green' as const,
+                  progress: (avgHumeur / 10) * 100
+                }] : []),
+                ...(avgEnergie > 0 ? [{ 
+                  label: 'Énergie', 
+                  value: avgEnergie, 
+                  color: 'cyan' as const,
+                  progress: (avgEnergie / 10) * 100
+                }] : []),
+                { 
+                  label: 'Jours', 
+                  value: entries.length, 
+                  color: 'purple'
+                },
+                ...(objectifsActifs.length > 0 ? [{ 
+                  label: 'Objectifs', 
+                  value: objectifsActifs.length, 
+                  color: 'pink' as const
+                }] : [])
+              ]}
+            />
             
             {/* Hint compact */}
             {showHint && (
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
-                <span>💡 Raccourci: Ctrl+N pour ajouter une entrée</span>
-                <button
-                  onClick={() => setShowHint(false)}
-                  className="text-muted-foreground hover:text-white transition-colors ml-2"
-                  title="Masquer ce hint"
-                >
-                  ✕
-                </button>
+              <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <span>💡 Raccourci: Ctrl+N pour ajouter une entrée</span>
+                  <button
+                    onClick={() => setShowHint(false)}
+                    className="text-muted-foreground hover:text-white transition-colors ml-2"
+                    title="Masquer ce hint"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Barre outils date améliorée */}

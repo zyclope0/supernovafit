@@ -52,6 +52,7 @@ import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestor
 import { Entrainement } from '@/types'
 import { Plus, BarChart3 } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
+import StatsDashboard from '@/components/ui/StatsDashboard'
 // import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { 
@@ -206,44 +207,42 @@ export default function EntrainementsPage() {
           }}
         />
 
-        {/* Dashboard compact avec stats performance */}
+        {/* Dashboard standardisé */}
         {user && (
-          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4">
-              {/* Séances cette semaine */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
-                <div className="text-2xl font-bold text-neon-green">{thisWeekTrainings.length}</div>
-                <div className="text-xs text-muted-foreground">Séances</div>
-                <div className="text-xs text-neon-green mt-1">Cette semaine</div>
-              </div>
-              
-              {/* Durée totale */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
-                <div className="text-2xl font-bold text-neon-cyan">{Math.round(totalMinutes / 60)}h</div>
-                <div className="text-xs text-muted-foreground">Durée</div>
-                <div className="text-xs text-neon-cyan mt-1">{totalMinutes % 60}min</div>
-              </div>
-              
-              {/* Calories brûlées */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
-                <div className="text-2xl font-bold text-neon-purple">{totalCalories}</div>
-                <div className="text-xs text-muted-foreground">Calories</div>
-                <div className="text-xs text-neon-purple mt-1">Brûlées</div>
-              </div>
-              
-              {/* Durée moyenne */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
-                <div className="text-2xl font-bold text-neon-pink">{averageDuration}</div>
-                <div className="text-xs text-muted-foreground">Durée moy.</div>
-                <div className="text-xs text-neon-pink mt-1">Minutes</div>
-              </div>
-            </div>
+          <>
+            <StatsDashboard
+              stats={[
+                { 
+                  label: 'Séances', 
+                  value: thisWeekTrainings.length, 
+                  color: 'green'
+                },
+                { 
+                  label: 'Durée', 
+                  value: `${Math.round(totalMinutes / 60)}h${totalMinutes % 60 ? ` ${totalMinutes % 60}min` : ''}`, 
+                  color: 'cyan'
+                },
+                { 
+                  label: 'Calories', 
+                  value: totalCalories, 
+                  color: 'purple'
+                },
+                { 
+                  label: 'Durée moy.', 
+                  value: averageDuration, 
+                  unit: 'min',
+                  color: 'pink'
+                }
+              ]}
+            />
             
             {/* Hint compact */}
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
-              <span>💡 Cliquez sur le bouton flottant pour ajouter un entraînement</span>
+            <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <span>💡 Cliquez sur le bouton flottant pour ajouter un entraînement</span>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {/* Message si pas connecté */}
@@ -271,20 +270,20 @@ export default function EntrainementsPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
+                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 font-medium whitespace-nowrap"
                 >
                   Aujourd&apos;hui
                 </button>
                 <button
                   onClick={() => setShowHistory(true)}
-                  className="px-2 sm:px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
+                  className="px-2 sm:px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-all duration-200 transform hover:scale-105 font-medium whitespace-nowrap"
                 >
                   <span className="hidden sm:inline">📊 Historique</span>
                   <span className="sm:hidden">📊</span>
                 </button>
                 <button
                   onClick={() => setShowGarminImport(true)}
-                  className="px-2 sm:px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-colors font-medium whitespace-nowrap"
+                  className="px-2 sm:px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 font-medium whitespace-nowrap"
                 >
                   <span className="hidden sm:inline">📤 Import Garmin</span>
                   <span className="sm:hidden">📤</span>

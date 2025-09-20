@@ -22,6 +22,7 @@ import { CardSkeleton, ChartSkeleton, ListSkeleton } from '@/components/ui/Skele
 import SmartSuggestions from '@/components/diete/SmartSuggestions'
 import type { SmartSuggestion } from '@/lib/nutritional-database'
 import PageHeader from '@/components/ui/PageHeader'
+import StatsDashboard from '@/components/ui/StatsDashboard'
 
 import React from 'react'
 
@@ -380,60 +381,46 @@ export default function DietePage() {
           }}
         />
 
-        {/* Dashboard compact avec stats nutritionnelles */}
+        {/* Dashboard standardisé */}
         {user && (
-          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-4">
-              {/* Calories */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
-                <div className="text-2xl font-bold text-neon-green">
-                  {todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0)}
-                </div>
-                <div className="text-xs text-muted-foreground">Calories</div>
-                <div className="w-full bg-space-700 rounded-full h-1 mt-2">
-                  <div 
-                    className="bg-neon-green h-1 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              {/* Protéines */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
-                <div className="text-2xl font-bold text-neon-cyan">
-                  {Math.round(todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0))}g
-                </div>
-                <div className="text-xs text-muted-foreground">Protéines</div>
-                <div className="w-full bg-space-700 rounded-full h-1 mt-2">
-                  <div 
-                    className="bg-neon-cyan h-1 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0) / 150) * 100, 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-              
-              {/* Repas */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
-                <div className="text-2xl font-bold text-neon-purple">{todayMeals.length}</div>
-                <div className="text-xs text-muted-foreground">Repas</div>
-                <div className="text-xs text-neon-purple mt-1">Aujourd&apos;hui</div>
-              </div>
-              
-              {/* Objectif */}
-              <div className="text-center p-2 sm:p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
-                <div className="text-2xl font-bold text-neon-pink">
-                  {Math.round((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100)}%
-                </div>
-                <div className="text-xs text-muted-foreground">Objectif</div>
-                <div className="text-xs text-neon-pink mt-1">Calories</div>
-              </div>
-            </div>
+          <>
+            <StatsDashboard
+              stats={[
+                { 
+                  label: 'Calories', 
+                  value: todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0), 
+                  unit: '',
+                  color: 'green',
+                  progress: Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100, 100)
+                },
+                { 
+                  label: 'Protéines', 
+                  value: Math.round(todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0)), 
+                  unit: 'g',
+                  color: 'cyan',
+                  progress: Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0) / 150) * 100, 100)
+                },
+                { 
+                  label: 'Repas', 
+                  value: todayMeals.length, 
+                  color: 'purple'
+                },
+                { 
+                  label: 'Objectif', 
+                  value: Math.round((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100), 
+                  unit: '%',
+                  color: 'pink'
+                }
+              ]}
+            />
             
             {/* Hint compact */}
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
-              <span>💡 Cliquez sur un repas pour ajouter des aliments</span>
+            <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <span>💡 Cliquez sur un repas pour ajouter des aliments</span>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {/* Barre d'outils pour actions secondaires */}

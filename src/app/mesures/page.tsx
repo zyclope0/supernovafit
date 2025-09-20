@@ -13,6 +13,7 @@ import { formatDate } from '@/lib/utils'
 import { Plus, Edit3, Trash2, BarChart3, Camera } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import PageHeader from '@/components/ui/PageHeader'
+import StatsDashboard from '@/components/ui/StatsDashboard'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
@@ -42,14 +43,14 @@ function MesureCard({
         <div className="flex gap-1">
           <button
             onClick={() => onEdit(mesure)}
-            className="p-2 text-neon-purple hover:bg-neon-purple/20 rounded-lg transition-colors"
+            className="p-2 text-neon-purple hover:bg-neon-purple/20 rounded-lg transition-all duration-200 transform hover:scale-105"
             title="Modifier"
           >
             <Edit3 className="h-4 w-4" />
           </button>
           <button
             onClick={() => onDelete(mesure.id)}
-            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all duration-200 transform hover:scale-105"
             title="Supprimer"
           >
             <Trash2 className="h-4 w-4" />
@@ -294,52 +295,43 @@ export default function MesuresPage() {
           ]}
         />
 
-        {/* Dashboard compact avec stats corporelles */}
+        {/* Dashboard standardisé */}
         {user && (
-          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10 bg-gradient-to-r from-neon-purple/5 to-neon-cyan/5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              {/* Nombre de mesures */}
-              <div className="text-center p-3 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20">
-                <div className="text-2xl font-bold text-neon-cyan">
-                  {mesures.length > 0 ? mesures.length : '0'}
-                </div>
-                <div className="text-xs text-muted-foreground">Mesures</div>
-                <div className="text-xs text-neon-cyan mt-1">Total</div>
-              </div>
-              
-              {/* IMC actuel */}
-              <div className="text-center p-3 rounded-lg bg-neon-green/10 border border-neon-green/20">
-                <div className="text-2xl font-bold text-neon-green">
-                  {stats ? stats.imc.toFixed(1) : '--'}
-                </div>
-                <div className="text-xs text-muted-foreground">IMC</div>
-                <div className="text-xs text-neon-green mt-1">Actuel</div>
-              </div>
-              
-              {/* Évolution poids */}
-              <div className="text-center p-3 rounded-lg bg-neon-pink/10 border border-neon-pink/20">
-                <div className="text-2xl font-bold text-neon-pink">
-                  {stats ? `${stats.evolution_poids > 0 ? '+' : ''}${stats.evolution_poids.toFixed(1)}kg` : '--'}
-                </div>
-                <div className="text-xs text-muted-foreground">Évolution</div>
-                <div className="text-xs text-neon-pink mt-1">Poids</div>
-              </div>
-              
-              {/* Dernier poids */}
-              <div className="text-center p-3 rounded-lg bg-neon-purple/10 border border-neon-purple/20">
-                <div className="text-2xl font-bold text-neon-purple">
-                  {mesures.length > 0 ? `${mesures[0].poids?.toFixed(1) || 'N/A'}kg` : '--'}
-                </div>
-                <div className="text-xs text-muted-foreground">Dernier poids</div>
-                <div className="text-xs text-neon-purple mt-1">Récent</div>
-              </div>
-            </div>
+          <>
+            <StatsDashboard
+              stats={[
+                { 
+                  label: 'Mesures', 
+                  value: mesures.length > 0 ? mesures.length : 0, 
+                  color: 'cyan'
+                },
+                { 
+                  label: 'IMC', 
+                  value: stats ? stats.imc.toFixed(1) : '--', 
+                  color: 'green'
+                },
+                { 
+                  label: 'Évolution', 
+                  value: stats ? `${stats.evolution_poids > 0 ? '+' : ''}${stats.evolution_poids.toFixed(1)}` : '--', 
+                  unit: 'kg',
+                  color: 'pink'
+                },
+                { 
+                  label: 'Dernier poids', 
+                  value: mesures.length > 0 ? mesures[0].poids?.toFixed(1) || 'N/A' : '--', 
+                  unit: 'kg',
+                  color: 'purple'
+                }
+              ]}
+            />
             
             {/* Hint compact */}
-            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-2 border-t border-white/10">
-              <span>💡 Cliquez sur le bouton flottant pour ajouter une mesure</span>
+            <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <span>💡 Cliquez sur le bouton flottant pour ajouter une mesure</span>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
 
