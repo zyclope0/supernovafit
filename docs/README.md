@@ -1,48 +1,32 @@
 # 📚 DOCUMENTATION SUPERNOVAFIT v1.11.0
 
-> Documentation complète et organisée pour SuperNovaFit - Plateforme Diète & Entraînement
+> **Documentation consolidée et optimisée** - Source unique de vérité technique
 
-## **🗂️ STRUCTURE OPTIMISÉE**
+## **📋 DOCUMENTS PRINCIPAUX**
 
-### **📊 [Audits](./audits/)**
-Analyses qualité et optimisations du projet
+### **🚀 [CONTEXTE TECHNIQUE COMPLET](./CONTEXTE_TECHNIQUE_COMPLET.md)**
+**Document unique consolidé** contenant 100% du contexte projet :
+- Architecture complète et stack technique
+- Design system standardisé et patterns
+- Modules fonctionnels et APIs
+- Sécurité, déploiement, règles développement
+- État projet, métriques, roadmap
 
-- **[Audit Qualité 2025-01-15](./audits/2025-01-15-quality/)** - Analyse complète (Score 9.2/10)
-- **[Audit UI/UX 2025-01-17](./audits/2025-01-17-ui-ux/)** - Design System (Score 8.8/10)
-- **[Patches](./audits/patches/)** - Correctifs techniques disponibles
+### **🤖 [Contexte IA](./context/ai_context_summary.md)**
+Résumé évolutif pour l'assistant IA avec dernières actions
 
-### **📖 [Guides](./guides/)**
-Guides pratiques pour utilisateurs et développeurs
+## **📊 DOCUMENTATION DÉTAILLÉE**
 
-- **[Guides Développement](./guides/)** - Setup, testing, déploiement
-- **[Guides Monitoring](./guides/monitoring/)** - Sentry, Analytics, Web Vitals
-- **[Guide Utilisateurs](./guides/)** - Utilisation de l'application
+### **📊 [Audits Qualité](./audits/)**
+- **[2025-01-15](./audits/2025-01-15-quality/)** - Analyse complète (Score 9.2/10)
+- **[2025-01-17](./audits/2025-01-17-ui-ux/)** - Design System (Score 8.8/10)
+- **[Patches](./audits/patches/)** - 8 correctifs techniques disponibles
 
-### **🔧 [Technique](./technical/)**
-Documentation technique détaillée
-
-- **Architecture** - Structure du projet et patterns
-- **Base de données** - Modèle Firestore et règles
-- **APIs** - Hooks et intégrations
-- **Patches** - Historique des correctifs techniques
+### **📖 [Guides Pratiques](./guides/)**
+- Guides développement, monitoring, utilisateurs
 
 ### **⚖️ [Légal](./legal/)**
-Documents légaux et conformité
-
-- **[Privacy Policy](./legal/PRIVACY.md)** - Politique de confidentialité
-- **[Security](./legal/SECURITY.md)** - Politique de sécurité
-
-### **🤖 [Contexte IA](./context/)**
-Contexte et mémoire pour l'assistant IA
-
-- **[Résumé Contexte](./context/ai_context_summary.md)** - État actuel du projet
-- **[Contexte Recovery](./context/RECOVERY_CONTEXT.md)** - Informations de récupération
-
-### **📦 [Archive](./archive/)**
-Historique et fichiers obsolètes
-
-- **[Archive 2025-01-15](./archive/obsolete_2025_01_15/)** - Fichiers obsolètes archivés
-- **[Sauvegardes](./archive/)** - Backups et historique
+- Privacy Policy, Security Policy
 
 ---
 
