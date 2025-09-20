@@ -259,7 +259,7 @@ export default function Dashboard() {
     <MainLayout>
       <div className="space-y-6">
         {/* Mobile Dashboard */}
-        <div className="block md:hidden">
+        <div className="block xl:hidden">
           <MobileDashboard />
         </div>
         
