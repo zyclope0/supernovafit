@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { ChefHat, Clock, MessageSquare } from 'lucide-react'
+import { ChefHat, MessageSquare } from 'lucide-react'
 import { CoachDietPlan, CoachComment } from '@/types'
 
 interface CoachDietSectionProps {

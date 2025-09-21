@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
 const TrainingForm = dynamic(() => import('@/components/ui/TrainingForm'), { ssr: false })
@@ -52,7 +52,8 @@ import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestor
 import { Entrainement } from '@/types'
 import { Plus, BarChart3 } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
-import StatsDashboard from '@/components/ui/StatsDashboard'
+// StatsDashboard supprimé - remplacé par TrainingProgressHeader
+import TrainingProgressHeader from '@/components/entrainements/TrainingProgressHeader'
 // import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { 
@@ -84,9 +85,10 @@ export default function EntrainementsPage() {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0])
   const [dateFilterActive, setDateFilterActive] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [performancePeriod, setPerformancePeriod] = useState<'today' | 'week' | 'month'>('week')
 
-  // Calculer les statistiques
-  const thisWeekTrainings = entrainements.filter(e => {
+  // Calculer les statistiques avec useMemo pour performance
+  const thisWeekTrainings = useMemo(() => entrainements.filter(e => {
     const trainingDate = new Date(e.date)
     const weekStart = new Date()
     const dayOfWeek = weekStart.getDay()
@@ -94,11 +96,54 @@ export default function EntrainementsPage() {
     weekStart.setDate(weekStart.getDate() - daysToSubtract)
     weekStart.setHours(0, 0, 0, 0)
     return trainingDate >= weekStart
-  })
+  }), [entrainements])
 
-  const totalMinutes = thisWeekTrainings.reduce((sum, e) => sum + e.duree, 0)
-  const totalCalories = thisWeekTrainings.reduce((sum, e) => sum + (e.calories || 0), 0)
-  const averageDuration = thisWeekTrainings.length > 0 ? Math.round(totalMinutes / thisWeekTrainings.length) : 0
+  // Calculs selon la période sélectionnée
+  const periodStats = useMemo(() => {
+    let periodTrainings: Entrainement[] = []
+    const today = new Date().toISOString().split('T')[0]
+    
+    if (performancePeriod === 'today') {
+      periodTrainings = entrainements.filter(e => e.date === today)
+    } else if (performancePeriod === 'week') {
+      periodTrainings = thisWeekTrainings
+    } else { // month
+      const monthStart = new Date()
+      monthStart.setDate(1)
+      const monthStartStr = monthStart.toISOString().split('T')[0]
+      periodTrainings = entrainements.filter(e => e.date >= monthStartStr)
+    }
+    
+    const totalMinutes = periodTrainings.reduce((sum, e) => sum + e.duree, 0)
+    const totalCalories = periodTrainings.reduce((sum, e) => sum + (e.calories || 0), 0)
+    // averageDuration calculé mais non utilisé dans le nouveau header
+    const averageIntensity = periodTrainings.length > 0 
+      ? periodTrainings.reduce((sum, e) => {
+          // Approximation intensité basée sur calories/minute
+          const caloriesPerMin = (e.calories || 0) / e.duree
+          const intensityScore = caloriesPerMin < 5 ? 1 : caloriesPerMin < 10 ? 2 : 3
+          return sum + intensityScore
+        }, 0) / periodTrainings.length
+      : 0
+    
+    // Objectifs selon la période
+    const targets = {
+      today: { sessions: 1, duration: 45, calories: 300, intensity: 2 },
+      week: { sessions: 4, duration: 180, calories: 1200, intensity: 2 },
+      month: { sessions: 16, duration: 720, calories: 4800, intensity: 2 }
+    }
+    
+    const target = targets[performancePeriod]
+    
+    return {
+      sessions: { current: periodTrainings.length, target: target.sessions, unit: '' },
+      duration: { current: totalMinutes, target: target.duration, unit: 'min' },
+      calories: { current: totalCalories, target: target.calories, unit: 'kcal' },
+      intensity: { current: Math.round(averageIntensity * 10) / 10, target: target.intensity, unit: '/3' }
+    }
+  }, [entrainements, thisWeekTrainings, performancePeriod])
+
+  // weekStats supprimé - remplacé par periodStats
 
   // Gestion des actions
   const handleSubmit = async (trainingData: Omit<Entrainement, 'id' | 'user_id'>) => {
@@ -209,42 +254,16 @@ export default function EntrainementsPage() {
           }}
         />
 
-        {/* Dashboard standardisé */}
+        {/* Header performance révolutionnaire */}
         {user && (
-          <>
-            <StatsDashboard
-              stats={[
-                { 
-                  label: 'Séances', 
-                  value: thisWeekTrainings.length, 
-                  color: 'green'
-                },
-                { 
-                  label: 'Durée', 
-                  value: `${Math.round(totalMinutes / 60)}h${totalMinutes % 60 ? ` ${totalMinutes % 60}min` : ''}`, 
-                  color: 'cyan'
-                },
-                { 
-                  label: 'Calories', 
-                  value: totalCalories, 
-                  color: 'purple'
-                },
-                { 
-                  label: 'Durée moy.', 
-                  value: averageDuration, 
-                  unit: 'min',
-                  color: 'pink'
-                }
-              ]}
-            />
-            
-            {/* Hint compact */}
-            <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <span>💡 Cliquez sur le bouton flottant pour ajouter un entraînement</span>
-              </div>
-            </div>
-          </>
+          <TrainingProgressHeader
+            sessions={periodStats.sessions}
+            duration={periodStats.duration}
+            calories={periodStats.calories}
+            intensity={periodStats.intensity}
+            period={performancePeriod}
+            onPeriodChange={setPerformancePeriod}
+          />
         )}
 
         {/* Message si pas connecté */}

@@ -23,6 +23,7 @@ interface WeightIMCChartProps {
 import type { TooltipProps } from 'recharts'
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const data = payload[0].payload
     
     return (

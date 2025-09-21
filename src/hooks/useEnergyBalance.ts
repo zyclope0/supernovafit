@@ -56,10 +56,10 @@ export function useEnergyBalance({
     const avgDailySportCalories = rawSportCalories / periodDays
     
     // Facteur de correction
-    const correctionFactor = userProfile ? getSportCorrectionFactor(userProfile.niveau_activite) : 0.7
+    const correctionFactor = userProfile?.niveau_activite ? getSportCorrectionFactor(userProfile.niveau_activite) : 0.7
     
     // TDEE ajusté (avec pondération)
-    const adjustedTDEE = userProfile ? calculateAdjustedTDEE(userProfile, avgDailySportCalories) : baseTDEE
+    const adjustedTDEE = userProfile ? calculateAdjustedTDEE(userProfile, avgDailySportCalories) || baseTDEE : baseTDEE
     
     // Calories sport pondérées
     const adjustedSportCalories = Math.round(rawSportCalories * correctionFactor)
@@ -79,12 +79,13 @@ export function useEnergyBalance({
     }), { calories: 0, proteins: 0, carbs: 0, fats: 0 })
     
     // Bilan énergétique
-    const energyBalance = periodStats.calories - adjustedTDEE
+    const finalAdjustedTDEE = adjustedTDEE || baseTDEE || 2000
+    const energyBalance = periodStats.calories - finalAdjustedTDEE
     const isDeficit = energyBalance < 0
     
     return {
       baseTDEE: baseTDEE || 2000,
-      adjustedTDEE,
+      adjustedTDEE: adjustedTDEE || baseTDEE || 2000,
       correctionFactor,
       rawSportCalories,
       adjustedSportCalories,

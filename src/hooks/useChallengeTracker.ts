@@ -407,7 +407,7 @@ export function useChallengeTracker() {
     }
 
     // Challenges de journal avancés
-    const { startOfDay, endOfDay } = getTodayBounds()
+    // const { startOfDay, endOfDay } = getTodayBounds() // Temporairement désactivé
 
     // 8. "Suivi Parfait" - 3 mesures cette semaine
     const suiviParfaitChallenge = challenges.find(c => 
@@ -488,7 +488,7 @@ export function useChallengeTracker() {
         
         const dayEntries = journalEntries.filter(entry => {
           const entryDate = new Date(entry.date)
-          return entryDate >= dayStart && entryDate <= dayEnd && (entry.sommeil || 0) >= 7
+          return entryDate >= dayStart && entryDate <= dayEnd && (entry.sommeil_duree || 0) >= 7
         })
         
         if (dayEntries.length > 0) sleepDays++

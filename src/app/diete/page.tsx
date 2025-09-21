@@ -208,7 +208,8 @@ export default function DietePage() {
   // Repas selon la période sélectionnée
   const periodMeals = macrosPeriod === 'today' ? todayMeals : weekMeals
 
-  // Hook centralisé pour tous les calculs énergétiques
+  // Hook centralisé pour tous les calculs énergétiques (préparé pour future intégration)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const energyBalance = useEnergyBalance({
     userProfile,
     repas: periodMeals,
