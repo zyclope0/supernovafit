@@ -5,15 +5,17 @@ import type { User } from '@/types'
 describe('TDEE Sport Adjustment', () => {
   const mockUser: User = {
     id: 'test',
+    role: 'sportif',
     nom: 'Test User',
     email: 'test@test.com',
+    date_invitation: new Date('2025-01-01'),
+    dernier_acces: new Date('2025-09-21'),
     age: 30,
     sexe: 'M',
     taille: 175,
     poids_initial: 70,
     niveau_activite: 'modere',
-    objectif: 'maintien',
-    role: 'sportif'
+    objectif: 'maintien'
   }
 
   describe('getSportCorrectionFactor', () => {
@@ -42,7 +44,7 @@ describe('TDEE Sport Adjustment', () => {
     })
 
     it('should add high sport bonus for sedentary user', () => {
-      const sedentaryUser = { ...mockUser, niveau_activite: 'sedentaire' }
+      const sedentaryUser = { ...mockUser, niveau_activite: 'sedentaire' as const }
       const sportCalories = 600
       const baseTDEE = calculateTDEE(sedentaryUser)
       const adjustedTDEE = calculateAdjustedTDEE(sedentaryUser, sportCalories)
@@ -53,7 +55,7 @@ describe('TDEE Sport Adjustment', () => {
     })
 
     it('should add minimal bonus for very intense user', () => {
-      const intenseUser = { ...mockUser, niveau_activite: 'tres_intense' }
+      const intenseUser = { ...mockUser, niveau_activite: 'tres_intense' as const }
       const sportCalories = 800
       const baseTDEE = calculateTDEE(intenseUser)
       const adjustedTDEE = calculateAdjustedTDEE(intenseUser, sportCalories)

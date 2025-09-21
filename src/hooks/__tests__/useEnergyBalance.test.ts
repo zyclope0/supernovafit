@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useEnergyBalance } from '../useEnergyBalance'
 import { User, Repas, Entrainement } from '@/types'
@@ -5,8 +6,11 @@ import { User, Repas, Entrainement } from '@/types'
 // Mock user profile
 const mockUser: User = {
   id: 'test-user',
+  role: 'sportif',
   nom: 'Test User',
   email: 'test@example.com',
+  date_invitation: new Date('2025-01-01'),
+  dernier_acces: new Date('2025-09-21'),
   age: 30,
   sexe: 'M',
   taille: 180,
@@ -42,7 +46,7 @@ const mockEntrainements: Entrainement[] = [
     type: 'musculation',
     duree: 60,
     calories: 400,
-    intensite: 'modere'
+    source: 'manuel'
   },
   {
     id: '2',
@@ -51,7 +55,7 @@ const mockEntrainements: Entrainement[] = [
     type: 'cardio',
     duree: 30,
     calories: 300,
-    intensite: 'intense'
+    source: 'manuel'
   }
 ]
 

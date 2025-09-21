@@ -1,0 +1,99 @@
+[debug] [2025-09-21T16:44:44.393Z] ----------------------------------------------------------------------
+[debug] [2025-09-21T16:44:44.396Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\yanni\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --project supernovafit-a6fe7
+[debug] [2025-09-21T16:44:44.396Z] CLI Version:   14.16.0
+[debug] [2025-09-21T16:44:44.396Z] Platform:      win32
+[debug] [2025-09-21T16:44:44.396Z] Node Version:  v24.4.0
+[debug] [2025-09-21T16:44:44.396Z] Time:          Sun Sep 21 2025 18:44:44 GMT+0200 (heure d’été d’Europe centrale)
+[debug] [2025-09-21T16:44:44.397Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-21T16:44:44.399Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-09-21T16:44:44.646Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-21T16:44:44.646Z] > authorizing via signed-in user (yannick.malgorn@gmail.com)
+[debug] [2025-09-21T16:44:44.647Z] [iam] checking project supernovafit-a6fe7 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-09-21T16:44:44.647Z] Checked if tokens are valid: false, expires at: 1757714451148
+[debug] [2025-09-21T16:44:44.648Z] Checked if tokens are valid: false, expires at: 1757714451148
+[debug] [2025-09-21T16:44:44.648Z] > refreshing access token with scopes: []
+[debug] [2025-09-21T16:44:44.649Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-21T16:44:44.649Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-21T16:44:44.878Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-21T16:44:44.878Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-21T16:44:44.886Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/supernovafit-a6fe7:testIamPermissions [none]
+[debug] [2025-09-21T16:44:44.887Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/supernovafit-a6fe7:testIamPermissions x-goog-quota-user=projects/supernovafit-a6fe7
+[debug] [2025-09-21T16:44:44.887Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/supernovafit-a6fe7:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-21T16:44:45.004Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-09-21T16:44:45.005Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-09-21T16:44:45.765Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/supernovafit-a6fe7:testIamPermissions 200
+[debug] [2025-09-21T16:44:45.766Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/supernovafit-a6fe7:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-09-21T16:44:45.767Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:44:45.767Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:44:45.767Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/supernovafit-a6fe7 [none]
+[debug] [2025-09-21T16:44:46.123Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/supernovafit-a6fe7 200
+[debug] [2025-09-21T16:44:46.124Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/supernovafit-a6fe7 {"projectId":"supernovafit-a6fe7","projectNumber":"261698689691","displayName":"supernovafit","name":"projects/supernovafit-a6fe7","resources":{"hostingSite":"supernovafit-a6fe7"},"state":"ACTIVE","etag":"1_3d604441-66b0-4fbd-b38c-eb400aecdcaf"}
+[debug] [2025-09-21T16:44:51.135Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:44:51.135Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:44:51.135Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/supernovafit-a6fe7/sites pageToken=&pageSize=10
+[debug] [2025-09-21T16:44:52.171Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/supernovafit-a6fe7/sites 200
+[debug] [2025-09-21T16:44:52.171Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/supernovafit-a6fe7/sites {"sites":[{"name":"projects/supernovafit-a6fe7/sites/supernovafit-a6fe7","defaultUrl":"https://supernovafit-a6fe7.web.app","appId":"1:261698689691:web:edc7a7135d94a8250c443e","type":"DEFAULT_SITE"}]}
+[debug] [2025-09-21T16:44:52.172Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:44:52.172Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:44:52.172Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:261698689691:web:edc7a7135d94a8250c443e/config [none]
+[debug] [2025-09-21T16:44:53.138Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:261698689691:web:edc7a7135d94a8250c443e/config 200
+[debug] [2025-09-21T16:44:53.138Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:261698689691:web:edc7a7135d94a8250c443e/config {"projectId":"supernovafit-a6fe7","appId":"1:261698689691:web:edc7a7135d94a8250c443e","storageBucket":"supernovafit-a6fe7.firebasestorage.app","apiKey":"AIzaSyBe176JrNl_R0NmUAFkhCISThnFUUgt8U4","authDomain":"supernovafit-a6fe7.firebaseapp.com","messagingSenderId":"261698689691","measurementId":"G-RV0RK8JWN4"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 15.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2025-09-21T16:45:04.099Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:45:04.099Z] Checked if tokens are valid: true, expires at: 1758476683878
+[debug] [2025-09-21T16:45:04.100Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/supernovafit-a6fe7/sites/supernovafit-a6fe7 [none]
+[debug] [2025-09-21T16:45:05.036Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/supernovafit-a6fe7/sites/supernovafit-a6fe7 200
+[debug] [2025-09-21T16:45:05.036Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/supernovafit-a6fe7/sites/supernovafit-a6fe7 {"name":"projects/supernovafit-a6fe7/sites/supernovafit-a6fe7","defaultUrl":"https://supernovafit-a6fe7.web.app","appId":"1:261698689691:web:edc7a7135d94a8250c443e","type":"DEFAULT_SITE"}
+[info]    ▲ Next.js 15.5.2
+
+[info]    - Environments: .env.production.local, .env.local
+   - Experiments (use with caution):
+     ✓ webpackBuildWorker
+     · clientTraceMetadata
+     · optimizePackageImports
+     ✓ parallelServerCompiles
+
+
+[info]    Creating an optimized production build ...
+
+[info] > [PWA] Compile server
+
+[info] > [PWA] Compile server
+
+[info] > [PWA] Compile server
+
+[info] > [PWA] Compile client (static)
+
+[info] > [PWA] Auto register service worker with: D:\SuperNovaFit\node_modules\next-pwa\register.js
+> [PWA] Service worker: D:\SuperNovaFit\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+
+[info] > [PWA] Compile server
+
+[info] > [PWA] Compile client (static)
+
+[info] > [PWA] Auto register service worker with: D:\SuperNovaFit\node_modules\next-pwa\register.js
+> [PWA] Service worker: D:\SuperNovaFit\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+
+[info] > [PWA] Fallback to precache routes when fetch failed from cache or network:
+
+[info] > [PWA]   document (page): /offline.html
+
+[info] > [PWA] Fallback to precache routes when fetch failed from cache or network:
+
+[info] > [PWA]   document (page): /offline.html
+
