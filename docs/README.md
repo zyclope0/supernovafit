@@ -1,4 +1,4 @@
-# 📚 DOCUMENTATION SUPERNOVAFIT v1.11.0
+# 📚 DOCUMENTATION SUPERNOVAFIT v1.12.0
 
 > **Documentation consolidée et optimisée** - Source unique de vérité technique
 

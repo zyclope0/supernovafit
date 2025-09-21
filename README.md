@@ -24,6 +24,7 @@
 - **Entraînements** : CRUD complet, calcul calories (MET + FC), import Garmin (TCX/GPX), 4 graphiques, templates rapides
 - **Mesures & Photos** : Mesures complètes, IMC, 4 graphiques, upload photos (Storage), galerie, comparaisons
 - **Journal & Motivation** : Humeur/énergie/sommeil/stress, notes, badges, objectifs, corrélations, saisie tactile
+- **🏆 Challenges & Gamification** : 17/42 challenges fonctionnels, tracking automatique, interface intelligente, progression XP
 - **Profil Utilisateur** : Calculs BMR/TDEE/IMC, recommandations macros personnalisées
 - **Mode Coach** : Dashboard coach, commentaires contextualisés, plan diète, sections rétractables
 

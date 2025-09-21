@@ -98,6 +98,8 @@ export default function BottomNavigation({
     if (pathname.startsWith('/mesures')) return 'mesures'
     if (pathname.startsWith('/journal')) return 'more'
     if (pathname.startsWith('/challenges')) return 'more'
+    if (pathname.startsWith('/guide')) return 'more'
+    if (pathname.startsWith('/menu')) return 'more'
     return 'more'
   }
 

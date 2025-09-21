@@ -89,6 +89,13 @@ export default function MenuPage() {
           description: 'Exporter mes statistiques',
           icon: BarChart3,
           href: '/export'
+        },
+        {
+          id: 'guide',
+          label: 'Guide',
+          description: 'Comment utiliser l\'application',
+          icon: HelpCircle,
+          href: '/guide'
         }
       ]
     },
@@ -299,7 +306,7 @@ export default function MenuPage() {
 
         {/* Version Info */}
         <div className="text-center text-white/40 text-sm py-4">
-          SuperNovaFit v1.10.0 • Mobile-First UX
+          SuperNovaFit v1.12.0 • Desktop & Mobile
         </div>
       </div>
     </div>

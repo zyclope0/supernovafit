@@ -823,11 +823,34 @@ export function createChallengeFromDefinition(
   definition: typeof CHALLENGE_DEFINITIONS[0],
   userId: string
 ): Omit<Challenge, 'id' | 'created_at' | 'completed_at'> {
+  const now = new Date()
+  const endDate = new Date(now)
+  
+  // Calculer la date de fin selon la catégorie
+  switch (definition.category) {
+    case 'daily':
+      endDate.setDate(now.getDate() + 1)
+      break
+    case 'weekly':
+      endDate.setDate(now.getDate() + 7)
+      break
+    case 'monthly':
+      endDate.setMonth(now.getMonth() + 1)
+      break
+    case 'special':
+      endDate.setMonth(now.getMonth() + 3) // 3 mois pour les spéciaux
+      break
+    default:
+      endDate.setDate(now.getDate() + 7)
+  }
+  
   return {
     ...definition,
     user_id: userId,
     current: 0,
-    status: 'active'
+    status: 'active',
+    startDate: now.toISOString(),
+    endDate: endDate.toISOString()
   }
 }
 

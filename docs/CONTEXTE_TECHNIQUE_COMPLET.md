@@ -1,7 +1,7 @@
-# 🚀 SUPERNOVAFIT - CONTEXTE TECHNIQUE COMPLET v1.11.0
+# 🚀 SUPERNOVAFIT - CONTEXTE TECHNIQUE COMPLET v1.12.0
 
 > **Document unique** consolidant 100% du contexte : architecture, technologies, règles, contraintes, état projet
-> **Dernière mise à jour** : 20.01.2025 | **Statut** : 🏆 EXCELLENCE TECHNIQUE
+> **Dernière mise à jour** : 21.09.2025 | **Statut** : 🏆 EXCELLENCE TECHNIQUE + GAMIFICATION AVANCÉE
 
 ---
 
@@ -20,7 +20,7 @@
 | **🧪 Tests** | 6.8/10 | ⚠️ Améliorer | +240% |
 
 ### **🎯 MÉTRIQUES TECHNIQUES**
-- **Build Time** : 35.1s (stable)
+- **Build Time** : 17.9s (optimisé)
 - **Bundle Principal** : 221KB (excellent)
 - **Vulnérabilités** : 0 (parfait)
 - **ESLint/TypeScript** : 0 erreur
@@ -143,7 +143,15 @@ SuperNovaFit/
 - **Corrélations** : Analyse patterns comportementaux
 - **Interface tactile** : Saisie rapide mobile
 
-### **6. Mode Coach**
+### **🏆 6. SYSTÈME CHALLENGES RÉVOLUTIONNAIRE (NOUVEAU v1.12.0)**
+- **17/42 challenges fonctionnels** : Tracking automatique temps réel
+- **Interface intelligente** : Classification visuelle selon l'implémentation
+- **5 catégories trackées** : Nutrition, Entraînement, Journal, Bien-être, Mesures
+- **Gamification avancée** : XP, difficultés, achievements
+- **Architecture évolutive** : Système modulaire pour extensions futures
+- **📋 Documentation** : [CHALLENGES_SYSTEM.md](technical/CHALLENGES_SYSTEM.md)
+
+### **7. Mode Coach**
 - **Dashboard athlètes** : Vue globale multi-utilisateurs
 - **Commentaires contextuels** : Par module, date, entraînement
 - **Plans diète** : Création et suivi personnalisés
@@ -469,13 +477,35 @@ const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
 
 ---
 
+## 🚀 **AMÉLIORATIONS RÉCENTES v1.12.0**
+
+### **⚡ Centralisation Énergétique (21.09.2025)**
+- ✅ **Hook `useEnergyBalance`** : Calculs TDEE/sport centralisés
+- ✅ **Cohérence garantie** : Même logique partout dans l'app
+- ✅ **Tests complets** : 4 scénarios de validation
+- ✅ **Performance** : -45 lignes de code dupliqué
+
+### **📅 Correction Calcul Semaine (21.09.2025)**
+- ✅ **Standard français** : Semaine Lundi → Dimanche (ISO 8601)
+- ✅ **4 fichiers corrigés** : Desktop, Mobile, Entrainements, Challenges
+- ✅ **Impact UX** : Mode semaine fonctionnel à 100%
+- ✅ **Données complètes** : Graphiques 7 jours complets
+
+### **📊 Graphiques Motivationnels (21.09.2025)**
+- ✅ **Domaines dynamiques** : Y-axis adapté aux données utilisateur
+- ✅ **Pondération sport** : Correction double comptage TDEE
+- ✅ **Périodes adaptatives** : Aujourd'hui/Semaine/Mois cohérents
+- ✅ **UX motivante** : Amplification visuelle des progrès
+
+---
+
 ## 📈 **ROADMAP TECHNIQUE**
 
-### **Phase 1 - Quick Wins (1 semaine)**
-- [ ] Nettoyer 44 exports inutilisés
-- [ ] Supprimer 3 dépendances obsolètes  
-- [ ] Optimiser route coach (lazy loading)
-- [ ] Tests composants UI critiques
+### **Phase 1 - Finalisation Centralisation (1 semaine)**
+- [ ] Refactoriser MobileDashboard avec useEnergyBalance
+- [ ] Refactoriser diete/page.tsx avec useEnergyBalance  
+- [ ] Tests intégration calculs énergétiques
+- [ ] Documentation développeur complète
 
 ### **Phase 2 - Tests (2 semaines)**
 - [ ] Coverage 2.16% → 15%
@@ -517,4 +547,4 @@ const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
 
 ---
 
-**SuperNovaFit v1.11.0** © 2025 - Excellence technique, mobile-first, production ready 🚀
+**SuperNovaFit v1.12.0** © 2025 - Excellence technique, mobile-first, production ready 🚀

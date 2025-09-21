@@ -67,8 +67,47 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
         tour_poitrine: mesure.tour_poitrine || null
       }))
     
+    // Calculer domains dynamiques motivationnels pour chaque métrique
+    const weights = data.map(d => d.poids).filter(Boolean) as number[]
+    const imcs = data.map(d => d.imc).filter(Boolean) as number[]
+    const masseGrasse = data.map(d => d.masse_grasse).filter(Boolean) as number[]
+    const masseMusculaire = data.map(d => d.masse_musculaire).filter(Boolean) as number[]
+    const tourTaille = data.map(d => d.tour_taille).filter(Boolean) as number[]
+    const tourHanches = data.map(d => d.tour_hanches).filter(Boolean) as number[]
+    const tourBras = data.map(d => d.tour_bras).filter(Boolean) as number[]
+    const tourCuisses = data.map(d => d.tour_cuisses).filter(Boolean) as number[]
     
-    return data
+    // Fonction helper pour calculer domain motivationnel
+    const getMotivationalDomain = (values: number[], isLossGood = true): [number, number] => {
+      if (values.length === 0) return [0, 100]
+      
+      const min = Math.min(...values)
+      const max = Math.max(...values)
+      const range = max - min
+      
+      if (isLossGood) {
+        // Pour poids, tour de taille, etc. : Focus sur les pertes
+        return [
+          Math.max(0, min - Math.max(2, range * 0.3)), // Plus d'espace en bas
+          max + Math.max(1, range * 0.1) // Moins d'espace en haut
+        ]
+      } else {
+        // Pour masse musculaire : Focus sur les gains
+        return [
+          Math.max(0, min - Math.max(1, range * 0.1)), // Moins d'espace en bas
+          max + Math.max(2, range * 0.3) // Plus d'espace en haut
+        ]
+      }
+    }
+    
+    const domains = {
+      weight: getMotivationalDomain(weights, true),
+      imc: getMotivationalDomain(imcs, true),
+      composition: [0, Math.max(50, Math.max(...masseGrasse, ...masseMusculaire) + 5)],
+      mensurations: getMotivationalDomain([...tourTaille, ...tourHanches, ...tourBras, ...tourCuisses], true)
+    }
+    
+    return { data, domains }
   }, [mesures])
 
 
@@ -93,7 +132,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
           Évolution Poids & IMC
         </h3>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData.data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis 
               dataKey="date" 
@@ -106,7 +145,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               stroke="#06b6d4"
               tick={{ fill: '#06b6d4', fontSize: 12 }}
               width={50}
-              domain={[25, 'dataMax']}
+              domain={chartData.domains.weight}
               tickFormatter={(v: number) => String(Math.round(v as number))}
               label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#06b6d4' } }}
             />
@@ -116,6 +155,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               stroke="#10b981"
               tick={{ fill: '#10b981', fontSize: 12 }}
               width={36}
+              domain={chartData.domains.imc}
               tickFormatter={(v: number) => String(Math.round((v as number) * 10) / 10)}
               label={{ value: 'IMC', angle: 90, position: 'insideRight', style: { textAnchor: 'middle', fill: '#10b981' } }}
             />
@@ -126,7 +166,12 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               dataKey="poids"
               stroke="#06b6d4"
               strokeWidth={3}
-              dot={{ fill: '#06b6d4', strokeWidth: 2, r: 4 }}
+              dot={{ 
+                fill: '#06b6d4', 
+                strokeWidth: 2, 
+                r: 5,
+                stroke: '#ffffff'
+              }}
               connectNulls={false}
             />
             <Line
@@ -135,7 +180,12 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               dataKey="imc"
               stroke="#10b981"
               strokeWidth={3}
-              dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+              dot={{ 
+                fill: '#10b981', 
+                strokeWidth: 2, 
+                r: 5,
+                stroke: '#ffffff'
+              }}
               connectNulls={false}
             />
           </LineChart>
@@ -149,7 +199,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
           Composition Corporelle
         </h3>
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={chartData}>
+          <AreaChart data={chartData.data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis 
               dataKey="date" 
@@ -160,6 +210,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
             <YAxis 
               stroke="#9ca3af"
               tick={{ fill: '#9ca3af', fontSize: 12 }}
+              domain={chartData.domains.composition}
               label={{ value: 'Pourcentage (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#9ca3af' } }}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -187,12 +238,33 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
 
       {/* Graphique Mensurations */}
       <div className="glass-effect p-6 rounded-lg border border-white/10">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Ruler className="h-5 w-5 text-neon-pink" />
-          Évolution des Mensurations
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Ruler className="h-5 w-5 text-neon-pink" />
+            Évolution des Mensurations
+          </h3>
+          {/* Stats motivationnelles mensurations */}
+          {chartData.data.length > 1 && (() => {
+            const firstTaille = chartData.data.find(d => d.tour_taille)?.tour_taille
+            const lastTaille = [...chartData.data].reverse().find(d => d.tour_taille)?.tour_taille
+            const tailleChange = firstTaille && lastTaille ? lastTaille - firstTaille : null
+            
+            return tailleChange !== null ? (
+              <div className="text-right">
+                <div className={`text-sm font-bold ${
+                  tailleChange < 0 ? 'text-green-400' : tailleChange > 0 ? 'text-red-400' : 'text-gray-400'
+                }`}>
+                  Tour de taille: {tailleChange > 0 ? '+' : ''}{tailleChange.toFixed(1)}cm
+                </div>
+                <div className="text-xs text-white/60">
+                  {tailleChange < 0 ? '📉 Excellent !' : tailleChange > 0 ? '📈 Attention' : '➡️ Stable'}
+                </div>
+              </div>
+            ) : null
+          })()}
+        </div>
         <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData.data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
             <XAxis 
               dataKey="date" 
@@ -203,6 +275,7 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
             <YAxis 
               stroke="#9ca3af"
               tick={{ fill: '#9ca3af', fontSize: 12 }}
+              domain={chartData.domains.mensurations}
               label={{ value: 'Centimètres (cm)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#9ca3af' } }}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -210,32 +283,32 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
               type="monotone"
               dataKey="tour_taille"
               stroke="#ec4899"
-              strokeWidth={2}
-              dot={{ fill: '#ec4899', strokeWidth: 2, r: 3 }}
+              strokeWidth={3}
+              dot={{ fill: '#ec4899', strokeWidth: 2, r: 4, stroke: '#ffffff' }}
               connectNulls={false}
             />
             <Line
               type="monotone"
               dataKey="tour_hanches"
               stroke="#f59e0b"
-              strokeWidth={2}
-              dot={{ fill: '#f59e0b', strokeWidth: 2, r: 3 }}
+              strokeWidth={3}
+              dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4, stroke: '#ffffff' }}
               connectNulls={false}
             />
             <Line
               type="monotone"
               dataKey="tour_bras"
               stroke="#06b6d4"
-              strokeWidth={2}
-              dot={{ fill: '#06b6d4', strokeWidth: 2, r: 3 }}
+              strokeWidth={3}
+              dot={{ fill: '#06b6d4', strokeWidth: 2, r: 4, stroke: '#ffffff' }}
               connectNulls={false}
             />
             <Line
               type="monotone"
               dataKey="tour_cuisses"
               stroke="#10b981"
-              strokeWidth={2}
-              dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
+              strokeWidth={3}
+              dot={{ fill: '#10b981', strokeWidth: 2, r: 4, stroke: '#ffffff' }}
               connectNulls={false}
             />
           </LineChart>

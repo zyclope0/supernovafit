@@ -15,7 +15,7 @@ import {
 import DashboardWidget from './DashboardWidget'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures, useJournal } from '@/hooks/useFirestore'
-import { calculateTDEE } from '@/lib/userCalculations'
+import { calculateTDEE, calculateAdjustedTDEE } from '@/lib/userCalculations'
 import { cn } from '@/lib/utils'
 
 interface WidgetConfig {
@@ -60,7 +60,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
 
   // Entraînements de la semaine
   const weekStart = new Date()
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+  const dayOfWeek = weekStart.getDay()
+  const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Dimanche = 6 jours, autres = jour - 1
+  weekStart.setDate(weekStart.getDate() - daysToSubtract)
   const weekStartStr = weekStart.toISOString().split('T')[0]
   const thisWeekTrainings = entrainements.filter(e => e.date >= weekStartStr)
 
@@ -72,8 +74,15 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   // Humeur du jour
   const todayMood = journalEntries.find(e => e.date === today)
 
-  // TDEE calculé
-  const estimatedTDEE = userProfile ? calculateTDEE(userProfile) : (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 2000)
+  // Calculer calories d'entraînement de la semaine pour ajustement
+  const weekCaloriesBurned = thisWeekTrainings.reduce((total, training) => total + (training.calories || 0), 0)
+  
+  // TDEE ajusté pour éviter le double comptage avec les entraînements
+  // Utiliser la moyenne quotidienne pour l'ajustement (pas le total de la période)
+  const avgDailySportCalories = weekCaloriesBurned / 7
+  const baseTDEE = userProfile ? calculateTDEE(userProfile) : (latestWeight?.poids ? Math.round(latestWeight.poids * 22 * 1.55) : 2000)
+  const adjustedTDEE = userProfile ? calculateAdjustedTDEE(userProfile, avgDailySportCalories) : baseTDEE
+  const estimatedTDEE = adjustedTDEE || baseTDEE
 
   const handleToggleSize = (widgetId: string) => {
     setWidgetSizes(prev => {
@@ -158,7 +167,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <div 
               className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500"
               style={{ 
-                width: `${Math.min(100, (todayStats.proteins / 150) * 100)}%` 
+                width: `${Math.min(100, (todayStats.proteins / (latestWeight?.poids ? Math.round(latestWeight.poids * 1.6) : 112)) * 100)}%` 
               }}
             />
           </div>
@@ -241,19 +250,19 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
               <div>
                 <div className="font-medium text-white">Protéines</div>
                 <div className="text-sm text-white/60">
-                  {Math.round(todayStats.proteins)} / 150g
+                  {Math.round(todayStats.proteins)} / {latestWeight?.poids ? Math.round(latestWeight.poids * 1.6) : 112}g
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-lg font-bold text-blue-400">
-                {Math.round((todayStats.proteins / 150) * 100)}%
+                {Math.round((todayStats.proteins / (latestWeight?.poids ? Math.round(latestWeight.poids * 1.6) : 112)) * 100)}%
               </div>
               <div className="w-16 bg-white/10 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-500"
                   style={{ 
-                    width: `${Math.min(100, (todayStats.proteins / 150) * 100)}%` 
+                    width: `${Math.min(100, (todayStats.proteins / (latestWeight?.poids ? Math.round(latestWeight.poids * 1.6) : 112)) * 100)}%` 
                   }}
                 />
               </div>
@@ -401,7 +410,10 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
 
       {/* Quick Actions Grid */}
       <div className="grid grid-cols-2 gap-3">
-        <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105">
+        <button 
+          onClick={() => window.location.href = '/diete'}
+          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
+        >
           <div className="text-center">
             <Utensils className="w-8 h-8 text-orange-400 mx-auto mb-2" />
             <div className="font-medium text-white mb-1">Ajouter Repas</div>
@@ -409,7 +421,10 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
           </div>
         </button>
 
-        <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105">
+        <button 
+          onClick={() => window.location.href = '/entrainements'}
+          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
+        >
           <div className="text-center">
             <Activity className="w-8 h-8 text-blue-400 mx-auto mb-2" />
             <div className="font-medium text-white mb-1">Entraînement</div>
@@ -417,7 +432,10 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
           </div>
         </button>
 
-        <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105">
+        <button 
+          onClick={() => window.location.href = '/mesures'}
+          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
+        >
           <div className="text-center">
             <Scale className="w-8 h-8 text-green-400 mx-auto mb-2" />
             <div className="font-medium text-white mb-1">Peser</div>
@@ -425,7 +443,10 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
           </div>
         </button>
 
-        <button className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105">
+        <button 
+          onClick={() => window.location.href = '/journal'}
+          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
+        >
           <div className="text-center">
             <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
             <div className="font-medium text-white mb-1">Humeur</div>
@@ -438,7 +459,13 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-white">Widgets Configurables</h3>
-          <button className="text-xs text-white/60 hover:text-white transition-colors">
+          <button 
+            onClick={() => {
+              // TODO: Implémenter modal de configuration widgets
+              console.log('Configuration widgets demandée')
+            }}
+            className="text-xs text-white/60 hover:text-white transition-colors"
+          >
             Configurer
           </button>
         </div>

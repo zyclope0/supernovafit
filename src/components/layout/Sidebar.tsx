@@ -23,7 +23,8 @@ import {
   ChartPieIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  TrophyIcon
+  TrophyIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -33,6 +34,7 @@ const navigation = [
   { name: 'Mesures', href: '/mesures', icon: ScaleIcon },
   { name: 'Journal', href: '/journal', icon: BookOpenIcon },
   { name: 'Challenges', href: '/challenges', icon: TrophyIcon },
+  { name: 'Guide', href: '/guide', icon: QuestionMarkCircleIcon },
   { name: 'Export', href: '/export', icon: DocumentTextIcon },
 ]
 

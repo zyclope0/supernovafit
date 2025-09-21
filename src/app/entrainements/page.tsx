@@ -89,7 +89,9 @@ export default function EntrainementsPage() {
   const thisWeekTrainings = entrainements.filter(e => {
     const trainingDate = new Date(e.date)
     const weekStart = new Date()
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+    const dayOfWeek = weekStart.getDay()
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Dimanche = 6 jours, autres = jour - 1
+    weekStart.setDate(weekStart.getDate() - daysToSubtract)
     weekStart.setHours(0, 0, 0, 0)
     return trainingDate >= weekStart
   })

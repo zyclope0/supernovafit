@@ -5,24 +5,27 @@ import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
 const MealForm = dynamic(() => import('@/components/ui/MealForm'), { ssr: false })
 import { useAuth } from '@/hooks/useAuth'
-import { useRepas, useAthleteDietPlan, useCoachCommentsByModule } from '@/hooks/useFirestore'
+import { useEnergyBalance } from '@/hooks/useEnergyBalance'
+import { calculateTDEE, calculateAdjustedTDEE } from '@/lib/userCalculations'
+import { useRepas, useAthleteDietPlan, useCoachCommentsByModule, useEntrainements } from '@/hooks/useFirestore'
 import { MealType, Aliment, Macros } from '@/types'
 // formatNumber removed - not used
 import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
 import { IconButton } from '@/components/ui/IconButton'
 import dynamic from 'next/dynamic'
-const MacrosChart = dynamic(() => import('@/components/ui/MacrosChart'), { ssr: false })
+// MacrosChart supprimé - remplacé par NutritionAnalytics evidence-based
 // import SwipeableMealCard from '@/components/mobile/SwipeableMealCard' // TODO: À intégrer
 const MenuTypesModal = dynamic(() => import('@/components/ui/MenuTypesModal'), { ssr: false })
 const HistoriqueModal = dynamic(() => import('@/components/ui/HistoriqueModal'), { ssr: false })
-import CoachRecommendations from '@/components/ui/CoachRecommendations'
-import ModuleComments from '@/components/ui/ModuleComments'
+// CoachRecommendations et ModuleComments remplacés par CoachDietSection optimisé
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
-import { CardSkeleton, ChartSkeleton, ListSkeleton } from '@/components/ui/Skeletons'
+// Skeletons supprimés - plus utilisés dans la nouvelle structure
 import SmartSuggestions from '@/components/diete/SmartSuggestions'
 import type { SmartSuggestion } from '@/lib/nutritional-database'
 import PageHeader from '@/components/ui/PageHeader'
-import StatsDashboard from '@/components/ui/StatsDashboard'
+import MacroProgressHeader from '@/components/diete/MacroProgressHeader'
+import NutritionAnalytics from '@/components/diete/NutritionAnalytics'
+import CoachDietSection from '@/components/diete/CoachDietSection'
 
 import React from 'react'
 
@@ -145,15 +148,17 @@ function MealCard({
   )
 }
 
-const MealCardMemo = React.memo(MealCard)
+// MealCardMemo supprimé - plus utilisé
 
 import type { Repas } from '@/types'
 
 export default function DietePage() {
-  const { user } = useAuth()
-  const { repas, loading: repasLoading, addRepas, updateRepas, deleteRepas } = useRepas() // Pour les opérations CRUD et données
+  const { user, userProfile } = useAuth()
+  const { repas, addRepas, updateRepas, deleteRepas } = useRepas() // Pour les opérations CRUD et données
+  const { entrainements } = useEntrainements() // Pour calculer l'ajustement TDEE
   const { currentPlan, loading: planLoading } = useAthleteDietPlan()
   const [selectedDate, setSelectedDate] = useState('')
+  const [macrosPeriod, setMacrosPeriod] = useState<'today' | 'week'>('today')
   const { comments: dieteComments, loading: commentsLoading } = useCoachCommentsByModule('diete', selectedDate)
   const [showMealForm, setShowMealForm] = useState<MealType | null>(null)
   const [editingMeal, setEditingMeal] = useState<string | null>(null) // ID du repas en édition
@@ -186,6 +191,38 @@ export default function DietePage() {
 
   // Filtrer les repas du jour sélectionné
   const todayMeals = useMemo(() => repas.filter((r: Repas) => r.date === selectedDate), [repas, selectedDate])
+
+  // Calcul des repas de la semaine pour le mode semaine
+  const weekMeals = useMemo(() => {
+    if (macrosPeriod !== 'week') return []
+    
+    const weekStart = new Date(selectedDate)
+    const dayOfWeek = weekStart.getDay()
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Semaine française (lun→dim)
+    weekStart.setDate(weekStart.getDate() - daysToSubtract)
+    const weekStartStr = weekStart.toISOString().split('T')[0]
+    
+    return repas.filter((r: Repas) => r.date >= weekStartStr && r.date <= selectedDate)
+  }, [repas, selectedDate, macrosPeriod])
+
+  // Repas selon la période sélectionnée
+  const periodMeals = macrosPeriod === 'today' ? todayMeals : weekMeals
+
+  // Hook centralisé pour tous les calculs énergétiques
+  const energyBalance = useEnergyBalance({
+    userProfile,
+    repas: periodMeals,
+    entrainements: macrosPeriod === 'today' 
+      ? entrainements.filter(e => e.date === selectedDate)
+      : entrainements.filter(e => {
+          const weekStart = new Date(selectedDate)
+          const dayOfWeek = weekStart.getDay()
+          const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+          weekStart.setDate(weekStart.getDate() - daysToSubtract)
+          return e.date >= weekStart.toISOString().split('T')[0] && e.date <= selectedDate
+        }),
+    periodDays: macrosPeriod === 'today' ? 1 : 7
+  })
 
   // Gérer l'ajout ou la modification d'un repas
   const handleAddMeal = async (mealType: MealType, aliments: Aliment[], macros: Macros) => {
@@ -226,7 +263,8 @@ export default function DietePage() {
     }
   }
   
-  // Gérer la suppression d'un repas
+  // Gérer la suppression d'un repas (temporairement désactivé)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDeleteMeal = async (mealId: string) => {
     if (!user) return
     
@@ -313,20 +351,68 @@ export default function DietePage() {
     }
   }, [todayMeals])
 
-  // Objectifs nutritionnels par défaut (à adapter selon le profil utilisateur)
+  // Objectifs nutritionnels basés sur le profil utilisateur avec ajustement sport
   const targetMacros = useMemo(() => {
-    // TODO: Récupérer les objectifs depuis le profil utilisateur
-    // Pour l'instant, objectifs par défaut pour un adulte actif
+    const estimatedWeight = userProfile?.poids_initial || 70
+    
+    // Calculer calories d'entraînement du jour pour ajustement
+    const todayTrainings = entrainements.filter(e => e.date === selectedDate)
+    const todayCaloriesBurned = todayTrainings.reduce((total, training) => total + (training.calories || 0), 0)
+    
+    // TDEE ajusté pour éviter double comptage (utilise les calories du jour, pas une moyenne)
+    const baseTDEE = userProfile ? calculateTDEE(userProfile) : 2000
+    const adjustedTDEE = userProfile ? calculateAdjustedTDEE(userProfile, todayCaloriesBurned) : baseTDEE
+    const finalTDEE = adjustedTDEE || baseTDEE
+    
+    const safeTDEE = finalTDEE || 2000 // Fallback si null
+    
     return {
-      calories: 2000,
-      protein: 150, // 1.8g/kg pour 80kg
-      carbs: 250,   // 50% des calories
-      fat: 67       // 30% des calories
+      calories: safeTDEE,
+      protein: Math.round(estimatedWeight * 1.6), // 1.6g/kg (standard fitness)
+      carbs: Math.round(safeTDEE * 0.5 / 4),     // 50% des calories
+      fat: Math.round(safeTDEE * 0.25 / 9),      // 25% des calories
+      isAdjusted: todayCaloriesBurned > 0 && userProfile
     }
-  }, [])
+  }, [userProfile, entrainements, selectedDate])
 
   // Objectif utilisateur par défaut (à récupérer depuis le profil)
   const userGoal: 'weight_loss' | 'muscle_gain' | 'maintenance' = 'maintenance'
+
+  // Calculs des macros actuels selon la période
+  const periodMacros = useMemo(() => {
+    const totalMacros = periodMeals.reduce((acc: Macros, meal: Repas) => ({
+      kcal: acc.kcal + (meal.macros?.kcal || 0),
+      prot: acc.prot + (meal.macros?.prot || 0),
+      glucides: acc.glucides + (meal.macros?.glucides || 0),
+      lipides: acc.lipides + (meal.macros?.lipides || 0)
+    }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
+
+    // Adapter les objectifs selon la période
+    const periodMultiplier = macrosPeriod === 'week' ? 7 : 1
+    
+    return {
+      calories: { 
+        current: totalMacros.kcal, 
+        target: targetMacros.calories * periodMultiplier, 
+        unit: '' 
+      },
+      proteins: { 
+        current: Math.round(totalMacros.prot), 
+        target: targetMacros.protein * periodMultiplier, 
+        unit: 'g' 
+      },
+      carbs: { 
+        current: Math.round(totalMacros.glucides), 
+        target: targetMacros.carbs * periodMultiplier, 
+        unit: 'g' 
+      },
+      fats: { 
+        current: Math.round(totalMacros.lipides), 
+        target: targetMacros.fat * periodMultiplier, 
+        unit: 'g' 
+      }
+    }
+  }, [periodMeals, targetMacros, macrosPeriod])
 
   // Gérer l'ajout d'un aliment suggéré
   const handleAddSuggestedFood = (suggestion: SmartSuggestion) => {
@@ -381,78 +467,125 @@ export default function DietePage() {
           }}
         />
 
-        {/* Dashboard standardisé */}
+        {/* Header macros amélioré */}
         {user && (
-          <>
-            <StatsDashboard
-              stats={[
-                { 
-                  label: 'Calories', 
-                  value: todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0), 
-                  unit: '',
-                  color: 'green',
-                  progress: Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100, 100)
-                },
-                { 
-                  label: 'Protéines', 
-                  value: Math.round(todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0)), 
-                  unit: 'g',
-                  color: 'cyan',
-                  progress: Math.min((todayMeals.reduce((total, meal) => total + (meal.macros?.prot || 0), 0) / 150) * 100, 100)
-                },
-                { 
-                  label: 'Repas', 
-                  value: todayMeals.length, 
-                  color: 'purple'
-                },
-                { 
-                  label: 'Objectif', 
-                  value: Math.round((todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0) / 2200) * 100), 
-                  unit: '%',
-                  color: 'pink'
-                }
-              ]}
-            />
-            
-            {/* Hint compact */}
-            <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
-              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                <span>💡 Cliquez sur un repas pour ajouter des aliments</span>
-              </div>
-            </div>
-          </>
+          <MacroProgressHeader
+            calories={periodMacros.calories}
+            proteins={periodMacros.proteins}
+            carbs={periodMacros.carbs}
+            fats={periodMacros.fats}
+            period={macrosPeriod}
+            onPeriodChange={setMacrosPeriod}
+          />
         )}
 
-        {/* Barre d'outils pour actions secondaires */}
-        {user && (
-          <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center gap-3 flex-wrap">
-                <label className="text-sm text-muted-foreground whitespace-nowrap">📅 Date :</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200 flex-1 sm:flex-none"
-                />
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
-                >
-                  Aujourd&apos;hui
-                </button>
-                <button
-                  onClick={() => setShowHistorique(true)}
-                  className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
-                >
-                  📊 Historique
-                </button>
-              </div>
+        {/* SECTION 2: RECOMMANDATIONS COACH (optimisé UX) */}
+        <CollapsibleCard 
+          title="🏋️ Recommandations Coach"
+          defaultOpen={false}
+        >
+          <CoachDietSection 
+            plan={currentPlan}
+            planLoading={planLoading}
+            comments={dieteComments}
+            commentsLoading={commentsLoading}
+          />
+        </CollapsibleCard>
+
+        {/* SECTION 3: REPAS DU JOUR (toujours ouvert) */}
+        <div className="glass-effect p-4 rounded-xl border border-white/10 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              🍽️ REPAS DU JOUR
+            </h2>
+            <div className="text-xs text-muted-foreground">
+              💡 Cliquez pour ajouter des aliments
             </div>
           </div>
-        )}
+
+          {/* Actions rapides */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="text-sm text-muted-foreground whitespace-nowrap">📅 Date :</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200 flex-1 sm:flex-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+                className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
+              >
+                Aujourd&apos;hui
+              </button>
+              <button
+                onClick={() => setShowHistorique(true)}
+                className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
+              >
+                📊 Historique
+              </button>
+            </div>
+          </div>
+
+          {/* Liste des repas */}
+          {!showMealForm && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {meals.map((meal) => {
+                // Récupérer TOUS les repas de ce type
+                const mealsOfType = todayMeals.filter((m: Repas) => m.repas === meal.type)
+                
+                // Prendre le plus récent (dernier dans la journée)
+                const mealData = mealsOfType.length > 0 
+                  ? mealsOfType[mealsOfType.length - 1]
+                  : undefined
+
+                return (
+                  <MealCard
+                    key={meal.type}
+                    mealName={meal.name}
+                    mealIcon={meal.icon}
+                    time={meal.time}
+                    mealType={meal.type}
+                    aliments={mealData?.aliments || []}
+                    macros={mealData?.macros}
+                    onAddMeal={() => setShowMealForm(meal.type)}
+                    onDelete={undefined}
+                    mealId={mealData?.id}
+                  />
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* SECTION 3: SUGGESTIONS INTELLIGENTES (après action) */}
+        <CollapsibleCard 
+          title="🧠 Suggestions Intelligentes"
+          defaultOpen={false}
+        >
+          <SmartSuggestions 
+            currentMacros={currentMacros}
+            targetMacros={targetMacros}
+            userGoal={userGoal}
+            onAddFood={handleAddSuggestedFood}
+          />
+        </CollapsibleCard>
+
+        {/* SECTION 4: ÉVOLUTION & TENDANCES (evidence-based) */}
+        <CollapsibleCard 
+          title="📊 Évolution & Tendances"
+          defaultOpen={false}
+        >
+          <NutritionAnalytics 
+            repas={repas}
+            userProfile={userProfile}
+            selectedDate={selectedDate}
+          />
+        </CollapsibleCard>
+
 
         {/* Message si non connecté */}
         {!user && (
@@ -462,56 +595,6 @@ export default function DietePage() {
             </p>
           </div>
         )}
-
-        {/* Recommandations Coach */}
-        {planLoading ? (
-          <CardSkeleton />
-        ) : (
-          <CoachRecommendations plan={currentPlan} loading={planLoading} />
-        )}
-
-        {/* Messages du Coach pour cette date (rétractable fermé par défaut) */}
-        <CollapsibleCard title="Messages du Coach" defaultOpen={false} counter={dieteComments?.length || 0}>
-          {commentsLoading ? (
-            <ListSkeleton items={3} />
-          ) : (
-            <ModuleComments comments={dieteComments} loading={commentsLoading} />
-          )}
-        </CollapsibleCard>
-
-        {/* Résumé du jour */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {repasLoading ? (
-            <>
-              <CardSkeleton />
-              <ChartSkeleton />
-            </>
-          ) : (
-            <>
-              {todayMeals.length > 0 && (
-              <MacrosChart 
-                macros={todayMeals.reduce((total: Macros, meal: Repas) => ({
-                  kcal: total.kcal + (meal.macros?.kcal || 0),
-                  prot: total.prot + (meal.macros?.prot || 0),
-                  glucides: total.glucides + (meal.macros?.glucides || 0),
-                  lipides: total.lipides + (meal.macros?.lipides || 0),
-                }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })}
-                title="Répartition du jour"
-              />
-              )}
-              
-              {/* Suggestions Intelligentes */}
-              {user && (
-                <SmartSuggestions
-                  currentMacros={currentMacros}
-                  targetMacros={targetMacros}
-                  userGoal={userGoal}
-                  onAddFood={handleAddSuggestedFood}
-                />
-              )}
-            </>
-          )}
-        </div>
 
         {/* Formulaire d'ajout/édition de repas */}
         {showMealForm && (
@@ -528,52 +611,6 @@ export default function DietePage() {
           />
         )}
 
-        {/* Liste des repas */}
-        {!showMealForm && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-white">Repas du jour</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {meals.map((meal) => {
-                // Récupérer TOUS les repas de ce type
-                const mealsOfType = todayMeals.filter((m: Repas) => m.repas === meal.type)
-                
-                // Prendre le plus récent (dernier dans la journée)
-                const mealData = mealsOfType.length > 0 
-                  ? mealsOfType[mealsOfType.length - 1]
-                  : null
-                
-                // Combiner tous les aliments et macros si plusieurs repas
-                const combinedAliments = mealsOfType.flatMap((m: Repas) => m.aliments || [])
-                const combinedMacros = mealsOfType.reduce((total: Macros, m: Repas) => ({
-                  kcal: total.kcal + (m.macros?.kcal || 0),
-                  prot: total.prot + (m.macros?.prot || 0),
-                  glucides: total.glucides + (m.macros?.glucides || 0),
-                  lipides: total.lipides + (m.macros?.lipides || 0),
-                }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
-                
-                return (
-                  <CollapsibleCard key={meal.type} title={`${meal.icon} ${meal.name}`} defaultOpen={true}>
-                    <MealCardMemo 
-                      mealName={meal.name}
-                      mealIcon={meal.icon}
-                      time={meal.time}
-                      mealType={meal.type}
-                      aliments={mealsOfType.length > 1 ? combinedAliments : mealData?.aliments}
-                      macros={mealsOfType.length > 1 ? combinedMacros : mealData?.macros}
-                      onAddMeal={() => {
-                        setShowMealForm(meal.type)
-                        setEditingMeal(mealData?.id || null)
-                      }}
-                      onDelete={mealsOfType.length === 1 ? handleDeleteMeal : undefined}
-                      mealId={mealsOfType.length === 1 ? mealData?.id : undefined}
-                      collapsible={false}
-                    />
-                  </CollapsibleCard>
-                )
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Modals */}
         <MenuTypesModal
@@ -590,7 +627,6 @@ export default function DietePage() {
           onDateChange={(d) => setSelectedDate(d)}
         />
 
-        <HistoriqueSection allRepas={repas} loading={repasLoading} />
       </div>
       
       {/* FAB (Floating Action Button) pour ajouter un repas */}
@@ -607,42 +643,4 @@ export default function DietePage() {
   )
 } 
 
-function HistoriqueSection({ allRepas, loading }: { allRepas: Repas[], loading: boolean }) {
-  const sorted = [...allRepas].sort((a, b) => b.date.localeCompare(a.date))
-  
-  if (sorted.length === 0 && !loading) return null
-
-  return (
-    <CollapsibleCard title="Historique des repas" defaultOpen={false}>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="text-xs text-accessible-secondary">{sorted.length} repas affichés</div>
-        </div>
-        <div className="divide-y divide-white/10">
-          {sorted.map((r) => (
-            <div key={r.id} className="py-2 flex items-center justify-between">
-              <div className="text-sm text-white">
-                {new Date(r.date).toLocaleDateString('fr-FR')}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {r.aliments?.length || 0} aliments • {Math.round(r.macros?.kcal || 0)} kcal
-              </div>
-              <a
-                href={`?date=${r.date}`}
-                className="ml-3 px-2 py-1 text-xs bg-white/10 text-white rounded hover:bg-white/10"
-                aria-label={`Voir le jour ${new Date(r.date).toLocaleDateString('fr-FR')}`}
-              >
-                Voir
-              </a>
-            </div>
-          ))}
-        </div>
-        {loading && sorted.length > 0 && (
-          <div className="flex justify-center mt-4">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-neon-cyan"></div>
-          </div>
-        )}
-      </div>
-    </CollapsibleCard>
-  )
-}
+// HistoriqueSection supprimée - remplacée par HistoriqueModal

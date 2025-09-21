@@ -126,10 +126,13 @@ export default function ChallengeCard({
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
             <span>
-              {new Date(challenge.endDate).toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'short'
-              })}
+              {challenge.endDate && challenge.endDate !== '' && !isNaN(new Date(challenge.endDate).getTime())
+                ? new Date(challenge.endDate).toLocaleDateString('fr-FR', {
+                    day: 'numeric',
+                    month: 'short'
+                  })
+                : 'En cours'
+              }
             </span>
           </div>
         </div>

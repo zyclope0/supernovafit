@@ -45,12 +45,35 @@ export function calculateTDEE(user: User): number | null {
   return Math.round(bmr * activityMultipliers[user.niveau_activite])
 }
 
-// Fonction calculateIMC supprimée - non utilisée
+/**
+ * Calcule le facteur de correction pour éviter le double comptage TDEE + sport
+ * Le TDEE inclut déjà une estimation d'activité, donc les entraînements réels
+ * ne doivent être comptés qu'en partie selon le niveau d'activité déclaré
+ */
+export function getSportCorrectionFactor(niveau_activite: string): number {
+  switch (niveau_activite) {
+    case 'sedentaire': return 0.9     // 90% du sport = nouveau (peu d'activité prévue)
+    case 'leger': return 0.7          // 70% du sport = nouveau (activité légère prévue)
+    case 'modere': return 0.5         // 50% du sport = nouveau (activité modérée prévue)
+    case 'intense': return 0.3        // 30% du sport = nouveau (activité intense prévue)
+    case 'tres_intense': return 0.1   // 10% du sport = nouveau (activité très intense prévue)
+    default: return 0.7               // Défaut conservateur
+  }
+}
 
-// Fonction interpretIMC supprimée - non utilisée
-
-// Fonction calculateCalorieNeeds supprimée - non utilisée
-
-// Fonction calculateMacroSplit supprimée - non utilisée
-
-// Fonction generateRecommendations supprimée - non utilisée
+/**
+ * Calcule les besoins caloriques ajustés (TDEE + sport corrigé)
+ * Évite le double comptage entre TDEE et calories d'entraînement
+ */
+export function calculateAdjustedTDEE(
+  user: User, 
+  sportCalories: number = 0
+): number | null {
+  const baseTDEE = calculateTDEE(user)
+  if (!baseTDEE || !user.niveau_activite) return baseTDEE
+  
+  const correctionFactor = getSportCorrectionFactor(user.niveau_activite)
+  const sportBonus = Math.round(sportCalories * correctionFactor)
+  
+  return baseTDEE + sportBonus
+}

@@ -1,4 +1,4 @@
-# 📊 ARCHITECTURE DASHBOARDS SUPERNOVAFIT v1.11.0
+# 📊 ARCHITECTURE DASHBOARDS SUPERNOVAFIT v1.12.0
 
 > **Documentation complète** des différents dashboards et leurs conditions d'affichage
 > **CRITIQUE** : Modifier TOUS les dashboards lors d'ajouts/modifications de fonctionnalités
@@ -231,5 +231,5 @@ transition-all duration-200: Transitions fluides
 
 ---
 
-**SuperNovaFit v1.11.0** - Architecture dashboards multi-contexte  
+**SuperNovaFit v1.12.0** - Architecture dashboards multi-contexte  
 **IMPORTANT** : Cette documentation DOIT être mise à jour à chaque évolution ! 🎯

@@ -14,57 +14,149 @@ export default function NouveautesPage() {
           <span className="text-xs text-white/60">v{APP_VERSION} · {APP_RELEASE_DATE}</span>
         </div>
 
-        {/* NOUVELLES FONCTIONNALITÉS UTILISATEUR */}
-        <CollapsibleCard title={`v${APP_VERSION} — 📱 Révolution Mobile-First`} defaultOpen>
+        {/* VERSION 1.13.0 - OPTIMISATIONS DASHBOARD & DIÈTE */}
+        <CollapsibleCard title={`v1.13.0 — ⚡ Optimisations Dashboard & Diète`} defaultOpen>
           <div className="space-y-3">
-            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
-              <h2 className="font-semibold text-neon-purple mb-2">📱 Navigation Mobile Révolutionnaire</h2>
+            <div className="bg-neon-green/10 p-3 rounded-lg border border-neon-green/20">
+              <h3 className="font-semibold text-neon-green mb-2">⚡ Centralisation Énergétique</h3>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Bottom Navigation</strong> : Navigation principale en bas d&apos;écran, toujours accessible</li>
-                <li><strong>FAB Contextuel</strong> : Bouton flottant intelligent qui s&apos;adapte à chaque page</li>
-                <li><strong>Menu Mobile</strong> : Page dédiée avec accès rapide aux fonctionnalités avancées</li>
-                <li><strong>Quick Actions</strong> : Actions contextuelles selon la page visitée</li>
-              </ul>
-            </div>
-            
-            <div className="bg-neon-cyan/10 p-3 rounded-lg border border-neon-cyan/20">
-              <h2 className="font-semibold text-neon-cyan mb-2">⚡ Templates Ultra-Rapides</h2>
-              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Repas Express</strong> : Ajout d&apos;un repas complet en 30 secondes avec templates prédéfinis</li>
-                <li><strong>Entraînements Rapides</strong> : Saisie d&apos;un entraînement en 45 secondes via modales optimisées</li>
-                <li><strong>Poids Instantané</strong> : Enregistrement du poids avec suggestions intelligentes</li>
-                <li><strong>Humeur Express</strong> : Journal quotidien avec sliders tactiles et saisie rapide</li>
+                <li><strong>Hook useEnergyBalance</strong> : Calculs TDEE/sport centralisés pour cohérence absolue</li>
+                <li><strong>Pondération sport</strong> : Correction double comptage selon niveau activité (facteur 0.1-0.9)</li>
+                <li><strong>Tests complets</strong> : 4 scénarios de validation pour fiabilité</li>
+                <li><strong>Performance</strong> : Suppression de 45 lignes de code dupliqué</li>
               </ul>
             </div>
 
-            <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-              <h2 className="font-semibold text-emerald-400 mb-2">📊 Dashboard Mobile-First</h2>
+            <div className="bg-neon-cyan/10 p-3 rounded-lg border border-neon-cyan/20">
+              <h3 className="font-semibold text-neon-cyan mb-2">📅 Correction Calcul Semaine</h3>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Widgets adaptatifs</strong> : Dashboard principal optimisé pour mobile avec widgets interactifs</li>
-                <li><strong>Graphiques tactiles</strong> : Charts avec zoom, pan et interactions tactiles améliorées</li>
-                <li><strong>Cartes glissantes</strong> : Navigation par swipe sur les repas et entraînements</li>
-                <li><strong>Responsive complet</strong> : Interface qui s&apos;adapte parfaitement à tous les écrans</li>
+                <li><strong>Standard français</strong> : Semaine lundi→dimanche (ISO 8601)</li>
+                <li><strong>4 fichiers corrigés</strong> : Dashboard, Mobile, Entrainements, Challenges</li>
+                <li><strong>Mode semaine fonctionnel</strong> : Données complètes 7 jours</li>
+                <li><strong>Impact UX</strong> : Plus de graphiques vides le dimanche</li>
+              </ul>
+            </div>
+
+            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
+              <h3 className="font-semibold text-neon-purple mb-2">📊 Page Diète Révolutionnaire</h3>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Header macros</strong> : 4 barres progression + conseils intelligents + toggle période</li>
+                <li><strong>Sections collapsibles</strong> : Réduction 60% hauteur page, charge cognitive optimisée</li>
+                <li><strong>Analyse evidence-based</strong> : 5 insights scientifiques (timing, régularité, protéines, tendances, diversité)</li>
+                <li><strong>UX coach optimisée</strong> : Suppression double clic, intégration directe</li>
+                <li><strong>Objectifs adaptatifs</strong> : Multiplication automatique selon période (jour/semaine)</li>
+              </ul>
+            </div>
+
+            <div className="bg-neon-pink/10 p-3 rounded-lg border border-neon-pink/20">
+              <h3 className="font-semibold text-neon-pink mb-2">📈 Graphiques Motivationnels</h3>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Domaines dynamiques</strong> : Y-axis adapté aux données utilisateur pour amplifier progrès</li>
+                <li><strong>Statistiques motivantes</strong> : Changement total, pourcentage, tendance récente</li>
+                <li><strong>Adaptation période</strong> : Filtrage données selon sélection (aujourd&apos;hui/semaine/mois)</li>
+                <li><strong>Visual feedback</strong> : Dots plus gros, couleurs motivantes, marges asymétriques</li>
+              </ul>
+            </div>
+          </div>
+        </CollapsibleCard>
+
+        {/* VERSION 1.12.0 - DESKTOP INTERFACE */}
+        <CollapsibleCard title={`v1.12.0 — 🖥️ Interface Desktop`} defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
+              <h3 className="font-semibold text-neon-purple mb-2">🖥️ DesktopDashboard</h3>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Layout flexbox</strong> : Sidebar 320px + zone de contenu principale</li>
+                <li><strong>6 métriques</strong> : Calories, protéines, poids, séances, calories brûlées, humeur</li>
+                <li><strong>4 graphiques</strong> : Balance énergétique, évolution calories, répartition macros, poids & IMC</li>
+                <li><strong>Sélecteur période</strong> : Aujourd&apos;hui/Semaine/Mois avec données filtrées</li>
+                <li><strong>Sidebar</strong> : Actions rapides, activité récente, objectifs, notifications</li>
+              </ul>
+            </div>
+
+            <div className="bg-neon-cyan/10 p-3 rounded-lg border border-neon-cyan/20">
+              <h3 className="font-semibold text-neon-cyan mb-2">🔧 Corrections & Harmonisation</h3>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>MobileDashboard</strong> : Widgets affichent maintenant les vraies données</li>
+                <li><strong>Propriétés unifiées</strong> : calories/proteins cohérents entre mobile et desktop</li>
+                <li><strong>Navigation</strong> : useRouter + notifications toast sur les boutons</li>
+                <li><strong>WeightIMCChart</strong> : Graphique poids & IMC dédié pour desktop</li>
+              </ul>
+            </div>
+
+            <div className="bg-neon-green/10 p-3 rounded-lg border border-neon-green/20">
+              <h3 className="font-semibold text-neon-green mb-2">📚 Documentation</h3>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Contexte technique</strong> : Document unique consolidant le contexte projet</li>
+                <li><strong>Architecture dashboards</strong> : Documentation des 5 dashboards</li>
+                <li><strong>Audit cohérence</strong> : Analyse et corrections appliquées</li>
+                <li><strong>Checklist maintenance</strong> : Procédures pour modifications futures</li>
               </ul>
             </div>
 
             <div className="bg-orange-500/10 p-3 rounded-lg border border-orange-500/20">
-              <h2 className="font-semibold text-orange-400 mb-2">🎯 Expérience Utilisateur</h2>
+              <h3 className="font-semibold text-orange-400 mb-2">🎯 Interface Utilisateur</h3>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Gain d&apos;efficacité 75%</strong> : Actions principales 3x plus rapides qu&apos;avant</li>
-                <li><strong>Interface intuitive</strong> : Navigation naturelle avec gestes tactiles</li>
-                <li><strong>Performance optimisée</strong> : Temps de chargement réduits et animations fluides</li>
-                <li><strong>Accessibilité mobile</strong> : Conçu pour une utilisation à une main</li>
+                <li><strong>Interface adaptive</strong> : Affichage selon taille d&apos;écran (mobile/desktop)</li>
+                <li><strong>Données temps réel</strong> : Synchronisation onSnapshot sur les dashboards</li>
+                <li><strong>Feedback visuel</strong> : Notifications toast et animations hover</li>
+                <li><strong>Navigation</strong> : Transitions entre pages</li>
+              </ul>
+            </div>
+          </div>
+        </CollapsibleCard>
+
+        {/* VERSIONS PRÉCÉDENTES */}
+        <CollapsibleCard title={`v1.11.0 — 📱 Interface Mobile`} defaultOpen={false}>
+          <div className="space-y-3">
+            <div className="bg-neon-purple/10 p-3 rounded-lg border border-neon-purple/20">
+              <h2 className="font-semibold text-neon-purple mb-2">📱 Navigation Mobile</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Bottom Navigation</strong> : Navigation principale en bas d&apos;écran</li>
+                <li><strong>FAB Contextuel</strong> : Bouton flottant qui s&apos;adapte à chaque page</li>
+                <li><strong>Menu Mobile</strong> : Page dédiée avec accès aux fonctionnalités</li>
+                <li><strong>Quick Actions</strong> : Actions selon la page visitée</li>
+              </ul>
+            </div>
+            
+            <div className="bg-neon-cyan/10 p-3 rounded-lg border border-neon-cyan/20">
+              <h2 className="font-semibold text-neon-cyan mb-2">⚡ Templates Rapides</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Repas</strong> : Ajout d&apos;un repas en 30 secondes avec templates prédéfinis</li>
+                <li><strong>Entraînements</strong> : Saisie d&apos;un entraînement en 45 secondes</li>
+                <li><strong>Poids</strong> : Enregistrement du poids avec suggestions</li>
+                <li><strong>Humeur</strong> : Journal quotidien avec sliders tactiles</li>
+              </ul>
+            </div>
+
+            <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
+              <h2 className="font-semibold text-emerald-400 mb-2">📊 Dashboard Mobile</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Widgets</strong> : Dashboard principal pour mobile avec widgets interactifs</li>
+                <li><strong>Graphiques tactiles</strong> : Charts avec zoom, pan et interactions tactiles</li>
+                <li><strong>Cartes glissantes</strong> : Navigation par swipe sur les repas et entraînements</li>
+                <li><strong>Responsive</strong> : Interface qui s&apos;adapte aux différents écrans</li>
+              </ul>
+            </div>
+
+            <div className="bg-orange-500/10 p-3 rounded-lg border border-orange-500/20">
+              <h2 className="font-semibold text-orange-400 mb-2">🎯 Améliorations UX</h2>
+              <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
+                <li><strong>Efficacité</strong> : Actions principales plus rapides avec templates</li>
+                <li><strong>Navigation</strong> : Gestes tactiles pour mobile</li>
+                <li><strong>Performance</strong> : Temps de chargement réduits</li>
+                <li><strong>Accessibilité mobile</strong> : Utilisation à une main</li>
               </ul>
             </div>
 
 
             <div className="bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
-              <h2 className="font-semibold text-blue-400 mb-2">🎯 Expérience Utilisateur Unifiée</h2>
+              <h2 className="font-semibold text-blue-400 mb-2">🎯 Interface Unifiée</h2>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Philosophie UX cohérente</strong> : Même approche ergonomique sur toutes les pages</li>
-                <li><strong>Raccourcis clavier</strong> : Ctrl+N disponible partout avec aide contextuelle</li>
-                <li><strong>Navigation intuitive</strong> : Actions principales toujours accessibles</li>
-                <li><strong>Design responsive</strong> : Adaptation parfaite mobile et desktop</li>
+                <li><strong>UX cohérente</strong> : Même approche sur toutes les pages</li>
+                <li><strong>Raccourcis clavier</strong> : Ctrl+N disponible avec aide contextuelle</li>
+                <li><strong>Navigation</strong> : Actions principales accessibles</li>
+                <li><strong>Design responsive</strong> : Adaptation mobile et desktop</li>
               </ul>
             </div>
           </div>
@@ -74,12 +166,12 @@ export default function NouveautesPage() {
         <CollapsibleCard title="v1.9.4 — ⚡ Performance & Sécurité" defaultOpen={false}>
           <div className="space-y-3">
             <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-              <h4 className="font-semibold text-emerald-400 mb-2">⚡ Images Ultra-Rapides</h4>
+              <h4 className="font-semibold text-emerald-400 mb-2">⚡ Images Optimisées</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
-                <li><strong>Chargement instantané</strong> : Images optimisées automatiquement en AVIF et WebP</li>
-                <li><strong>Économie de données</strong> : Réduction de 20 à 50% de la taille des images</li>
-                <li><strong>Adaptation intelligente</strong> : Taille automatique selon votre appareil</li>
-                <li><strong>Effet de transition</strong> : Chargement progressif avec effet de flou élégant</li>
+                <li><strong>Images optimisées</strong> : Formats AVIF et WebP automatiques</li>
+                <li><strong>Économie de données</strong> : Réduction de 20 à 50% de la taille</li>
+                <li><strong>Adaptation automatique</strong> : Taille selon l&apos;appareil</li>
+                <li><strong>Chargement progressif</strong> : Effet de flou pendant le chargement</li>
               </ul>
             </div>
             
@@ -109,7 +201,7 @@ export default function NouveautesPage() {
         <CollapsibleCard title="🔧 Mises à Jour Techniques" defaultOpen={false}>
           <div className="space-y-3">
             <div className="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-              <h4 className="font-semibold text-emerald-400 mb-2">🔒 Audit Sécurité Complet</h4>
+              <h4 className="font-semibold text-emerald-400 mb-2">🔒 Audit Sécurité</h4>
               <ul className="list-disc pl-5 text-sm text-gray-200 space-y-1">
                 <li><strong>0 vulnérabilités npm</strong> : jsPDF 2.5.1→3.0.2, xlsx→exceljs migration</li>
                 <li><strong>Dépendances nettoyées</strong> : 15 packages inutiles supprimés (-439KB)</li>

@@ -487,8 +487,8 @@ npm run start
 #### **8.1 Mise à jour version**
 **Fichier : `src/lib/constants.ts`**
 ```typescript
-export const APP_VERSION = '1.10.0'
-export const APP_RELEASE_DATE = '2025-01-15'
+export const APP_VERSION = '1.12.0'
+export const APP_RELEASE_DATE = '2025-09-21'
 ```
 
 **Fichier : `package.json`**

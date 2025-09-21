@@ -4,6 +4,14 @@ import React, { useState, useMemo } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import { useChallenges, useAchievements, useUserProgress } from '@/hooks/useChallenges'
+import { useChallengeTracker } from '@/hooks/useChallengeTracker'
+import { 
+  isChallengeImplemented, 
+  isChallengeImplementable, 
+  getUnimplementationReason,
+  getChallengeStats
+  // getTrackableChallengeDefinitions // Supprimé avec les outils de test
+} from '@/lib/challengeImplementation'
 import { 
   CHALLENGE_DEFINITIONS, 
   createChallengeFromDefinition,
@@ -22,12 +30,16 @@ import { CardSkeleton } from '@/components/ui/Skeletons'
 import { Plus, Trophy, Target, Star, Search, Filter, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import PageHeader from '@/components/ui/PageHeader'
+import StatsDashboard from '@/components/ui/StatsDashboard'
 
 export default function ChallengesPage() {
   const { user } = useAuth()
   const { challenges, loading: challengesLoading, addChallenge, updateChallenge, deleteChallenge } = useChallenges()
   const { achievements, loading: achievementsLoading } = useAchievements()
   const { progress, loading: progressLoading } = useUserProgress()
+  
+  // Activer le suivi automatique des challenges
+  useChallengeTracker()
   
   const [activeTab, setActiveTab] = useState<'challenges' | 'achievements' | 'progress'>('challenges')
   const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'expired'>('all')
@@ -144,6 +156,8 @@ export default function ChallengesPage() {
     }
   }
 
+
+
   // Fonctions pour les filtres
   const resetFilters = () => {
     setSearchQuery('')
@@ -171,8 +185,8 @@ export default function ChallengesPage() {
       <div className="space-y-6">
         {/* Header standardisé */}
         <PageHeader
-          title="🏆 Challenges & Gamification"
-          description="Défiez-vous et débloquez des récompenses !"
+          title="Challenges & Récompenses"
+          description="Défiez-vous et progressez jour après jour"
           action={{
             label: 'Nouveau Challenge',
             onClick: () => setShowAddChallenge(true),
@@ -181,10 +195,89 @@ export default function ChallengesPage() {
           }}
         />
 
-        {/* Progress Bar Compact */}
-        {progress && (
-          <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10">
-            <ProgressBar progress={progress} compact />
+        {/* Dashboard standardisé */}
+        {user && (
+          <>
+            <StatsDashboard
+              stats={[
+                { 
+                  label: 'Challenges', 
+                  value: challenges.filter(c => c.status === 'active').length, 
+                  color: 'green'
+                },
+                { 
+                  label: 'Terminés', 
+                  value: challenges.filter(c => c.status === 'completed').length, 
+                  color: 'cyan'
+                },
+                { 
+                  label: 'Achievements', 
+                  value: achievements.length, 
+                  color: 'purple'
+                },
+                ...(progress ? [{ 
+                  label: 'Niveau', 
+                  value: progress.level, 
+                  color: 'pink' as const
+                }] : [])
+              ]}
+            />
+            
+            {/* Progress Bar Compact */}
+            {progress && (
+              <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10">
+                <ProgressBar progress={progress} compact />
+              </div>
+            )}
+
+            {/* Statistiques d'implémentation */}
+            <div className="glass-effect rounded-xl p-4 border border-white/20">
+              <h3 className="text-lg font-semibold text-white mb-3">📊 État d&apos;implémentation</h3>
+              {(() => {
+                const stats = getChallengeStats()
+                return (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-neon-cyan">{stats.total}</div>
+                      <div className="text-white/60">Total</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-neon-green">{stats.implemented}</div>
+                      <div className="text-white/60">Fonctionnels</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-yellow-400">{stats.implementable - stats.implemented}</div>
+                      <div className="text-white/60">À développer</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-red-400">{stats.unimplementable}</div>
+                      <div className="text-white/60">Non faisables</div>
+                    </div>
+                  </div>
+                )
+              })()}
+              <div className="mt-3 text-center text-white/70 text-sm">
+                <span className="text-neon-green font-semibold">{getChallengeStats().implementedPercentage}%</span> des challenges implémentables sont fonctionnels
+              </div>
+            </div>
+            
+          </>
+        )}
+
+        {/* Message si pas connecté */}
+        {!user && (
+          <div className="glass-effect p-6 lg:p-8 rounded-xl border border-white/20 text-center">
+            <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-white mb-2">Challenges & Récompenses</h3>
+            <p className="text-white/70 mb-4">
+              Connectez-vous pour accéder aux challenges, débloquer des achievements et suivre votre progression !
+            </p>
+            <button
+              onClick={() => window.location.href = '/auth'}
+              className="px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-lg hover:from-neon-purple/80 hover:to-neon-cyan/80 transition-all duration-200 transform hover:scale-105"
+            >
+              Se connecter
+            </button>
           </div>
         )}
 
@@ -446,8 +539,16 @@ export default function ChallengesPage() {
                 {availableChallenges.map((definition, index) => (
                   <div
                     key={index}
-                    className="p-4 border border-white/20 rounded-lg hover:border-white/40 transition-all cursor-pointer hover:bg-white/5 group"
-                    onClick={() => handleAddChallenge(definition)}
+                    className={`p-4 border rounded-lg transition-all group ${
+                      isChallengeImplementable(definition.title) 
+                        ? 'border-white/20 hover:border-white/40 cursor-pointer hover:bg-white/5'
+                        : 'border-red-400/30 bg-red-400/5 cursor-not-allowed opacity-60'
+                    }`}
+                    onClick={() => {
+                      if (isChallengeImplementable(definition.title)) {
+                        handleAddChallenge(definition)
+                      }
+                    }}
                   >
                     <div className="flex items-start gap-3 mb-3">
                       <div className="text-2xl group-hover:scale-110 transition-transform">{definition.icon}</div>
@@ -464,6 +565,19 @@ export default function ChallengesPage() {
                           }`}>
                             {definition.difficulty}
                           </span>
+                          {isChallengeImplemented(definition.title) ? (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium text-green-400 bg-green-400/20">
+                              ✅ Fonctionnel
+                            </span>
+                          ) : isChallengeImplementable(definition.title) ? (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium text-yellow-400 bg-yellow-400/20">
+                              🔧 À développer
+                            </span>
+                          ) : (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium text-red-400 bg-red-400/20">
+                              ❌ Non faisable
+                            </span>
+                          )}
                           <span className="text-xs text-white/70">{definition.xpReward} XP</span>
                           <span className="text-xs text-white/50">•</span>
                           <span className="text-xs text-white/50 capitalize">{definition.category}</span>
@@ -471,6 +585,11 @@ export default function ChallengesPage() {
                       </div>
                     </div>
                     <p className="text-sm text-white/70 leading-relaxed">{definition.description}</p>
+                    {!isChallengeImplementable(definition.title) && (
+                      <div className="mt-3 p-2 bg-red-400/10 border border-red-400/20 rounded text-xs text-red-300">
+                        <strong>Non implémentable :</strong> {getUnimplementationReason(definition.title)}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

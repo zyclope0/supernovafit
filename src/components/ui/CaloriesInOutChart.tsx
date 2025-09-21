@@ -18,9 +18,10 @@ interface CaloriesInOutChartProps {
   entrainements: Array<{ date: string; calories?: number }>
   days?: number
   tdee?: number // Total Daily Energy Expenditure (maintenance)
+  title?: string // Titre personnalisé
 }
 
-export default function CaloriesInOutChart({ repas, entrainements, days = 7, tdee }: CaloriesInOutChartProps) {
+export default function CaloriesInOutChart({ repas, entrainements, days = 7, tdee, title }: CaloriesInOutChartProps) {
   const data = useMemo(() => {
     const today = new Date()
     const dates: string[] = []
@@ -72,7 +73,9 @@ export default function CaloriesInOutChart({ repas, entrainements, days = 7, tde
 
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10">
-      <h3 className="text-lg font-semibold text-white mb-4">Calories In/Out (7 jours)</h3>
+      <h3 className="text-lg font-semibold text-white mb-4">
+        {title || `Calories In/Out (${days} jour${days > 1 ? 's' : ''})`}
+      </h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ left: 8, right: 8 }}>

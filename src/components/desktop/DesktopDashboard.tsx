@@ -3,9 +3,12 @@
 import React, { useState, useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures, useJournal } from '@/hooks/useFirestore'
-import { calculateTDEE } from '@/lib/userCalculations'
+import { useEnergyBalance } from '@/hooks/useEnergyBalance'
+// calculateTDEE supprimé - maintenant dans useEnergyBalance
 import { formatNumber } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
+import toast from 'react-hot-toast'
 import dynamic from 'next/dynamic'
 import {
   TrendingUp,
@@ -70,6 +73,7 @@ interface RecentActivity {
 
 export default function DesktopDashboard({ className }: DesktopDashboardProps) {
   const { user, userProfile } = useAuth()
+  const router = useRouter()
   const { repas } = useRepas()
   const { entrainements } = useEntrainements()
   const { mesures } = useMesures()
@@ -80,7 +84,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
   // Calculs des données selon la période sélectionnée
   const today = new Date().toISOString().split('T')[0]
   const weekStart = new Date()
-  weekStart.setDate(weekStart.getDate() - weekStart.getDay())
+  const dayOfWeek = weekStart.getDay()
+  const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Dimanche = 6 jours, autres = jour - 1
+  weekStart.setDate(weekStart.getDate() - daysToSubtract)
   const weekStartStr = weekStart.toISOString().split('T')[0]
   
   const monthStart = new Date()
@@ -107,19 +113,22 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
   const periodMeals = selectedPeriod === 'today' 
     ? repas.filter(r => r.date === today)
     : repas.filter(r => r.date >= periodStart)
-    
-  const periodStats = periodMeals.reduce((total, meal) => ({
-    calories: total.calories + (meal.macros?.kcal || 0),
-    proteins: total.proteins + (meal.macros?.prot || 0),
-    carbs: total.carbs + (meal.macros?.glucides || 0),
-    fats: total.fats + (meal.macros?.lipides || 0),
-  }), { calories: 0, proteins: 0, carbs: 0, fats: 0 })
 
   // Entraînements selon la période
   const periodTrainings = selectedPeriod === 'today'
     ? entrainements.filter(e => e.date === today)
     : entrainements.filter(e => e.date >= periodStart)
-  const periodCaloriesBurned = periodTrainings.reduce((total, t) => total + (t.calories || 0), 0)
+
+  // Calculer les jours de la période
+  const periodDays = selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 7 : 30
+
+  // Hook centralisé pour tous les calculs énergétiques
+  const energyBalance = useEnergyBalance({
+    userProfile,
+    repas: periodMeals,
+    entrainements: periodTrainings,
+    periodDays
+  })
 
   // Garder aussi les données du jour pour certains calculs
   const todayMeals = repas.filter(r => r.date === today)
@@ -149,8 +158,22 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
     ? thisWeekJournal.reduce((sum, e) => sum + (e.humeur || 3), 0) / thisWeekJournal.length
     : 3
 
-  // TDEE calculé
-  const estimatedTDEE = userProfile ? calculateTDEE(userProfile) : (latestWeight?.poids ? Math.round(latestWeight.poids * 30) : 2000)
+  // TDEE et calculs centralisés via le hook useEnergyBalance
+  const { baseTDEE, adjustedTDEE, correctionFactor, avgDailySportCalories, periodStats, adjustedTrainings } = energyBalance
+  const estimatedTDEE = adjustedTDEE
+  
+  // Debug pour vérifier les calculs centralisés
+  if (userProfile && energyBalance.rawSportCalories > 0) {
+    console.log('🔍 TDEE Debug (centralisé):', {
+      period: selectedPeriod,
+      baseTDEE,
+      rawSportCalories: energyBalance.rawSportCalories,
+      avgDailySportCalories: Math.round(avgDailySportCalories),
+      correctionFactor,
+      adjustedTDEE,
+      difference: adjustedTDEE - baseTDEE
+    })
+  }
   // const bmr = userProfile ? calculateBMR(userProfile) : (latestWeight?.poids ? Math.round(latestWeight.poids * 22) : 1600)
 
   // Stats rapides pour la grille principale
@@ -193,7 +216,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
     },
     {
       label: `Calories brûlées ${periodLabel}`,
-      value: formatNumber(periodCaloriesBurned),
+      value: formatNumber(energyBalance.rawSportCalories),
       unit: 'kcal',
       trend: 'up',
       color: 'pink',
@@ -209,7 +232,7 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
     }
   ]
 
-  // Actions rapides
+  // Actions rapides avec navigation optimisée
   const quickActions: QuickAction[] = [
     {
       id: 'add-meal',
@@ -217,7 +240,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       description: 'Enregistrer un nouveau repas',
       icon: Utensils,
       color: 'from-orange-500 to-red-500',
-      onClick: () => window.location.href = '/diete'
+      onClick: () => {
+        router.push('/diete')
+        toast.success('Redirection vers la diète')
+      }
     },
     {
       id: 'add-training',
@@ -225,7 +251,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       description: 'Enregistrer une séance',
       icon: Dumbbell,
       color: 'from-blue-500 to-purple-500',
-      onClick: () => window.location.href = '/entrainements'
+      onClick: () => {
+        router.push('/entrainements')
+        toast.success('Redirection vers les entraînements')
+      }
     },
     {
       id: 'add-measure',
@@ -233,7 +262,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       description: 'Poids, tour de taille...',
       icon: Scale,
       color: 'from-green-500 to-teal-500',
-      onClick: () => window.location.href = '/mesures'
+      onClick: () => {
+        router.push('/mesures')
+        toast.success('Redirection vers les mesures')
+      }
     },
     {
       id: 'journal-entry',
@@ -241,7 +273,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       description: 'Humeur, énergie, notes',
       icon: BookOpen,
       color: 'from-purple-500 to-pink-500',
-      onClick: () => window.location.href = '/journal'
+      onClick: () => {
+        router.push('/journal')
+        toast.success('Redirection vers le journal')
+      }
     }
   ]
 
@@ -393,7 +428,13 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                 <Activity className="h-5 w-5 text-neon-pink" />
               </div>
               <div className="h-96">
-                <CaloriesInOutChart repas={periodMeals} entrainements={periodTrainings} days={selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 7 : 30} tdee={estimatedTDEE || 2000} />
+                <CaloriesInOutChart 
+                  repas={periodMeals} 
+                  entrainements={adjustedTrainings} 
+                  days={periodDays} 
+                  tdee={baseTDEE}
+                  title={`Calories In/Out (${periodLabel.toLowerCase()})`}
+                />
               </div>
             </div>
 
@@ -450,11 +491,13 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
             {/* Graphique poids & IMC - Optimisé pour desktop */}
             <div className="glass-effect p-6 rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Évolution Poids & IMC</h3>
+                <h3 className="text-lg font-semibold text-white">
+                  Évolution Poids & IMC {periodLabel}
+                </h3>
                 <TrendingUp className="h-5 w-5 text-neon-purple" />
               </div>
               <div className="h-80">
-                <WeightIMCChart mesures={mesures} />
+                <WeightIMCChart mesures={mesures} period={selectedPeriod} />
               </div>
             </div>
           </div>
@@ -473,7 +516,10 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
               </div>
               <button
                 onClick={() => {
-                  console.log('Changer de coach demandé')
+                  toast('Pour changer de coach, contactez votre coach actuel', {
+                    icon: '💡',
+                    duration: 4000
+                  })
                 }}
                 className="text-xs text-muted-foreground hover:text-white transition-colors"
               >
@@ -548,25 +594,34 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
             </div>
           </div>
 
-          {/* Objectifs du jour */}
+          {/* Objectifs de la période */}
           <div className="glass-effect p-4 lg:p-6 rounded-lg lg:rounded-xl border border-white/10">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Objectifs du Jour</h3>
+              <h3 className="text-lg font-semibold text-white">
+                Objectifs {selectedPeriod === 'today' ? 'du Jour' : selectedPeriod === 'week' ? 'de la Semaine' : 'du Mois'}
+              </h3>
               <Target className="h-5 w-5 text-neon-green" />
             </div>
             <div className="space-y-4">
               {/* Objectif calories */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-white">Calories</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-white">Calories</span>
+                    {userProfile && energyBalance.rawSportCalories > 0 && (
+                      <span className="text-xs px-2 py-1 bg-neon-purple/20 text-neon-purple rounded-full" title={`Correction sport: ${Math.round(avgDailySportCalories)}kcal/j × ${correctionFactor}`}>
+                        Ajusté sport ({Math.round(adjustedTDEE - baseTDEE)}kcal)
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm text-neon-green">
-                    {formatNumber(todayStats.calories)} / {formatNumber(estimatedTDEE || 2000)}
+                    {formatNumber(selectedPeriod === 'today' ? todayStats.calories : periodStats.calories)} / {formatNumber(estimatedTDEE || 2000)}
                   </span>
                 </div>
                 <div className="w-full bg-space-700 rounded-full h-2">
                   <div 
                     className="bg-neon-green h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((todayStats.calories / (estimatedTDEE || 2000)) * 100, 100)}%` }}
+                    style={{ width: `${Math.min(((selectedPeriod === 'today' ? todayStats.calories : periodStats.calories) / (estimatedTDEE || 2000)) * 100, 100)}%` }}
                   />
                 </div>
               </div>
@@ -576,29 +631,31 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-white">Protéines</span>
                   <span className="text-sm text-neon-cyan">
-                    {formatNumber(todayStats.proteins)} / {Math.round((latestWeight?.poids || 70) * 1.6)}g
+                    {formatNumber(selectedPeriod === 'today' ? todayStats.proteins : periodStats.proteins)} / {Math.round((latestWeight?.poids || 70) * 1.6)}g
                   </span>
                 </div>
                 <div className="w-full bg-space-700 rounded-full h-2">
                   <div 
                     className="bg-neon-cyan h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((todayStats.proteins / Math.round((latestWeight?.poids || 70) * 1.6)) * 100, 100)}%` }}
+                    style={{ width: `${Math.min(((selectedPeriod === 'today' ? todayStats.proteins : periodStats.proteins) / Math.round((latestWeight?.poids || 70) * 1.6)) * 100, 100)}%` }}
                   />
                 </div>
               </div>
 
-              {/* Objectif entraînements semaine */}
+              {/* Objectif entraînements selon période */}
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-white">Entraînements</span>
                   <span className="text-sm text-neon-purple">
-                    {thisWeekTrainings.length} / 4 cette semaine
+                    {adjustedTrainings.length} / {selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 4 : 12} {periodLabel}
                   </span>
                 </div>
                 <div className="w-full bg-space-700 rounded-full h-2">
                   <div 
                     className="bg-neon-purple h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((thisWeekTrainings.length / 4) * 100, 100)}%` }}
+                    style={{ 
+                      width: `${Math.min((adjustedTrainings.length / (selectedPeriod === 'today' ? 1 : selectedPeriod === 'week' ? 4 : 12)) * 100, 100)}%` 
+                    }}
                   />
                 </div>
               </div>
