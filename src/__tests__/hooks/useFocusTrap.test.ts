@@ -36,20 +36,20 @@ describe('useFocusTrap Hook', () => {
   })
 
   it('should return a ref object', () => {
-    const { result } = renderHook(() => useFocusTrap(false))
+    const { result } = renderHook(() => useFocusTrap({ isActive: false }))
     
     expect(result.current).toHaveProperty('current')
   })
 
   it('should not activate focus trap when isActive is false', () => {
-    renderHook(() => useFocusTrap(false))
+    renderHook(() => useFocusTrap({ isActive: false }))
     
     // Focus trap should not be active
     expect(document.body.style.overflow).not.toBe('hidden')
   })
 
   it('should activate focus trap when isActive is true', () => {
-    const { result } = renderHook(() => useFocusTrap(true))
+    const { result } = renderHook(() => useFocusTrap({ isActive: true }))
     
     expect(result.current).toBeDefined()
   })
@@ -57,7 +57,7 @@ describe('useFocusTrap Hook', () => {
   it('should handle onEscape callback', () => {
     const onEscape = vi.fn()
     
-    renderHook(() => useFocusTrap(true, onEscape))
+    renderHook(() => useFocusTrap({ isActive: true, onClose: onEscape }))
     
     // Simulate Escape key press
     const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' })
@@ -69,14 +69,14 @@ describe('useFocusTrap Hook', () => {
   })
 
   it('should handle Tab key for focus management', () => {
-    const { result } = renderHook(() => useFocusTrap(true))
+    const { result } = renderHook(() => useFocusTrap({ isActive: true }))
     
     // Vérifier que le hook retourne une ref
     expect(result.current).toBeDefined()
   })
 
   it('should restore focus when restoreFocus is true', () => {
-    const { unmount } = renderHook(() => useFocusTrap(true, undefined, true))
+    const { unmount } = renderHook(() => useFocusTrap({ isActive: true, trapFocus: true }))
     
     // Unmount pour déclencher le cleanup
     unmount()
@@ -86,21 +86,21 @@ describe('useFocusTrap Hook', () => {
   })
 
   it('should handle initialFocus parameter', () => {
-    const { result } = renderHook(() => useFocusTrap(true, undefined, true, 'button'))
+    const { result } = renderHook(() => useFocusTrap({ isActive: true, trapFocus: true, initialFocus: 'button' }))
     
     // Vérifier que le hook fonctionne avec initialFocus
     expect(result.current).toBeDefined()
   })
 
   it('should prevent body scroll when active', () => {
-    renderHook(() => useFocusTrap(true))
+    renderHook(() => useFocusTrap({ isActive: true }))
     
     // Le hook peut modifier le body scroll
     expect(document.body.style.overflow).toBeDefined()
   })
 
   it('should clean up event listeners on unmount', () => {
-    const { unmount } = renderHook(() => useFocusTrap(true))
+    const { unmount } = renderHook(() => useFocusTrap({ isActive: true }))
     
     // Mock addEventListener/removeEventListener
     const addEventListenerSpy = vi.spyOn(document, 'addEventListener')
