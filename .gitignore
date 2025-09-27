@@ -9,6 +9,9 @@
 # testing
 /coverage
 
+# archived non-essential files
+/archive/non-essential/
+
 # next.js
 /.next/
 /out/
