@@ -1,0 +1,54 @@
+From: Audit Agent <audit@supernovafit.com>
+Date: Sat, 27 Sep 2025 21:50:00 +0000
+Subject: [PATCH] feat: add security headers for enhanced protection
+
+---
+ next.config.js | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/next.config.js b/next.config.js
+index 1234567..abcdefg 100644
+--- a/next.config.js
++++ b/next.config.js
+@@ -24,6 +24,41 @@ const nextConfig = {
+     locales: ['fr'],
+     defaultLocale: 'fr',
+   },
++  
++  // Security Headers
++  async headers() {
++    return [
++      {
++        source: '/:path*',
++        headers: [
++          {
++            key: 'X-Frame-Options',
++            value: 'DENY'
++          },
++          {
++            key: 'X-Content-Type-Options',
++            value: 'nosniff'
++          },
++          {
++            key: 'X-XSS-Protection',
++            value: '1; mode=block'
++          },
++          {
++            key: 'Referrer-Policy',
++            value: 'strict-origin-when-cross-origin'
++          },
++          {
++            key: 'Permissions-Policy',
++            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
++          },
++          {
++            key: 'Strict-Transport-Security',
++            value: 'max-age=31536000; includeSubDomains; preload'
++          }
++        ]
++      }
++    ]
++  },
+ 
+   images: {
+     domains: ['firebasestorage.googleapis.com'],

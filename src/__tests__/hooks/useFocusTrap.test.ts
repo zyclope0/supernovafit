@@ -35,10 +35,13 @@ describe('useFocusTrap Hook', () => {
     document.body.style.overflow = ''
   })
 
-  it('should return a ref object', () => {
+  it('should return a ref object and getFocusableElements function', () => {
     const { result } = renderHook(() => useFocusTrap({ isActive: false }))
     
-    expect(result.current).toHaveProperty('current')
+    expect(result.current).toHaveProperty('containerRef')
+    expect(result.current).toHaveProperty('getFocusableElements')
+    expect(result.current.containerRef).toHaveProperty('current')
+    expect(typeof result.current.getFocusableElements).toBe('function')
   })
 
   it('should not activate focus trap when isActive is false', () => {
