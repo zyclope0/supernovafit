@@ -4,10 +4,12 @@ import { useState } from 'react'
 import MainLayout from '@/components/layout/MainLayout'
 import { useAuth } from '@/hooks/useAuth'
 import ProfileForm from '@/components/ui/ProfileForm'
-import { User as UserIcon, Settings, TrendingUp } from 'lucide-react'
+import { User as UserIcon, TrendingUp, Target, Activity, Calculator } from 'lucide-react'
 import { calculateTDEE } from '@/lib/userCalculations'
 import type { User as UserProfile } from '@/types'
 import AuthGuard from '@/components/auth/AuthGuard'
+import ProfilProgressHeader from '@/components/profil/ProfilProgressHeader'
+import ProfilCardClickable from '@/components/ui/ProfilCardClickable'
 
 export default function ProfilPage() {
   const { userProfile } = useAuth()
@@ -30,33 +32,43 @@ export default function ProfilPage() {
   const completeness = calculateProfileCompleteness()
   const currentProfile = (updatedProfile || userProfile) as UserProfile | null
 
+  // Données pour le ProgressHeader - Seulement la complétude avec progression
+  const progressItems = [
+    {
+      icon: <UserIcon className="h-4 w-4" />,
+      label: 'Complétude',
+      data: {
+        current: completeness,
+        target: 100,
+        unit: '%'
+      },
+      color: 'purple' as const
+    }
+  ]
+
+  const generateSmartAdvice = () => {
+    if (completeness < 50) {
+      return "Complétez votre profil pour des recommandations personnalisées"
+    }
+    if (completeness < 100) {
+      return "Quelques informations manquantes pour optimiser vos calculs"
+    }
+    return "Profil complet ! Vos données sont optimisées pour des recommandations précises"
+  }
+
   return (
     <AuthGuard>
       <MainLayout>
         <div className="container mx-auto p-4 space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Mon Profil</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Configurez vos informations personnelles pour des recommandations personnalisées
-            </p>
-          </div>
-          
-          {/* Indicateur de complétude */}
-          <div className="text-center sm:text-right">
-            <div className="text-sm text-muted-foreground mb-1">Profil complété</div>
-            <div className="flex items-center gap-2 justify-center sm:justify-end">
-              <div className="w-20 bg-space-700 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-neon-cyan to-neon-green h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${completeness}%` }}
-                />
-              </div>
-              <span className="text-sm font-medium text-neon-cyan">{completeness}%</span>
-            </div>
-          </div>
-        </div>
+          {/* ProgressHeader standardisé */}
+          <ProfilProgressHeader
+            title="PROFIL"
+            emoji="👤"
+            period="today"
+            onPeriodChange={() => {}}
+            items={progressItems}
+            advice={generateSmartAdvice()}
+          />
 
         {/* Alerte profil incomplet */}
         {completeness < 100 && (
@@ -73,78 +85,87 @@ export default function ProfilPage() {
           </div>
         )}
 
-        {/* Vue d'ensemble rapide */}
+        {/* Vue d'ensemble avec ClickableCards */}
         {completeness > 50 && currentProfile && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="glass-effect p-4 rounded-lg border border-white/10">
-              <div className="flex items-center gap-2 mb-2">
-                <UserIcon className="h-4 w-4 text-neon-purple" />
-                <span className="text-sm text-muted-foreground">Âge</span>
-              </div>
-              <div className="text-lg font-semibold text-white">
-                {currentProfile.age ? `${currentProfile.age} ans` : 'Non défini'}
-              </div>
-            </div>
+            <ProfilCardClickable
+              data={{
+                icon: <UserIcon className="h-4 w-4" />,
+                label: 'Âge',
+                value: currentProfile.age ? `${currentProfile.age} ans` : 'Non défini',
+                color: 'purple'
+              }}
+              onView={() => {}}
+              onEdit={() => {}}
+              showActions={false}
+            />
             
-            <div className="glass-effect p-4 rounded-lg border border-white/10">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-neon-green" />
-                <span className="text-sm text-muted-foreground">Objectif</span>
-              </div>
-              <div className="text-lg font-semibold text-white">
-                {currentProfile.objectif ? {
+            <ProfilCardClickable
+              data={{
+                icon: <Target className="h-4 w-4" />,
+                label: 'Objectif',
+                value: currentProfile.objectif ? {
                   'maintien': '🎯 Maintien',
                   'prise_masse': '💪 Prise de masse',
                   'seche': '🔥 Sèche',
                   'performance': '⚡ Performance'
-                }[currentProfile.objectif] : 'Non défini'}
-              </div>
-            </div>
+                }[currentProfile.objectif] : '❌ Non défini',
+                color: currentProfile.objectif ? 'green' : 'red'
+              }}
+              onView={() => {}}
+              onEdit={() => {}}
+              showActions={false}
+            />
             
-            <div className="glass-effect p-4 rounded-lg border border-white/10">
-              <div className="flex items-center gap-2 mb-2">
-                <Settings className="h-4 w-4 text-neon-cyan" />
-                <span className="text-sm text-muted-foreground">Activité</span>
-              </div>
-              <div className="text-lg font-semibold text-white">
-                {currentProfile.niveau_activite ? {
+            <ProfilCardClickable
+              data={{
+                icon: <Activity className="h-4 w-4" />,
+                label: 'Activité',
+                value: currentProfile.niveau_activite ? {
                   'sedentaire': '🪑 Sédentaire',
                   'leger': '🚶 Léger',
                   'modere': '🏃 Modéré',
                   'intense': '💪 Intense',
                   'tres_intense': '🔥 Très intense'
-                }[currentProfile.niveau_activite] : 'Non défini'}
-              </div>
-            </div>
+                }[currentProfile.niveau_activite] : '❌ Non défini',
+                color: currentProfile.niveau_activite ? 'cyan' : 'red'
+              }}
+              onView={() => {}}
+              onEdit={() => {}}
+              showActions={false}
+            />
             
-            <div className="glass-effect p-4 rounded-lg border border-white/10">
-              <div className="flex items-center gap-2 mb-2">
-                <UserIcon className="h-4 w-4 text-neon-pink" />
-                <span className="text-sm text-muted-foreground">IMC</span>
-              </div>
-              <div className="text-lg font-semibold text-white">
-                {currentProfile.taille && currentProfile.poids_initial ? 
+            <ProfilCardClickable
+              data={{
+                icon: <Calculator className="h-4 w-4" />,
+                label: 'IMC',
+                value: currentProfile.taille && currentProfile.poids_initial ? 
                   (() => {
                     const imc = currentProfile.poids_initial / Math.pow(currentProfile.taille / 100, 2)
                     return `${imc.toFixed(1)}`
                   })() 
-                  : 'Non calculé'
-                }
-              </div>
-            </div>
+                  : '❌ Non calculé',
+                color: (currentProfile.taille && currentProfile.poids_initial) ? 'pink' : 'red'
+              }}
+              onView={() => {}}
+              onEdit={() => {}}
+              showActions={false}
+            />
 
-            <div className="glass-effect p-4 rounded-lg border border-white/10">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-neon-green" />
-                <span className="text-sm text-muted-foreground">TDEE</span>
-              </div>
-              <div className="text-lg font-semibold text-white">
-                {(() => {
+            <ProfilCardClickable
+              data={{
+                icon: <TrendingUp className="h-4 w-4" />,
+                label: 'TDEE',
+                value: (() => {
                   const tdee = calculateTDEE(currentProfile)
-                  return tdee ? `${tdee} kcal/j` : 'Non calculé'
-                })()}
-              </div>
-            </div>
+                  return tdee ? `${tdee} kcal/j` : '❌ Non calculé'
+                })(),
+                color: calculateTDEE(currentProfile) ? 'green' : 'red'
+              }}
+              onView={() => {}}
+              onEdit={() => {}}
+              showActions={false}
+            />
           </div>
         )}
 

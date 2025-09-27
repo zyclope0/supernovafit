@@ -3,14 +3,14 @@
 import { useState, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
-const MealForm = dynamic(() => import('@/components/ui/MealForm'), { ssr: false })
+const DietForm = dynamic(() => import('@/components/diete/DietForm'), { ssr: false })
 import { useAuth } from '@/hooks/useAuth'
 import { useEnergyBalance } from '@/hooks/useEnergyBalance'
 import { calculateTDEE, calculateAdjustedTDEE } from '@/lib/userCalculations'
 import { useRepas, useAthleteDietPlan, useCoachCommentsByModule, useEntrainements } from '@/hooks/useFirestore'
 import { MealType, Aliment, Macros } from '@/types'
 // formatNumber removed - not used
-import { ChevronDown, ChevronRight, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import { IconButton } from '@/components/ui/IconButton'
 import dynamic from 'next/dynamic'
 // MacrosChart supprimé - remplacé par NutritionAnalytics evidence-based
@@ -22,131 +22,16 @@ import CollapsibleCard from '@/components/ui/CollapsibleCard'
 // Skeletons supprimés - plus utilisés dans la nouvelle structure
 import SmartSuggestions from '@/components/diete/SmartSuggestions'
 import type { SmartSuggestion } from '@/lib/nutritional-database'
-import PageHeader from '@/components/ui/PageHeader'
-import MacroProgressHeader from '@/components/diete/MacroProgressHeader'
+// PageHeader supprimé - remplacé par DietProgressHeader industrialisé
+import DietProgressHeader from '@/components/ui/DietProgressHeader'
 import NutritionAnalytics from '@/components/diete/NutritionAnalytics'
 import CoachDietSection from '@/components/diete/CoachDietSection'
+import DietCardClickable from '@/components/ui/DietCardClickable'
+import DietDetailModal from '@/components/ui/DietDetailModal'
 
 import React from 'react'
 
-function MealCard({ 
-  mealName, 
-  mealIcon, 
-  time,
-  mealType,
-  aliments = [],
-  macros,
-  onAddMeal,
-  onDelete,
-  mealId,
-  collapsible = true
-}: { 
-  mealName: string
-  mealIcon: string
-  time: string
-  mealType: MealType
-  aliments?: Aliment[]
-  macros?: Macros
-  onAddMeal: () => void
-  onDelete?: (id: string) => void
-  mealId?: string
-  collapsible?: boolean
-}) {
-  const hasFood = aliments.length > 0
-  const [open, setOpen] = useState(!collapsible ? true : hasFood)
-  const detailsId = `meal-details-${mealId || mealType}`
-
-  return (
-    <div className="glass-effect p-4 rounded-lg glass-hover hover:glow-cyan transition-all">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <div className="flex items-center space-x-3 flex-1 min-w-0">
-          <span className="text-2xl flex-shrink-0">{mealIcon}</span>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-medium text-white truncate">{mealName}</h4>
-            <p className="text-sm text-accessible-secondary">{time}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {macros && (
-            <span className="px-2 py-1 bg-white/10 text-white/80 rounded text-xs whitespace-nowrap">
-              {Math.round(macros.kcal)} kcal
-            </span>
-          )}
-          {hasFood && (
-            <span className="px-2 py-1 bg-white/5 text-white/70 rounded text-xs whitespace-nowrap">
-              {aliments.length} aliments
-            </span>
-          )}
-          {collapsible && (
-            <button
-              type="button"
-              onClick={() => setOpen(!open)}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
-              title={open ? 'Réduire' : 'Développer'}
-              aria-expanded={open}
-              aria-controls={detailsId}
-            >
-              {open ? (
-                <ChevronDown className="w-4 h-4 text-white" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-white" />
-              )}
-            </button>
-          )}
-          {hasFood && onDelete && mealId && (
-            <IconButton
-              icon={Trash2}
-              label="Supprimer le repas"
-              onClick={() => onDelete(mealId)}
-              variant="danger"
-              size="sm"
-            />
-          )}
-          <button 
-            onClick={onAddMeal}
-            className="px-3 py-1 bg-neon-purple/20 text-neon-purple rounded-lg text-sm font-medium hover:bg-neon-purple/30 transition-colors whitespace-nowrap"
-          >
-            {hasFood ? 'Modifier' : 'Ajouter'}
-          </button>
-        </div>
-      </div>
-      
-      {/* Résumé compact toujours visible */}
-      {macros && (
-        <div className="flex flex-wrap gap-4 text-xs text-accessible-tertiary py-2 border-t border-white/10">
-          <span className="text-neon-green">{Math.round(macros.kcal)} kcal</span>
-          <span>P: {macros.prot.toFixed(1)}g</span>
-          <span>G: {macros.glucides.toFixed(1)}g</span>
-          <span>L: {macros.lipides.toFixed(1)}g</span>
-        </div>
-      )}
-
-      {/* Détails repliables */}
-      {open && (
-        <div id={detailsId} className="space-y-2 mt-2">
-          {hasFood ? (
-            <>
-              <div className="space-y-1">
-                {aliments.slice(0, 6).map((aliment, index) => (
-                  <div key={index} className="text-sm text-accessible-secondary">
-                    • {aliment.nom} ({aliment.quantite}{aliment.unite})
-                  </div>
-                ))}
-                {aliments.length > 6 && (
-                  <div className="text-sm text-accessible-tertiary">
-                    • +{aliments.length - 6} autres aliments
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="text-sm text-muted-foreground">Aucun aliment ajouté</div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
+// MealCard supprimé - remplacé par DietCardClickable industrialisé
 
 // MealCardMemo supprimé - plus utilisé
 
@@ -158,13 +43,17 @@ export default function DietePage() {
   const { entrainements } = useEntrainements() // Pour calculer l'ajustement TDEE
   const { currentPlan, loading: planLoading } = useAthleteDietPlan()
   const [selectedDate, setSelectedDate] = useState('')
-  const [macrosPeriod, setMacrosPeriod] = useState<'today' | 'week'>('today')
+  const [macrosPeriod, setMacrosPeriod] = useState<'today' | 'week' | 'month'>('today')
   const { comments: dieteComments, loading: commentsLoading } = useCoachCommentsByModule('diete', selectedDate)
   const [showMealForm, setShowMealForm] = useState<MealType | null>(null)
   const [editingMeal, setEditingMeal] = useState<string | null>(null) // ID du repas en édition
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showMenuTypes, setShowMenuTypes] = useState(false)
   const [showHistorique, setShowHistorique] = useState(false)
+  
+  // États pour les nouveaux composants industrialisés
+  const [selectedMeal, setSelectedMeal] = useState<Repas | null>(null)
+  const [showMealDetail, setShowMealDetail] = useState(false)
 
   // Initialiser selectedDate côté client pour éviter hydration mismatch
   useEffect(() => {
@@ -173,12 +62,12 @@ export default function DietePage() {
     }
   }, [selectedDate])
 
-  const today = new Date().toLocaleDateString('fr-FR', { 
-    weekday: 'long',
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  })
+  // const today = new Date().toLocaleDateString('fr-FR', { 
+  //   weekday: 'long',
+  //   year: 'numeric', 
+  //   month: 'long', 
+  //   day: 'numeric' 
+  // }) // Supprimé car non utilisé après suppression du PageHeader
 
   const meals: { type: MealType; name: string; icon: string; time: string }[] = useMemo(() => [
     { type: 'petit_dej', name: 'Petit-déjeuner', icon: '🌅', time: '7h30' },
@@ -189,8 +78,64 @@ export default function DietePage() {
     { type: 'collation_soir', name: 'Collation soir', icon: '🌃', time: '21h30' }
   ], [])
 
-  // Filtrer les repas du jour sélectionné
-  const todayMeals = useMemo(() => repas.filter((r: Repas) => r.date === selectedDate), [repas, selectedDate])
+  // Fonction de migration pour adapter les anciens repas à la nouvelle structure
+  const migrateLegacyMeal = (meal: unknown): Repas => {
+    // Si c'est déjà un repas moderne, le retourner tel quel
+    if (meal && typeof meal === 'object' && 'aliments' in meal && 'macros' in meal) {
+      const mealObj = meal as Record<string, unknown>
+      if (Array.isArray(mealObj.aliments) && mealObj.macros) {
+        return meal as Repas
+      }
+    }
+    
+    // Migration des anciens repas
+    const mealObj = meal as Record<string, unknown>
+    const migratedMeal: Repas = {
+      id: (mealObj.id as string) || (mealObj._id as string) || '',
+      user_id: (mealObj.user_id as string) || (mealObj.userId as string) || '',
+      date: (mealObj.date as string) || ((mealObj.created_at as string)?.split('T')[0]) || '',
+      repas: (mealObj.repas as MealType) || (mealObj.mealType as MealType) || (mealObj.type as MealType) || 'dejeuner',
+      aliments: (mealObj.aliments as Aliment[]) || (mealObj.foods as Aliment[]) || (mealObj.items as Aliment[]) || [],
+      macros: (mealObj.macros as Macros) || (mealObj.nutrition as Macros) || {
+        kcal: (mealObj.calories as number) || (mealObj.kcal as number) || 0,
+        prot: (mealObj.protein as number) || (mealObj.proteines as number) || 0,
+        glucides: (mealObj.carbs as number) || (mealObj.glucides as number) || 0,
+        lipides: (mealObj.fat as number) || (mealObj.lipides as number) || 0
+      }
+    }
+    
+    // Migration des aliments si nécessaire
+    if (migratedMeal.aliments && migratedMeal.aliments.length > 0) {
+      migratedMeal.aliments = migratedMeal.aliments.map((aliment: unknown) => {
+        const alimentObj = aliment as Record<string, unknown>
+        return {
+          id: (alimentObj.id as string) || (alimentObj._id as string) || '',
+          nom: (alimentObj.nom as string) || (alimentObj.name as string) || (alimentObj.food_name as string) || 'Aliment inconnu',
+          quantite: (alimentObj.quantite as number) || (alimentObj.quantity as number) || (alimentObj.amount as number) || 100,
+          unite: (alimentObj.unite as string) || (alimentObj.unit as string) || (alimentObj.unity as string) || 'g',
+          openfoodfacts_id: (alimentObj.openfoodfacts_id as string) || (alimentObj.product_id as string),
+          macros: (alimentObj.macros as Macros) || {
+            kcal: (alimentObj.calories as number) || (alimentObj.kcal as number) || 0,
+            prot: (alimentObj.protein as number) || (alimentObj.proteines as number) || 0,
+            glucides: (alimentObj.carbs as number) || (alimentObj.glucides as number) || 0,
+            lipides: (alimentObj.fat as number) || (alimentObj.lipides as number) || 0
+          },
+          macros_base: (alimentObj.macros_base as Macros) || (alimentObj.base_macros as Macros) || (alimentObj.macros as Macros)
+        }
+      })
+    }
+    
+    return migratedMeal
+  }
+
+  // Filtrer les repas du jour sélectionné avec migration
+  const todayMeals = useMemo(() => {
+    const migratedRepas = repas.map(migrateLegacyMeal)
+    const filtered = migratedRepas.filter((r: Repas) => r.date === selectedDate)
+    
+    
+    return filtered
+  }, [repas, selectedDate])
 
   // Calcul des repas de la semaine pour le mode semaine
   const weekMeals = useMemo(() => {
@@ -205,8 +150,33 @@ export default function DietePage() {
     return repas.filter((r: Repas) => r.date >= weekStartStr && r.date <= selectedDate)
   }, [repas, selectedDate, macrosPeriod])
 
+  // Calcul des repas du mois pour le mode mois
+  const monthMeals = useMemo(() => {
+    if (macrosPeriod !== 'month') return []
+    
+    const monthStart = new Date(selectedDate)
+    monthStart.setDate(1) // Premier jour du mois
+    const monthStartStr = monthStart.toISOString().split('T')[0]
+    
+    const filtered = repas.filter((r: Repas) => r.date >= monthStartStr && r.date <= selectedDate)
+    
+    
+    return filtered
+  }, [repas, selectedDate, macrosPeriod])
+
   // Repas selon la période sélectionnée
-  const periodMeals = macrosPeriod === 'today' ? todayMeals : weekMeals
+  const periodMeals = useMemo(() => {
+    switch (macrosPeriod) {
+      case 'today':
+        return todayMeals
+      case 'week':
+        return weekMeals
+      case 'month':
+        return monthMeals
+      default:
+        return todayMeals
+    }
+  }, [macrosPeriod, todayMeals, weekMeals, monthMeals])
 
   // Hook centralisé pour tous les calculs énergétiques (préparé pour future intégration)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -388,31 +358,33 @@ export default function DietePage() {
       lipides: acc.lipides + (meal.macros?.lipides || 0)
     }), { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
 
-    // Adapter les objectifs selon la période
-    const periodMultiplier = macrosPeriod === 'week' ? 7 : 1
     
-    return {
+    // Calculs selon la période : moyenne pour week/month, total pour today
+    const result = {
       calories: { 
-        current: totalMacros.kcal, 
-        target: targetMacros.calories * periodMultiplier, 
+        current: macrosPeriod === 'today' ? totalMacros.kcal : Math.round(totalMacros.kcal / (macrosPeriod === 'week' ? 7 : 30)), 
+        target: targetMacros.calories, 
         unit: '' 
       },
       proteins: { 
-        current: Math.round(totalMacros.prot), 
-        target: targetMacros.protein * periodMultiplier, 
+        current: macrosPeriod === 'today' ? Math.round(totalMacros.prot) : Math.round(totalMacros.prot / (macrosPeriod === 'week' ? 7 : 30)), 
+        target: targetMacros.protein, 
         unit: 'g' 
       },
       carbs: { 
-        current: Math.round(totalMacros.glucides), 
-        target: targetMacros.carbs * periodMultiplier, 
+        current: macrosPeriod === 'today' ? Math.round(totalMacros.glucides) : Math.round(totalMacros.glucides / (macrosPeriod === 'week' ? 7 : 30)), 
+        target: targetMacros.carbs, 
         unit: 'g' 
       },
       fats: { 
-        current: Math.round(totalMacros.lipides), 
-        target: targetMacros.fat * periodMultiplier, 
+        current: macrosPeriod === 'today' ? Math.round(totalMacros.lipides) : Math.round(totalMacros.lipides / (macrosPeriod === 'week' ? 7 : 30)), 
+        target: targetMacros.fat, 
         unit: 'g' 
       }
     }
+    
+    
+    return result
   }, [periodMeals, targetMacros, macrosPeriod])
 
   // Gérer l'ajout d'un aliment suggéré
@@ -420,6 +392,28 @@ export default function DietePage() {
     // Ouvrir le formulaire de repas avec l'aliment pré-rempli
     setShowMealForm('collation_apres_midi') // Par défaut, ajouter comme collation
     toast.success(`${suggestion.food.name} ajouté à vos suggestions !`)
+  }
+
+  // Handlers pour les nouveaux composants industrialisés
+  const handleMealView = (meal: Repas) => {
+    setSelectedMeal(meal)
+    setShowMealDetail(true)
+  }
+
+  const handleMealEdit = (meal: Repas) => {
+    setEditingMeal(meal.id)
+    setShowMealForm(meal.repas)
+    setShowMealDetail(false)
+  }
+
+  const handleMealDelete = async (mealId: string) => {
+    try {
+      await deleteRepas(mealId)
+      toast.success('Repas supprimé avec succès')
+      setShowMealDetail(false)
+    } catch {
+      toast.error('Erreur lors de la suppression')
+    }
   }
 
   // Raccourcis clavier pour améliorer l'UX
@@ -433,15 +427,38 @@ export default function DietePage() {
           setShowMealForm(nextMeal.type)
         }
       }
-      if (e.key === 'Escape' && showMealForm) {
-        setShowMealForm(null)
-        setEditingMeal(null)
+      if (e.key === 'Escape') {
+        if (showMealForm) {
+          setShowMealForm(null)
+          setEditingMeal(null)
+        }
+        if (showMenuTypes) {
+          setShowMenuTypes(false)
+        }
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [showMealForm, todayMeals, meals])
+  }, [showMealForm, showMenuTypes, todayMeals, meals])
+
+  // Fermer le menu de sélection quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showMenuTypes) {
+        const target = e.target as Element
+        // Ne pas fermer si on clique sur le FAB ou sur une card de repas
+        if (!target.closest('.fixed.bottom-6.right-6') && 
+            !target.closest('.fixed.bottom-8.right-8') &&
+            !target.closest('[data-meal-card]')) {
+          setShowMenuTypes(false)
+        }
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [showMenuTypes])
 
   // Loading state pendant initialisation selectedDate
   if (!selectedDate) {
@@ -457,26 +474,60 @@ export default function DietePage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header standardisé */}
-        <PageHeader
-          title="Diète & Nutrition"
-          description={`Suivi nutritionnel - ${today}`}
-          action={{
-            label: 'Menu-type',
-            onClick: () => setShowMenuTypes(true),
-            color: 'purple'
-          }}
-        />
+        {/* Bouton d'action pour menu-type */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowMenuTypes(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg hover:bg-neon-purple/30 transition-colors"
+          >
+            <span className="text-lg">🍽️</span>
+            Menu-type
+          </button>
+        </div>
 
-        {/* Header macros amélioré */}
+
+
+        {/* Header macros industrialisé */}
         {user && (
-          <MacroProgressHeader
-            calories={periodMacros.calories}
-            proteins={periodMacros.proteins}
-            carbs={periodMacros.carbs}
-            fats={periodMacros.fats}
+          <DietProgressHeader
+            title="MACROS & NUTRITION"
+            emoji="🍎"
             period={macrosPeriod}
-            onPeriodChange={setMacrosPeriod}
+            onPeriodChange={(period) => setMacrosPeriod(period as 'today' | 'week' | 'month')}
+            items={[
+              {
+                icon: <span className="text-neon-green">🔥</span>,
+                label: 'Calories',
+                data: periodMacros.calories,
+                color: 'neon-green'
+              },
+              {
+                icon: <span className="text-neon-cyan">💪</span>,
+                label: 'Protéines',
+                data: periodMacros.proteins,
+                color: 'neon-cyan'
+              },
+              {
+                icon: <span className="text-neon-yellow">⚡</span>,
+                label: 'Glucides',
+                data: periodMacros.carbs,
+                color: 'neon-yellow'
+              },
+              {
+                icon: <span className="text-neon-pink">💧</span>,
+                label: 'Lipides',
+                data: periodMacros.fats,
+                color: 'neon-pink'
+              }
+            ]}
+            advice={periodMeals.length === 0 
+              ? `Commencez par ajouter votre premier repas ! Objectif: ${Math.round(targetMacros.calories)} kcal`
+              : macrosPeriod === 'today' 
+                ? `Objectif: ${Math.round(targetMacros.calories)} kcal aujourd'hui`
+                : macrosPeriod === 'week'
+                  ? `Moyenne quotidienne: ${Math.round(periodMacros.calories.current)} kcal/jour | Total semaine: ${Math.round(periodMeals.reduce((sum, meal) => sum + (meal.macros?.kcal || 0), 0))} kcal`
+                  : `Moyenne quotidienne: ${Math.round(periodMacros.calories.current)} kcal/jour | Total mensuel: ${Math.round(periodMeals.reduce((sum, meal) => sum + (meal.macros?.kcal || 0), 0))} kcal`
+            }
           />
         )}
 
@@ -544,18 +595,29 @@ export default function DietePage() {
                   : undefined
 
                 return (
-                  <MealCard
-                    key={meal.type}
-                    mealName={meal.name}
-                    mealIcon={meal.icon}
-                    time={meal.time}
-                    mealType={meal.type}
-                    aliments={mealData?.aliments || []}
-                    macros={mealData?.macros}
-                    onAddMeal={() => setShowMealForm(meal.type)}
-                    onDelete={undefined}
-                    mealId={mealData?.id}
-                  />
+                  <div key={meal.type} data-meal-card>
+                    <DietCardClickable
+                      title={meal.name}
+                      emoji={meal.icon}
+                      time={meal.time}
+                      items={mealData?.aliments?.map((aliment: Aliment) => ({
+                        name: aliment.nom,
+                        quantity: `${aliment.quantite}${aliment.unite}`,
+                        calories: aliment.macros?.kcal
+                      })) || []}
+                      totalCalories={mealData?.macros?.kcal}
+                      macros={mealData?.macros ? {
+                        protein: mealData.macros.prot,
+                        carbs: mealData.macros.glucides,
+                        fat: mealData.macros.lipides
+                      } : undefined}
+                      isEmpty={!mealData}
+                      onView={() => mealData && handleMealView(mealData)}
+                      onEdit={() => mealData && handleMealEdit(mealData)}
+                      onDelete={() => mealData && handleMealDelete(mealData.id)}
+                      onAdd={() => setShowMealForm(meal.type)}
+                    />
+                  </div>
                 )
               })}
             </div>
@@ -597,9 +659,9 @@ export default function DietePage() {
           </div>
         )}
 
-        {/* Formulaire d'ajout/édition de repas */}
+        {/* Formulaire d'ajout/édition de repas industrialisé */}
         {showMealForm && (
-          <MealForm 
+          <DietForm 
             mealType={showMealForm}
             onSubmit={(aliments, macros) => handleAddMeal(showMealForm, aliments, macros)}
             onCancel={() => {
@@ -628,18 +690,68 @@ export default function DietePage() {
           onDateChange={(d) => setSelectedDate(d)}
         />
 
+        {/* Modal détaillée des repas */}
+        {selectedMeal && (
+          <DietDetailModal
+            isOpen={showMealDetail}
+            onClose={() => setShowMealDetail(false)}
+            title={meals.find(m => m.type === selectedMeal.repas)?.name || 'Repas'}
+            emoji={meals.find(m => m.type === selectedMeal.repas)?.icon || '🍽️'}
+            time={meals.find(m => m.type === selectedMeal.repas)?.time || ''}
+            items={selectedMeal.aliments?.map((aliment: Aliment) => ({
+              name: aliment.nom,
+              quantity: `${aliment.quantite}${aliment.unite}`,
+              calories: aliment.macros?.kcal || 0,
+              protein: aliment.macros?.prot || 0,
+              carbs: aliment.macros?.glucides || 0,
+              fat: aliment.macros?.lipides || 0
+            })) || []}
+            totalCalories={selectedMeal.macros?.kcal || 0}
+            totalMacros={{
+              protein: selectedMeal.macros?.prot || 0,
+              carbs: selectedMeal.macros?.glucides || 0,
+              fat: selectedMeal.macros?.lipides || 0
+            }}
+            onEdit={() => handleMealEdit(selectedMeal)}
+            onDelete={() => handleMealDelete(selectedMeal.id)}
+          />
+        )}
+
       </div>
       
       {/* FAB (Floating Action Button) pour ajouter un repas */}
-      <button
-        onClick={() => setShowMealForm('petit_dej')}
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
-        title="Ajouter un repas (raccourci: Ctrl+N)"
-      >
-        <span className="text-2xl md:text-3xl group-hover:rotate-90 transition-transform duration-300">🍽️</span>
-        {/* Ripple effect */}
-        <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-      </button>
+      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50">
+        {/* Menu de sélection des types de repas */}
+        {showMenuTypes && (
+          <div className="absolute bottom-20 right-0 mb-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl p-2 min-w-[200px]">
+            <div className="text-xs text-gray-400 mb-2 px-2">Choisir le type de repas :</div>
+            {meals.map((meal) => (
+              <button
+                key={meal.type}
+                onClick={() => {
+                  setShowMealForm(meal.type)
+                  setShowMenuTypes(false)
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 text-white hover:bg-white/10 rounded-md transition-colors text-sm"
+              >
+                <span className="text-lg">{meal.icon}</span>
+                <span>{meal.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Bouton principal */}
+        <button
+          onClick={() => setShowMenuTypes(!showMenuTypes)}
+          className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-purple/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+          title="Ajouter un repas (raccourci: Ctrl+N)"
+        >
+          <span className="text-2xl md:text-3xl group-hover:rotate-90 transition-transform duration-300">🍽️</span>
+          {/* Ripple effect */}
+          <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+        </button>
+      </div>
     </MainLayout>
   )
 } 

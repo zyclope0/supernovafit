@@ -6,7 +6,7 @@ import { Entrainement } from '@/types'
 // generateId removed - not used
 import { getQuickCalorieEstimate, smartCalorieCalculation } from '@/lib/caloriesCalculator'
 import { entrainementSchema, validateData } from '@/lib/validation'
-import { X, Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
+import { Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface TrainingFormProps {
@@ -181,18 +181,7 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
   const selectedType = TRAINING_TYPES.find(t => t.value === type)
 
   return (
-    <div className="glass-effect p-6 rounded-xl border border-white/10">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white">
-          {isEditing ? 'Modifier l\'entraînement' : 'Ajouter un entraînement'}
-        </h2>
-        <button
-          onClick={onCancel}
-          className="p-2 text-muted-foreground hover:text-white transition-colors"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
+    <div className="space-y-6">
 
       {/* Erreurs de validation */}
       {hasValidated && validationErrors.length > 0 && (

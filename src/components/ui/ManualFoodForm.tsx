@@ -21,20 +21,27 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
     lipides: 0
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
+  const handleAdd = () => {
     if (!nom.trim()) {
       alert('Veuillez entrer un nom d\'aliment')
       return
     }
 
+    // Calculer les macros pour la quantité actuelle
+    const ratio = quantite / 100
+    const macrosCalcules = {
+      kcal: macros.kcal * ratio,
+      prot: macros.prot * ratio,
+      glucides: macros.glucides * ratio,
+      lipides: macros.lipides * ratio,
+    }
+    
     const aliment: Aliment = {
       id: generateId(),
       nom: nom.trim(),
       quantite,
       unite,
-      macros,
+      macros: macrosCalcules,
       // Stocker les valeurs de base pour 100g
       macros_base: { ...macros }
     }
@@ -59,7 +66,7 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-4">
         {/* Nom de l&apos;aliment */}
         <div>
           <label className="block text-xs text-muted-foreground mb-1">
@@ -207,13 +214,14 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
             Annuler
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={handleAdd}
             className="flex-1 px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded text-sm font-medium hover:bg-neon-cyan/30 transition-colors"
           >
             Ajouter
           </button>
         </div>
-      </form>
+      </div>
     </div>
   )
 }

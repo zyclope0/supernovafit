@@ -5,8 +5,8 @@
 
 // Application metadata
 export const APP_NAME = 'SuperNovaFit'
-export const APP_VERSION = '1.13.0'
-export const APP_RELEASE_DATE = '2025-09-21'
+export const APP_VERSION = '2.0.0'
+export const APP_RELEASE_DATE = '2025-01-15'
 
 // Activity levels pour les tests
 export const ACTIVITY_LEVELS = {

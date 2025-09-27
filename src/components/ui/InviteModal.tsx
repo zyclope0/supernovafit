@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Copy, RefreshCw, Users, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Copy, RefreshCw, Users, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { useCoachInvites } from '@/hooks/useInvites'
 import { getTimeUntilExpiration, formatExpirationDate } from '@/lib/inviteUtils'
-import { useFocusTrap } from '@/hooks/useFocusTrap'
+import StandardModal from './StandardModal'
 // import type { Invite } from '@/types' - Type non utilisé dans ce fichier
 
 interface InviteModalProps {
@@ -16,7 +16,6 @@ interface InviteModalProps {
 export default function InviteModal({ isOpen, onClose, coachId }: InviteModalProps) {
   const { invites, loading, generating, generateInvite, revokeInvite } = useCoachInvites(coachId)
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
-  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
 
   const handleGenerateInvite = async () => {
     const code = await generateInvite()
@@ -44,34 +43,17 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
   if (!isOpen) return null
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="invite-modal-title"
-      aria-describedby="invite-modal-description"
+    <StandardModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Inviter un·e athlète"
+      subtitle="Générez des codes d'invitation pour permettre à vos athlètes de rejoindre votre coaching. Chaque code est valable 7 jours."
+      icon={<Users className="h-6 w-6 text-neon-cyan" />}
+      maxWidth="2xl"
+      height="auto"
     >
-      <div ref={focusTrapRef} className="glass-effect w-full max-w-2xl mx-4 p-6 rounded-xl border border-white/10">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Users className="h-6 w-6 text-neon-cyan" />
-            <h2 id="invite-modal-title" className="text-xl font-semibold text-white">Inviter un·e athlète</h2>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Fermer la modal d'invitation"
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          >
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
 
-        {/* Description */}
-        <p id="invite-modal-description" className="text-sm text-muted-foreground mb-6">
-          Générez des codes d&apos;invitation pour permettre à vos athlètes de rejoindre votre coaching. Chaque code est valable 7 jours.
-        </p>
-
+      <div className="p-6">
         {/* Génération de code */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-4">
@@ -211,6 +193,6 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
           </p>
         </div>
       </div>
-    </div>
+    </StandardModal>
   )
 }

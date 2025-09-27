@@ -12,6 +12,7 @@ import QuickMoodModal from '../mobile/QuickMoodModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useQuickActions } from '@/hooks/useQuickActions'
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
+import SmartNotifications from '@/components/ui/SmartNotifications'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -143,6 +144,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
         isOpen={quickMoodModalOpen}
         onClose={() => setQuickMoodModalOpen(false)}
       />
+      
+      {/* Smart Notifications */}
+      <SmartNotifications />
     </div>
   )
 } 

@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import MainLayout from '@/components/layout/MainLayout'
-const TrainingForm = dynamic(() => import('@/components/ui/TrainingForm'), { ssr: false })
-const TrainingCard = dynamic(() => import('@/components/ui/TrainingCard'), { ssr: false })
+const TrainingFormModal = dynamic(() => import('@/components/ui/TrainingFormModal'), { ssr: false })
+const TrainingCardClickable = dynamic(() => import('@/components/ui/TrainingCardClickable'), { ssr: false })
 import dynamic from 'next/dynamic'
 
 // Skeleton loader optimisé pour les graphiques
@@ -51,11 +51,12 @@ import { useAuth } from '@/hooks/useAuth'
 import { useEntrainements, usePaginatedEntrainements } from '@/hooks/useFirestore'
 import { Entrainement } from '@/types'
 import { Plus, BarChart3 } from 'lucide-react'
-import PageHeader from '@/components/ui/PageHeader'
+// PageHeader supprimé - remplacé par TrainingProgressHeader industrialisé
 // StatsDashboard supprimé - remplacé par TrainingProgressHeader
 import TrainingProgressHeader from '@/components/entrainements/TrainingProgressHeader'
-// import ModuleComments from '@/components/ui/ModuleComments' // Temporarily disabled
+import TrainingCalendar from '@/components/entrainements/TrainingCalendar'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
+const TrainingDetailModal = dynamic(() => import('@/components/ui/TrainingDetailModal'), { ssr: false })
 const HistoriqueEntrainementsModal = dynamic(() => import('@/components/ui/HistoriqueEntrainementsModal'), { 
   ssr: false,
   loading: () => (
@@ -86,6 +87,8 @@ export default function EntrainementsPage() {
   const [dateFilterActive, setDateFilterActive] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [performancePeriod, setPerformancePeriod] = useState<'today' | 'week' | 'month'>('week')
+  const [selectedTraining, setSelectedTraining] = useState<Entrainement | null>(null)
+  const [showTrainingDetail, setShowTrainingDetail] = useState(false)
 
   // Calculer les statistiques avec useMemo pour performance
   const thisWeekTrainings = useMemo(() => entrainements.filter(e => {
@@ -116,7 +119,6 @@ export default function EntrainementsPage() {
     
     const totalMinutes = periodTrainings.reduce((sum, e) => sum + e.duree, 0)
     const totalCalories = periodTrainings.reduce((sum, e) => sum + (e.calories || 0), 0)
-    // averageDuration calculé mais non utilisé dans le nouveau header
     const averageIntensity = periodTrainings.length > 0 
       ? periodTrainings.reduce((sum, e) => {
           // Approximation intensité basée sur calories/minute
@@ -143,7 +145,6 @@ export default function EntrainementsPage() {
     }
   }, [entrainements, thisWeekTrainings, performancePeriod])
 
-  // weekStats supprimé - remplacé par periodStats
 
   // Gestion des actions
   const handleSubmit = async (trainingData: Omit<Entrainement, 'id' | 'user_id'>) => {
@@ -223,6 +224,19 @@ export default function EntrainementsPage() {
     setEditingTraining(null)
   }
 
+  const handleTrainingView = (training: Entrainement) => {
+    setSelectedTraining(training)
+    setShowTrainingDetail(true)
+  }
+
+  const handleTrainingEdit = () => {
+    if (selectedTraining) {
+      setEditingTraining(selectedTraining)
+      setShowForm(true)
+      setShowTrainingDetail(false)
+    }
+  }
+
   // Raccourcis clavier pour améliorer l'UX
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -242,17 +256,16 @@ export default function EntrainementsPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header standardisé */}
-        <PageHeader
-          title="Entraînements & Performance"
-          description="Suivez vos séances et progressez"
-          action={{
-            label: showCharts ? 'Masquer' : 'Graphiques',
-            onClick: () => setShowCharts(!showCharts),
-            icon: BarChart3,
-            color: 'cyan'
-          }}
-        />
+        {/* Bouton d'action pour les graphiques */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowCharts(!showCharts)}
+            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors"
+          >
+            <BarChart3 className="h-4 w-4" />
+            {showCharts ? 'Masquer' : 'Graphiques'}
+          </button>
+        </div>
 
         {/* Header performance révolutionnaire */}
         {user && (
@@ -275,40 +288,72 @@ export default function EntrainementsPage() {
           </div>
         )}
 
-        {/* Barre d'outils pour actions secondaires */}
+        {/* Calendrier d'entraînements avec indicateurs visuels */}
         {user && (
-          <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-center gap-3 flex-wrap">
-                <label className="text-sm text-muted-foreground whitespace-nowrap">📅 Date :</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-purple focus:outline-none focus:ring-2 focus:ring-neon-purple/20 transition-all duration-200 flex-1 sm:flex-none"
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <TrainingCalendar
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
+                entrainements={entrainements}
+                onShowHistory={() => setShowHistory(true)}
+              />
+            </div>
+            
+            <div className="space-y-4">
+              {/* Actions rapides */}
+              <div className="glass-effect p-4 rounded-xl border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  ⚡ Actions rapides
+                </h3>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+                    className="w-full px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 font-medium"
+                  >
+                    📅 Aujourd&apos;hui
+                  </button>
+                  <button
+                    onClick={() => setShowHistory(true)}
+                    className="w-full px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-all duration-200 transform hover:scale-105 font-medium"
+                  >
+                    📊 Historique complet
+                  </button>
+                  <button
+                    onClick={() => setShowGarminImport(true)}
+                    className="w-full px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 font-medium"
+                  >
+                    📤 Import Garmin
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-                  className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 font-medium whitespace-nowrap"
-                >
-                  Aujourd&apos;hui
-                </button>
-                <button
-                  onClick={() => setShowHistory(true)}
-                  className="px-2 sm:px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-all duration-200 transform hover:scale-105 font-medium whitespace-nowrap"
-                >
-                  <span className="hidden sm:inline">📊 Historique</span>
-                  <span className="sm:hidden">📊</span>
-                </button>
-                <button
-                  onClick={() => setShowGarminImport(true)}
-                  className="px-2 sm:px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm hover:bg-neon-purple/30 transition-all duration-200 transform hover:scale-105 font-medium whitespace-nowrap"
-                >
-                  <span className="hidden sm:inline">📤 Import Garmin</span>
-                  <span className="sm:hidden">📤</span>
-                </button>
+              
+              {/* Stats du jour sélectionné */}
+              <div className="glass-effect p-4 rounded-xl border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  📊 {selectedDate === new Date().toISOString().split('T')[0] ? "Aujourd'hui" : new Date(selectedDate).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                </h3>
+                {(() => {
+                  const dayTrainings = entrainements.filter(e => e.date === selectedDate)
+                  if (dayTrainings.length === 0) {
+                    return (
+                      <p className="text-gray-400 text-sm">Aucun entraînement prévu</p>
+                    )
+                  }
+                  return (
+                    <div className="space-y-2">
+                      <div className="text-sm text-gray-300">
+                        {dayTrainings.length} séance{dayTrainings.length > 1 ? 's' : ''}
+                      </div>
+                      <div className="text-sm text-neon-cyan">
+                        {dayTrainings.reduce((total, t) => total + (t.duree || 0), 0)} min total
+                      </div>
+                      <div className="text-sm text-neon-pink">
+                        {dayTrainings.reduce((total, t) => total + (t.calories || 0), 0)} kcal brûlées
+                      </div>
+                    </div>
+                  )
+                })()}
               </div>
             </div>
           </div>
@@ -350,22 +395,27 @@ export default function EntrainementsPage() {
             allTrainings={entrainements}
             currentDate={selectedDate}
             onDateChange={(date) => { setSelectedDate(date); setDateFilterActive(true) }}
+            onEditTraining={(training) => {
+              setEditingTraining(training)
+              setShowForm(true)
+            }}
           />
         )}
 
-        {/* Formulaire */}
-        {showForm && (
-          <TrainingForm
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-            existingTraining={editingTraining || undefined}
-            isEditing={!!editingTraining}
-            isSubmitting={isSubmitting}
-          />
-        )}
+        {/* Modal de formulaire industrialisée */}
+        <TrainingFormModal
+          isOpen={showForm}
+          onClose={() => {
+            setShowForm(false)
+            setEditingTraining(null)
+          }}
+          onSubmit={handleSubmit}
+          editingTraining={editingTraining}
+          isSubmitting={isSubmitting}
+        />
 
         {/* Liste des entraînements (par date sélectionnée ou derniers par défaut) */}
-        {!showForm && user && (
+        {user && (
           <CollapsibleCard title="Historique des entraînements" defaultOpen={true}>
             {loading ? (
               <div className="glass-effect p-6 rounded-xl border border-white/10">
@@ -380,9 +430,10 @@ export default function EntrainementsPage() {
                 return trainingsForDate.length > 0 ? (
                   <div className="space-y-4">
                     {trainingsForDate.map((training) => (
-                      <TrainingCard
+                      <TrainingCardClickable
                         key={training.id}
                         training={training}
+                        onView={() => handleTrainingView(training)}
                         onEdit={() => handleEdit(training)}
                         onDelete={() => handleDelete(training)}
                       />
@@ -425,9 +476,10 @@ export default function EntrainementsPage() {
                 <div className="space-y-4">
                   <div className="text-xs text-muted-foreground">Dernières séances</div>
                   {latest.map((training) => (
-                    <TrainingCard
+                    <TrainingCardClickable
                       key={training.id}
                       training={training}
+                      onView={() => handleTrainingView(training)}
                       onEdit={() => handleEdit(training)}
                       onDelete={() => handleDelete(training)}
                     />
@@ -454,13 +506,21 @@ export default function EntrainementsPage() {
           <CollapsibleCard title="Tous les entraînements" defaultOpen={false}>
             <SimpleAllTrainingsList 
               trainings={entrainements} 
-              onShowDetail={(t) => { setEditingTraining(t); setShowForm(true) }}
+              onShowDetail={handleTrainingView}
               hasMore={hasMore}
               loadMore={loadMore}
               loading={loading}
             />
           </CollapsibleCard>
         )}
+        
+        {/* Modal de détail d'entraînement */}
+        <TrainingDetailModal
+          isOpen={showTrainingDetail}
+          onClose={() => setShowTrainingDetail(false)}
+          training={selectedTraining}
+          onEdit={handleTrainingEdit}
+        />
       </div>
       
       {/* FAB (Floating Action Button) pour nouvel entraînement */}

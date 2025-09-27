@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
-import VitalsReporter from '@/components/analytics/VitalsReporter'
 import ChunkGuard from '@/components/runtime/ChunkGuard'
 import InstallBanner from '@/components/pwa/InstallBanner'
+import VitalsReporterWrapper from '@/components/analytics/VitalsReporterWrapper'
 import '../styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -80,7 +80,7 @@ export default function RootLayout({
           Aller à la navigation
         </a>
         {/* <SentryProvider /> - Désactivé: remplacé par sentry.client.config.ts */}
-        <VitalsReporter />
+        <VitalsReporterWrapper />
         <ChunkGuard />
         {children}
         <Toaster

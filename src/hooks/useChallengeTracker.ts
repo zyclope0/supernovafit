@@ -366,7 +366,7 @@ export function useChallengeTracker() {
       }
     }
 
-  }, [user, entrainements, challenges, updateChallenge])
+  }, [user, entrainements, challenges, updateChallenge, repas])
 
   // Mettre à jour les challenges de journal
   useEffect(() => {

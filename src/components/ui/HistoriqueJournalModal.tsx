@@ -2,9 +2,9 @@
 
 import { JournalEntry } from '@/types'
 import { useState, useMemo, useRef } from 'react'
-import { X, Calendar, BarChart3, Eye } from 'lucide-react'
+import { Calendar, BarChart3, Eye } from 'lucide-react'
 import { useCoachCommentsByModule } from '@/hooks/useFirestore'
-import { useFocusTrap } from '@/hooks/useFocusTrap'
+import StandardModal from './StandardModal'
 
 interface HistoriqueJournalModalProps {
   isOpen: boolean
@@ -15,11 +15,10 @@ interface HistoriqueJournalModalProps {
 }
 
 export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, currentDate, onDateChange }: HistoriqueJournalModalProps) {
-  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
   const [viewMode, setViewMode] = useState<'calendar' | 'stats'>('calendar')
   const { comments: journalComments } = useCoachCommentsByModule('journal')
   const commentedEntryDates = useMemo(() => new Set((journalComments || []).map((c) => (c as { date?: string }).date).filter(Boolean)), [journalComments])
-  const closeBtnRef = useRef<HTMLButtonElement | null>(null)
+  // Removed closeBtnRef as it's no longer needed
   const dayRefs = useRef<Array<HTMLButtonElement | null>>([])
 
   const getLast30Days = () => {
@@ -74,30 +73,30 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
 
   if (!isOpen) return null
 
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div ref={focusTrapRef} className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true">
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <Calendar className="h-6 w-6 text-neon-green" />
-            <h1 className="text-xl font-semibold text-white">Historique Journal</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex bg-white/5 rounded-lg p-1">
-              <button onClick={() => setViewMode('calendar')} className={`px-3 py-1 rounded text-sm font-medium transition-colors ${viewMode === 'calendar' ? 'bg-neon-green/20 text-neon-green' : 'text-muted-foreground hover:text-white'}`}>
-                <Calendar className="h-4 w-4" />
-              </button>
-              <button onClick={() => setViewMode('stats')} className={`px-3 py-1 rounded text-sm font-medium transition-colors ${viewMode === 'stats' ? 'bg-neon-green/20 text-neon-green' : 'text-muted-foreground hover:text-white'}`}>
-                <BarChart3 className="h-4 w-4" />
-              </button>
-            </div>
-            <button onClick={onClose} className="p-2 text-muted-foreground hover:text-white transition-colors" ref={closeBtnRef}>
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+  const headerContent = (
+    <div className="flex bg-white/5 rounded-lg p-1">
+      <button onClick={() => setViewMode('calendar')} className={`px-3 py-1 rounded text-sm font-medium transition-colors ${viewMode === 'calendar' ? 'bg-neon-green/20 text-neon-green' : 'text-muted-foreground hover:text-white'}`}>
+        <Calendar className="h-4 w-4" />
+      </button>
+      <button onClick={() => setViewMode('stats')} className={`px-3 py-1 rounded text-sm font-medium transition-colors ${viewMode === 'stats' ? 'bg-neon-green/20 text-neon-green' : 'text-muted-foreground hover:text-white'}`}>
+        <BarChart3 className="h-4 w-4" />
+      </button>
+    </div>
+  )
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+  return (
+    <StandardModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Historique Journal"
+      icon={<Calendar className="h-6 w-6 text-neon-green" />}
+      headerContent={headerContent}
+      maxWidth="4xl"
+      height="90vh"
+      className="flex flex-col"
+    >
+
+      <div className="p-6 flex-1 overflow-y-auto">
           {viewMode === 'calendar' ? (
             <>
               <h2 className="text-lg font-medium text-white mb-4">30 derniers jours</h2>
@@ -160,9 +159,8 @@ export default function HistoriqueJournalModal({ isOpen, onClose, allEntries, cu
               </div>
             </>
           )}
-        </div>
       </div>
-    </div>
+    </StandardModal>
   )
 }
 

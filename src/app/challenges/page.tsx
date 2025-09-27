@@ -23,14 +23,14 @@ import {
   CHALLENGE_DIFFICULTIES,
   CHALLENGE_TYPES
 } from '@/lib/challenges'
-import ChallengeCard from '@/components/ui/ChallengeCard'
 import AchievementCard from '@/components/ui/AchievementCard'
 import ProgressBar from '@/components/ui/ProgressBar'
 import { CardSkeleton } from '@/components/ui/Skeletons'
 import { Plus, Trophy, Target, Star, Search, Filter, X } from 'lucide-react'
 import toast from 'react-hot-toast'
-import PageHeader from '@/components/ui/PageHeader'
-import StatsDashboard from '@/components/ui/StatsDashboard'
+import ChallengesProgressHeader from '@/components/challenges/ChallengesProgressHeaderSimple'
+import ChallengeCardClickable from '@/components/ui/ChallengeCardClickable'
+import ChallengeDetailModal from '@/components/ui/ChallengeDetailModal'
 
 export default function ChallengesPage() {
   const { user } = useAuth()
@@ -44,6 +44,10 @@ export default function ChallengesPage() {
   const [activeTab, setActiveTab] = useState<'challenges' | 'achievements' | 'progress'>('challenges')
   const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'expired'>('all')
   const [showAddChallenge, setShowAddChallenge] = useState(false)
+  
+  // États pour les nouveaux composants industrialisés
+  const [selectedChallenge, setSelectedChallenge] = useState<typeof challenges[0] | null>(null)
+  const [showChallengeDetail, setShowChallengeDetail] = useState(false)
   
   // États pour les filtres et recherche
   const [searchQuery, setSearchQuery] = useState('')
@@ -151,8 +155,47 @@ export default function ChallengesPage() {
     
     if (result.success) {
       toast.success('Challenge supprimé')
+      setShowChallengeDetail(false)
+      setSelectedChallenge(null)
     } else {
       toast.error('Erreur lors de la suppression du challenge')
+    }
+  }
+
+  // Handlers pour les nouveaux composants industrialisés
+  const handleChallengeView = (challenge: typeof challenges[0]) => {
+    setSelectedChallenge(challenge)
+    setShowChallengeDetail(true)
+  }
+
+
+  const handleChallengeDelete = () => {
+    if (selectedChallenge) {
+      handleDeleteChallenge(selectedChallenge.id)
+    }
+  }
+
+  const handleChallengeComplete = () => {
+    if (selectedChallenge) {
+      handleCompleteChallenge(selectedChallenge.id)
+      setShowChallengeDetail(false)
+      setSelectedChallenge(null)
+    }
+  }
+
+  const handleChallengePause = () => {
+    if (selectedChallenge) {
+      handlePauseChallenge(selectedChallenge.id)
+      setShowChallengeDetail(false)
+      setSelectedChallenge(null)
+    }
+  }
+
+  const handleChallengeResume = () => {
+    if (selectedChallenge) {
+      handlePauseChallenge(selectedChallenge.id) // Même fonction pour pause/resume
+      setShowChallengeDetail(false)
+      setSelectedChallenge(null)
     }
   }
 
@@ -183,52 +226,30 @@ export default function ChallengesPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header standardisé */}
-        <PageHeader
-          title="Challenges & Récompenses"
-          description="Défiez-vous et progressez jour après jour"
-          action={{
-            label: 'Nouveau Challenge',
-            onClick: () => setShowAddChallenge(true),
-            icon: Plus,
-            color: 'purple'
+        {/* Header industrialisé */}
+        <ChallengesProgressHeader
+          title="CHALLENGES"
+          emoji="🏆"
+          stats={{
+            activeChallenges: challenges.filter(c => c.status === 'active').length,
+            completedChallenges: challenges.filter(c => c.status === 'completed').length,
+            totalAchievements: achievements.length,
+            userLevel: progress?.level,
+            userXP: progress?.currentLevelXP,
+            nextLevelXP: progress?.nextLevelXP
           }}
         />
 
-        {/* Dashboard standardisé */}
-        {user && (
-          <>
-            <StatsDashboard
-              stats={[
-                { 
-                  label: 'Challenges', 
-                  value: challenges.filter(c => c.status === 'active').length, 
-                  color: 'green'
-                },
-                { 
-                  label: 'Terminés', 
-                  value: challenges.filter(c => c.status === 'completed').length, 
-                  color: 'cyan'
-                },
-                { 
-                  label: 'Achievements', 
-                  value: achievements.length, 
-                  color: 'purple'
-                },
-                ...(progress ? [{ 
-                  label: 'Niveau', 
-                  value: progress.level, 
-                  color: 'pink' as const
-                }] : [])
-              ]}
-            />
-            
-            {/* Progress Bar Compact */}
-            {progress && (
-              <div className="glass-effect p-4 sm:p-5 lg:p-6 rounded-xl border border-white/10">
-                <ProgressBar progress={progress} compact />
-              </div>
-            )}
+        {/* Bouton d'ajout de challenge */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowAddChallenge(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg hover:bg-neon-purple/30 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Nouveau Challenge
+          </button>
+        </div>
 
             {/* Statistiques d'implémentation */}
             <div className="glass-effect rounded-xl p-4 border border-white/20">
@@ -260,9 +281,6 @@ export default function ChallengesPage() {
                 <span className="text-neon-green font-semibold">{getChallengeStats().implementedPercentage}%</span> des challenges implémentables sont fonctionnels
               </div>
             </div>
-            
-          </>
-        )}
 
         {/* Message si pas connecté */}
         {!user && (
@@ -363,12 +381,14 @@ export default function ChallengesPage() {
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {categoryChallenges.map((challenge) => (
-                      <ChallengeCard
+                      <ChallengeCardClickable
                         key={challenge.id}
                         challenge={challenge}
-                        onComplete={handleCompleteChallenge}
-                        onPause={handlePauseChallenge}
-                        onDelete={handleDeleteChallenge}
+                        onView={() => handleChallengeView(challenge)}
+                        onDelete={() => handleChallengeView(challenge)} // Ouvre la modal pour confirmer
+                        onComplete={() => handleCompleteChallenge(challenge.id)}
+                        onPause={() => handlePauseChallenge(challenge.id)}
+                        onResume={() => handlePauseChallenge(challenge.id)}
                       />
                     ))}
                   </div>
@@ -610,6 +630,20 @@ export default function ChallengesPage() {
             </div>
           </div>
         )}
+
+        {/* Modal de détail du challenge */}
+        <ChallengeDetailModal
+          isOpen={showChallengeDetail}
+          onClose={() => {
+            setShowChallengeDetail(false)
+            setSelectedChallenge(null)
+          }}
+          challenge={selectedChallenge}
+          onDelete={handleChallengeDelete}
+          onComplete={handleChallengeComplete}
+          onPause={handleChallengePause}
+          onResume={handleChallengeResume}
+        />
       </div>
     </MainLayout>
   )

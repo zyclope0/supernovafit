@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { searchProducts, hasCompleteNutritionalData } from '@/lib/openfoodfacts'
 import { OpenFoodFactsProduct } from '@/types'
-import { Search, X, AlertCircle } from 'lucide-react'
+import { Search, X, AlertCircle, Leaf, Award } from 'lucide-react'
 import Image from 'next/image'
 
 interface FoodSearchProps {
@@ -18,7 +18,15 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  // Suggestions populaires pour produits frais
+  const popularSuggestions = [
+    'pomme', 'banane', 'carotte', 'brocoli', 'tomate', 'concombre',
+    'poulet', 'saumon', 'œuf', 'lait', 'yaourt', 'riz', 'quinoa',
+    'amande', 'noix', 'avocat', 'épinard', 'patate douce'
+  ]
 
   useEffect(() => {
     if (autoFocus) {
@@ -32,7 +40,7 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     
     setIsLoading(true)
     try {
-      const products = await searchProducts(query, 6) // Moins de résultats pour plus de rapidité
+      const products = await searchProducts(query, 8) // Plus de résultats pour meilleure qualité
       setResults(products)
       setIsOpen(products.length > 0)
       setSelectedIndex(-1)
@@ -50,12 +58,14 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     const timer = setTimeout(() => {
       if (query.length >= 2) {
         performSearch()
+        setShowSuggestions(false)
       } else {
         setResults([])
         setIsOpen(false)
         setIsLoading(false)
+        setShowSuggestions(query.length > 0)
       }
-    }, 500) // Augmenté à 500ms pour réduire les requêtes
+    }, 300) // Optimisé pour meilleure réactivité
 
     return () => clearTimeout(timer)
   }, [query, performSearch])
@@ -65,6 +75,12 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
     setQuery('')
     setResults([])
     setIsOpen(false)
+    setShowSuggestions(false)
+  }
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setQuery(suggestion)
+    setShowSuggestions(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -159,7 +175,11 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
       {isOpen && results.length > 0 && (
         <div 
           id="food-search-listbox"
-          className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden max-h-96 overflow-y-auto shadow-2xl"
+          className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg overflow-y-auto shadow-2xl"
+          style={{ 
+            maxHeight: `${Math.min(results.length * 80 + 20, 500)}px`,
+            minHeight: `${Math.max(results.length * 80 + 20, 120)}px`
+          }}
           role="listbox"
           aria-label="Résultats de recherche d'aliments"
         >
@@ -190,11 +210,27 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
                       <h4 className="font-medium text-white">
                         {highlight(product.product_name)}
                       </h4>
-                      {!isComplete && (
-                        <span title="Données nutritionnelles incomplètes" aria-label="Données nutritionnelles incomplètes">
-                          <AlertCircle className="h-4 w-4 text-yellow-500" aria-hidden="true" />
-                        </span>
-                      )}
+                      {/* Indicateurs de qualité */}
+                      <div className="flex items-center gap-1">
+                        {isComplete && (
+                          <span title="Données nutritionnelles complètes" aria-label="Données nutritionnelles complètes">
+                            <Award className="h-4 w-4 text-green-400" aria-hidden="true" />
+                          </span>
+                        )}
+                        {!isComplete && (
+                          <span title="Données nutritionnelles incomplètes" aria-label="Données nutritionnelles incomplètes">
+                            <AlertCircle className="h-4 w-4 text-yellow-500" aria-hidden="true" />
+                          </span>
+                        )}
+                        {/* Indicateur produit naturel */}
+                        {product.product_name.toLowerCase().includes('bio') || 
+                         product.product_name.toLowerCase().includes('organic') || 
+                         product.product_name.toLowerCase().includes('nature') && (
+                          <span title="Produit naturel/bio" aria-label="Produit naturel/bio">
+                            <Leaf className="h-4 w-4 text-green-500" aria-hidden="true" />
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {product.brands && (
                       <p className="text-sm text-muted-foreground mt-0.5">
@@ -233,6 +269,29 @@ export default function FoodSearch({ onSelectProduct, placeholder = "Rechercher 
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* Suggestions populaires */}
+      {showSuggestions && query.length > 0 && query.length < 2 && (
+        <div className="absolute z-[100] w-full mt-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden shadow-2xl">
+          <div className="p-3 border-b border-white/10">
+            <h4 className="text-sm font-medium text-white mb-2">Suggestions populaires</h4>
+            <div className="flex flex-wrap gap-2">
+              {popularSuggestions
+                .filter(suggestion => suggestion.toLowerCase().includes(query.toLowerCase()))
+                .slice(0, 8)
+                .map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="px-3 py-1.5 text-xs bg-neon-purple/20 text-neon-purple rounded-full hover:bg-neon-purple/30 transition-colors"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+            </div>
+          </div>
         </div>
       )}
 

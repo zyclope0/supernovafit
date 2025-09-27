@@ -157,7 +157,7 @@ export default function WeightIMCChart({ mesures, period = 'week' }: WeightIMCCh
       recentTrend,
       periodDays
     }
-  }, [chartData.data, mesures])
+  }, [chartData.data])
 
   if (mesures.length === 0) {
     return (
@@ -215,44 +215,44 @@ export default function WeightIMCChart({ mesures, period = 'week' }: WeightIMCCh
       <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData.data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
         <XAxis 
           dataKey="date" 
-          stroke="#9ca3af"
-          tick={{ fill: '#9ca3af', fontSize: 12 }}
+          stroke="var(--text-secondary)"
+          tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
           tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
         />
         <YAxis 
           yAxisId="poids"
-          stroke="#06b6d4"
-          tick={{ fill: '#06b6d4', fontSize: 12 }}
+          stroke="var(--neon-cyan)"
+          tick={{ fill: 'var(--neon-cyan)', fontSize: 12 }}
           width={50}
           domain={chartData.weightDomain}
           tickFormatter={(v: number) => String(Math.round(v as number))}
-          label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#06b6d4' } }}
+          label={{ value: 'kg', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'var(--neon-cyan)' } }}
         />
         <YAxis 
           yAxisId="imc"
           orientation="right"
-          stroke="#10b981"
-          tick={{ fill: '#10b981', fontSize: 12 }}
+          stroke="var(--neon-green)"
+          tick={{ fill: 'var(--neon-green)', fontSize: 12 }}
           width={36}
           domain={chartData.imcDomain}
           tickFormatter={(v: number) => String(Math.round((v as number) * 10) / 10)}
-          label={{ value: 'IMC', angle: 90, position: 'insideRight', style: { textAnchor: 'middle', fill: '#10b981' } }}
+          label={{ value: 'IMC', angle: 90, position: 'insideRight', style: { textAnchor: 'middle', fill: 'var(--neon-green)' } }}
         />
         <Tooltip content={<CustomTooltip />} />
         <Line
           yAxisId="poids"
           type="monotone"
           dataKey="poids"
-          stroke="#06b6d4"
+          stroke="var(--neon-cyan)"
           strokeWidth={3}
           dot={{ 
-            fill: '#06b6d4', 
+            fill: 'var(--neon-cyan)', 
             strokeWidth: 2, 
             r: 5, // Légèrement plus gros pour visibilité
-            stroke: '#ffffff'  // Contour blanc pour contraste
+            stroke: 'var(--text-primary)'  // Contour blanc pour contraste
           }}
           connectNulls={false}
           // Ligne continue pour meilleure lisibilité
@@ -261,9 +261,9 @@ export default function WeightIMCChart({ mesures, period = 'week' }: WeightIMCCh
           yAxisId="imc"
           type="monotone"
           dataKey="imc"
-          stroke="#10b981"
+          stroke="var(--neon-green)"
           strokeWidth={3}
-          dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+          dot={{ fill: 'var(--neon-green)', strokeWidth: 2, r: 4 }}
           connectNulls={false}
         />
       </LineChart>

@@ -64,6 +64,9 @@ const config: Config = {
           blue: '#3b82f6',
           cyan: '#06b6d4',
           green: '#10b981',
+          yellow: '#eab308',
+          orange: '#f97316',
+          red: '#ef4444',
         },
       },
       borderRadius: {

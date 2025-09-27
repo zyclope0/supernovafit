@@ -3,7 +3,7 @@
  * Orchestre tous les types d'export (CSV, JSON, Excel, PDF)
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRepas, useEntrainements, useMesures } from '@/hooks/useFirestore'
 import { useFirebaseError } from '@/hooks/useFirebaseError'
@@ -37,6 +37,18 @@ export function useExportData() {
     error: null,
     result: null
   })
+
+  const [lastExportDate, setLastExportDate] = useState<string>('')
+
+  // Récupérer la date du dernier export depuis localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('supernovafit_last_export_date')
+      if (stored) {
+        setLastExportDate(stored)
+      }
+    }
+  }, [])
 
   /**
    * Filtrer les données selon la configuration
@@ -223,6 +235,13 @@ export function useExportData() {
           throw new Error(`Format d'export non supporté: ${config.format}`)
       }
 
+      // Sauvegarder la date du dernier export
+      const exportDate = new Date().toISOString().split('T')[0]
+      setLastExportDate(exportDate)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('supernovafit_last_export_date', exportDate)
+      }
+
       setExportState(prev => ({
         ...prev,
         progress: 100,
@@ -333,6 +352,7 @@ export function useExportData() {
     exportState,
     error,
     loading: repasLoading || entrainementsLoading || mesuresLoading || exportState.isExporting,
+    lastExportDate,
     
     // Actions
     exportData,

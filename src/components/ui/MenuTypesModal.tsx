@@ -1,10 +1,10 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Repas } from '@/types'
-import { X, Save, Copy, Trash2, Clock, Star, ChefHat, Edit3, Eye } from 'lucide-react'
+import { Save, Copy, Trash2, Clock, Star, ChefHat, Edit3, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { useFocusTrap } from '@/hooks/useFocusTrap'
+import StandardModal from './StandardModal'
 
 interface MenuTypesModalProps {
   isOpen: boolean
@@ -23,7 +23,6 @@ interface MenuTemplate {
 }
 
 export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTemplate }: MenuTypesModalProps) {
-  const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
   const [templates, setTemplates] = useState<MenuTemplate[]>([
     // Templates par défaut avec repas réels
     {
@@ -223,11 +222,8 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
   const [newTemplateDescription, setNewTemplateDescription] = useState('')
   const [editingTemplate, setEditingTemplate] = useState<MenuTemplate | null>(null)
   const [viewingTemplate, setViewingTemplate] = useState<MenuTemplate | null>(null)
-  const closeBtnRef = useRef<HTMLButtonElement | null>(null)
 
   const todayTotalCalories = todayMeals.reduce((total, meal) => total + (meal.macros?.kcal || 0), 0)
-
-  // Note: Focus trap et gestion Escape maintenant gérés par useFocusTrap
 
   const handleSaveCurrentDay = () => {
     if (!newTemplateName.trim()) {
@@ -349,34 +345,17 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
   if (!isOpen) return null
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="menu-types-title"
-      aria-describedby="menu-types-description"
-    >
-      <div ref={focusTrapRef} className="glass-effect rounded-xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <ChefHat className="h-6 w-6 text-neon-purple" />
-            <h1 id="menu-types-title" className="text-xl font-semibold text-white">Menu-Types</h1>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-muted-foreground hover:text-white transition-colors"
-            ref={closeBtnRef}
-            aria-label="Fermer"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
-          <p id="menu-types-description" className="text-sm text-muted-foreground mb-6">
-            Créez et gérez vos templates de repas. Sauvegardez votre journée actuelle ou appliquez un template existant.
-          </p>
+    <>
+      <StandardModal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Menu-Types"
+        subtitle="Créez et gérez vos templates de repas. Sauvegardez votre journée actuelle ou appliquez un template existant."
+        icon={<ChefHat className="h-6 w-6 text-neon-purple" />}
+        maxWidth="4xl"
+        height="90vh"
+      >
+      <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
           {/* Sauvegarder journée actuelle */}
           <div className="glass-effect p-4 rounded-lg border border-neon-purple/20 mb-6">
             <h2 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
@@ -509,159 +488,148 @@ export default function MenuTypesModal({ isOpen, onClose, todayMeals, onApplyTem
             )}
           </div>
         </div>
-      </div>
+      </StandardModal>
 
       {/* Modal de visualisation */}
       {viewingTemplate && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-60 flex items-center justify-center p-4">
-          <div className="glass-effect rounded-xl border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Eye className="h-5 w-5 text-neon-cyan" />
-                {viewingTemplate.name}
-              </h3>
-              <button
-                onClick={() => setViewingTemplate(null)}
-                className="p-2 text-muted-foreground hover:text-white transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-              <p className="text-muted-foreground mb-4">{viewingTemplate.description}</p>
-              <div className="space-y-4">
-                {viewingTemplate.meals.map((meal, index) => (
-                  <div key={index} className="glass-effect p-4 rounded-lg border border-white/10">
-                    <h4 className="font-medium text-white mb-2">{getMealTypeName(meal.repas)}</h4>
-                    <div className="space-y-2">
-                      {meal.aliments.map((aliment, i) => (
-                        <div key={i} className="flex justify-between text-sm">
-                          <span className="text-white">{aliment.nom} ({aliment.quantite}{aliment.unite})</span>
-                          <span className="text-muted-foreground">{aliment.macros?.kcal ?? 0} kcal</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-3 pt-2 border-t border-white/10 text-sm">
-                      <div className="flex justify-between text-neon-green">
-                        <span>Total:</span>
-                        <span>{meal.macros.kcal} kcal • {meal.macros.prot}g prot</span>
+        <StandardModal
+          isOpen={!!viewingTemplate}
+          onClose={() => setViewingTemplate(null)}
+          title={viewingTemplate.name}
+          subtitle={viewingTemplate.description}
+          icon={<Eye className="h-6 w-6 text-neon-cyan" />}
+          maxWidth="2xl"
+          height="90vh"
+        >
+          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+            <div className="space-y-4">
+              {viewingTemplate.meals.map((meal, index) => (
+                <div key={index} className="glass-effect p-4 rounded-lg border border-white/10">
+                  <h4 className="font-medium text-white mb-2">{getMealTypeName(meal.repas)}</h4>
+                  <div className="space-y-2">
+                    {meal.aliments.map((aliment, i) => (
+                      <div key={i} className="flex justify-between text-sm">
+                        <span className="text-white">{aliment.nom} ({aliment.quantite}{aliment.unite})</span>
+                        <span className="text-muted-foreground">{aliment.macros?.kcal ?? 0} kcal</span>
                       </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-2 border-t border-white/10 text-sm">
+                    <div className="flex justify-between text-neon-green">
+                      <span>Total:</span>
+                      <span>{meal.macros.kcal} kcal • {meal.macros.prot}g prot</span>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="mt-6 pt-4 border-t border-white/10">
-                <div className="flex justify-between text-lg font-medium">
-                  <span className="text-white">Total journée:</span>
-                  <span className="text-neon-green">{viewingTemplate.totalCalories} kcal</span>
                 </div>
+              ))}
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/10">
+              <div className="flex justify-between text-lg font-medium">
+                <span className="text-white">Total journée:</span>
+                <span className="text-neon-green">{viewingTemplate.totalCalories} kcal</span>
               </div>
             </div>
           </div>
-        </div>
+        </StandardModal>
       )}
 
       {/* Modal d'édition */}
       {editingTemplate && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-60 flex items-center justify-center p-4">
-          <div className="glass-effect rounded-xl border border-white/10 w-full max-w-2xl max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <Edit3 className="h-5 w-5 text-neon-purple" />
-                Modifier le template
-              </h3>
-              <button
-                onClick={() => setEditingTemplate(null)}
-                className="p-2 text-muted-foreground hover:text-white transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Nom du template
-                  </label>
-                  <input
-                    type="text"
-                    value={editingTemplate.name}
-                    onChange={(e) => setEditingTemplate({
-                      ...editingTemplate,
-                      name: e.target.value
-                    })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white mb-1">
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    value={editingTemplate.description}
-                    onChange={(e) => setEditingTemplate({
-                      ...editingTemplate,
-                      description: e.target.value
-                    })}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
-                  />
-                </div>
+        <StandardModal
+          isOpen={!!editingTemplate}
+          onClose={() => setEditingTemplate(null)}
+          title="Modifier le template"
+          subtitle="Modifiez le nom, la description et les repas de votre template."
+          icon={<Edit3 className="h-6 w-6 text-neon-purple" />}
+          maxWidth="2xl"
+          height="90vh"
+        >
+          <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Nom du template
+                </label>
+                <input
+                  type="text"
+                  value={editingTemplate.name}
+                  onChange={(e) => setEditingTemplate({
+                    ...editingTemplate,
+                    name: e.target.value
+                  })}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
+                />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  value={editingTemplate.description}
+                  onChange={(e) => setEditingTemplate({
+                    ...editingTemplate,
+                    description: e.target.value
+                  })}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
+                />
+              </div>
+            </div>
 
-              <div className="space-y-4">
-                <h4 className="font-medium text-white">Repas inclus</h4>
-                {editingTemplate.meals.map((meal, index) => (
-                  <div key={index} className="glass-effect p-4 rounded-lg border border-white/10">
-                    <div className="flex justify-between items-center mb-2">
-                      <h5 className="font-medium text-white">{getMealTypeName(meal.repas)}</h5>
-                      <button
-                        onClick={() => {
-                          const updatedMeals = editingTemplate.meals.filter((_, i) => i !== index)
-                          setEditingTemplate({
-                            ...editingTemplate,
-                            meals: updatedMeals
-                          })
-                        }}
-                        className="p-1 text-red-400 hover:text-red-300 transition-colors"
-                        title="Supprimer ce repas"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {meal.aliments.length} aliment(s) • {meal.macros.kcal} kcal
-                    </div>
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      {meal.aliments.map(a => a.nom).join(', ')}
-                    </div>
+            <div className="space-y-4">
+              <h4 className="font-medium text-white">Repas inclus</h4>
+              {editingTemplate.meals.map((meal, index) => (
+                <div key={index} className="glass-effect p-4 rounded-lg border border-white/10">
+                  <div className="flex justify-between items-center mb-2">
+                    <h5 className="font-medium text-white">{getMealTypeName(meal.repas)}</h5>
+                    <button
+                      onClick={() => {
+                        const updatedMeals = editingTemplate.meals.filter((_, i) => i !== index)
+                        setEditingTemplate({
+                          ...editingTemplate,
+                          meals: updatedMeals
+                        })
+                      }}
+                      className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                      title="Supprimer ce repas"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-6 border-t border-white/10">
-              <div className="text-sm text-muted-foreground">
-                {editingTemplate.meals.length} repas • {editingTemplate.meals.reduce((sum, meal) => sum + meal.macros.kcal, 0)} kcal total
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setEditingTemplate(null)}
-                  className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleSaveEditedTemplate}
-                  className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Sauvegarder
-                </button>
-              </div>
+                  <div className="text-sm text-muted-foreground">
+                    {meal.aliments.length} aliment(s) • {meal.macros.kcal} kcal
+                  </div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    {meal.aliments.map(a => a.nom).join(', ')}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* Footer */}
+          <div className="flex justify-between items-center p-6 border-t border-white/10">
+            <div className="text-sm text-muted-foreground">
+              {editingTemplate.meals.length} repas • {editingTemplate.meals.reduce((sum, meal) => sum + meal.macros.kcal, 0)} kcal total
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setEditingTemplate(null)}
+                className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSaveEditedTemplate}
+                className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors flex items-center gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Sauvegarder
+              </button>
+            </div>
         </div>
+        </StandardModal>
       )}
-    </div>
+    </>
   )
 }

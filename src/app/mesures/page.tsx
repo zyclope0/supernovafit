@@ -10,116 +10,35 @@ import ModuleComments from '@/components/ui/ModuleComments'
 import CollapsibleCard from '@/components/ui/CollapsibleCard'
 import { CardSkeleton, ChartSkeleton, ListSkeleton, TableSkeleton } from '@/components/ui/Skeletons'
 import { formatDate } from '@/lib/utils'
-import { Plus, Edit3, Trash2, BarChart3, Camera } from 'lucide-react'
+import { Plus, BarChart3, Camera } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import PageHeader from '@/components/ui/PageHeader'
-import StatsDashboard from '@/components/ui/StatsDashboard'
+import MesuresCardClickable from '@/components/ui/MesuresCardClickable'
+import MesuresDetailModal from '@/components/ui/MesuresDetailModal'
+import MesuresFormModal from '@/components/ui/MesuresFormModal'
+import HealthIndicator from '@/components/ui/HealthIndicator'
+import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
 
-function MesureCard({ 
-  mesure, 
-  onEdit, 
-  onDelete,
-  getStats
-}: {
-  mesure: Mesure
-  onEdit: (mesure: Mesure) => void
-  onDelete: (id: string) => void
-  getStats: (mesure: Mesure) => ({ imc: number; evolution_poids: number; evolution_masse_grasse: number; poids_ideal_min: number; poids_ideal_max: number } | null)
-}) {
-  const stats = getStats(mesure)
-  
-  return (
-    <div className="glass-effect p-4 rounded-xl border border-white/10 hover:border-white/20 transition-colors">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h3 className="font-medium text-white">{formatDate(mesure.date)}</h3>
-          <p className="text-sm text-muted-foreground">
-            {new Date(mesure.date).toLocaleDateString('fr-FR', { weekday: 'long' })}
-          </p>
-        </div>
-        <div className="flex gap-1">
-          <button
-            onClick={() => onEdit(mesure)}
-            className="p-2 text-neon-purple hover:bg-neon-purple/20 rounded-lg transition-all duration-200 transform hover:scale-105"
-            title="Modifier"
-          >
-            <Edit3 className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => onDelete(mesure.id)}
-            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-all duration-200 transform hover:scale-105"
-            title="Supprimer"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {mesure.poids && (
-          <div className="text-center">
-            <div className="text-lg font-semibold text-neon-green">{mesure.poids}</div>
-            <div className="text-xs text-muted-foreground">kg</div>
-          </div>
-        )}
-        {stats?.imc && (
-          <div className="text-center">
-            <div className="text-lg font-semibold text-neon-cyan">{stats.imc}</div>
-            <div className="text-xs text-muted-foreground">IMC</div>
-          </div>
-        )}
-        {mesure.masse_grasse && (
-          <div className="text-center">
-            <div className="text-lg font-semibold text-neon-pink">{mesure.masse_grasse}</div>
-            <div className="text-xs text-muted-foreground">% MG</div>
-          </div>
-        )}
-        {mesure.tour_taille && (
-          <div className="text-center">
-            <div className="text-lg font-semibold text-neon-purple">{mesure.tour_taille}</div>
-            <div className="text-xs text-muted-foreground">cm taille</div>
-          </div>
-        )}
-      </div>
-
-      {mesure.commentaire && (
-        <div className="mt-3 pt-3 border-t border-white/10">
-          <p className="text-sm text-muted-foreground italic">&quot;{mesure.commentaire}&quot;</p>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function MesuresPage() {
   const { user } = useAuth()
   const { addMesure, updateMesure, deleteMesure, getStats } = useMesures() // Pour les opérations CRUD
   const { data: mesures, loading, hasMore, loadMore } = usePaginatedMesures(30) // Charger 30 mesures par page
   const { comments: mesureComments, loading: commentsLoading } = useCoachCommentsByModule('mesures')
+  const { announceSuccess, announceValidationError, announceModalState } = useAriaAnnouncer()
   const [showForm, setShowForm] = useState(false)
   const [editingMesure, setEditingMesure] = useState<Mesure | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showCharts, setShowCharts] = useState(false)
   const [showPhotos, setShowPhotos] = useState(false)
+  
+  // États pour les composants industrialisés
+  const [selectedMesure, setSelectedMesure] = useState<Mesure | null>(null)
+  const [showMesureDetail, setShowMesureDetail] = useState(false)
+  // const [period, setPeriod] = useState<'today' | 'week' | 'month'>('week') // Supprimé - pas de sélecteur de période
 
-  // Données du formulaire
-  const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
-    poids: '',
-    taille: '',
-    masse_grasse: '',
-    masse_musculaire: '',
-    tour_taille: '',
-    tour_hanches: '',
-    tour_bras: '',
-    tour_cuisses: '',
-    tour_cou: '',
-    tour_poitrine: '',
-    commentaire: ''
-  })
 
 
   // Mesure la plus récente avec des données valides pour les stats
@@ -128,26 +47,38 @@ export default function MesuresPage() {
                                       m.tour_cou || m.tour_poitrine || m.commentaire) || mesures[0]
   const stats = lastMesure ? getStats(lastMesure) : null
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
-
-    // Validation : au moins une mesure importante doit être remplie (sauf tour de taille)
-    const hasImportantData = formData.poids || formData.taille || formData.masse_grasse || 
-                            formData.masse_musculaire || formData.tour_hanches || 
-                            formData.tour_bras || formData.tour_cuisses || 
-                            formData.tour_cou || formData.tour_poitrine || formData.commentaire
-
-    if (!hasImportantData) {
-      toast.error('Veuillez remplir au moins une mesure importante (poids, taille, masse grasse, etc.)')
-      return
+  // Données historiques pour les SparklineCharts (dernières 7 mesures)
+  const recentMesures = mesures.slice(0, 7).reverse() // Plus récentes en premier
+  const weightHistory = recentMesures.map(m => m.poids || 0).filter(w => w > 0)
+  const imcHistory = recentMesures.map(m => {
+    if (m.poids && m.taille) {
+      const tailleEnM = m.taille / 100
+      return m.poids / (tailleEnM * tailleEnM)
     }
+    return 0
+  }).filter(imc => imc > 0)
+  const bodyFatHistory = recentMesures.map(m => m.masse_grasse || 0).filter(bf => bf > 0)
+
+  const handleSubmit = async (formData: {
+    date: string
+    poids: string
+    taille: string
+    masse_grasse: string
+    masse_musculaire: string
+    tour_taille: string
+    tour_hanches: string
+    tour_bras: string
+    tour_cuisses: string
+    tour_cou: string
+    tour_poitrine: string
+    commentaire: string
+  }) => {
+    if (!user) return
 
     setIsSubmitting(true)
     
     try {
       const mesureData = {
-        user_id: user.uid,
         date: formData.date,
         poids: formData.poids ? parseFloat(formData.poids) : undefined,
         taille: formData.taille ? parseFloat(formData.taille) : undefined,
@@ -170,20 +101,19 @@ export default function MesuresPage() {
       }
 
       if (result.success) {
-        toast.success(editingMesure ? 'Mesure mise à jour !' : 'Mesure ajoutée !')
+        const message = editingMesure ? 'Mesure mise à jour !' : 'Mesure ajoutée !'
+        toast.success(message)
+        announceSuccess(message)
         setShowForm(false)
         setEditingMesure(null)
-        setFormData({
-          date: new Date().toISOString().split('T')[0],
-          poids: '', taille: '', masse_grasse: '', masse_musculaire: '',
-          tour_taille: '', tour_hanches: '', tour_bras: '', tour_cuisses: '',
-          tour_cou: '', tour_poitrine: '', commentaire: ''
-        })
       } else {
-        toast.error(result.error || 'Erreur lors de l\'enregistrement')
+        const errorMessage = result.error || 'Erreur lors de l\'enregistrement'
+        toast.error(errorMessage)
+        announceValidationError('Mesure', errorMessage)
       }
     } catch {
       toast.error('Erreur inattendue')
+      announceValidationError('Mesure', 'Erreur inattendue lors de la sauvegarde')
     } finally {
       setIsSubmitting(false)
     }
@@ -191,21 +121,30 @@ export default function MesuresPage() {
 
   const handleEdit = (mesure: Mesure) => {
     setEditingMesure(mesure)
-    setFormData({
-      date: mesure.date,
-      poids: mesure.poids?.toString() || '',
-      taille: mesure.taille?.toString() || '',
-      masse_grasse: mesure.masse_grasse?.toString() || '',
-      masse_musculaire: mesure.masse_musculaire?.toString() || '',
-      tour_taille: mesure.tour_taille?.toString() || '',
-      tour_hanches: mesure.tour_hanches?.toString() || '',
-      tour_bras: mesure.tour_bras?.toString() || '',
-      tour_cuisses: mesure.tour_cuisses?.toString() || '',
-      tour_cou: mesure.tour_cou?.toString() || '',
-      tour_poitrine: mesure.tour_poitrine?.toString() || '',
-      commentaire: mesure.commentaire || ''
-    })
     setShowForm(true)
+    announceModalState(true, 'Modifier la mesure')
+  }
+
+  // Handlers pour les composants industrialisés
+  const handleMesureView = (mesure: Mesure) => {
+    setSelectedMesure(mesure)
+    setShowMesureDetail(true)
+    announceModalState(true, 'Détails de la mesure')
+  }
+
+  const handleMesureEdit = () => {
+    if (selectedMesure) {
+      setEditingMesure(selectedMesure)
+      setShowForm(true)
+      setShowMesureDetail(false)
+    }
+  }
+
+  const handleMesureDelete = () => {
+    if (selectedMesure) {
+      confirmDelete(selectedMesure.id)
+      setShowMesureDetail(false)
+    }
   }
 
   const handleDelete = async (id: string) => {
@@ -273,58 +212,102 @@ export default function MesuresPage() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header standardisé */}
-        <PageHeader
-          title="Mesures & Progression"
-          description="Suivez votre évolution corporelle"
-          actions={[
-            {
-              label: 'Graphiques',
-              shortLabel: showCharts ? 'Masquer' : 'Graphiques',
-              onClick: () => setShowCharts(!showCharts),
-              icon: BarChart3,
-              color: 'cyan'
-            },
-            {
-              label: 'Photos',
-              shortLabel: showPhotos ? 'Masquer' : 'Photos',
-              onClick: () => setShowPhotos(!showPhotos),
-              icon: Camera,
-              color: 'pink'
-            }
-          ]}
-        />
+        {/* Boutons d'action */}
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setShowCharts(!showCharts)}
+            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors"
+          >
+            <BarChart3 className="h-4 w-4" />
+            {showCharts ? 'Masquer' : 'Graphiques'}
+          </button>
+          <button
+            onClick={() => setShowPhotos(!showPhotos)}
+            className="flex items-center gap-2 px-4 py-2 bg-neon-pink/20 text-neon-pink rounded-lg hover:bg-neon-pink/30 transition-colors"
+          >
+            <Camera className="h-4 w-4" />
+            {showPhotos ? 'Masquer' : 'Photos'}
+          </button>
+        </div>
 
-        {/* Dashboard standardisé */}
+        {/* Header industrialisé avec métriques */}
         {user && (
           <>
-            <StatsDashboard
-              stats={[
-                { 
-                  label: 'Mesures', 
-                  value: mesures.length > 0 ? mesures.length : 0, 
-                  color: 'cyan'
-                },
-                { 
-                  label: 'IMC', 
-                  value: stats ? stats.imc.toFixed(1) : '--', 
-                  color: 'green'
-                },
-                { 
-                  label: 'Évolution', 
-                  value: stats ? `${stats.evolution_poids > 0 ? '+' : ''}${stats.evolution_poids.toFixed(1)}` : '--', 
-                  unit: 'kg',
-                  color: 'pink'
-                },
-                { 
-                  label: 'Dernier poids', 
-                  value: mesures.length > 0 ? mesures[0].poids?.toFixed(1) || 'N/A' : '--', 
-                  unit: 'kg',
-                  color: 'purple'
-                }
-              ]}
-            />
+            {/* Header simplifié - seulement le titre et le conseil */}
+            <div className="glass-effect rounded-xl p-4 border border-white/10">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">📏</span>
+                <h2 className="text-lg font-semibold text-white">MESURES</h2>
+              </div>
+              
+              {/* Conseil intelligent seulement */}
+              {stats && (
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="flex items-center gap-3 text-sm text-gray-300">
+                    <span className="text-neon-cyan">💡</span>
+                    <span>
+                      {(() => {
+                        const currentWeight = mesures.length > 0 ? (mesures[0].poids || 0) : 0
+                        if (currentWeight === 0) {
+                          return 'Ajoutez votre poids pour obtenir des conseils personnalisés.'
+                        }
+                        
+                        const weightStatus = currentWeight > stats.poids_ideal_max ? 
+                          `Votre poids (${currentWeight}kg) est au-dessus de la fourchette normale (${stats.poids_ideal_min}-${stats.poids_ideal_max}kg).` :
+                          currentWeight < stats.poids_ideal_min ?
+                          `Votre poids (${currentWeight}kg) est en-dessous de la fourchette normale (${stats.poids_ideal_min}-${stats.poids_ideal_max}kg).` :
+                          `Votre poids (${currentWeight}kg) est dans la fourchette normale (${stats.poids_ideal_min}-${stats.poids_ideal_max}kg).`
+                        
+                        const evolution = stats.evolution_poids > 0 ? 
+                          `Vous avez pris ${stats.evolution_poids.toFixed(1)}kg.` : 
+                          stats.evolution_poids < 0 ? 
+                          `Vous avez perdu ${Math.abs(stats.evolution_poids).toFixed(1)}kg.` : 
+                          'Votre poids est stable.'
+                        
+                        return `${weightStatus} ${evolution}`
+                      })()}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
             
+            {/* Indicateurs de santé améliorés - Version complète */}
+            {stats && mesures.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <HealthIndicator
+                  value={mesures[0].poids || 0}
+                  unit="kg"
+                  label="Poids"
+                  type="weight"
+                  target={stats ? { min: stats.poids_ideal_min, max: stats.poids_ideal_max } : undefined}
+                  trend={stats.evolution_poids > 0 ? 'up' : stats.evolution_poids < 0 ? 'down' : 'stable'}
+                  history={weightHistory.length > 1 ? weightHistory : undefined}
+                />
+                <HealthIndicator
+                  value={stats.imc}
+                  unit=""
+                  label="IMC"
+                  type="imc"
+                  history={imcHistory.length > 1 ? imcHistory : undefined}
+                />
+                <HealthIndicator
+                  value={mesures[0].masse_grasse || 0}
+                  unit="%"
+                  label="Masse grasse"
+                  type="bodyfat"
+                  history={bodyFatHistory.length > 1 ? bodyFatHistory : undefined}
+                  trend={stats.evolution_masse_grasse > 0 ? 'up' : stats.evolution_masse_grasse < 0 ? 'down' : 'stable'}
+                />
+                <HealthIndicator
+                  value={mesures.length}
+                  unit=""
+                  label="Mesures"
+                  type="muscle"
+                />
+              </div>
+            )}
+
             {/* Hint compact */}
             <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
@@ -393,161 +376,6 @@ export default function MesuresPage() {
               <PhotoUpload mesures={mesures} />
             ))}
 
-            {/* Formulaire d'ajout/modification */}
-            {showForm && (
-              <div className="glass-effect p-6 rounded-xl border border-white/10">
-                <h2 className="text-lg font-semibold text-white mb-4">
-                  {editingMesure ? 'Modifier la mesure' : 'Nouvelle mesure'}
-                </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Date</label>
-                      <input
-                        type="date"
-                        value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        className="w-44 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Poids (kg)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={formData.poids}
-                        onChange={(e) => setFormData({ ...formData, poids: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="70.5"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Taille (cm)</label>
-                      <input
-                        type="number"
-                        value={formData.taille}
-                        onChange={(e) => setFormData({ ...formData, taille: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="175"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Masse grasse (%)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={formData.masse_grasse}
-                        onChange={(e) => setFormData({ ...formData, masse_grasse: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="15.5"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Masse musculaire (%)</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={formData.masse_musculaire}
-                        onChange={(e) => setFormData({ ...formData, masse_musculaire: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="40.0"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Tour de taille (cm)</label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={formData.tour_taille}
-                        onChange={(e) => setFormData({ ...formData, tour_taille: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="80"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Tour de hanches (cm)</label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={formData.tour_hanches}
-                        onChange={(e) => setFormData({ ...formData, tour_hanches: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="95"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Tour de bras (cm)</label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={formData.tour_bras}
-                        onChange={(e) => setFormData({ ...formData, tour_bras: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="35"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white mb-1">Tour de cuisses (cm)</label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={formData.tour_cuisses}
-                        onChange={(e) => setFormData({ ...formData, tour_cuisses: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
-                        placeholder="60"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-1">Commentaire (optionnel)</label>
-                    <textarea
-                      value={formData.commentaire}
-                      onChange={(e) => setFormData({ ...formData, commentaire: e.target.value })}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none resize-none"
-                      rows={2}
-                      placeholder="Notes sur cette mesure..."
-                    />
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-neon-purple"></div>
-                          Enregistrement...
-                        </>
-                      ) : editingMesure ? (
-                        'Mettre à jour'
-                      ) : (
-                        'Enregistrer'
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowForm(false)
-                        setEditingMesure(null)
-                      }}
-                      className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
 
             {/* Liste des mesures */}
             {loading ? (
@@ -569,11 +397,12 @@ export default function MesuresPage() {
                 <h2 className="text-lg font-semibold text-white">Historique des mesures</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {mesures.map((mesure) => (
-                    <MesureCard
+                    <MesuresCardClickable
                       key={mesure.id}
                       mesure={mesure}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
+                      onView={() => handleMesureView(mesure)}
+                      onEdit={() => handleEdit(mesure)}
+                      onDelete={() => handleDelete(mesure.id)}
                       getStats={getStats}
                     />
                   ))}
@@ -610,6 +439,28 @@ export default function MesuresPage() {
         {/* Ripple effect */}
         <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
       </button>
+
+      {/* Modal de détail des mesures */}
+      <MesuresDetailModal
+        isOpen={showMesureDetail}
+        onClose={() => setShowMesureDetail(false)}
+        mesure={selectedMesure}
+        getStats={getStats}
+        onEdit={handleMesureEdit}
+        onDelete={handleMesureDelete}
+      />
+
+      {/* Modal de formulaire d'ajout/édition */}
+      <MesuresFormModal
+        isOpen={showForm}
+        onClose={() => {
+          setShowForm(false)
+          setEditingMesure(null)
+        }}
+        onSubmit={handleSubmit}
+        editingMesure={editingMesure}
+        isSubmitting={isSubmitting}
+      />
     </MainLayout>
   )
 } 

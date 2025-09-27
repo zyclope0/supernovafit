@@ -1,6 +1,6 @@
 {
   "name": "supernovafit",
-  "version": "1.13.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -49,6 +49,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.10.2",
     "@eslint/eslintrc": "^3.3.1",
     "@next/bundle-analyzer": "^15.4.6",
     "@testing-library/jest-dom": "^6.6.4",
@@ -67,6 +68,7 @@
     "cross-env": "^10.0.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.5.2",
+    "jest-axe": "^10.0.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.4.32",
     "prettier": "^3.3.3",

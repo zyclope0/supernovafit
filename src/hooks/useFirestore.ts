@@ -381,8 +381,9 @@ export function useMesures() {
     return () => unsubscribe()
   }, [user, mesuresErrorHandler])
 
-  const addMesure = async (mesureData: Omit<Mesure, 'id'>) => {
+  const addMesure = async (mesureData: Omit<Mesure, 'id' | 'user_id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
+    if (!mesureData.date) return { success: false, error: 'Date requise' }
 
     try {
       // Calculer l'IMC si poids et taille fournis
@@ -391,28 +392,29 @@ export function useMesures() {
         imc = mesureData.poids / Math.pow(mesureData.taille / 100, 2)
       }
 
-      // Préparer les données en filtrant les valeurs undefined
-      const dataToSave: Record<string, unknown> = {
-        user_id: user.uid,
-        date: mesureData.date,
-        created_at: serverTimestamp()
-      }
+      // Utiliser la même approche que addRepas et addEntry - filtrer les undefined
+      const filteredData = Object.fromEntries(
+        Object.entries({
+          user_id: user.uid,
+          date: mesureData.date,
+          poids: mesureData.poids,
+          taille: mesureData.taille,
+          masse_grasse: mesureData.masse_grasse,
+          masse_musculaire: mesureData.masse_musculaire,
+          tour_taille: mesureData.tour_taille,
+          tour_hanches: mesureData.tour_hanches,
+          tour_bras: mesureData.tour_bras,
+          tour_cuisses: mesureData.tour_cuisses,
+          tour_cou: mesureData.tour_cou,
+          tour_poitrine: mesureData.tour_poitrine,
+          commentaire: mesureData.commentaire,
+          imc: imc ? parseFloat(imc.toFixed(1)) : undefined,
+          created_at: serverTimestamp()
+        }).filter(([, value]) => value !== undefined)
+      )
 
-      // Ajouter seulement les champs qui ont des valeurs
-      if (mesureData.poids) dataToSave.poids = mesureData.poids
-      if (mesureData.taille) dataToSave.taille = mesureData.taille
-      if (mesureData.masse_grasse) dataToSave.masse_grasse = mesureData.masse_grasse
-      if (mesureData.masse_musculaire) dataToSave.masse_musculaire = mesureData.masse_musculaire
-      if (mesureData.tour_taille) dataToSave.tour_taille = mesureData.tour_taille
-      if (mesureData.tour_hanches) dataToSave.tour_hanches = mesureData.tour_hanches
-      if (mesureData.tour_bras) dataToSave.tour_bras = mesureData.tour_bras
-      if (mesureData.tour_cuisses) dataToSave.tour_cuisses = mesureData.tour_cuisses
-      if (mesureData.tour_cou) dataToSave.tour_cou = mesureData.tour_cou
-      if (mesureData.tour_poitrine) dataToSave.tour_poitrine = mesureData.tour_poitrine
-      if (mesureData.commentaire) dataToSave.commentaire = mesureData.commentaire
-      if (imc) dataToSave.imc = parseFloat(imc.toFixed(1))
-
-      const docRef = await addDoc(collection(db, 'mesures'), dataToSave)
+      console.log('🔍 Debug addMesure - Données filtrées:', filteredData)
+      const docRef = await addDoc(collection(db, 'mesures'), filteredData)
       return { success: true, id: docRef.id }
     } catch (error: unknown) {
       mesuresErrorHandler.handleError(error)
@@ -665,13 +667,15 @@ export function useJournal() {
     return () => unsubscribe()
   }, [user])
 
-  const addEntry = async (entryData: Omit<JournalEntry, 'id'>) => {
+  const addEntry = async (entryData: Omit<JournalEntry, 'id' | 'user_id'>) => {
     if (!user) return { success: false, error: 'Non connecté' }
+    if (!user.uid) return { success: false, error: 'UID utilisateur manquant' }
 
     try {
       // Filtrer les valeurs undefined
       const filteredData = Object.fromEntries(
         Object.entries({
+          user_id: user.uid,
           ...entryData,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp()
@@ -938,7 +942,39 @@ export function useBadges() {
     }
   }
 
-  return { badges, loading, addBadge }
+  const deleteBadge = async (badgeId: string) => {
+    if (!user) return { success: false, error: 'Non connecté' }
+
+    try {
+      await deleteDoc(doc(db, 'badges', badgeId))
+      return { success: true }
+    } catch (error: unknown) {
+      captureException(error)
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+    }
+  }
+
+  const clearAllBadges = async () => {
+    if (!user) return { success: false, error: 'Non connecté' }
+
+    try {
+      const q = query(
+        collection(db, 'badges'),
+        where('user_id', '==', user.uid)
+      )
+      
+      const snapshot = await getDocs(q)
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref))
+      await Promise.all(deletePromises)
+      
+      return { success: true, deleted: snapshot.size }
+    } catch (error: unknown) {
+      captureException(error)
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+    }
+  }
+
+  return { badges, loading, addBadge, deleteBadge, clearAllBadges }
 }
 
 // Hook pour les objectifs simples
@@ -1023,7 +1059,19 @@ export function useObjectifs() {
     }
   }
 
-  return { objectifs, loading, addObjectif, updateProgression }
+  const deleteObjectif = async (objectifId: string) => {
+    if (!user) return { success: false, error: 'Non connecté' }
+
+    try {
+      await deleteDoc(doc(db, 'objectifs', objectifId))
+      return { success: true }
+    } catch (error: unknown) {
+      captureException(error)
+      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+    }
+  }
+
+  return { objectifs, loading, addObjectif, updateProgression, deleteObjectif }
 }
 
 // Hook pour récupérer le profil utilisateur

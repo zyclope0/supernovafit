@@ -25,31 +25,28 @@ const ExportButton = dynamic(
   }
 )
 
-
-import { 
-  FileText, 
-  FileSpreadsheet, 
-  FileJson, 
-  BarChart3, 
+import {
+  FileText,
+  FileSpreadsheet,
+  FileJson,
+  BarChart3,
   Calendar,
   Download,
   CheckCircle,
-  Loader2,
-  Settings,
-  History,
-  TrendingUp
+  Loader2
 } from 'lucide-react'
 
 import type { ExportFormat, ExportDataType, ExportPeriod } from '@/types/export'
-import PageHeader from '@/components/ui/PageHeader'
-import StatsDashboard from '@/components/ui/StatsDashboard'
+import ExportProgressHeader from '@/components/export/ExportProgressHeader'
+import ExportCardClickable from '@/components/ui/ExportCardClickable'
 
 export default function ExportPage() {
   const {
     exportData,
     exportState,
     error,
-    loading
+    loading,
+    lastExportDate
   } = useExportData()
 
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('pdf')
@@ -61,72 +58,88 @@ export default function ExportPage() {
   const [showHint, setShowHint] = useState(true)
 
   const formats = [
-    { 
-      value: 'pdf', 
-      label: 'PDF', 
-      icon: FileText, 
+    {
+      value: 'pdf',
+      label: 'PDF',
+      icon: FileText,
       description: 'Rapport complet avec graphiques',
-      color: 'from-red-500 to-pink-500',
-      bgColor: 'bg-red-500/10',
-      borderColor: 'border-red-500/20'
+      color: 'purple' as const,
+      bgColor: 'bg-neon-purple/10',
+      borderColor: 'border-neon-purple/30',
+      iconColor: 'text-neon-purple'
     },
-    { 
-      value: 'excel', 
-      label: 'Excel', 
-      icon: FileSpreadsheet, 
+    {
+      value: 'excel',
+      label: 'Excel',
+      icon: FileSpreadsheet,
       description: 'Données structurées avec formules',
-      color: 'from-green-500 to-emerald-500',
-      bgColor: 'bg-green-500/10',
-      borderColor: 'border-green-500/20'
+      color: 'green' as const,
+      bgColor: 'bg-neon-green/10',
+      borderColor: 'border-neon-green/30',
+      iconColor: 'text-neon-green'
     },
-    { 
-      value: 'csv', 
-      label: 'CSV', 
-      icon: FileText, 
+    {
+      value: 'csv',
+      label: 'CSV',
+      icon: FileText,
       description: 'Données brutes pour analyse',
-      color: 'from-neon-cyan to-neon-green',
+      color: 'cyan' as const,
       bgColor: 'bg-neon-cyan/10',
-      borderColor: 'border-neon-cyan/20'
+      borderColor: 'border-neon-cyan/30',
+      iconColor: 'text-neon-cyan'
     },
-    { 
-      value: 'json', 
-      label: 'JSON', 
-      icon: FileJson, 
+    {
+      value: 'json',
+      label: 'JSON',
+      icon: FileJson,
       description: 'Format technique structuré',
-      color: 'from-purple-500 to-violet-500',
-      bgColor: 'bg-purple-500/10',
-      borderColor: 'border-purple-500/20'
+      color: 'pink' as const,
+      bgColor: 'bg-neon-pink/10',
+      borderColor: 'border-neon-pink/30',
+      iconColor: 'text-neon-pink'
     }
   ]
 
   const dataTypes = [
-    { 
-      value: 'all', 
-      label: 'Toutes les données', 
+    {
+      value: 'all',
+      label: 'Toutes les données',
       description: 'Repas, entraînements et mesures',
       icon: BarChart3,
-      color: 'from-indigo-500 to-purple-500'
+      color: 'purple' as const,
+      bgColor: 'bg-neon-purple/10',
+      borderColor: 'border-neon-purple/30',
+      iconColor: 'text-neon-purple'
     },
-    { 
-      value: 'repas', 
-      label: 'Repas uniquement', 
+    {
+      value: 'repas',
+      label: 'Repas uniquement',
       description: 'Données nutritionnelles',
       icon: BarChart3,
-      color: 'from-neon-pink to-neon-purple'
+      color: 'pink' as const,
+      bgColor: 'bg-neon-pink/10',
+      borderColor: 'border-neon-pink/30',
+      iconColor: 'text-neon-pink'
     },
-    { 
-      value: 'entrainements', 
-      label: 'Entraînements uniquement', 
+    {
+      value: 'entrainements',
+      label: 'Entraînements uniquement',
       description: 'Données d\'activité physique',
       icon: Calendar,
-      color: 'from-green-500 to-emerald-500'
+      color: 'green' as const,
+      bgColor: 'bg-neon-green/10',
+      borderColor: 'border-neon-green/30',
+      iconColor: 'text-neon-green'
     },
-    { 
-      value: 'mesures', 
-      label: 'Mesures uniquement', 
+    {
+      value: 'mesures',
+      label: 'Mesures uniquement',
       description: 'Données de progression',
       icon: Download,
-      color: 'from-neon-cyan to-neon-green'
+      color: 'cyan' as const,
+      bgColor: 'bg-neon-cyan/10',
+      borderColor: 'border-neon-cyan/30',
+      iconColor: 'text-neon-cyan'
     }
   ]
 
@@ -170,9 +183,43 @@ export default function ExportPage() {
   // Stats d'export simulées (à remplacer par de vraies données)
   const exportStats = {
     totalExports: 12,
-    lastExport: '2025-01-14',
+    lastExport: lastExportDate || 'Aucun export',
     favoriteFormat: 'PDF',
     dataExported: '2.3 MB'
+  }
+
+  // Données pour le ProgressHeader - Métriques simplifiées
+  const progressItems = [
+    {
+      icon: <Download className="h-4 w-4" />,
+      label: 'Exports',
+      data: {
+        current: exportStats.totalExports,
+        target: 0, // Pas d'objectif
+        unit: ''
+      },
+      color: 'purple' as const
+    },
+    {
+      icon: <BarChart3 className="h-4 w-4" />,
+      label: 'Données exportées',
+      data: {
+        current: 2.3,
+        target: 0, // Pas d'objectif
+        unit: 'MB'
+      },
+      color: 'green' as const
+    }
+  ]
+
+  const generateSmartAdvice = () => {
+    if (exportStats.totalExports < 5) {
+      return "Commencez à exporter vos données pour suivre votre progression"
+    }
+    if (exportStats.totalExports < 15) {
+      return "Excellent ! Vous exportez régulièrement vos données"
+    }
+    return "Exporteur expert ! Vos données sont parfaitement organisées"
   }
 
   // Raccourci clavier Ctrl+E pour export rapide
@@ -191,30 +238,15 @@ export default function ExportPage() {
   return (
     <MainLayout>
       <div className="max-w-7xl mx-auto">
-        {/* Header standardisé */}
-        <PageHeader
-          title="Export de Données"
-          description="Exportez vos données de fitness et nutrition dans différents formats"
-          icon={FileText}
-          action={{
-            label: 'Export Rapide',
-            onClick: () => handleQuickExport('pdf', 'week'),
-            icon: Download,
-            color: 'cyan'
-          }}
+        {/* ProgressHeader standardisé */}
+        <ExportProgressHeader
+          title="EXPORT"
+          emoji="📊"
+          items={progressItems}
+          advice={generateSmartAdvice()}
+          lastExportDate={exportStats.lastExport}
         />
 
-        {/* Dashboard standardisé */}
-        <StatsDashboard
-          stats={[
-            { label: 'Exports totaux', value: exportStats.totalExports, color: 'purple' },
-            { label: 'Format préféré', value: exportStats.favoriteFormat, color: 'cyan' },
-            { label: 'Données exportées', value: exportStats.dataExported, color: 'green' },
-            { label: 'Dernier export', value: exportStats.lastExport, color: 'pink' }
-          ]}
-          className="mb-6"
-        />
-        
         {showHint && (
           <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
@@ -245,7 +277,7 @@ export default function ExportPage() {
               </div>
             </div>
             <div className="w-full bg-gray-700/50 rounded-full h-3 overflow-hidden">
-              <div 
+              <div
                 className="bg-gradient-to-r from-neon-cyan to-neon-purple h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${exportState.progress}%` }}
               />
@@ -271,326 +303,162 @@ export default function ExportPage() {
           </div>
         )}
 
-        {/* Barre d'Outils Optimisée */}
-        <div className="glass-effect p-4 rounded-lg border border-white/10 mb-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-3">
-              <label className="text-sm text-muted-foreground">📊 Format sélectionné :</label>
-              <div className="px-3 py-2 bg-neon-purple/20 text-neon-purple rounded-lg text-sm font-medium">
-                {formats.find(f => f.value === selectedFormat)?.label}
+        {/* Section Export Unifiée */}
+        <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-purple/30 transition-all duration-300">
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
+                <Download className="h-5 w-5 text-neon-purple" />
               </div>
+              <h2 className="text-xl font-semibold text-white">Export de Données</h2>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setSelectedFormat('pdf')}
-                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                  selectedFormat === 'pdf' 
-                    ? 'bg-neon-purple/20 text-neon-purple' 
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                }`}
-              >
-                PDF
-              </button>
-              <button
-                onClick={() => setSelectedFormat('excel')}
-                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                  selectedFormat === 'excel' 
-                    ? 'bg-neon-purple/20 text-neon-purple' 
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                }`}
-              >
-                Excel
-              </button>
-              <button
-                onClick={() => setSelectedFormat('csv')}
-                className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                  selectedFormat === 'csv' 
-                    ? 'bg-neon-purple/20 text-neon-purple' 
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                }`}
-              >
-                CSV
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Export rapide */}
-          <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-purple/30 transition-all duration-300 group">
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-semibold flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20">
-                    <Download className="h-5 w-5 text-neon-purple" />
-                  </div>
-                  Export Rapide
-                </h2>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button className="p-2 hover:bg-neon-purple/20 rounded-lg" title="Paramètres">
-                    <Settings className="h-4 w-4 text-neon-purple" />
-                  </button>
-                  <button className="p-2 hover:bg-neon-cyan/20 rounded-lg" title="Historique">
-                    <History className="h-4 w-4 text-neon-cyan" />
-                  </button>
-                </div>
-              </div>
-              <p className="text-gray-300">
-                Exportez rapidement vos données avec des configurations prédéfinies
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              {/* Formats */}
-              <div>
-                <h3 className="font-medium mb-4 text-white">Format d&apos;export</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {formats.map((format) => {
-                    const Icon = format.icon
-                    const isSelected = selectedFormat === format.value
-                    return (
-                      <button
-                        key={format.value}
-                        onClick={() => setSelectedFormat(format.value as ExportFormat)}
-                        className={`
-                          p-4 rounded-xl border-2 transition-all duration-300 group relative overflow-hidden
-                          ${isSelected
-                            ? `bg-gradient-to-r ${format.color} border-transparent shadow-lg shadow-current/20`
-                            : `${format.bgColor} ${format.borderColor} hover:border-current/40 hover:scale-105`
-                          }
-                        `}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className={`h-5 w-5 ${isSelected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`} />
-                          <div className="text-left">
-                            <div className={`font-medium ${isSelected ? 'text-white' : 'text-gray-200 group-hover:text-white'}`}>
-                              {format.label}
-                            </div>
-                            <div className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                              {format.description}
-                            </div>
-                          </div>
-                        </div>
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Boutons d'export rapide */}
-              <div className="space-y-3">
-                <ExportButton
-                  onClick={() => handleQuickExport(selectedFormat, 'day')}
-                  disabled={loading}
-                  variant="default"
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 hover:from-neon-purple/30 hover:to-neon-cyan/30"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Export Aujourd&apos;hui
-                </ExportButton>
-                
-                <ExportButton
-                  onClick={() => handleQuickExport(selectedFormat, 'week')}
-                  disabled={loading}
-                  variant="default"
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 hover:from-neon-purple/30 hover:to-neon-cyan/30"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Export Cette Semaine
-                </ExportButton>
-                
-                <ExportButton
-                  onClick={() => handleQuickExport(selectedFormat, 'month')}
-                  disabled={loading}
-                  variant="default"
-                  size="sm"
-                  className="w-full bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 hover:from-neon-purple/30 hover:to-neon-cyan/30"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Export Ce Mois
-                </ExportButton>
-              </div>
-            </div>
+            <p className="text-gray-300">
+              Configurez et exportez vos données avec les options disponibles
+            </p>
           </div>
 
-          {/* Export personnalisé */}
-          <div className="glass-effect border border-white/10 rounded-xl p-6 hover:border-neon-cyan/30 transition-all duration-300 group">
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-semibold flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gradient-to-r from-neon-cyan/20 to-neon-purple/20">
-                    <BarChart3 className="h-5 w-5 text-neon-cyan" />
-                  </div>
-                  Export Personnalisé
-                </h2>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button className="p-2 hover:bg-neon-cyan/20 rounded-lg" title="Aide">
-                    <TrendingUp className="h-4 w-4 text-neon-cyan" />
-                  </button>
-                  <button className="p-2 hover:bg-neon-purple/20 rounded-lg" title="Prévisualiser">
-                    <FileText className="h-4 w-4 text-neon-purple" />
-                  </button>
-                </div>
-              </div>
-              <p className="text-gray-300">
-                Configurez précisément votre export avec des options avancées
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              {/* Type de données */}
-              <div>
-                <h3 className="font-medium mb-4 text-white">Type de données</h3>
-                <div className="space-y-3">
-                  {dataTypes.map((type) => {
-                    const Icon = type.icon
-                    const isSelected = selectedDataType === type.value
-                    return (
-                      <button
-                        key={type.value}
-                        onClick={() => setSelectedDataType(type.value as ExportDataType)}
-                        className={`
-                          w-full p-4 rounded-xl border-2 text-left transition-all duration-300 group relative overflow-hidden
-                          ${isSelected
-                            ? `bg-gradient-to-r ${type.color} border-transparent shadow-lg shadow-current/20`
-                            : 'bg-white/5 border-white/10 hover:border-white/20 hover:scale-[1.02]'
-                          }
-                        `}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className={`h-5 w-5 ${isSelected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`} />
-                          <div>
-                            <div className={`font-medium ${isSelected ? 'text-white' : 'text-gray-200 group-hover:text-white'}`}>
-                              {type.label}
-                            </div>
-                            <div className={`text-sm ${isSelected ? 'text-white/80' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                              {type.description}
-                            </div>
-                          </div>
-                        </div>
-                        {isSelected && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <hr className="border-white/10" />
-
-              {/* Période */}
-              <div>
-                <h3 className="font-medium mb-4 text-white">Période</h3>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  {periods.map((period) => {
-                    const Icon = period.icon
-                    const isSelected = selectedPeriod === period.value
-                    return (
-                      <button
-                        key={period.value}
-                        onClick={() => setSelectedPeriod(period.value as ExportPeriod)}
-                        className={`
-                          p-3 rounded-lg border-2 transition-all duration-300 flex items-center gap-2
-                          ${isSelected
-                            ? 'bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border-neon-purple/30 text-white'
-                            : 'bg-white/5 border-white/10 text-gray-300 hover:border-white/20 hover:text-white'
-                          }
-                        `}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {period.label}
-                      </button>
-                    )
-                  })}
-                </div>
-
-                {/* Dates personnalisées */}
-                {selectedPeriod === 'custom' && (
-                  <div className="grid grid-cols-2 gap-3 p-4 glass-effect rounded-lg border border-white/10">
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-white">Date de début</label>
-                      <input
-                        type="date"
-                        value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-white">Date de fin</label>
-                      <input
-                        type="date"
-                        value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <hr className="border-white/10" />
-
-              {/* Options avancées */}
-              <div>
-                <h3 className="font-medium mb-4 text-white">Options avancées</h3>
-                <div className="space-y-3">
-                  <label className="flex items-start gap-3 p-3 glass-effect rounded-lg border border-white/10 hover:border-neon-cyan/30 transition-all duration-300">
-                    <input
-                      type="checkbox"
-                      checked={includeCharts}
-                      onChange={(e) => setIncludeCharts(e.target.checked)}
-                      className="mt-1 rounded border-white/20 bg-white/5 text-neon-cyan focus:ring-neon-cyan/50"
+          <div className="space-y-6">
+            {/* Format d'export */}
+            <div>
+              <h3 className="font-medium mb-4 text-white">Format d&apos;export</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {formats.map((format) => {
+                  const Icon = format.icon
+                  const isSelected = selectedFormat === format.value
+                  return (
+                    <ExportCardClickable
+                      key={format.value}
+                      data={{
+                        icon: <Icon className="h-5 w-5" />,
+                        label: format.label,
+                        description: format.description,
+                        color: format.color,
+                        bgColor: format.bgColor,
+                        borderColor: format.borderColor,
+                        iconColor: format.iconColor
+                      }}
+                      onView={() => setSelectedFormat(format.value as ExportFormat)}
+                      isSelected={isSelected}
+                      viewLabel={isSelected ? 'Sélectionné' : 'Sélectionner'}
+                      className={isSelected ? `ring-2 ${format.borderColor}` : ''}
                     />
-                    <div>
-                      <div className="font-medium text-white">Inclure les graphiques</div>
-                      <div className="text-sm text-gray-300">
-                        Ajoute des visualisations dans les exports PDF et Excel
-                      </div>
-                    </div>
-                  </label>
-                </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Type de données */}
+            <div>
+              <h3 className="font-medium mb-4 text-white">Type de données</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {dataTypes.map((type) => {
+                  const Icon = type.icon
+                  const isSelected = selectedDataType === type.value
+                  return (
+                    <ExportCardClickable
+                      key={type.value}
+                      data={{
+                        icon: <Icon className="h-5 w-5" />,
+                        label: type.label,
+                        description: type.description,
+                        color: type.color,
+                        bgColor: type.bgColor,
+                        borderColor: type.borderColor,
+                        iconColor: type.iconColor
+                      }}
+                      onView={() => setSelectedDataType(type.value as ExportDataType)}
+                      isSelected={isSelected}
+                      viewLabel={isSelected ? 'Sélectionné' : 'Sélectionner'}
+                      className={isSelected ? `ring-2 ${type.borderColor}` : ''}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Période */}
+            <div>
+              <h3 className="font-medium mb-4 text-white">Période</h3>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {periods.map((period) => {
+                  const Icon = period.icon
+                  const isSelected = selectedPeriod === period.value
+                  return (
+                    <button
+                      key={period.value}
+                      onClick={() => setSelectedPeriod(period.value as ExportPeriod)}
+                      className={`
+                        p-3 rounded-lg border-2 transition-all duration-300 flex items-center gap-2
+                        ${isSelected
+                          ? 'bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border-neon-purple/30 text-white'
+                          : 'bg-white/5 border-white/10 text-gray-300 hover:border-white/20 hover:text-white'
+                        }
+                      `}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {period.label}
+                    </button>
+                  )
+                })}
               </div>
 
-              {/* Bouton d'export personnalisé */}
-              <ExportButton
-                onClick={handleCustomExport}
-                disabled={loading || (selectedPeriod === 'custom' && (!customStartDate || !customEndDate))}
-                variant="default"
-                size="lg"
-                className="w-full bg-gradient-to-r from-neon-cyan/20 to-neon-purple/20 border border-neon-cyan/30 hover:from-neon-cyan/30 hover:to-neon-purple/30"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Exporter avec Configuration
-              </ExportButton>
-            </div>
-          </div>
-        </div>
-
-        {/* Informations sur les formats */}
-        <div className="mt-12 glass-effect border border-white/10 rounded-xl p-4 sm:p-6 lg:p-8">
-          <h2 className="text-2xl font-semibold mb-6 text-center text-white">Informations sur les formats</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {formats.map((format) => {
-              const Icon = format.icon
-              return (
-                <div key={format.value} className="text-center p-6 glass-effect rounded-xl border border-white/10 hover:border-current/30 transition-all duration-300 group">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${format.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="h-8 w-8 text-white" />
+              {/* Dates personnalisées */}
+              {selectedPeriod === 'custom' && (
+                <div className="grid grid-cols-2 gap-3 p-4 glass-effect rounded-lg border border-white/10">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">Date de début</label>
+                    <input
+                      type="date"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50"
+                    />
                   </div>
-                  <h4 className="font-semibold text-white mb-2">{format.label}</h4>
-                  <p className="text-sm text-gray-300 leading-relaxed">
-                    {format.description}
-                  </p>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">Date de fin</label>
+                    <input
+                      type="date"
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      className="w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-neon-cyan/50 focus:outline-none focus:ring-1 focus:ring-neon-cyan/50"
+                    />
+                  </div>
                 </div>
-              )
-            })}
+              )}
+            </div>
+
+            {/* Options avancées */}
+            <div>
+              <h3 className="font-medium mb-4 text-white">Options avancées</h3>
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 p-3 glass-effect rounded-lg border border-white/10 hover:border-neon-cyan/30 transition-all duration-300">
+                  <input
+                    type="checkbox"
+                    checked={includeCharts}
+                    onChange={(e) => setIncludeCharts(e.target.checked)}
+                    className="mt-1 rounded border-white/20 bg-white/5 text-neon-cyan focus:ring-neon-cyan/50"
+                  />
+                  <div>
+                    <div className="font-medium text-white">Inclure les graphiques</div>
+                    <div className="text-sm text-gray-300">
+                      Ajoute des visualisations dans les exports PDF et Excel
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Bouton d'export */}
+            <ExportButton
+              onClick={handleCustomExport}
+              disabled={loading || (selectedPeriod === 'custom' && (!customStartDate || !customEndDate))}
+              variant="default"
+              size="lg"
+              className="w-full bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 hover:from-neon-purple/30 hover:to-neon-cyan/30"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Exporter les Données
+            </ExportButton>
           </div>
         </div>
 
