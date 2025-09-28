@@ -4,7 +4,7 @@
 name: 🚀 Deploy to Firebase Hosting - Production Excellence
 on:
   workflow_run:
-    workflows: ["Quality Checks"]
+    workflows: ["🏆 Quality Checks - Excellence Technique"]
     types: [completed]
 jobs:
   build_and_deploy:
