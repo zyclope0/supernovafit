@@ -19,37 +19,72 @@ export default function MesuresProgressHeader({
   mesures,
   stats,
 }: MesuresProgressHeaderProps) {
+  // Fonction pour déterminer la couleur selon les zones OMS
+  const getHealthZoneColor = (type: 'weight' | 'imc' | 'bodyfat', current: number, target: number) => {
+    const ratio = current / target;
+    
+    if (type === 'weight') {
+      // Zones OMS pour le poids (ratio par rapport au poids idéal max)
+      if (ratio <= 0.9) return 'blue'; // Sous-poids
+      if (ratio <= 1.0) return 'green'; // Normal
+      if (ratio <= 1.1) return 'yellow'; // Surpoids léger
+      return 'red'; // Surpoids important
+    }
+    
+    if (type === 'imc') {
+      // Zones OMS pour l'IMC
+      if (current < 18.5) return 'blue'; // Sous-poids
+      if (current <= 25) return 'green'; // Normal
+      if (current <= 30) return 'yellow'; // Surpoids
+      return 'red'; // Obésité
+    }
+    
+    if (type === 'bodyfat') {
+      // Zones pour la masse grasse
+      if (current <= 15) return 'green'; // Excellent
+      if (current <= 20) return 'yellow'; // Bon
+      if (current <= 25) return 'orange'; // Acceptable
+      return 'red'; // Élevé
+    }
+    
+    return 'gray';
+  };
+
   // Calculer les métriques pour les barres de progression
+  const currentWeight = mesures.length > 0 ? mesures[0].poids || 0 : 0;
+  const currentIMC = stats ? stats.imc : 0;
+  const currentBodyFat = mesures.length > 0 ? mesures[0].masse_grasse || 0 : 0;
+  
   const progressItems = [
     {
       icon: <span className="text-2xl">⚖️</span>,
       label: 'Poids',
       data: {
-        current: mesures.length > 0 ? mesures[0].poids || 0 : 0,
+        current: currentWeight,
         target: stats ? stats.poids_ideal_max : 80,
         unit: 'kg',
       },
-      color: 'cyan' as const,
+      color: getHealthZoneColor('weight', currentWeight, stats ? stats.poids_ideal_max : 80),
     },
     {
       icon: <span className="text-2xl">📏</span>,
       label: 'IMC',
       data: {
-        current: stats ? stats.imc : 0,
+        current: currentIMC,
         target: 25, // IMC normal maximum
         unit: '',
       },
-      color: 'green' as const,
+      color: getHealthZoneColor('imc', currentIMC, 25),
     },
     {
       icon: <span className="text-2xl">💪</span>,
       label: 'Masse grasse',
       data: {
-        current: mesures.length > 0 ? mesures[0].masse_grasse || 0 : 0,
+        current: currentBodyFat,
         target: 20, // Objectif masse grasse
         unit: '%',
       },
-      color: 'pink' as const,
+      color: getHealthZoneColor('bodyfat', currentBodyFat, 20),
     },
     {
       icon: <span className="text-2xl">📊</span>,

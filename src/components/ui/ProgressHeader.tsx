@@ -40,7 +40,6 @@ function ProgressItem({ icon, label, data, color }: ProgressItemProps) {
     ? Math.min((data.current / data.target) * 100, 100)
     : 0;
   const remaining = hasTarget ? Math.max(data.target - data.current, 0) : 0;
-  const isComplete = hasTarget && data.current >= data.target;
 
   return (
     <div className="flex items-center gap-4">
@@ -68,14 +67,16 @@ function ProgressItem({ icon, label, data, color }: ProgressItemProps) {
           {hasTarget && (
             <span
               className={`text-xs px-2 py-1 rounded-full ${
-                isComplete
-                  ? 'bg-neon-green/20 text-neon-green'
-                  : percentage >= 50
-                    ? 'bg-neon-yellow/20 text-neon-yellow'
-                    : 'bg-gray-600/20 text-gray-400'
+                percentage >= 100
+                  ? 'bg-red-500/20 text-red-400'
+                  : percentage >= 80
+                    ? 'bg-yellow-500/20 text-yellow-400'
+                    : percentage >= 50
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-blue-500/20 text-blue-400'
               }`}
             >
-              {isComplete ? '✅' : `${Math.round(percentage)}%`}
+              {Math.round(percentage)}%
             </span>
           )}
         </div>
