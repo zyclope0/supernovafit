@@ -17,6 +17,7 @@ import MesuresDetailModal from '@/components/ui/MesuresDetailModal'
 import MesuresFormModal from '@/components/ui/MesuresFormModal'
 import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer'
 import HealthIndicator from '@/components/ui/HealthIndicator'
+import MesuresProgressHeader from '@/components/mesures/MesuresProgressHeader'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
 
@@ -37,7 +38,7 @@ export default function MesuresPage() {
   // États pour les composants industrialisés
   const [selectedMesure, setSelectedMesure] = useState<Mesure | null>(null)
   const [showMesureDetail, setShowMesureDetail] = useState(false)
-  // const [period, setPeriod] = useState<'today' | 'week' | 'month'>('week') // Supprimé - pas de sélecteur de période
+  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('week')
 
 
 
@@ -230,47 +231,16 @@ export default function MesuresPage() {
           </button>
         </div>
 
-        {/* Header industrialisé avec métriques */}
+        {/* Header industrialisé avec ProgressHeader standardisé */}
         {user && (
           <>
-            {/* Header simplifié - seulement le titre et le conseil */}
-            <div className="glass-effect rounded-xl p-4 border border-white/10">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">📏</span>
-                <h2 className="text-lg font-semibold text-white">MESURES</h2>
-              </div>
-              
-              {/* Conseil intelligent seulement */}
-              {stats && (
-                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="flex items-center gap-3 text-sm text-gray-300">
-                    <span className="text-neon-cyan">💡</span>
-                    <span>
-                      {(() => {
-                        const currentWeight = mesures.length > 0 ? (mesures[0].poids || 0) : 0
-                        if (currentWeight === 0) {
-                          return 'Ajoutez votre poids pour obtenir des conseils personnalisés.'
-                        }
-                        
-                        const weightStatus = currentWeight > stats.poids_ideal_max ? 
-                          `Votre poids (${currentWeight}kg) est au-dessus de la fourchette normale (${stats.poids_ideal_min}-${stats.poids_ideal_max}kg).` :
-                          currentWeight < stats.poids_ideal_min ?
-                          `Votre poids (${currentWeight}kg) est en-dessous de la fourchette normale (${stats.poids_ideal_min}-${stats.poids_ideal_max}kg).` :
-                          `Votre poids (${currentWeight}kg) est dans la fourchette normale (${stats.poids_ideal_min}-${stats.poids_ideal_max}kg).`
-                        
-                        const evolution = stats.evolution_poids > 0 ? 
-                          `Vous avez pris ${stats.evolution_poids.toFixed(1)}kg.` : 
-                          stats.evolution_poids < 0 ? 
-                          `Vous avez perdu ${Math.abs(stats.evolution_poids).toFixed(1)}kg.` : 
-                          'Votre poids est stable.'
-                        
-                        return `${weightStatus} ${evolution}`
-                      })()}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* ProgressHeader standardisé avec métriques et barres de progression */}
+            <MesuresProgressHeader
+              mesures={mesures}
+              stats={stats}
+              period={period}
+              onPeriodChange={(newPeriod) => setPeriod(newPeriod as 'today' | 'week' | 'month')}
+            />
             
             {/* Indicateurs de santé améliorés - Version complète avec SparklineCharts */}
             {stats && mesures.length > 0 && (
