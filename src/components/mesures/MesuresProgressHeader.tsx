@@ -20,9 +20,13 @@ export default function MesuresProgressHeader({
   stats,
 }: MesuresProgressHeaderProps) {
   // Fonction pour déterminer la couleur selon les zones OMS
-  const getHealthZoneColor = (type: 'weight' | 'imc' | 'bodyfat', current: number, target: number) => {
+  const getHealthZoneColor = (
+    type: 'weight' | 'imc' | 'bodyfat',
+    current: number,
+    target: number,
+  ) => {
     const ratio = current / target;
-    
+
     if (type === 'weight') {
       // Zones OMS pour le poids (ratio par rapport au poids idéal max)
       if (ratio <= 0.9) return 'blue'; // Sous-poids
@@ -30,7 +34,7 @@ export default function MesuresProgressHeader({
       if (ratio <= 1.1) return 'yellow'; // Surpoids léger
       return 'red'; // Surpoids important
     }
-    
+
     if (type === 'imc') {
       // Zones OMS pour l'IMC
       if (current < 18.5) return 'blue'; // Sous-poids
@@ -38,7 +42,7 @@ export default function MesuresProgressHeader({
       if (current <= 30) return 'yellow'; // Surpoids
       return 'red'; // Obésité
     }
-    
+
     if (type === 'bodyfat') {
       // Zones pour la masse grasse
       if (current <= 15) return 'green'; // Excellent
@@ -46,7 +50,7 @@ export default function MesuresProgressHeader({
       if (current <= 25) return 'orange'; // Acceptable
       return 'red'; // Élevé
     }
-    
+
     return 'gray';
   };
 
@@ -54,7 +58,7 @@ export default function MesuresProgressHeader({
   const currentWeight = mesures.length > 0 ? mesures[0].poids || 0 : 0;
   const currentIMC = stats ? stats.imc : 0;
   const currentBodyFat = mesures.length > 0 ? mesures[0].masse_grasse || 0 : 0;
-  
+
   const progressItems = [
     {
       icon: <span className="text-2xl">⚖️</span>,
@@ -64,7 +68,11 @@ export default function MesuresProgressHeader({
         target: stats ? stats.poids_ideal_max : 80,
         unit: 'kg',
       },
-      color: getHealthZoneColor('weight', currentWeight, stats ? stats.poids_ideal_max : 80),
+      color: getHealthZoneColor(
+        'weight',
+        currentWeight,
+        stats ? stats.poids_ideal_max : 80,
+      ),
     },
     {
       icon: <span className="text-2xl">📏</span>,
