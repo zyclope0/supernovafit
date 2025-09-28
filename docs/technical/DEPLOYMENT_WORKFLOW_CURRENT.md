@@ -18,7 +18,7 @@ graph TD
     C -->|✅ Oui| D[🚀 Deploy to Firebase Hosting]
     C -->|❌ Non| E[❌ Déploiement bloqué]
     D --> F[✅ Production Live]
-    
+
     style A fill:#a855f7
     style B fill:#06b6d4
     style D fill:#10b981
@@ -27,11 +27,11 @@ graph TD
 
 ### **Workflows GitHub Actions**
 
-| Workflow | Déclencheur | Objectif | Statut |
-|----------|-------------|----------|--------|
-| **🏆 Quality Checks** | Push sur `main` | Tests, Lint, Build | ✅ Actif |
+| Workflow                  | Déclencheur          | Objectif               | Statut   |
+| ------------------------- | -------------------- | ---------------------- | -------- |
+| **🏆 Quality Checks**     | Push sur `main`      | Tests, Lint, Build     | ✅ Actif |
 | **🚀 Deploy to Firebase** | Après Quality Checks | Déploiement production | ✅ Actif |
-| **🔍 Audit CI Pipeline** | Push sur `audit/**` | Analyse avancée | ✅ Actif |
+| **🔍 Audit CI Pipeline**  | Push sur `audit/**`  | Analyse avancée        | ✅ Actif |
 
 ---
 
@@ -139,23 +139,23 @@ firebase hosting:channel:list
 
 ### **Build & Déploiement**
 
-| Métrique | Valeur | Objectif | Statut |
-|----------|--------|----------|--------|
-| **Build Time** | ~15s | <30s | ✅ |
-| **Bundle Size** | 221KB | <300KB | ✅ |
-| **Quality Checks** | ~2min | <5min | ✅ |
-| **Deploy Time** | ~3min | <10min | ✅ |
-| **Total CI/CD** | ~5min | <15min | ✅ |
+| Métrique           | Valeur | Objectif | Statut |
+| ------------------ | ------ | -------- | ------ |
+| **Build Time**     | ~15s   | <30s     | ✅     |
+| **Bundle Size**    | 221KB  | <300KB   | ✅     |
+| **Quality Checks** | ~2min  | <5min    | ✅     |
+| **Deploy Time**    | ~3min  | <10min   | ✅     |
+| **Total CI/CD**    | ~5min  | <15min   | ✅     |
 
 ### **Qualité du Code**
 
-| Check | Statut | Détail |
-|-------|--------|--------|
-| **TypeScript** | ✅ Passed | 0 erreur de type |
-| **ESLint** | ✅ Passed | 0 erreur de linting |
-| **Prettier** | ✅ Passed | Formatage parfait |
-| **Tests** | ✅ Passed | 180 tests passent |
-| **Security** | ✅ Audited | 0 vulnérabilité |
+| Check          | Statut     | Détail              |
+| -------------- | ---------- | ------------------- |
+| **TypeScript** | ✅ Passed  | 0 erreur de type    |
+| **ESLint**     | ✅ Passed  | 0 erreur de linting |
+| **Prettier**   | ✅ Passed  | Formatage parfait   |
+| **Tests**      | ✅ Passed  | 180 tests passent   |
+| **Security**   | ✅ Audited | 0 vulnérabilité     |
 
 ---
 
@@ -191,11 +191,11 @@ firebase hosting:channel:list
 
 ### **Secrets GitHub**
 
-| Secret | Usage | Statut |
-|--------|-------|--------|
-| `NEXT_PUBLIC_FIREBASE_*` | Configuration Firebase | ✅ Configuré |
-| `FIREBASE_SERVICE_ACCOUNT_*` | Authentification GCP | ✅ Configuré |
-| `CODECOV_TOKEN` | Coverage reports | ✅ Configuré |
+| Secret                       | Usage                  | Statut       |
+| ---------------------------- | ---------------------- | ------------ |
+| `NEXT_PUBLIC_FIREBASE_*`     | Configuration Firebase | ✅ Configuré |
+| `FIREBASE_SERVICE_ACCOUNT_*` | Authentification GCP   | ✅ Configuré |
+| `CODECOV_TOKEN`              | Coverage reports       | ✅ Configuré |
 
 ### **Configuration Firebase**
 
