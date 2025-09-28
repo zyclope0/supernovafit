@@ -13,18 +13,40 @@ interface MesuresProgressHeaderProps {
     poids_ideal_min: number
     poids_ideal_max: number
   } | null
-  period: 'today' | 'week' | 'month'
-  onPeriodChange: (period: string) => void
 }
 
 export default function MesuresProgressHeader({
   mesures,
-  stats,
-  period,
-  onPeriodChange
+  stats
 }: MesuresProgressHeaderProps) {
   
-  // Calculer les métriques pour les barres de progression
+  // Fonction pour déterminer la couleur selon les zones OMS
+  const getHealthZoneColor = (type: 'weight' | 'imc' | 'bodyfat', value: number) => {
+    switch (type) {
+      case 'weight':
+        if (!stats) return 'gray'
+        if (value >= stats.poids_ideal_min && value <= stats.poids_ideal_max) return 'green'
+        if (value < stats.poids_ideal_min * 0.9 || value > stats.poids_ideal_max * 1.1) return 'red'
+        return 'yellow'
+      
+      case 'imc':
+        if (value >= 18.5 && value < 25) return 'green'      // Normal
+        if (value >= 25 && value < 30) return 'yellow'       // Surpoids
+        if (value >= 30) return 'red'                        // Obésité
+        return 'blue'                                        // Sous-poids
+      
+      case 'bodyfat':
+        if (value >= 10 && value <= 20) return 'green'       // Normal
+        if (value > 20 && value <= 25) return 'yellow'       // Élevé
+        if (value > 25) return 'red'                         // Très élevé
+        return 'blue'                                        // Très bas
+      
+      default:
+        return 'gray'
+    }
+  }
+
+  // Calculer les métriques avec logique de zones de santé
   const progressItems = [
     {
       icon: <span className="text-2xl">⚖️</span>,
@@ -34,7 +56,7 @@ export default function MesuresProgressHeader({
         target: stats ? stats.poids_ideal_max : 80,
         unit: 'kg'
       },
-      color: 'cyan' as const
+      color: getHealthZoneColor('weight', mesures.length > 0 ? (mesures[0].poids || 0) : 0)
     },
     {
       icon: <span className="text-2xl">📏</span>,
@@ -44,7 +66,7 @@ export default function MesuresProgressHeader({
         target: 25, // IMC normal maximum
         unit: ''
       },
-      color: 'green' as const
+      color: getHealthZoneColor('imc', stats ? stats.imc : 0)
     },
     {
       icon: <span className="text-2xl">💪</span>,
@@ -54,7 +76,7 @@ export default function MesuresProgressHeader({
         target: 20, // Objectif masse grasse
         unit: '%'
       },
-      color: 'pink' as const
+      color: getHealthZoneColor('bodyfat', mesures.length > 0 ? (mesures[0].masse_grasse || 0) : 0)
     },
     {
       icon: <span className="text-2xl">📊</span>,
@@ -64,7 +86,7 @@ export default function MesuresProgressHeader({
         target: 10, // Objectif nombre de mesures
         unit: ''
       },
-      color: 'purple' as const
+      color: mesures.length >= 10 ? 'green' : mesures.length >= 5 ? 'yellow' : 'red'
     }
   ]
 
@@ -94,8 +116,8 @@ export default function MesuresProgressHeader({
     <ProgressHeader
       title="MESURES"
       emoji="📏"
-      period={period}
-      onPeriodChange={onPeriodChange}
+      period="week" // Période fixe - pas de sélecteur
+      onPeriodChange={() => {}} // Fonction vide - pas de changement
       items={progressItems}
       advice={getIntelligentAdvice()}
     />

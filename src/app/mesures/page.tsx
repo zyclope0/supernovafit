@@ -38,7 +38,6 @@ export default function MesuresPage() {
   // États pour les composants industrialisés
   const [selectedMesure, setSelectedMesure] = useState<Mesure | null>(null)
   const [showMesureDetail, setShowMesureDetail] = useState(false)
-  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('week')
 
 
 
@@ -238,8 +237,6 @@ export default function MesuresPage() {
             <MesuresProgressHeader
               mesures={mesures}
               stats={stats}
-              period={period}
-              onPeriodChange={(newPeriod) => setPeriod(newPeriod as 'today' | 'week' | 'month')}
             />
             
             {/* Indicateurs de santé améliorés - Version complète avec SparklineCharts */}
