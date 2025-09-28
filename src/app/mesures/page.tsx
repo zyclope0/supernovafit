@@ -229,26 +229,26 @@ export default function MesuresPage() {
               </div>
               
               {/* Métriques principales avec tendances */}
-              {stats && mesures.length > 0 && (
+              {mesures.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   {/* Poids avec tendance */}
                   <div className="p-3 bg-white/5 rounded-lg border border-white/10">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-gray-300">Poids actuel</span>
                       <span className={`text-xs px-2 py-1 rounded ${
-                        stats.evolution_poids > 0 ? 'bg-red-500/20 text-red-400' :
-                        stats.evolution_poids < 0 ? 'bg-green-500/20 text-green-400' :
+                        stats && stats.evolution_poids > 0 ? 'bg-red-500/20 text-red-400' :
+                        stats && stats.evolution_poids < 0 ? 'bg-green-500/20 text-green-400' :
                         'bg-gray-500/20 text-gray-400'
                       }`}>
-                        {stats.evolution_poids > 0 ? '↗️' : stats.evolution_poids < 0 ? '↘️' : '→'}
-                        {stats.evolution_poids !== 0 ? Math.abs(stats.evolution_poids).toFixed(1) + 'kg' : 'Stable'}
+                        {stats && stats.evolution_poids > 0 ? '↗️' : stats && stats.evolution_poids < 0 ? '↘️' : '→'}
+                        {stats && stats.evolution_poids !== 0 ? Math.abs(stats.evolution_poids).toFixed(1) + 'kg' : 'Stable'}
                       </span>
                     </div>
                     <div className="text-xl font-bold text-white">
                       {mesures[0].poids || 0}kg
                     </div>
                     <div className="text-xs text-gray-400">
-                      Fourchette: {stats.poids_ideal_min}-{stats.poids_ideal_max}kg
+                      {stats ? `Fourchette: ${stats.poids_ideal_min}-${stats.poids_ideal_max}kg` : 'Ajoutez taille pour calculer IMC'}
                     </div>
                   </div>
 
@@ -257,18 +257,20 @@ export default function MesuresPage() {
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-gray-300">IMC</span>
                       <span className={`text-xs px-2 py-1 rounded ${
-                        stats.imc < 18.5 ? 'bg-blue-500/20 text-blue-400' :
-                        stats.imc < 25 ? 'bg-green-500/20 text-green-400' :
-                        stats.imc < 30 ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-red-500/20 text-red-400'
+                        stats && stats.imc < 18.5 ? 'bg-blue-500/20 text-blue-400' :
+                        stats && stats.imc < 25 ? 'bg-green-500/20 text-green-400' :
+                        stats && stats.imc < 30 ? 'bg-yellow-500/20 text-yellow-400' :
+                        stats ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'
                       }`}>
-                        {stats.imc < 18.5 ? 'Sous-poids' :
-                         stats.imc < 25 ? 'Normal' :
-                         stats.imc < 30 ? 'Surpoids' : 'Obésité'}
+                        {stats ? (
+                          stats.imc < 18.5 ? 'Sous-poids' :
+                          stats.imc < 25 ? 'Normal' :
+                          stats.imc < 30 ? 'Surpoids' : 'Obésité'
+                        ) : 'Calcul...'}
                       </span>
                     </div>
                     <div className="text-xl font-bold text-white">
-                      {stats.imc.toFixed(1)}
+                      {stats ? stats.imc.toFixed(1) : 'N/A'}
                     </div>
                     <div className="text-xs text-gray-400">
                       Dernière mesure: {formatDate(mesures[0].date)}
@@ -280,12 +282,12 @@ export default function MesuresPage() {
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-gray-300">Masse grasse</span>
                       <span className={`text-xs px-2 py-1 rounded ${
-                        stats.evolution_masse_grasse > 0 ? 'bg-red-500/20 text-red-400' :
-                        stats.evolution_masse_grasse < 0 ? 'bg-green-500/20 text-green-400' :
+                        stats && stats.evolution_masse_grasse > 0 ? 'bg-red-500/20 text-red-400' :
+                        stats && stats.evolution_masse_grasse < 0 ? 'bg-green-500/20 text-green-400' :
                         'bg-gray-500/20 text-gray-400'
                       }`}>
-                        {stats.evolution_masse_grasse > 0 ? '↗️' : stats.evolution_masse_grasse < 0 ? '↘️' : '→'}
-                        {stats.evolution_masse_grasse !== 0 ? Math.abs(stats.evolution_masse_grasse).toFixed(1) + '%' : 'Stable'}
+                        {stats && stats.evolution_masse_grasse > 0 ? '↗️' : stats && stats.evolution_masse_grasse < 0 ? '↘️' : '→'}
+                        {stats && stats.evolution_masse_grasse !== 0 ? Math.abs(stats.evolution_masse_grasse).toFixed(1) + '%' : 'Stable'}
                       </span>
                     </div>
                     <div className="text-xl font-bold text-white">
