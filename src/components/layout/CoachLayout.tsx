@@ -1,36 +1,41 @@
-'use client'
+'use client';
 
-import { ReactNode } from 'react'
-import MainLayout from './MainLayout'
-import { AthleteBreadcrumbs } from '@/components/ui/AthleteBreadcrumbs'
+import { ReactNode } from 'react';
+import MainLayout from './MainLayout';
+import { AthleteBreadcrumbs } from '@/components/ui/AthleteBreadcrumbs';
 
 interface CoachLayoutProps {
-  children: ReactNode
-  athleteId?: string
-  athleteName?: string
-  currentPage?: 'overview' | 'diete' | 'entrainements' | 'mesures' | 'journal' | 'plan-diete'
-  showBreadcrumbs?: boolean
+  children: ReactNode;
+  athleteId?: string;
+  athleteName?: string;
+  currentPage?:
+    | 'overview'
+    | 'diete'
+    | 'entrainements'
+    | 'mesures'
+    | 'journal'
+    | 'plan-diete';
+  showBreadcrumbs?: boolean;
 }
 
 /**
  * Layout spécialisé pour les pages coach avec navigation contextuelle
- * 
+ *
  * Features:
  * - Breadcrumbs automatiques pour les pages d'athlètes
  * - Support des sous-pages
  * - Fallback vers MainLayout standard
  */
-export function CoachLayout({ 
-  children, 
-  athleteId, 
-  athleteName, 
+export function CoachLayout({
+  children,
+  athleteId,
+  athleteName,
   currentPage,
-  showBreadcrumbs = true 
+  showBreadcrumbs = true,
 }: CoachLayoutProps) {
-  
   // Si pas d'athleteId, utiliser le layout standard
   if (!athleteId || !showBreadcrumbs) {
-    return <MainLayout>{children}</MainLayout>
+    return <MainLayout>{children}</MainLayout>;
   }
 
   return (
@@ -45,5 +50,5 @@ export function CoachLayout({
       </div>
       {children}
     </MainLayout>
-  )
+  );
 }

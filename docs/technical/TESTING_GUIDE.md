@@ -9,6 +9,7 @@
 ## 🚀 **DÉMARRAGE RAPIDE**
 
 ### **1. Démarrer l'Application**
+
 ```bash
 # Terminal 1 - Serveur de développement
 npm run dev
@@ -18,6 +19,7 @@ npm test accessibility
 ```
 
 ### **2. URLs de Test**
+
 - **Page Mesures** : `http://localhost:3000/mesures`
 - **Page Journal** : `http://localhost:3000/journal`
 - **Page Diète** : `http://localhost:3000/diete`
@@ -31,6 +33,7 @@ npm test accessibility
 ### **A. Tests des Announces Automatiques**
 
 #### **1. Test sur Page Mesures**
+
 ```typescript
 // Scénario : Ajout d'une mesure
 1. Ouvrir : http://localhost:3000/mesures
@@ -48,6 +51,7 @@ npm test accessibility
 ```
 
 #### **2. Test d'Erreur de Validation**
+
 ```typescript
 // Scénario : Données invalides
 1. Ouvrir le formulaire d'ajout de mesure
@@ -64,6 +68,7 @@ npm test accessibility
 ### **B. Tests des Sparklines Historiques**
 
 #### **1. Visualisation des Tendances**
+
 ```typescript
 // Prérequis : Avoir au moins 3 mesures dans l'historique
 1. Ouvrir : http://localhost:3000/mesures
@@ -78,6 +83,7 @@ npm test accessibility
 ```
 
 #### **2. Zones de Couleur OMS**
+
 ```typescript
 // Test des standards médicaux
 1. Vérifier les couleurs selon les valeurs :
@@ -92,6 +98,7 @@ npm test accessibility
 ### **C. Tests du Focus Trap**
 
 #### **1. Navigation Clavier dans les Modals**
+
 ```typescript
 // Test de focus trap
 1. Ouvrir n'importe quelle modal (ajout mesure, détail, etc.)
@@ -109,6 +116,7 @@ npm test accessibility
 ```
 
 #### **2. Test de Focus Restoration**
+
 ```typescript
 // Test de restauration du focus
 1. Cliquer sur un bouton (ex: "Ajouter")
@@ -126,6 +134,7 @@ npm test accessibility
 ### **A. Tests avec Screen Readers**
 
 #### **NVDA (Windows)**
+
 ```bash
 # Installation
 1. Télécharger : https://www.nvaccess.org/download/
@@ -139,6 +148,7 @@ npm test accessibility
 ```
 
 #### **VoiceOver (macOS)**
+
 ```bash
 # Activation
 1. Cmd + F5 pour activer VoiceOver
@@ -153,6 +163,7 @@ npm test accessibility
 ### **B. Tests de Navigation Clavier**
 
 #### **Navigation Standard**
+
 ```typescript
 // Test complet de navigation
 1. Page Mesures :
@@ -168,6 +179,7 @@ npm test accessibility
 ```
 
 #### **Tests de Contraste**
+
 ```typescript
 // Vérification visuelle
 1. Couleurs neon :
@@ -185,6 +197,7 @@ npm test accessibility
 ## 🤖 **TESTS AUTOMATISÉS**
 
 ### **A. Tests d'Accessibilité**
+
 ```bash
 # Exécution des tests
 npm test accessibility
@@ -198,6 +211,7 @@ npm test accessibility
 ```
 
 ### **B. Tests Lighthouse**
+
 ```bash
 # Prérequis : Serveur de développement démarré
 npm run dev
@@ -213,6 +227,7 @@ npx lighthouse http://localhost:3000/mesures --view --only-categories=accessibil
 ```
 
 ### **C. Tests axe-core**
+
 ```bash
 # Installation des outils
 npm install --save-dev @axe-core/react jest-axe
@@ -226,6 +241,7 @@ npm install --save-dev @axe-core/react jest-axe
 ## 📱 **TESTS MOBILE**
 
 ### **A. Tests Responsive**
+
 ```typescript
 // Tests sur différentes tailles d'écran
 1. Mobile (375px) :
@@ -241,6 +257,7 @@ npm install --save-dev @axe-core/react jest-axe
 ```
 
 ### **B. Tests Tactiles**
+
 ```typescript
 // Tests sur appareils tactiles
 1. Navigation :
@@ -257,6 +274,7 @@ npm install --save-dev @axe-core/react jest-axe
 ## 🔧 **TESTS DE PERFORMANCE**
 
 ### **A. Bundle Size**
+
 ```bash
 # Vérification de la taille
 npm run build
@@ -268,6 +286,7 @@ npm run build
 ```
 
 ### **B. Tests de Chargement**
+
 ```typescript
 // Tests de performance
 1. Chargement initial :
@@ -286,6 +305,7 @@ npm run build
 ## 🐛 **TESTS DE RÉGRESSION**
 
 ### **A. Fonctionnalités Existantes**
+
 ```typescript
 // Vérification que rien n'est cassé
 1. Journal :
@@ -303,6 +323,7 @@ npm run build
 ```
 
 ### **B. Tests Cross-Browser**
+
 ```typescript
 // Tests sur différents navigateurs
 1. Chrome :
@@ -321,32 +342,38 @@ npm run build
 ## 📊 **RAPPORT DE TEST**
 
 ### **Template de Rapport**
+
 ```markdown
 ## Test SuperNovaFit v2.2.0 - [Date]
 
 ### Environnement
+
 - Navigateur : [Chrome/Firefox/Safari]
 - Screen Reader : [NVDA/JAWS/VoiceOver/None]
 - Version : [Version]
 
 ### Résultats Fonctionnels
+
 - ✅ Announces automatiques : [X/100]%
 - ✅ Sparklines historiques : [X/100]%
 - ✅ Focus trap : [X/100]%
 - ✅ Navigation clavier : [X/100]%
 
 ### Résultats Accessibilité
+
 - ✅ Conformité WCAG 2.1 AAA : [X/100]%
 - ✅ Screen reader : [X/100]%
 - ✅ Contraste : [X/100]%
 - ✅ ARIA : [X/100]%
 
 ### Problèmes identifiés
+
 1. [Description du problème]
 2. [Niveau de criticité]
 3. [Solution proposée]
 
 ### Recommandations
+
 1. [Amélioration suggérée]
 2. [Priorité]
 ```
@@ -356,6 +383,7 @@ npm run build
 ## 🎉 **VALIDATION FINALE**
 
 ### **Checklist de Validation**
+
 - ✅ **Announces automatiques** : Fonctionnels sur toutes les actions
 - ✅ **Sparklines historiques** : Mini-graphiques visibles et interactifs
 - ✅ **Focus trap** : Navigation clavier parfaite dans les modals
@@ -365,6 +393,7 @@ npm run build
 - ✅ **Cross-browser** : Compatibilité confirmée
 
 ### **Score Final**
+
 - **Fonctionnalités** : 100% ✅
 - **Accessibilité** : 95% WCAG 2.1 AAA ✅
 - **Performance** : Stable ✅

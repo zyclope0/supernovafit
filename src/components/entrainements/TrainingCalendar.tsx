@@ -1,66 +1,66 @@
-'use client'
+'use client';
 
-import React, { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Calendar, History } from 'lucide-react'
-import { Entrainement } from '@/types'
-import { cn } from '@/lib/utils'
+import React, { useState, useMemo } from 'react';
+import { ChevronLeft, ChevronRight, Calendar, History } from 'lucide-react';
+import { Entrainement } from '@/types';
+import { cn } from '@/lib/utils';
 
 interface TrainingCalendarProps {
-  selectedDate: string
-  onDateChange: (date: string) => void
-  entrainements: Entrainement[]
-  onShowHistory: () => void
+  selectedDate: string;
+  onDateChange: (date: string) => void;
+  entrainements: Entrainement[];
+  onShowHistory: () => void;
 }
 
 const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   selectedDate,
   onDateChange,
   entrainements,
-  onShowHistory
+  onShowHistory,
 }) => {
   const [currentMonth, setCurrentMonth] = useState(() => {
-    const date = new Date(selectedDate)
-    return new Date(date.getFullYear(), date.getMonth(), 1)
-  })
+    const date = new Date(selectedDate);
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  });
 
   // Créer une map des jours avec entraînements
   const trainingsMap = useMemo(() => {
-    const map = new Map<string, Entrainement[]>()
-    entrainements.forEach(training => {
-      const dateKey = training.date
+    const map = new Map<string, Entrainement[]>();
+    entrainements.forEach((training) => {
+      const dateKey = training.date;
       if (!map.has(dateKey)) {
-        map.set(dateKey, [])
+        map.set(dateKey, []);
       }
-      map.get(dateKey)?.push(training)
-    })
-    return map
-  }, [entrainements])
+      map.get(dateKey)?.push(training);
+    });
+    return map;
+  }, [entrainements]);
 
   // Générer les jours du calendrier
   const calendarDays = useMemo(() => {
-    const year = currentMonth.getFullYear()
-    const month = currentMonth.getMonth()
-    
-    const firstDay = new Date(year, month, 1)
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+
+    const firstDay = new Date(year, month, 1);
     // const lastDay = new Date(year, month + 1, 0) // Unused for now
-    const startDate = new Date(firstDay)
-    
+    const startDate = new Date(firstDay);
+
     // Commencer le lundi (ISO 8601)
-    const dayOfWeek = firstDay.getDay()
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1
-    startDate.setDate(firstDay.getDate() - daysToSubtract)
-    
-    const days = []
-    const current = new Date(startDate)
-    
+    const dayOfWeek = firstDay.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    startDate.setDate(firstDay.getDate() - daysToSubtract);
+
+    const days = [];
+    const current = new Date(startDate);
+
     // Générer 42 jours (6 semaines)
     for (let i = 0; i < 42; i++) {
-      const dateStr = current.toISOString().split('T')[0]
-      const trainingsForDay = trainingsMap.get(dateStr) || []
-      const isCurrentMonth = current.getMonth() === month
-      const isToday = dateStr === new Date().toISOString().split('T')[0]
-      const isSelected = dateStr === selectedDate
-      
+      const dateStr = current.toISOString().split('T')[0];
+      const trainingsForDay = trainingsMap.get(dateStr) || [];
+      const isCurrentMonth = current.getMonth() === month;
+      const isToday = dateStr === new Date().toISOString().split('T')[0];
+      const isSelected = dateStr === selectedDate;
+
       days.push({
         date: new Date(current),
         dateStr,
@@ -69,51 +69,63 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
         isToday,
         isSelected,
         trainings: trainingsForDay,
-        hasTrainings: trainingsForDay.length > 0
-      })
-      
-      current.setDate(current.getDate() + 1)
+        hasTrainings: trainingsForDay.length > 0,
+      });
+
+      current.setDate(current.getDate() + 1);
     }
-    
-    return days
-  }, [currentMonth, trainingsMap, selectedDate])
+
+    return days;
+  }, [currentMonth, trainingsMap, selectedDate]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentMonth(prev => {
-      const newMonth = new Date(prev)
-      newMonth.setMonth(prev.getMonth() + (direction === 'next' ? 1 : -1))
-      return newMonth
-    })
-  }
+    setCurrentMonth((prev) => {
+      const newMonth = new Date(prev);
+      newMonth.setMonth(prev.getMonth() + (direction === 'next' ? 1 : -1));
+      return newMonth;
+    });
+  };
 
   const monthNames = [
-    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-  ]
+    'Janvier',
+    'Février',
+    'Mars',
+    'Avril',
+    'Mai',
+    'Juin',
+    'Juillet',
+    'Août',
+    'Septembre',
+    'Octobre',
+    'Novembre',
+    'Décembre',
+  ];
 
-  const weekDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+  const weekDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
   const getTrainingIndicator = (trainings: Entrainement[]) => {
-    if (trainings.length === 0) return null
-    
+    if (trainings.length === 0) return null;
+
     if (trainings.length === 1) {
-      const training = trainings[0]
+      const training = trainings[0];
       if (training.type.toLowerCase().includes('cardio')) {
-        return <div className="w-1.5 h-1.5 bg-red-400 rounded-full" />
+        return <div className="w-1.5 h-1.5 bg-red-400 rounded-full" />;
       } else if (training.type.toLowerCase().includes('musculation')) {
-        return <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />
+        return <div className="w-1.5 h-1.5 bg-orange-400 rounded-full" />;
       } else {
-        return <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+        return <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />;
       }
     }
-    
+
     // Multiple trainings - show count
     return (
       <div className="w-4 h-4 bg-neon-purple rounded-full flex items-center justify-center">
-        <span className="text-[8px] font-bold text-white">{trainings.length}</span>
+        <span className="text-[8px] font-bold text-white">
+          {trainings.length}
+        </span>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="glass-effect p-4 rounded-xl border border-white/10">
@@ -125,7 +137,7 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </h3>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <button
             onClick={onShowHistory}
@@ -151,8 +163,11 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
 
       {/* Jours de la semaine */}
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {weekDays.map(day => (
-          <div key={day} className="p-2 text-center text-xs font-medium text-gray-400">
+        {weekDays.map((day) => (
+          <div
+            key={day}
+            className="p-2 text-center text-xs font-medium text-gray-400"
+          >
             {day}
           </div>
         ))}
@@ -166,22 +181,33 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
             onClick={() => day.isCurrentMonth && onDateChange(day.dateStr)}
             disabled={!day.isCurrentMonth}
             className={cn(
-              "relative p-2 text-sm rounded-lg transition-all duration-200 min-h-[36px]",
-              "flex flex-col items-center justify-center gap-0.5",
+              'relative p-2 text-sm rounded-lg transition-all duration-200 min-h-[36px]',
+              'flex flex-col items-center justify-center gap-0.5',
               day.isCurrentMonth
-                ? "text-white hover:bg-white/10 cursor-pointer"
-                : "text-gray-600 cursor-not-allowed",
-              day.isSelected && "bg-neon-cyan text-white shadow-lg",
-              day.isToday && !day.isSelected && "bg-white/10 text-neon-cyan font-semibold",
-              day.hasTrainings && day.isCurrentMonth && !day.isSelected && "bg-white/5"
+                ? 'text-white hover:bg-white/10 cursor-pointer'
+                : 'text-gray-600 cursor-not-allowed',
+              day.isSelected && 'bg-neon-cyan text-white shadow-lg',
+              day.isToday &&
+                !day.isSelected &&
+                'bg-white/10 text-neon-cyan font-semibold',
+              day.hasTrainings &&
+                day.isCurrentMonth &&
+                !day.isSelected &&
+                'bg-white/5',
             )}
           >
-            <span className={cn(
-              day.isSelected ? "font-bold" : day.isToday ? "font-semibold" : "font-normal"
-            )}>
+            <span
+              className={cn(
+                day.isSelected
+                  ? 'font-bold'
+                  : day.isToday
+                    ? 'font-semibold'
+                    : 'font-normal',
+              )}
+            >
               {day.day}
             </span>
-            
+
             {/* Indicateur d'entraînements */}
             {day.hasTrainings && (
               <div className="absolute bottom-1 right-1">
@@ -215,7 +241,7 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
               <span>Multiple</span>
             </div>
           </div>
-          
+
           <button
             onClick={onShowHistory}
             className="text-neon-cyan hover:text-neon-cyan/80 transition-colors flex items-center gap-1"
@@ -226,7 +252,7 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TrainingCalendar
+export default TrainingCalendar;

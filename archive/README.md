@@ -5,6 +5,7 @@ Ce dossier contient les fichiers archivés qui ne sont pas nécessaires au fonct
 ## 📁 Structure
 
 ### `/non-essential/`
+
 Fichiers temporaires, rapports et outils de développement :
 
 - **Rapports de performance** : `chromewebdata_*.report.html`, `localhost_*.report.html`
@@ -17,6 +18,7 @@ Fichiers temporaires, rapports et outils de développement :
 ## 🎯 Objectif
 
 Réduire la taille du repository et améliorer les performances en excluant :
+
 - Fichiers temporaires de build
 - Rapports de performance générés
 - Outils de développement non critiques

@@ -1,44 +1,43 @@
-'use client'
+'use client';
 
-import React from 'react'
-import ProgressHeader from './ProgressHeader'
+import React from 'react';
+import ProgressHeader from './ProgressHeader';
 
 interface ProgressItem {
-  icon: React.ReactNode
-  label: string
+  icon: React.ReactNode;
+  label: string;
   data: {
-    current: number
-    target: number
-    unit: string
-  }
-  color: string
+    current: number;
+    target: number;
+    unit: string;
+  };
+  color: string;
 }
 
 interface DietProgressHeaderProps {
-  title: string
-  emoji: string
-  period: 'today' | 'week' | 'month'
-  onPeriodChange: (period: 'today' | 'week' | 'month') => void
-  items: ProgressItem[]
-  advice?: string
+  title: string;
+  emoji: string;
+  period: 'today' | 'week' | 'month';
+  onPeriodChange: (period: 'today' | 'week' | 'month') => void;
+  items: ProgressItem[];
+  advice?: string;
 }
 
-
-export default function DietProgressHeader({ 
-  title, 
-  emoji, 
-  period, 
-  onPeriodChange, 
-  items, 
-  advice 
+export default function DietProgressHeader({
+  title,
+  emoji,
+  period,
+  onPeriodChange,
+  items,
+  advice,
 }: DietProgressHeaderProps) {
   // Convertir les items vers le format ProgressHeader
-  const progressItems = items.map(item => ({
+  const progressItems = items.map((item) => ({
     icon: item.icon,
     label: item.label,
     data: item.data,
-    color: item.color
-  }))
+    color: item.color,
+  }));
 
   return (
     <ProgressHeader
@@ -49,11 +48,10 @@ export default function DietProgressHeader({
       items={progressItems}
       advice={advice}
       periodLabels={{
-        today: 'Aujourd\'hui',
+        today: "Aujourd'hui",
         week: 'Semaine',
-        month: 'Mois'
+        month: 'Mois',
       }}
     />
-  )
+  );
 }
-

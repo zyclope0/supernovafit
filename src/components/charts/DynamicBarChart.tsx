@@ -1,11 +1,18 @@
-'use client'
+'use client';
 
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
-} from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 
 interface DynamicBarChartProps {
-  data: Array<{ jour: string; calories: number; proteines: number }>
+  data: Array<{ jour: string; calories: number; proteines: number }>;
 }
 
 export default function DynamicBarChart({ data }: DynamicBarChartProps) {
@@ -15,8 +22,12 @@ export default function DynamicBarChart({ data }: DynamicBarChartProps) {
         <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
         <XAxis dataKey="jour" stroke="#9CA3AF" />
         <YAxis stroke="#9CA3AF" />
-        <Tooltip 
-          contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px' }}
+        <Tooltip
+          contentStyle={{
+            backgroundColor: '#1F2937',
+            border: 'none',
+            borderRadius: '8px',
+          }}
           labelStyle={{ color: '#9CA3AF' }}
         />
         <Legend />
@@ -24,5 +35,5 @@ export default function DynamicBarChart({ data }: DynamicBarChartProps) {
         <Bar dataKey="proteines" fill="#06b6d4" name="Protéines (g)" />
       </BarChart>
     </ResponsiveContainer>
-  )
+  );
 }

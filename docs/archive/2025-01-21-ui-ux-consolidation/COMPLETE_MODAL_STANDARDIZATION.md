@@ -7,6 +7,7 @@
 ## 🎯 **OBJECTIF**
 
 Standardiser **TOUTES les modals** de SuperNovaFit avec le composant `StandardModal` pour garantir :
+
 - ✅ **Apparence identique** : Cadre blanc proéminent (`border-white/70`)
 - ✅ **Effet de glow** : Ombre intense (`shadow-white/40`)
 - ✅ **Cohérence parfaite** : Même style partout
@@ -16,45 +17,46 @@ Standardiser **TOUTES les modals** de SuperNovaFit avec le composant `StandardMo
 
 ### **✅ DÉJÀ STANDARDISÉES :**
 
-| Modal | Composant | Statut | Apparence |
-|-------|-----------|--------|-----------|
-| **TrainingFormModal** | `StandardModal` | ✅ | **Parfaite** |
-| **DetailModal** | `StandardModal` | ✅ | **Parfaite** |
-| **FormModal** | `StandardModal` | ✅ | **Parfaite** |
-| **MesuresDetailModal** | `DetailModal` → `StandardModal` | ✅ | **Parfaite** |
-| **MesuresFormModal** | `DetailModal` → `StandardModal` | ✅ | **Parfaite** |
-| **DietDetailModal** | `DetailModal` → `StandardModal` | ✅ | **Parfaite** |
-| **JournalDetailModal** | `DetailModal` → `StandardModal` | ✅ | **Parfaite** |
-| **ChallengeDetailModal** | `DetailModal` → `StandardModal` | ✅ | **Parfaite** |
+| Modal                    | Composant                       | Statut | Apparence    |
+| ------------------------ | ------------------------------- | ------ | ------------ |
+| **TrainingFormModal**    | `StandardModal`                 | ✅     | **Parfaite** |
+| **DetailModal**          | `StandardModal`                 | ✅     | **Parfaite** |
+| **FormModal**            | `StandardModal`                 | ✅     | **Parfaite** |
+| **MesuresDetailModal**   | `DetailModal` → `StandardModal` | ✅     | **Parfaite** |
+| **MesuresFormModal**     | `DetailModal` → `StandardModal` | ✅     | **Parfaite** |
+| **DietDetailModal**      | `DetailModal` → `StandardModal` | ✅     | **Parfaite** |
+| **JournalDetailModal**   | `DetailModal` → `StandardModal` | ✅     | **Parfaite** |
+| **ChallengeDetailModal** | `DetailModal` → `StandardModal` | ✅     | **Parfaite** |
 
 ### **🔄 À STANDARDISER :**
 
-| Modal | Composant Actuel | Priorité | Action |
-|-------|------------------|----------|--------|
-| **MultiModeHistoryModal** | Ancien style | 🔴 **Haute** | ✅ Créé `MultiModeHistoryModalStandard` |
-| **HistoriqueEntrainementsModal** | Ancien style | 🔴 **Haute** | 🔄 À migrer |
-| **TrainingDetailModal** | Ancien style | 🔴 **Haute** | 🔄 À migrer |
-| **HistoriqueJournalModal** | Ancien style | 🟡 **Moyenne** | 🔄 À migrer |
-| **HistoriqueModal** | Ancien style | 🟡 **Moyenne** | 🔄 À migrer |
-| **InviteModal** | Ancien style | 🟡 **Moyenne** | 🔄 À migrer |
-| **MenuTypesModal** | Ancien style | 🟡 **Moyenne** | 🔄 À migrer |
-| **GarminImport** | Ancien style | 🟢 **Basse** | 🔄 À migrer |
-| **PhotoUpload** | Ancien style | 🟢 **Basse** | 🔄 À migrer |
-| **PhotosLibresGallery** | Ancien style | 🟢 **Basse** | 🔄 À migrer |
+| Modal                            | Composant Actuel | Priorité       | Action                                  |
+| -------------------------------- | ---------------- | -------------- | --------------------------------------- |
+| **MultiModeHistoryModal**        | Ancien style     | 🔴 **Haute**   | ✅ Créé `MultiModeHistoryModalStandard` |
+| **HistoriqueEntrainementsModal** | Ancien style     | 🔴 **Haute**   | 🔄 À migrer                             |
+| **TrainingDetailModal**          | Ancien style     | 🔴 **Haute**   | 🔄 À migrer                             |
+| **HistoriqueJournalModal**       | Ancien style     | 🟡 **Moyenne** | 🔄 À migrer                             |
+| **HistoriqueModal**              | Ancien style     | 🟡 **Moyenne** | 🔄 À migrer                             |
+| **InviteModal**                  | Ancien style     | 🟡 **Moyenne** | 🔄 À migrer                             |
+| **MenuTypesModal**               | Ancien style     | 🟡 **Moyenne** | 🔄 À migrer                             |
+| **GarminImport**                 | Ancien style     | 🟢 **Basse**   | 🔄 À migrer                             |
+| **PhotoUpload**                  | Ancien style     | 🟢 **Basse**   | 🔄 À migrer                             |
+| **PhotosLibresGallery**          | Ancien style     | 🟢 **Basse**   | 🔄 À migrer                             |
 
 ### **📱 MODALS MOBILES (Spéciales) :**
 
-| Modal | Composant Actuel | Statut | Note |
-|-------|------------------|--------|------|
-| **QuickMealModal** | Style mobile | ✅ | **Spécialisé mobile** |
-| **QuickTrainingModal** | Style mobile | ✅ | **Spécialisé mobile** |
-| **QuickActionModal** | Style mobile | ✅ | **Spécialisé mobile** |
-| **QuickMoodModal** | Style mobile | ✅ | **Spécialisé mobile** |
-| **QuickWeightModal** | Style mobile | ✅ | **Spécialisé mobile** |
+| Modal                  | Composant Actuel | Statut | Note                  |
+| ---------------------- | ---------------- | ------ | --------------------- |
+| **QuickMealModal**     | Style mobile     | ✅     | **Spécialisé mobile** |
+| **QuickTrainingModal** | Style mobile     | ✅     | **Spécialisé mobile** |
+| **QuickActionModal**   | Style mobile     | ✅     | **Spécialisé mobile** |
+| **QuickMoodModal**     | Style mobile     | ✅     | **Spécialisé mobile** |
+| **QuickWeightModal**   | Style mobile     | ✅     | **Spécialisé mobile** |
 
 ## 🏗️ **COMPOSANT STANDARDMODAL**
 
 ### **Style Standardisé :**
+
 ```typescript
 // Apparence parfaite avec cadre blanc proéminent
 className="bg-space-900 border-2 border-white/70 rounded-xl w-full max-w-4xl overflow-hidden shadow-2xl shadow-white/40 ring-1 ring-white/70 relative flex flex-col"
@@ -64,27 +66,29 @@ className="bg-space-900 border-2 border-white/70 rounded-xl w-full max-w-4xl ove
 ```
 
 ### **Props Standardisées :**
+
 ```typescript
 interface StandardModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  subtitle?: string
-  icon?: React.ReactNode
-  children: React.ReactNode
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
-  height?: 'auto' | '85vh' | '90vh'
-  showFooter?: boolean
-  footerContent?: React.ReactNode
-  onEdit?: () => void
-  editLabel?: string
-  className?: string
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+  height?: "auto" | "85vh" | "90vh";
+  showFooter?: boolean;
+  footerContent?: React.ReactNode;
+  onEdit?: () => void;
+  editLabel?: string;
+  className?: string;
 }
 ```
 
 ## 🔧 **PLAN DE MIGRATION**
 
 ### **Phase 1 : Modals Principales (TERMINÉE)**
+
 - ✅ **TrainingFormModal** → `StandardModal`
 - ✅ **DetailModal** → `StandardModal`
 - ✅ **FormModal** → `StandardModal`
@@ -95,6 +99,7 @@ interface StandardModalProps {
 - ✅ **ChallengeDetailModal** → `StandardModal`
 
 ### **Phase 2 : Modals Historique (EN COURS)**
+
 - ✅ **MultiModeHistoryModal** → `MultiModeHistoryModalStandard`
 - 🔄 **HistoriqueEntrainementsModal** → `StandardModal`
 - 🔄 **TrainingDetailModal** → `StandardModal`
@@ -102,6 +107,7 @@ interface StandardModalProps {
 - 🔄 **HistoriqueModal** → `StandardModal`
 
 ### **Phase 3 : Modals Utilitaires**
+
 - 🔄 **InviteModal** → `StandardModal`
 - 🔄 **MenuTypesModal** → `StandardModal`
 - 🔄 **GarminImport** → `StandardModal`
@@ -109,24 +115,28 @@ interface StandardModalProps {
 - 🔄 **PhotosLibresGallery** → `StandardModal`
 
 ### **Phase 4 : Modals Coach**
+
 - 🔄 **Coach Athlete Modals** → `StandardModal`
 - 🔄 **Coach Dashboard Modals** → `StandardModal`
 
 ## 📈 **BÉNÉFICES ATTENDUS**
 
 ### **✅ UX/UI :**
+
 - **Cohérence parfaite** : Toutes les modals ont la même apparence
 - **Cadre blanc proéminent** : Meilleure visibilité et séparation
 - **Effet de glow** : Apparence professionnelle et moderne
 - **Expérience unifiée** : Plus de différences visuelles
 
 ### **✅ Développement :**
+
 - **Code centralisé** : Un seul composant pour toutes les modals
 - **Maintenance simplifiée** : Modifier l'apparence = 1 seul fichier
 - **Réutilisabilité** : StandardModal peut être utilisé partout
 - **Performance** : Moins de code dupliqué
 
 ### **✅ Qualité :**
+
 - **Tests centralisés** : Un seul composant à tester
 - **Accessibilité** : Focus trap et navigation clavier unifiés
 - **Responsive** : Design adaptatif standardisé
@@ -135,6 +145,7 @@ interface StandardModalProps {
 ## 🎯 **UTILISATION**
 
 ### **Pour une nouvelle modal :**
+
 ```typescript
 import StandardModal from '@/components/ui/StandardModal'
 
@@ -152,6 +163,7 @@ import StandardModal from '@/components/ui/StandardModal'
 ```
 
 ### **Pour migrer une modal existante :**
+
 ```typescript
 // ❌ AVANT : Structure complexe dupliquée
 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -176,6 +188,7 @@ import StandardModal from '@/components/ui/StandardModal'
 ## 🏆 **RÉSULTATS ACTUELS**
 
 ### **✅ Modals Standardisées : 8/20 (40%)**
+
 - **TrainingFormModal** ✅
 - **DetailModal** ✅
 - **FormModal** ✅
@@ -186,9 +199,11 @@ import StandardModal from '@/components/ui/StandardModal'
 - **ChallengeDetailModal** ✅
 
 ### **🔄 En Cours : 1/20 (5%)**
+
 - **MultiModeHistoryModal** → `MultiModeHistoryModalStandard` ✅
 
 ### **📱 Modals Mobiles : 5/20 (25%)**
+
 - **QuickMealModal** ✅ (Spécialisé)
 - **QuickTrainingModal** ✅ (Spécialisé)
 - **QuickActionModal** ✅ (Spécialisé)

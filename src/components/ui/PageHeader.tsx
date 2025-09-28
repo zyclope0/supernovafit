@@ -1,49 +1,51 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { LucideIcon } from 'lucide-react'
+import React from 'react';
+import { LucideIcon } from 'lucide-react';
 
 interface PageHeaderProps {
-  title: string
-  description: string
-  icon?: LucideIcon
+  title: string;
+  description: string;
+  icon?: LucideIcon;
   action?: {
-    label: string
-    onClick: () => void
-    icon?: LucideIcon
-    color?: 'purple' | 'cyan' | 'green' | 'pink'
-    variant?: 'primary' | 'secondary'
-  }
+    label: string;
+    onClick: () => void;
+    icon?: LucideIcon;
+    color?: 'purple' | 'cyan' | 'green' | 'pink';
+    variant?: 'primary' | 'secondary';
+  };
   actions?: Array<{
-    label: string
-    shortLabel?: string
-    onClick: () => void
-    icon?: LucideIcon
-    color?: 'purple' | 'cyan' | 'green' | 'pink'
-    variant?: 'primary' | 'secondary'
-  }>
-  customContent?: React.ReactNode
-  className?: string
+    label: string;
+    shortLabel?: string;
+    onClick: () => void;
+    icon?: LucideIcon;
+    color?: 'purple' | 'cyan' | 'green' | 'pink';
+    variant?: 'primary' | 'secondary';
+  }>;
+  customContent?: React.ReactNode;
+  className?: string;
 }
 
 const colorMap = {
   purple: 'neon-purple',
-  cyan: 'neon-cyan', 
+  cyan: 'neon-cyan',
   green: 'neon-green',
-  pink: 'neon-pink'
-}
+  pink: 'neon-pink',
+};
 
-export default function PageHeader({ 
-  title, 
-  description, 
+export default function PageHeader({
+  title,
+  description,
   icon: Icon,
   action,
   actions,
   customContent,
-  className = ''
+  className = '',
 }: PageHeaderProps) {
   return (
-    <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${className}`}>
+    <div
+      className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ${className}`}
+    >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3 mb-2">
           {Icon && (
@@ -53,16 +55,14 @@ export default function PageHeader({
           )}
           <h1 className="text-xl sm:text-2xl font-bold neon-text">{title}</h1>
         </div>
-        <p className="text-muted-foreground text-sm sm:text-base">{description}</p>
+        <p className="text-muted-foreground text-sm sm:text-base">
+          {description}
+        </p>
       </div>
-      
+
       {/* Custom content (like progress indicators) */}
-      {customContent && (
-        <div className="flex-shrink-0">
-          {customContent}
-        </div>
-      )}
-      
+      {customContent && <div className="flex-shrink-0">{customContent}</div>}
+
       {/* Single action */}
       {action && !actions && (
         <button
@@ -73,12 +73,12 @@ export default function PageHeader({
           {action.label}
         </button>
       )}
-      
+
       {/* Multiple actions */}
       {actions && (
         <div className="hidden md:flex gap-2">
           {actions.map((actionItem, index) => {
-            const ActionIcon = actionItem.icon
+            const ActionIcon = actionItem.icon;
             return (
               <button
                 key={index}
@@ -87,12 +87,14 @@ export default function PageHeader({
               >
                 {ActionIcon && <ActionIcon className="h-4 w-4" />}
                 <span className="hidden lg:inline">{actionItem.label}</span>
-                <span className="lg:hidden">{actionItem.shortLabel || actionItem.label}</span>
+                <span className="lg:hidden">
+                  {actionItem.shortLabel || actionItem.label}
+                </span>
               </button>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
+  );
 }

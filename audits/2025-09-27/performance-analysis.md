@@ -1,4 +1,5 @@
 # Analyse de Performance - SuperNovaFit
+
 **Date**: 2025-09-27  
 **Version**: 2.0.0
 
@@ -12,16 +13,18 @@
 ## Métriques Actuelles
 
 ### Build Performance
+
 ```
 Build terminé en 17.9s
 Bundle Size: 221KB (First Load JS)
 - chunks/1762: 126KB
-- chunks/4bd1b696: 54.4KB  
+- chunks/4bd1b696: 54.4KB
 - chunks/52774a7f: 36.7KB
 - autres: 4.34KB
 ```
 
 ### Web Vitals (Estimés)
+
 - **LCP**: < 2.5s ✅ (Good)
 - **FID**: < 100ms ✅ (Good)
 - **CLS**: < 0.1 ✅ (Good)
@@ -30,6 +33,7 @@ Bundle Size: 221KB (First Load JS)
 ## Analyse du Bundle
 
 ### Répartition par Librairie
+
 ```
 firebase: ~85KB (38%)
 react/react-dom: ~45KB (20%)
@@ -39,6 +43,7 @@ autres: ~26KB (12%)
 ```
 
 ### Pages les Plus Lourdes
+
 1. **/entrainements**: 418KB (avec charts)
 2. **/mesures**: 401KB (avec graphiques)
 3. **/diete**: 399KB (avec recherche aliments)
@@ -47,8 +52,10 @@ autres: ~26KB (12%)
 ## Optimisations Identifiées
 
 ### OPT-001: Dynamic Imports Manquants
+
 **Impact**: -15% First Load JS  
 **Fichiers concernés**:
+
 ```typescript
 // Avant
 import { MesuresCharts } from '@/components/charts/MesuresCharts'
@@ -56,60 +63,68 @@ import { MesuresCharts } from '@/components/charts/MesuresCharts'
 // Après
 const MesuresCharts = dynamic(
   () => import('@/components/charts/MesuresCharts'),
-  { 
+  {
     loading: () => <ChartSkeleton />,
-    ssr: false 
+    ssr: false
   }
 )
 ```
 
 **Composants à optimiser**:
+
 - Tous les graphiques Recharts
 - Modals complexes
 - Export components (PDF, Excel)
 
 ### OPT-002: Images Non Optimisées
+
 **Impact**: -30% de bande passante  
 **Problème**: Utilisation de `<img>` au lieu de `next/image`
+
 ```typescript
 // Avant
 <img src="/photo.jpg" alt="..." />
 
 // Après
 import Image from 'next/image'
-<Image 
-  src="/photo.jpg" 
-  alt="..." 
-  width={400} 
+<Image
+  src="/photo.jpg"
+  alt="..."
+  width={400}
   height={300}
   loading="lazy"
 />
 ```
 
 ### OPT-003: Requêtes Firestore N+1
+
 **Impact**: -50% latence sur listes  
 **Problème**: Requêtes multiples dans les boucles
+
 ```typescript
 // Avant - N+1 queries
 athletes.map(async (athlete) => {
-  const comments = await getComments(athlete.id)
+  const comments = await getComments(athlete.id);
   // ...
-})
+});
 
 // Après - Batch query
-const allComments = await db.collection('comments')
-  .where('athlete_id', 'in', athleteIds)
-  .get()
+const allComments = await db
+  .collection("comments")
+  .where("athlete_id", "in", athleteIds)
+  .get();
 ```
 
 ## Analyse du Code Splitting
 
 ### ✅ Bien Optimisé
+
 - Routes avec lazy loading Next.js
 - Service Worker pour cache PWA
 - Fonts optimisées (system fonts)
 
 ### ⚠️ À Améliorer
+
 1. **Recharts** chargé sur toutes les pages (35KB)
 2. **Firebase Auth** même sans connexion (20KB)
 3. **Zod schemas** bundlés partout (8KB)
@@ -117,6 +132,7 @@ const allComments = await db.collection('comments')
 ## Recommandations par Priorité
 
 ### P0 - Quick Wins (< 1 jour)
+
 ```typescript
 // 1. Ajouter compression Brotli
 // next.config.js
@@ -134,12 +150,14 @@ const HeavyModal = dynamic(() => import('./HeavyModal'))
 ```
 
 ### P1 - Optimisations Moyennes (< 1 semaine)
+
 1. **Implémenter React.memo** sur composants lourds
 2. **useMemo/useCallback** pour calculs coûteux
 3. **Virtual scrolling** pour listes longues
 4. **Image optimization** avec next/image
 
 ### P2 - Refactoring (< 1 mois)
+
 1. **Split Firebase** en modules
 2. **Tree-shake Recharts** imports
 3. **Web Workers** pour calculs lourds
@@ -147,21 +165,23 @@ const HeavyModal = dynamic(() => import('./HeavyModal'))
 ## Monitoring Recommandé
 
 ### Configuration Web Vitals
+
 ```typescript
 // lib/vitals.ts
 export function reportWebVitals(metric: NextWebVitalsMetric) {
-  if (metric.label === 'web-vital') {
+  if (metric.label === "web-vital") {
     // Envoyer à analytics
-    analytics.track('Web Vital', {
+    analytics.track("Web Vital", {
       name: metric.name,
       value: Math.round(metric.value),
-      rating: metric.rating
-    })
+      rating: metric.rating,
+    });
   }
 }
 ```
 
 ### Lighthouse CI
+
 ```yaml
 # .github/workflows/lighthouse.yml
 - name: Run Lighthouse CI
@@ -215,17 +235,18 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
 
 ## Métriques Cibles
 
-| Métrique | Actuel | Cible 30j | Cible 90j |
-|----------|--------|-----------|-----------|
-| Bundle Size | 221KB | 200KB | 180KB |
-| Build Time | 17.9s | 15s | 12s |
-| LCP | 2.5s | 2.0s | 1.5s |
-| TTI | 3.2s | 2.5s | 2.0s |
-| Lighthouse Score | 92 | 95 | 98 |
+| Métrique         | Actuel | Cible 30j | Cible 90j |
+| ---------------- | ------ | --------- | --------- |
+| Bundle Size      | 221KB  | 200KB     | 180KB     |
+| Build Time       | 17.9s  | 15s       | 12s       |
+| LCP              | 2.5s   | 2.0s      | 1.5s      |
+| TTI              | 3.2s   | 2.5s      | 2.0s      |
+| Lighthouse Score | 92     | 95        | 98        |
 
 ## Conclusion
 
 SuperNovaFit affiche d'**excellentes performances** avec un bundle de seulement 221KB. Les optimisations suggérées permettraient de:
+
 - Réduire le TTI de 30%
 - Diminuer la consommation réseau de 25%
 - Améliorer le score Lighthouse à 98/100

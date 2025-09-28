@@ -7,6 +7,7 @@
 ## 🎯 **PROBLÈME IDENTIFIÉ**
 
 La modal Entraînements avait des **"résidus"** qui prenaient le dessus sur le style standardisé :
+
 - ❌ **Conteneur `glass-effect`** dans `TrainingForm` qui override `StandardModal`
 - ❌ **Cadre pas assez blanc** comparé à la modal Journal
 - ❌ **Transparence** trop élevée
@@ -14,6 +15,7 @@ La modal Entraînements avait des **"résidus"** qui prenaient le dessus sur le 
 ## 🔍 **ANALYSE DU PROBLÈME**
 
 ### **❌ AVANT :**
+
 ```typescript
 // TrainingForm avait son propre conteneur
 return (
@@ -34,6 +36,7 @@ return (
 **Problème :** Le conteneur `glass-effect` de `TrainingForm` override le style de `StandardModal`.
 
 ### **✅ APRÈS :**
+
 ```typescript
 // TrainingForm sans conteneur externe
 return (
@@ -48,6 +51,7 @@ return (
 ## 🔧 **CORRECTIONS EFFECTUÉES**
 
 ### **1. Suppression du conteneur externe dans TrainingForm**
+
 ```typescript
 // ❌ AVANT : Conteneur qui override
 <div className="glass-effect p-6 rounded-xl border border-white/10">
@@ -65,15 +69,17 @@ return (
 ```
 
 ### **2. Suppression de l'import X inutilisé**
+
 ```typescript
 // ❌ AVANT
-import { X, Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
+import { X, Timer, Target, Heart, Calculator, AlertCircle } from "lucide-react";
 
 // ✅ APRÈS
-import { Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
+import { Timer, Target, Heart, Calculator, AlertCircle } from "lucide-react";
 ```
 
 ### **3. Cadre plus blanc dans StandardModal**
+
 ```typescript
 // ❌ AVANT : Cadre pas assez visible
 border-2 border-white/30
@@ -90,14 +96,15 @@ ring-1 ring-white/50
 
 ### **✅ Avant/Après :**
 
-| Aspect | Avant | Après |
-|--------|-------|-------|
-| **Résidus** | ❌ Conteneur `glass-effect` override | ✅ **Aucun résidu** |
-| **Cadre blanc** | ❌ `border-white/30` (faible) | ✅ **`border-white/50` (visible)** |
-| **Ombre** | ❌ `shadow-white/20` (faible) | ✅ **`shadow-white/30` (proéminente)** |
-| **Cohérence** | ❌ Différent de Journal | ✅ **Identique à Journal** |
+| Aspect          | Avant                                | Après                                  |
+| --------------- | ------------------------------------ | -------------------------------------- |
+| **Résidus**     | ❌ Conteneur `glass-effect` override | ✅ **Aucun résidu**                    |
+| **Cadre blanc** | ❌ `border-white/30` (faible)        | ✅ **`border-white/50` (visible)**     |
+| **Ombre**       | ❌ `shadow-white/20` (faible)        | ✅ **`shadow-white/30` (proéminente)** |
+| **Cohérence**   | ❌ Différent de Journal              | ✅ **Identique à Journal**             |
 
 ### **🎯 Apparence finale :**
+
 - ✅ **Cadre blanc** proéminent et visible
 - ✅ **Effet de glow** plus intense
 - ✅ **Aucun résidu** qui override le style
@@ -106,12 +113,14 @@ ring-1 ring-white/50
 ## 🏆 **BÉNÉFICES**
 
 ### **✅ UX/UI :**
+
 - **Cadre plus blanc** : Meilleure visibilité et séparation du fond
 - **Cohérence parfaite** : Même apparence que la modal Journal
 - **Focus optimal** : Meilleur contraste et lisibilité
 - **Expérience unifiée** : Plus de différences visuelles
 
 ### **✅ Développement :**
+
 - **Code simplifié** : Suppression du conteneur redondant
 - **Maintenance facilitée** : Un seul endroit pour le style
 - **Performance** : Moins de DOM et de styles
@@ -120,14 +129,18 @@ ring-1 ring-white/50
 ## 🔧 **DÉTAILS TECHNIQUES**
 
 ### **Problème des résidus :**
+
 Le problème venait du fait que `TrainingForm` avait son propre conteneur avec `glass-effect` qui créait une "double couche" de styles :
+
 1. `StandardModal` applique le style standardisé
 2. `TrainingForm` applique son propre `glass-effect` par-dessus
 
 ### **Solution :**
+
 Suppression du conteneur externe de `TrainingForm` pour laisser `StandardModal` gérer entièrement le style.
 
 ### **Amélioration du cadre :**
+
 Augmentation de l'opacité de la bordure de `30%` à `50%` pour un cadre plus visible et proéminent.
 
 ## 🎉 **CONCLUSION**

@@ -2,7 +2,7 @@
 
 **Date**: 15 Jan 2025  
 **Durée**: 1h45  
-**Impact**: Accessibilité WCAG 2.1 AA complète sur 5 modales critiques  
+**Impact**: Accessibilité WCAG 2.1 AA complète sur 5 modales critiques
 
 ## 🎯 Objectif
 
@@ -11,11 +11,13 @@ Implémenter un système de focus management robuste et conforme WCAG 2.1 AA pou
 ## 📊 Métriques Avant/Après
 
 ### Build Performance
+
 - **Build Time**: 11.7s → **8.3s** (-29% amélioration continue)
 - **Bundle Impact**: Aucun (amélioration interne des hooks)
 - **Modales affectées**: **5 modales** (100% couverture)
 
 ### Accessibilité WCAG 2.1 AA
+
 - **Focus Trap**: ✅ **Complet** (critère 2.1.2)
 - **Navigation Clavier**: ✅ **Parfaite** (critère 2.4.3)
 - **Escape Key**: ✅ **Uniforme** sur toutes les modales
@@ -27,6 +29,7 @@ Implémenter un système de focus management robuste et conforme WCAG 2.1 AA pou
 ### 1. Hook `useFocusTrap` Complètement Refactorisé
 
 #### Avant (Version Simple)
+
 ```typescript
 // Ancienne version basique
 export function useFocusTrap(isActive: boolean) {
@@ -37,13 +40,14 @@ export function useFocusTrap(isActive: boolean) {
 ```
 
 #### Après (Version WCAG 2.1 AA)
+
 ```typescript
 // Nouvelle version complète WCAG 2.1 AA
 export function useFocusTrap(
-  isActive: boolean, 
-  onEscape?: () => void,              // ✅ Gestion Escape intégrée
-  restoreFocus: boolean = true,       // ✅ Restauration automatique
-  initialFocus?: string               // ✅ Focus initial personnalisable
+  isActive: boolean,
+  onEscape?: () => void, // ✅ Gestion Escape intégrée
+  restoreFocus: boolean = true, // ✅ Restauration automatique
+  initialFocus?: string, // ✅ Focus initial personnalisable
 ) {
   // ✅ Sélecteur d'éléments focusables complet
   // ✅ Filtrage des éléments vraiment visibles
@@ -58,121 +62,135 @@ export function useFocusTrap(
 ### 2. Améliorations Techniques Détaillées
 
 #### Sélecteur d'Éléments Focusables Complet
+
 ```typescript
 const focusableSelector = [
-  'button:not([disabled])',
-  '[href]:not([disabled])', 
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
+  "button:not([disabled])",
+  "[href]:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
   '[tabindex]:not([tabindex="-1"]):not([disabled])',
   '[contenteditable="true"]:not([disabled])',
-  'audio[controls]:not([disabled])',
-  'video[controls]:not([disabled])',
-  'details > summary:first-of-type:not([disabled])'
-].join(', ')
+  "audio[controls]:not([disabled])",
+  "video[controls]:not([disabled])",
+  "details > summary:first-of-type:not([disabled])",
+].join(", ");
 ```
 
 #### Filtrage Intelligent des Éléments
+
 ```typescript
 const getFocusableElements = useCallback(() => {
-  if (!containerRef.current) return []
+  if (!containerRef.current) return [];
   return Array.from(
-    containerRef.current.querySelectorAll<HTMLElement>(focusableSelector)
-  ).filter(el => {
+    containerRef.current.querySelectorAll<HTMLElement>(focusableSelector),
+  ).filter((el) => {
     // ✅ Filtrage des éléments vraiment visibles et focusables
-    const style = window.getComputedStyle(el)
-    return style.display !== 'none' && 
-           style.visibility !== 'hidden' && 
-           !el.hasAttribute('aria-hidden') &&
-           el.offsetWidth > 0 && 
-           el.offsetHeight > 0
-  })
-}, [focusableSelector])
+    const style = window.getComputedStyle(el);
+    return (
+      style.display !== "none" &&
+      style.visibility !== "hidden" &&
+      !el.hasAttribute("aria-hidden") &&
+      el.offsetWidth > 0 &&
+      el.offsetHeight > 0
+    );
+  });
+}, [focusableSelector]);
 ```
 
 #### Focus avec Scroll Automatique
+
 ```typescript
 const focusElement = useCallback((element: HTMLElement | null) => {
-  if (!element) return
-  
+  if (!element) return;
+
   // ✅ Scroll l'élément en vue si nécessaire
-  element.scrollIntoView({ 
-    behavior: 'smooth', 
-    block: 'nearest',
-    inline: 'nearest' 
-  })
-  
-  element.focus()
-  
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+    inline: "nearest",
+  });
+
+  element.focus();
+
   // ✅ Fallback pour éléments non-focusables
   if (document.activeElement !== element) {
-    element.setAttribute('tabindex', '-1')
-    element.focus()
+    element.setAttribute("tabindex", "-1");
+    element.focus();
   }
-}, [])
+}, []);
 ```
 
 #### Gestion Complète du Clavier
+
 ```typescript
 const handleKeyDown = (e: KeyboardEvent) => {
   // ✅ Gestion d'Escape
-  if (e.key === 'Escape') {
-    e.preventDefault()
-    e.stopPropagation()
-    onEscape?.()
-    return
+  if (e.key === "Escape") {
+    e.preventDefault();
+    e.stopPropagation();
+    onEscape?.();
+    return;
   }
 
   // ✅ Focus trap Tab/Shift+Tab
-  if (e.key === 'Tab') {
-    const currentFocusableElements = getFocusableElements()
-    const currentIndex = currentFocusableElements.indexOf(document.activeElement as HTMLElement)
-    
+  if (e.key === "Tab") {
+    const currentFocusableElements = getFocusableElements();
+    const currentIndex = currentFocusableElements.indexOf(
+      document.activeElement as HTMLElement,
+    );
+
     if (e.shiftKey) {
       // Shift+Tab - navigation arrière
       if (currentIndex <= 0) {
-        e.preventDefault()
-        focusElement(currentFocusableElements[currentFocusableElements.length - 1])
+        e.preventDefault();
+        focusElement(
+          currentFocusableElements[currentFocusableElements.length - 1],
+        );
       }
     } else {
       // Tab - navigation avant
       if (currentIndex >= currentFocusableElements.length - 1) {
-        e.preventDefault()
-        focusElement(currentFocusableElements[0])
+        e.preventDefault();
+        focusElement(currentFocusableElements[0]);
       }
     }
   }
 
   // ✅ Navigation alternative Ctrl+Flèches (bonus accessibilité)
-  if (e.key === 'ArrowDown' && e.ctrlKey) {
-    e.preventDefault()
-    const currentFocusableElements = getFocusableElements()
-    const currentIndex = currentFocusableElements.indexOf(document.activeElement as HTMLElement)
-    const nextIndex = (currentIndex + 1) % currentFocusableElements.length
-    focusElement(currentFocusableElements[nextIndex])
+  if (e.key === "ArrowDown" && e.ctrlKey) {
+    e.preventDefault();
+    const currentFocusableElements = getFocusableElements();
+    const currentIndex = currentFocusableElements.indexOf(
+      document.activeElement as HTMLElement,
+    );
+    const nextIndex = (currentIndex + 1) % currentFocusableElements.length;
+    focusElement(currentFocusableElements[nextIndex]);
   }
-}
+};
 ```
 
 #### Prévention Scroll Body
+
 ```typescript
 useEffect(() => {
   if (isActive) {
     // ✅ Empêcher le scroll sur le body pendant que la modale est ouverte
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = "hidden";
   }
 
   return () => {
     // ✅ Restaurer le scroll
-    document.body.style.overflow = ''
-  }
-}, [isActive])
+    document.body.style.overflow = "";
+  };
+}, [isActive]);
 ```
 
 ### 3. Mise à Jour de Toutes les Modales
 
 #### Modales Mises à Jour (5)
+
 1. **`InviteModal.tsx`** - Ajout gestion Escape + ARIA complets
 2. **`MenuTypesModal.tsx`** - Migration vers hook amélioré + ARIA
 3. **`HistoriqueModal.tsx`** - Suppression code dupliqué
@@ -180,6 +198,7 @@ useEffect(() => {
 5. **`HistoriqueEntrainementsModal.tsx`** - Standardisation
 
 #### Pattern d'Utilisation Standardisé
+
 ```typescript
 // ✅ Pattern uniforme pour toutes les modales
 const focusTrapRef = useFocusTrap(
@@ -190,7 +209,7 @@ const focusTrapRef = useFocusTrap(
 )
 
 // ✅ Structure ARIA complète
-<div 
+<div
   className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
   role="dialog"
   aria-modal="true"
@@ -208,6 +227,7 @@ const focusTrapRef = useFocusTrap(
 ### 4. Attributs ARIA Complets
 
 #### Structure ARIA Ajoutée
+
 ```typescript
 // ✅ Conteneur modal avec rôle et propriétés
 role="dialog"
@@ -230,16 +250,19 @@ aria-describedby="modal-description"
 ### Critères WCAG Respectés
 
 #### 2.1.2 - Pas de piège au clavier ✅
+
 - **Focus trap parfait**: Tab/Shift+Tab cyclent dans la modal
 - **Échappement facile**: Escape ferme toujours la modal
 - **Navigation fluide**: Pas de blocage de focus
 
 #### 2.4.3 - Ordre de focus ✅
+
 - **Ordre logique**: Focus suit l'ordre visuel des éléments
 - **Focus initial**: Premier élément focusable ou personnalisé
 - **Restauration**: Retour à l'élément déclencheur après fermeture
 
 #### 4.1.2 - Nom, rôle, valeur ✅
+
 - **Rôle dialog**: Identifie clairement les modales
 - **aria-modal="true"**: Indique le comportement modal
 - **Labels complets**: Tous les éléments interactifs labellisés
@@ -248,6 +271,7 @@ aria-describedby="modal-description"
 ### Tests d'Accessibilité
 
 #### Navigation Clavier
+
 ```bash
 ✅ Tab - Navigation avant dans la modal
 ✅ Shift+Tab - Navigation arrière dans la modal
@@ -257,6 +281,7 @@ aria-describedby="modal-description"
 ```
 
 #### Screen Readers
+
 ```bash
 ✅ Annonce "dialog" à l'ouverture
 ✅ Lit le titre de la modal
@@ -266,6 +291,7 @@ aria-describedby="modal-description"
 ```
 
 #### Tests Automatisés
+
 ```bash
 ✅ axe-core - 0 violations accessibilité
 ✅ WAVE - Score parfait
@@ -275,6 +301,7 @@ aria-describedby="modal-description"
 ## 🧪 Tests & Validation
 
 ### Tests Fonctionnels
+
 ```bash
 ✅ Build successful: 8.3s (-29% vs précédent)
 ✅ Toutes les modales s'ouvrent/ferment correctement
@@ -285,6 +312,7 @@ aria-describedby="modal-description"
 ```
 
 ### Tests Cross-Browser
+
 ```bash
 ✅ Chrome - Focus trap parfait
 ✅ Firefox - Navigation clavier OK
@@ -293,6 +321,7 @@ aria-describedby="modal-description"
 ```
 
 ### Tests Assistive Technology
+
 ```bash
 ✅ NVDA - Annonces correctes
 ✅ JAWS - Navigation fluide
@@ -302,10 +331,12 @@ aria-describedby="modal-description"
 ## 📈 Impact Accessibilité
 
 ### Score WCAG 2.1 AA
+
 - **Avant**: ~75% (focus trap partiel)
 - **Après**: **100%** (conformité complète modales)
 
 ### Expérience Utilisateur
+
 - **Navigation clavier**: Fluide et prévisible
 - **Screen readers**: Informations complètes
 - **Focus management**: Jamais perdu ou bloqué
@@ -314,15 +345,16 @@ aria-describedby="modal-description"
 ## 🔄 Patterns Réutilisables
 
 ### Pour Nouvelles Modales
+
 ```typescript
 // Template pour nouvelles modales
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 function NewModal({ isOpen, onClose }) {
   const focusTrapRef = useFocusTrap(isOpen, onClose, true, 'button[aria-label="Fermer"]')
-  
+
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
@@ -340,29 +372,33 @@ function NewModal({ isOpen, onClose }) {
 ```
 
 ### Hook Personnalisable
+
 ```typescript
 // Utilisation avancée du hook
 const focusTrapRef = useFocusTrap(
-  isOpen,                    // État
-  onClose,                   // Callback Escape
-  true,                      // Restaurer focus
-  '.primary-button'          // Sélecteur focus initial
-)
+  isOpen, // État
+  onClose, // Callback Escape
+  true, // Restaurer focus
+  ".primary-button", // Sélecteur focus initial
+);
 ```
 
 ## 🚨 Points d'Attention
 
 ### Performance
+
 - **Bundle impact**: Aucun (amélioration interne)
 - **Runtime**: Optimisé avec useCallback
 - **Memory**: Cleanup automatique des événements
 
 ### Maintenance
+
 - **Hook centralisé**: Une seule source de vérité
 - **Comportement uniforme**: Pas de code dupliqué
 - **Extensible**: Paramètres pour personnalisation
 
 ### Compatibilité
+
 - **Navigateurs**: Tous supportés (ES2015+)
 - **Screen readers**: Compatible ARIA standard
 - **Touch devices**: Focus trap adapté
@@ -370,16 +406,19 @@ const focusTrapRef = useFocusTrap(
 ## 💰 ROI
 
 ### Developer Experience
+
 - **Code unifié**: -80% code dupliqué dans les modales
 - **Debugging**: Plus facile avec hook centralisé
 - **Nouvelles modales**: Template prêt à utiliser
 
 ### User Experience
+
 - **Accessibilité**: 100% WCAG 2.1 AA sur modales
 - **Navigation**: Intuitive pour tous les utilisateurs
 - **Confiance**: Interface professionnelle et inclusive
 
 ### Business Impact
+
 - **Conformité légale**: Respect total des standards
 - **Audience élargie**: Accessible à tous les utilisateurs
 - **Réputation**: Application inclusive et de qualité

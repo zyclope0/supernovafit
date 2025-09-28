@@ -1,61 +1,65 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { useSmartNotifications } from '@/components/ui/SmartNotifications'
-import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer'
+import React from 'react';
+import { useSmartNotifications } from '@/components/ui/SmartNotifications';
+import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer';
 
 export default function AccessibilityDemo() {
-  const { addNotification } = useSmartNotifications()
-  const { 
-    announceSuccess, 
-    announceValidationError, 
+  const { addNotification } = useSmartNotifications();
+  const {
+    announceSuccess,
+    announceValidationError,
     announceModalState,
-    announceDataUpdate 
-  } = useAriaAnnouncer()
+    announceDataUpdate,
+  } = useAriaAnnouncer();
 
   const handleTestNotification = () => {
     addNotification({
       id: 'test-1',
       type: 'success',
       title: 'Test d&apos;accessibilité',
-      message: 'Cette notification teste les announces automatiques pour les screen readers.',
+      message:
+        'Cette notification teste les announces automatiques pour les screen readers.',
       autoHide: true,
       duration: 5000,
       actions: [
         {
           label: 'Voir détails',
-          action: () => announceSuccess('Détails affichés')
-        }
-      ]
-    })
-    
+          action: () => announceSuccess('Détails affichés'),
+        },
+      ],
+    });
+
     // Annonce pour screen reader
-    announceSuccess('Notification de test envoyée')
-  }
+    announceSuccess('Notification de test envoyée');
+  };
 
   const handleTestValidation = () => {
-    announceValidationError('Poids', 'La valeur doit être comprise entre 30 et 300 kg')
-  }
+    announceValidationError(
+      'Poids',
+      'La valeur doit être comprise entre 30 et 300 kg',
+    );
+  };
 
   const handleTestModal = () => {
-    announceModalState(true, 'Modal de démonstration')
-    
+    announceModalState(true, 'Modal de démonstration');
+
     // Simuler fermeture après 3 secondes
     setTimeout(() => {
-      announceModalState(false, 'Modal de démonstration')
-    }, 3000)
-  }
+      announceModalState(false, 'Modal de démonstration');
+    }, 3000);
+  };
 
   const handleTestDataUpdate = () => {
-    announceDataUpdate('Mesures', 'mises à jour avec succès')
-  }
+    announceDataUpdate('Mesures', 'mises à jour avec succès');
+  };
 
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10 max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold text-white mb-6">
         🎯 Démonstration d&apos;Accessibilité
       </h2>
-      
+
       <div className="space-y-4">
         <div className="text-sm text-gray-300 mb-6">
           <p>Testez les nouvelles fonctionnalités d&apos;accessibilité :</p>
@@ -79,7 +83,7 @@ export default function AccessibilityDemo() {
           <button
             onClick={handleTestValidation}
             className="px-4 py-3 bg-neon-red text-white rounded-lg hover:bg-neon-red/80 transition-colors font-medium"
-            aria-label="Tester l&apos;annonce d&apos;erreur de validation"
+            aria-label="Tester l'annonce d'erreur de validation"
           >
             ⚠️ Test Validation
           </button>
@@ -87,7 +91,7 @@ export default function AccessibilityDemo() {
           <button
             onClick={handleTestModal}
             className="px-4 py-3 bg-neon-purple text-white rounded-lg hover:bg-neon-purple/80 transition-colors font-medium"
-            aria-label="Tester l&apos;annonce d&apos;état de modal"
+            aria-label="Tester l'annonce d'état de modal"
           >
             🪟 Test Modal
           </button>
@@ -114,5 +118,5 @@ export default function AccessibilityDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }

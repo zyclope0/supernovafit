@@ -1,4 +1,5 @@
 # 📚 PHASE 5 - DOCUMENTATION TECHNIQUE EXHAUSTIVE ✅
+
 ## SuperNovaFit - Guide Développeur & Production
 
 > **Objectif** : Documentation professionnelle complète pour maintenance, évolution et transfert de compétences
@@ -9,6 +10,7 @@
 ## 🎯 **VISION GLOBALE DU PROJET**
 
 ### **Architecture Générale**
+
 SuperNovaFit est une **Progressive Web App** de fitness avec monitoring avancé, déployée en **SSR Firebase Hosting** avec **CI/CD GitHub Actions**.
 
 ```mermaid
@@ -17,20 +19,21 @@ graph TD
     A --> C[Firestore DB]
     A --> D[Open Food Facts API]
     A --> E[Firebase Storage]
-    
+
     F[GitHub Actions] --> G[Build & Test]
     G --> H[Deploy Firebase]
-    
+
     I[Sentry] --> A
     J[Web Vitals] --> A
     K[Firebase Analytics] --> A
-    
+
     style A fill:#a855f7
     style F fill:#10b981
     style I fill:#ef4444
 ```
 
 ### **Stack Technique Validée**
+
 - **Frontend** : Next.js 15.1.0 (App Router) + React 18.3.1 + TypeScript 5.8.3
 - **UI** : Tailwind CSS + Radix UI + Framer Motion + Glass morphism
 - **Backend** : Firebase (Auth, Firestore, Storage, Analytics)
@@ -68,21 +71,24 @@ npm run test:ui
 ```
 
 #### **1.2 Types de Tests Implémentés**
+
 ```typescript
 // Tests calculs métier (src/lib/__tests__/calculations.test.ts)
 ✅ BMR Mifflin-St Jeor (hommes/femmes)
-✅ TDEE selon niveaux activité 
+✅ TDEE selon niveaux activité
 ✅ Calories MET + fréquence cardiaque
 ✅ IMC + catégories
 ✅ Distribution macros
 
 // Tests hooks Firebase (partiellement fonctionnels)
 ⚠️ useAuth : contexte utilisateur Sentry
-⚠️ useFirestore : CRUD opérations 
+⚠️ useFirestore : CRUD opérations
 ```
 
 #### **1.3 CI/CD Tests Automatiques**
+
 Le workflow `.github/workflows/quality.yml` s'exécute sur :
+
 - **Pull Requests** → Tests + Lint + TypeCheck
 - **Push main** → Tests + Build + Deploy
 
@@ -97,6 +103,7 @@ git push origin feature/ma-branche
 ### **🔄 PHASE 2 - MIGRATIONS**
 
 #### **2.1 Stack Migré avec Succès**
+
 ```bash
 # Vérifier versions actuelles
 npx next --version  # 15.1.0 ✅
@@ -105,6 +112,7 @@ npm list react      # 18.3.1 ✅
 ```
 
 #### **2.2 Configurations Next.js 15 Actives**
+
 ```javascript
 // next.config.js - Features utilisées
 bundlePagesRouterDependencies: true,     // Optimisation deps
@@ -117,6 +125,7 @@ experimental: {
 ```
 
 #### **2.3 TypeScript 5.8 Features**
+
 ```typescript
 // tsconfig.json - Configuration optimale
 "moduleResolution": "bundler",   // Résolution modules moderne
@@ -127,6 +136,7 @@ experimental: {
 ### **📊 PHASE 3 - OPTIMISATIONS BUNDLE**
 
 #### **3.1 Analyse Bundle**
+
 ```bash
 # Analyser bundle Windows-friendly
 npm run analyze:win
@@ -141,11 +151,12 @@ Coach diète: 269kB (-28% vs avant)
 ```
 
 #### **3.2 Patterns Dynamic Import**
+
 ```typescript
 // ✅ Pattern recommandé - Groupes fonctionnels
-const ChartsSection = dynamic(() => 
-  import('@/components/charts/CoachDieteCharts'), 
-  { 
+const ChartsSection = dynamic(() =>
+  import('@/components/charts/CoachDieteCharts'),
+  {
     ssr: false,
     loading: () => <ChartSkeleton />
   }
@@ -156,9 +167,11 @@ const SingleChart = dynamic(() => import('recharts').then(mod => mod.LineChart))
 ```
 
 #### **3.3 Tree Shaking Configuré**
+
 Les packages suivants sont automatiquement optimisés :
+
 - **recharts** : Composants charts non utilisés supprimés
-- **lucide-react** : Icons non utilisées supprimées  
+- **lucide-react** : Icons non utilisées supprimées
 - **@heroicons/react** : Icons non utilisées supprimées
 
 ### **🔍 PHASE 4 - MONITORING PRODUCTION**
@@ -166,78 +179,84 @@ Les packages suivants sont automatiquement optimisés :
 #### **4.1 Sentry Error Tracking**
 
 **Configuration (automatique)** :
+
 ```typescript
 // Contexte utilisateur automatique (useAuth)
 Sentry.setUser({
   id: user.uid,
   email: user.email,
-})
-Sentry.setTag('user_role', profile.role)
+});
+Sentry.setTag("user_role", profile.role);
 ```
 
 **Utilisation manuelle** :
+
 ```typescript
 // Capturer erreur custom
 try {
-  await riskyOperation()
+  await riskyOperation();
 } catch (error) {
-  Sentry.captureException(error)
-  throw error
+  Sentry.captureException(error);
+  throw error;
 }
 
 // Ajouter contexte debugging
 Sentry.addBreadcrumb({
-  message: 'User clicked export button',
-  data: { export_type: 'pdf' }
-})
+  message: "User clicked export button",
+  data: { export_type: "pdf" },
+});
 ```
 
 #### **4.2 Firebase Analytics Events**
 
 **Events automatiques** (déjà intégrés) :
+
 ```typescript
 // Dans MealForm après ajout repas
-trackMealAdded('petit_dej', 3, 450)
+trackMealAdded("petit_dej", 3, 450);
 
-// Dans TrainingForm après ajout 
-trackTrainingAdded('running', 45, 'manual')
+// Dans TrainingForm après ajout
+trackTrainingAdded("running", 45, "manual");
 
 // Dans JournalForm
-trackJournalEntry(8, 7) // mood: 8, energy: 7
+trackJournalEntry(8, 7); // mood: 8, energy: 7
 ```
 
 **Events custom** (à ajouter si besoin) :
+
 ```typescript
-import { trackEvent } from '@/lib/analytics'
+import { trackEvent } from "@/lib/analytics";
 
 // Event personnalisé
-trackEvent('feature_used', {
-  feature_name: 'export_data',
-  user_type: 'premium',
-  timestamp: Date.now()
-})
+trackEvent("feature_used", {
+  feature_name: "export_data",
+  user_type: "premium",
+  timestamp: Date.now(),
+});
 ```
 
 #### **4.3 Web Vitals Monitoring**
 
 **Automatique** (déjà configuré) :
+
 - **CLS** : Cumulative Layout Shift
 - **INP** : Interaction to Next Paint (remplace FID)
-- **FCP** : First Contentful Paint  
+- **FCP** : First Contentful Paint
 - **LCP** : Largest Contentful Paint
 - **TTFB** : Time to First Byte
 
 **Monitoring custom composants** :
+
 ```typescript
-import { usePerformanceTracker } from '@/lib/vitals'
+import { usePerformanceTracker } from "@/lib/vitals";
 
 function HeavyComponent() {
-  const perf = usePerformanceTracker('HeavyComponent')
-  
+  const perf = usePerformanceTracker("HeavyComponent");
+
   useEffect(() => {
     // Composant chargé
-    perf.finish('load_complete')
-  }, [])
+    perf.finish("load_complete");
+  }, []);
 }
 ```
 
@@ -248,6 +267,7 @@ function HeavyComponent() {
 ## 🔧 **GUIDE OPÉRATIONNEL QUOTIDIEN**
 
 ### **Développement Local**
+
 ```bash
 # Setup projet (première fois)
 git clone <repo>
@@ -267,6 +287,7 @@ npm run test:coverage # Coverage tests
 ```
 
 ### **Déploiement Production**
+
 ```bash
 # Automatique via GitHub Actions
 git add .
@@ -280,6 +301,7 @@ firebase deploy --only hosting --project supernovafit-a6fe7
 ```
 
 ### **Monitoring & Debug**
+
 ```bash
 # Analyser performance
 npm run analyze:win   # Bundle size
@@ -297,6 +319,7 @@ npm run analyze:win   # Bundle size
 ### **Erreurs Communes**
 
 #### **1. Tests Firebase échouent**
+
 ```bash
 # Symptôme : "unsubscribe is not a function"
 # Cause : Mocks Firebase incomplets
@@ -307,6 +330,7 @@ npm run test:lib  # Tests fonctionnels uniquement
 ```
 
 #### **2. Build échoue TypeScript**
+
 ```bash
 # Symptôme : Module resolution errors
 # Solution : Vérifier tsconfig.json
@@ -316,6 +340,7 @@ npm run test:lib  # Tests fonctionnels uniquement
 ```
 
 #### **3. Bundle trop volumineux**
+
 ```bash
 # Analyser bundle
 npm run analyze:win
@@ -327,20 +352,22 @@ npm run analyze:win
 ```
 
 #### **4. Sentry errors spam**
+
 ```bash
 # Filtrage actif dans sentry.client.config.ts :
 # - ChunkLoadError (ignoré)
-# - Network errors (ignoré)  
+# - Network errors (ignoré)
 # - Firebase quota (ignoré)
 
 # Ajuster si nécessaire
 ```
 
 #### **5. Performance dégradée**
+
 ```bash
 # Web Vitals alerts dans Sentry si :
 # - CLS > 0.25
-# - INP > 500ms  
+# - INP > 500ms
 # - LCP > 4000ms
 
 # Solutions :
@@ -354,6 +381,7 @@ npm run analyze:win
 ## 📊 **MÉTRIQUES & KPIs**
 
 ### **Performance Targets Atteints**
+
 ```bash
 ✅ Shared JS: 106kB (target < 150kB)
 ✅ TypeScript: 0 erreurs (target: 0)
@@ -363,14 +391,16 @@ npm run analyze:win
 ```
 
 ### **Monitoring Dashboards**
+
 - **Sentry** : https://sentry.io → Erreurs + Performance
 - **Firebase Console** : Analytics + Crash reports
 - **GitHub Actions** : Build status + Deploy logs
 - **Bundle Analyzer** : `npm run analyze:win` (local)
 
 ### **Alertes Configurées**
+
 - **Sentry** : Erreurs > 5/hour
-- **Web Vitals** : Performance rating "poor" 
+- **Web Vitals** : Performance rating "poor"
 - **GitHub Actions** : Build/deploy failures
 - **Firebase** : Quota limits approaching
 
@@ -379,6 +409,7 @@ npm run analyze:win
 ## 🔐 **SÉCURITÉ & SECRETS**
 
 ### **Variables Environnement**
+
 ```bash
 # .env.local (local dev)
 NEXT_PUBLIC_FIREBASE_API_KEY=xxx
@@ -391,6 +422,7 @@ FIREBASE_SERVICE_ACCOUNT_SUPERNOVAFIT_A6FE7=xxx
 ```
 
 ### **Règles Firestore**
+
 ```javascript
 // Sécurité : lecture/écriture par user.uid uniquement
 rules_version = '2';
@@ -409,6 +441,7 @@ service cloud.firestore {
 ## 🚀 **ÉVOLUTIONS FUTURES RECOMMANDÉES**
 
 ### **Priorité 1 - Tests Complets**
+
 ```bash
 # TODO : Corriger tests hooks Firebase
 # TODO : Ajouter tests composants UI critiques
@@ -416,6 +449,7 @@ service cloud.firestore {
 ```
 
 ### **Priorité 2 - Performance++**
+
 ```bash
 # TODO : Service Worker (PWA)
 # TODO : Images WebP/AVIF automatiques
@@ -423,6 +457,7 @@ service cloud.firestore {
 ```
 
 ### **Priorité 3 - Monitoring++**
+
 ```bash
 # TODO : Alerts Slack/Email Sentry
 # TODO : Performance budgets CI/CD
@@ -434,12 +469,14 @@ service cloud.firestore {
 ## 📞 **CONTACTS & SUPPORT**
 
 ### **Ressources Techniques**
+
 - **Next.js 15** : https://nextjs.org/docs
 - **Sentry Next.js** : https://docs.sentry.io/platforms/javascript/guides/nextjs/
 - **Firebase** : https://firebase.google.com/docs
 - **Vitest** : https://vitest.dev/guide/
 
 ### **Architecture Decisions Records (ADR)**
+
 - **ADR-001** : Next.js 15 + TypeScript (performance + DX)
 - **ADR-002** : Firebase Full Stack (simplicité + temps réel)
 - **ADR-003** : Vitest vs Jest (vitesse + ESM native)

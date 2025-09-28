@@ -1,31 +1,39 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 
 // Émojis pour les niveaux 1-10
 const LEVEL_EMOJIS = {
-  1: '😞', 2: '😔', 3: '😐', 4: '🙂', 5: '😊',
-  6: '😄', 7: '😁', 8: '🤩', 9: '😍', 10: '🚀'
-}
+  1: '😞',
+  2: '😔',
+  3: '😐',
+  4: '🙂',
+  5: '😊',
+  6: '😄',
+  7: '😁',
+  8: '🤩',
+  9: '😍',
+  10: '🚀',
+};
 
 interface CompactSliderProps {
-  label: string
-  value: number
-  onChange: (value: number) => void
-  color?: string
-  icon: React.ComponentType<{ className?: string }>
-  min?: number
-  max?: number
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  color?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  min?: number;
+  max?: number;
 }
 
-export default function CompactSlider({ 
-  label, 
-  value, 
-  onChange, 
+export default function CompactSlider({
+  label,
+  value,
+  onChange,
   color = 'neon-green',
   icon: Icon,
   min = 1,
-  max = 10
+  max = 10,
 }: CompactSliderProps) {
   return (
     <div className="space-y-2">
@@ -34,7 +42,9 @@ export default function CompactSlider({
           <Icon className="h-4 w-4 text-neon-cyan" />
           <span className="text-sm font-medium text-white">{label}</span>
         </div>
-        <span className="text-sm text-neon-cyan font-bold">{value}/{max}</span>
+        <span className="text-sm text-neon-cyan font-bold">
+          {value}/{max}
+        </span>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs text-muted-foreground">{min}</span>
@@ -54,5 +64,5 @@ export default function CompactSlider({
         </span>
       </div>
     </div>
-  )
+  );
 }

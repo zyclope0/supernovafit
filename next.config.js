@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 /* eslint-disable @typescript-eslint/no-require-imports */
-const { withSentryConfig } = require('@sentry/nextjs')
+const { withSentryConfig } = require('@sentry/nextjs');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: false, // Désactivé pour améliorer build time
-})
+});
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
@@ -14,7 +14,7 @@ const withPWA = require('next-pwa')({
     /app-build-manifest\.json$/,
     /build-manifest\.json$/,
     /server-reference-manifest\.json$/,
-    /react-loadable-manifest\.json$/
+    /react-loadable-manifest\.json$/,
   ],
   reloadOnOnline: true,
   sw: 'sw.js',
@@ -96,7 +96,7 @@ const withPWA = require('next-pwa')({
       },
     },
   ],
-})
+});
 
 const nextConfig = {
   // ✅ Issue #12 - ESLint activé en production pour détecter les erreurs
@@ -131,8 +131,8 @@ const nextConfig = {
       fs: false,
       net: false,
       tls: false,
-    }
-    
+    };
+
     // Optimisations bundle - approche plus conservative
     if (!isServer) {
       config.optimization = {
@@ -160,35 +160,35 @@ const nextConfig = {
             },
           },
         },
-      }
+      };
     }
-    
+
     // Supprimer warnings Prisma/OpenTelemetry spécifiques
     config.module = {
       ...config.module,
       exprContextCritical: false, // Désactive "Critical dependency" warnings
-    }
-    
+    };
+
     // Ignorer warnings spécifiques Sentry/Prisma
     config.ignoreWarnings = [
       /Critical dependency: the request of a dependency is an expression/,
       /node_modules\/@prisma\/instrumentation/,
-      /node_modules\/@opentelemetry/
-    ]
-    
-    return config
+      /node_modules\/@opentelemetry/,
+    ];
+
+    return config;
   },
   // Next.js 15: Optimisations build time ciblées
   bundlePagesRouterDependencies: true,
   transpilePackages: ['recharts', 'date-fns'],
-  
+
   // Tree shaking optimisé - packages les plus utilisés seulement
   experimental: {
     optimizePackageImports: [
       'lucide-react',
-      'react-hot-toast', 
+      'react-hot-toast',
       'date-fns',
-      'clsx'
+      'clsx',
     ],
     // Optimisations webpack légères
     webpackBuildWorker: true,
@@ -196,19 +196,24 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
+      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  }
-}
+    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
+      process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  },
+};
 
 // Export with Sentry + Bundle Analyzer + PWA
 module.exports = withSentryConfig(
   withBundleAnalyzer(
-    withPWA(nextConfig) // Ajouter withPWA ici
+    withPWA(nextConfig), // Ajouter withPWA ici
   ),
   {
     // For all available options, see:
@@ -216,18 +221,18 @@ module.exports = withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-    
+
     // Upload source maps during build
     widenClientFileUpload: true,
-    
+
     // Hides source maps from generated client bundles
     hideSourceMaps: true,
-    
+
     // Automatically tree-shake Sentry logger statements
     disableLogger: true,
-    
+
     // Enables automatic instrumentation of Vercel Cron Monitors.
     automaticVercelMonitors: true,
     uploadClientErrors: true,
-  }
-)
+  },
+);

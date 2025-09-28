@@ -1,25 +1,33 @@
-'use client'
+'use client';
 
-import { useState, useRef } from 'react'
-import { Camera, Upload, X, Eye, Trash2, Edit3, ArrowLeftRight } from 'lucide-react'
-import { usePhotos } from '@/hooks/useFirestore'
-import { Mesure } from '@/types'
-import toast from 'react-hot-toast'
-import Image from 'next/image'
+import { useState, useRef } from 'react';
+import {
+  Camera,
+  Upload,
+  X,
+  Eye,
+  Trash2,
+  Edit3,
+  ArrowLeftRight,
+} from 'lucide-react';
+import { usePhotos } from '@/hooks/useFirestore';
+import { Mesure } from '@/types';
+import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 interface PhotoUploadProps {
-  mesures: Mesure[]
+  mesures: Mesure[];
 }
 
-  interface PhotoData {
-  id: string
-  url: string
-  fileName?: string
-  date: string
-  type: 'face' | 'profil' | 'dos' | 'libre'
-  mesure_id?: string
-  commentaire: string
-    created_at: Date | string | { toDate?: () => Date }
+interface PhotoData {
+  id: string;
+  url: string;
+  fileName?: string;
+  date: string;
+  type: 'face' | 'profil' | 'dos' | 'libre';
+  mesure_id?: string;
+  commentaire: string;
+  created_at: Date | string | { toDate?: () => Date };
 }
 
 // Types de photos disponibles
@@ -27,20 +35,26 @@ const PHOTO_TYPES = [
   { value: 'face', label: 'Face', icon: '👤', color: 'neon-cyan' },
   { value: 'profil', label: 'Profil', icon: '↗️', color: 'neon-purple' },
   { value: 'dos', label: 'Dos', icon: '🔙', color: 'neon-pink' },
-  { value: 'libre', label: 'Libre', icon: '📸', color: 'neon-green' }
-] as const
+  { value: 'libre', label: 'Libre', icon: '📸', color: 'neon-green' },
+] as const;
 
 // Composant pour afficher une photo
-function PhotoCard({ photo, mesures, onEdit, onDelete }: {
-  photo: PhotoData
-  mesures: Mesure[]
-  onEdit: (photo: PhotoData) => void
-  onDelete: (photo: PhotoData) => void
+function PhotoCard({
+  photo,
+  mesures,
+  onEdit,
+  onDelete,
+}: {
+  photo: PhotoData;
+  mesures: Mesure[];
+  onEdit: (photo: PhotoData) => void;
+  onDelete: (photo: PhotoData) => void;
 }) {
-  const [showPreview, setShowPreview] = useState(false)
-  
-  const typeInfo = PHOTO_TYPES.find(t => t.value === photo.type) || PHOTO_TYPES[3]
-  const linkedMesure = mesures.find(m => m.id === photo.mesure_id)
+  const [showPreview, setShowPreview] = useState(false);
+
+  const typeInfo =
+    PHOTO_TYPES.find((t) => t.value === photo.type) || PHOTO_TYPES[3];
+  const linkedMesure = mesures.find((m) => m.id === photo.mesure_id);
 
   return (
     <>
@@ -82,21 +96,26 @@ function PhotoCard({ photo, mesures, onEdit, onDelete }: {
         {/* Informations */}
         <div className="p-3">
           <div className="flex items-center justify-between mb-2">
-            <div className={`flex items-center gap-2 px-2 py-1 rounded-full bg-${typeInfo.color}/20`}>
+            <div
+              className={`flex items-center gap-2 px-2 py-1 rounded-full bg-${typeInfo.color}/20`}
+            >
               <span className="text-xs">{typeInfo.icon}</span>
-              <span className={`text-xs font-medium text-${typeInfo.color}`}>{typeInfo.label}</span>
+              <span className={`text-xs font-medium text-${typeInfo.color}`}>
+                {typeInfo.label}
+              </span>
             </div>
             <span className="text-xs text-muted-foreground">
               {new Date(photo.date).toLocaleDateString('fr-FR')}
             </span>
           </div>
-          
+
           {linkedMesure && (
             <div className="text-xs text-muted-foreground mb-1">
-              📊 Poids: {linkedMesure.poids}kg {linkedMesure.imc && `• IMC: ${linkedMesure.imc.toFixed(1)}`}
+              📊 Poids: {linkedMesure.poids}kg{' '}
+              {linkedMesure.imc && `• IMC: ${linkedMesure.imc.toFixed(1)}`}
             </div>
           )}
-          
+
           {photo.commentaire && (
             <div className="text-xs text-white/80 italic truncate">
               &quot;{photo.commentaire}&quot;
@@ -127,135 +146,138 @@ function PhotoCard({ photo, mesures, onEdit, onDelete }: {
         </div>
       )}
     </>
-  )
+  );
 }
 
 export default function PhotoUpload({ mesures }: PhotoUploadProps) {
-  const { photos, loading, uploading, uploadPhoto, deletePhoto, updatePhoto } = usePhotos()
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  
-  const [showForm, setShowForm] = useState(false)
-  const [editingPhoto, setEditingPhoto] = useState<PhotoData | null>(null)
-  const [showComparison, setShowComparison] = useState(false)
+  const { photos, loading, uploading, uploadPhoto, deletePhoto, updatePhoto } =
+    usePhotos();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [showForm, setShowForm] = useState(false);
+  const [editingPhoto, setEditingPhoto] = useState<PhotoData | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
   const [comparisonData, setComparisonData] = useState({
     photoA: null as PhotoData | null,
     photoB: null as PhotoData | null,
-    selectedType: 'face' as 'face' | 'profil' | 'dos' | 'libre'
-  })
+    selectedType: 'face' as 'face' | 'profil' | 'dos' | 'libre',
+  });
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     type: 'face' as 'face' | 'profil' | 'dos' | 'libre',
     mesure_id: '',
     commentaire: '',
-    file: null as File | null
-  })
+    file: null as File | null,
+  });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
       // Vérifier la taille (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('La photo ne doit pas dépasser 5MB')
-        return
+        toast.error('La photo ne doit pas dépasser 5MB');
+        return;
       }
 
       // Vérifier le type
       if (!file.type.startsWith('image/')) {
-        toast.error('Veuillez sélectionner une image')
-        return
+        toast.error('Veuillez sélectionner une image');
+        return;
       }
 
-      setFormData({ ...formData, file })
-      setShowForm(true)
+      setFormData({ ...formData, file });
+      setShowForm(true);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.file) return
+    e.preventDefault();
+    if (!formData.file) return;
 
     const result = await uploadPhoto(formData.file, {
       date: formData.date,
       type: formData.type,
       mesure_id: formData.mesure_id || undefined,
-      commentaire: formData.commentaire
-    })
+      commentaire: formData.commentaire,
+    });
 
     if (result.success) {
-      toast.success('Photo uploadée avec succès !')
-      setShowForm(false)
+      toast.success('Photo uploadée avec succès !');
+      setShowForm(false);
       setFormData({
         date: new Date().toISOString().split('T')[0],
         type: 'face',
         mesure_id: '',
         commentaire: '',
-        file: null
-      })
+        file: null,
+      });
       if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+        fileInputRef.current.value = '';
       }
     } else {
-      toast.error(`Erreur: ${result.error}`)
+      toast.error(`Erreur: ${result.error}`);
     }
-  }
+  };
 
   const handleEdit = (photo: PhotoData) => {
-    setEditingPhoto(photo)
-  }
+    setEditingPhoto(photo);
+  };
 
   const handleSaveEdit = async () => {
-    if (!editingPhoto) return
+    if (!editingPhoto) return;
 
     const result = await updatePhoto(editingPhoto.id, {
       commentaire: editingPhoto.commentaire,
       type: editingPhoto.type,
-      mesure_id: editingPhoto.mesure_id || ''
-    })
+      mesure_id: editingPhoto.mesure_id || '',
+    });
 
     if (result.success) {
-      toast.success('Photo mise à jour !')
-      setEditingPhoto(null)
+      toast.success('Photo mise à jour !');
+      setEditingPhoto(null);
     } else {
-      toast.error(`Erreur: ${result.error}`)
+      toast.error(`Erreur: ${result.error}`);
     }
-  }
+  };
 
   const handleDelete = async (photo: PhotoData) => {
-    const result = await deletePhoto(photo.id, photo.fileName || '')
-    
+    const result = await deletePhoto(photo.id, photo.fileName || '');
+
     if (result.success) {
-      toast.success('Photo supprimée')
+      toast.success('Photo supprimée');
     } else {
-      toast.error(`Erreur: ${result.error}`)
+      toast.error(`Erreur: ${result.error}`);
     }
-  }
+  };
 
   const handleStartComparison = () => {
     // Trouver les photos du type sélectionné, triées par date
     const photosOfType = photos
-      .filter(p => p.type === comparisonData.selectedType)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .filter((p) => p.type === comparisonData.selectedType)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     if (photosOfType.length < 2) {
-      toast.error(`Vous devez avoir au moins 2 photos de type "${PHOTO_TYPES.find(t => t.value === comparisonData.selectedType)?.label}" pour faire une comparaison`)
-      return
+      toast.error(
+        `Vous devez avoir au moins 2 photos de type "${PHOTO_TYPES.find((t) => t.value === comparisonData.selectedType)?.label}" pour faire une comparaison`,
+      );
+      return;
     }
 
     // Par défaut, prendre la plus ancienne et la plus récente
     setComparisonData({
       ...comparisonData,
       photoA: photosOfType[0] as unknown as PhotoData, // cast léger pour compat
-      photoB: photosOfType[photosOfType.length - 1] as unknown as PhotoData
-    })
-    setShowComparison(true)
-  }
+      photoB: photosOfType[photosOfType.length - 1] as unknown as PhotoData,
+    });
+    setShowComparison(true);
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-cyan"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -291,10 +313,19 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
             <div className="flex items-center gap-3">
               <select
                 value={comparisonData.selectedType}
-                  onChange={(e) => setComparisonData({...comparisonData, selectedType: e.target.value as 'face' | 'profil' | 'dos' | 'libre'})}
+                onChange={(e) =>
+                  setComparisonData({
+                    ...comparisonData,
+                    selectedType: e.target.value as
+                      | 'face'
+                      | 'profil'
+                      | 'dos'
+                      | 'libre',
+                  })
+                }
                 className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-neon-cyan focus:outline-none"
               >
-                {PHOTO_TYPES.map(type => (
+                {PHOTO_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
                     {type.icon} {type.label}
                   </option>
@@ -315,27 +346,44 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
       {/* Formulaire d'upload */}
       {showForm && formData.file && (
         <div className="glass-effect p-6 rounded-lg border border-white/10">
-          <h4 className="text-lg font-semibold text-white mb-4">Détails de la photo</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">
+            Détails de la photo
+          </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Date</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Date
+                </label>
                 <input
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, date: e.target.value })
+                  }
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Type de photo</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Type de photo
+                </label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as 'face' | 'profil' | 'dos' | 'libre' })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      type: e.target.value as
+                        | 'face'
+                        | 'profil'
+                        | 'dos'
+                        | 'libre',
+                    })
+                  }
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
                 >
-                  {PHOTO_TYPES.map(type => (
+                  {PHOTO_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.icon} {type.label}
                     </option>
@@ -345,26 +393,35 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-1">Associer à une mesure (optionnel)</label>
+              <label className="block text-sm font-medium text-white mb-1">
+                Associer à une mesure (optionnel)
+              </label>
               <select
                 value={formData.mesure_id}
-                onChange={(e) => setFormData({ ...formData, mesure_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, mesure_id: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
               >
                 <option value="">Aucune mesure</option>
-                {mesures.map(mesure => (
+                {mesures.map((mesure) => (
                   <option key={mesure.id} value={mesure.id}>
-                    {new Date(mesure.date).toLocaleDateString('fr-FR')} - {mesure.poids}kg
+                    {new Date(mesure.date).toLocaleDateString('fr-FR')} -{' '}
+                    {mesure.poids}kg
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-white mb-1">Commentaire</label>
+              <label className="block text-sm font-medium text-white mb-1">
+                Commentaire
+              </label>
               <textarea
                 value={formData.commentaire}
-                onChange={(e) => setFormData({ ...formData, commentaire: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, commentaire: e.target.value })
+                }
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none resize-none"
                 rows={3}
                 placeholder="Notes sur cette photo..."
@@ -395,16 +452,29 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
       {editingPhoto && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="glass-effect p-6 rounded-lg border border-white/10 w-full max-w-md">
-            <h4 className="text-lg font-semibold text-white mb-4">Modifier la photo</h4>
+            <h4 className="text-lg font-semibold text-white mb-4">
+              Modifier la photo
+            </h4>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Type</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Type
+                </label>
                 <select
                   value={editingPhoto.type}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, type: e.target.value as 'face' | 'profil' | 'dos' | 'libre' })}
+                  onChange={(e) =>
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      type: e.target.value as
+                        | 'face'
+                        | 'profil'
+                        | 'dos'
+                        | 'libre',
+                    })
+                  }
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
                 >
-                  {PHOTO_TYPES.map(type => (
+                  {PHOTO_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
                       {type.icon} {type.label}
                     </option>
@@ -413,26 +483,41 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Mesure associée</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Mesure associée
+                </label>
                 <select
                   value={editingPhoto.mesure_id || ''}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, mesure_id: e.target.value })}
+                  onChange={(e) =>
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      mesure_id: e.target.value,
+                    })
+                  }
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
                 >
                   <option value="">Aucune mesure</option>
-                  {mesures.map(mesure => (
+                  {mesures.map((mesure) => (
                     <option key={mesure.id} value={mesure.id}>
-                      {new Date(mesure.date).toLocaleDateString('fr-FR')} - {mesure.poids}kg
+                      {new Date(mesure.date).toLocaleDateString('fr-FR')} -{' '}
+                      {mesure.poids}kg
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white mb-1">Commentaire</label>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Commentaire
+                </label>
                 <textarea
                   value={editingPhoto.commentaire}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, commentaire: e.target.value })}
+                  onChange={(e) =>
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      commentaire: e.target.value,
+                    })
+                  }
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none resize-none"
                   rows={3}
                 />
@@ -461,8 +546,12 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
       {photos.length === 0 ? (
         <div className="text-center py-12">
           <Camera className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground mb-2">Aucune photo de progression</p>
-          <p className="text-sm text-muted-foreground">Cliquez sur &quot;Ajouter photo&quot; pour commencer</p>
+          <p className="text-muted-foreground mb-2">
+            Aucune photo de progression
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Cliquez sur &quot;Ajouter photo&quot; pour commencer
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -485,9 +574,20 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <div>
-                <h3 className="text-xl font-semibold text-white">Comparaison Photos</h3>
+                <h3 className="text-xl font-semibold text-white">
+                  Comparaison Photos
+                </h3>
                 <p className="text-muted-foreground">
-                  {PHOTO_TYPES.find(t => t.value === comparisonData.selectedType)?.icon} {PHOTO_TYPES.find(t => t.value === comparisonData.selectedType)?.label}
+                  {
+                    PHOTO_TYPES.find(
+                      (t) => t.value === comparisonData.selectedType,
+                    )?.icon
+                  }{' '}
+                  {
+                    PHOTO_TYPES.find(
+                      (t) => t.value === comparisonData.selectedType,
+                    )?.label
+                  }
                 </p>
               </div>
               <button
@@ -503,49 +603,67 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Photo A (Avant) */}
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Photo &quot;Avant&quot;</label>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Photo &quot;Avant&quot;
+                  </label>
                   <select
                     value={comparisonData.photoA?.id || ''}
                     onChange={(e) => {
-                      const photo = photos.find(p => p.id === e.target.value)
-                      setComparisonData({...comparisonData, photoA: (photo as unknown as PhotoData) || null})
+                      const photo = photos.find((p) => p.id === e.target.value);
+                      setComparisonData({
+                        ...comparisonData,
+                        photoA: (photo as unknown as PhotoData) || null,
+                      });
                     }}
                     className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-cyan focus:outline-none"
                   >
                     {photos
-                      .filter(p => p.type === comparisonData.selectedType)
-                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                      .map(photo => (
+                      .filter((p) => p.type === comparisonData.selectedType)
+                      .sort(
+                        (a, b) =>
+                          new Date(a.date).getTime() -
+                          new Date(b.date).getTime(),
+                      )
+                      .map((photo) => (
                         <option key={photo.id} value={photo.id}>
-                          {new Date(photo.date).toLocaleDateString('fr-FR')} 
-                          {photo.commentaire && ` - ${photo.commentaire.substring(0, 30)}${photo.commentaire.length > 30 ? '...' : ''}`}
+                          {new Date(photo.date).toLocaleDateString('fr-FR')}
+                          {photo.commentaire &&
+                            ` - ${photo.commentaire.substring(0, 30)}${photo.commentaire.length > 30 ? '...' : ''}`}
                         </option>
-                      ))
-                    }
+                      ))}
                   </select>
                 </div>
 
                 {/* Photo B (Après) */}
                 <div>
-                  <label className="block text-sm font-medium text-white mb-2">Photo &quot;Après&quot;</label>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Photo &quot;Après&quot;
+                  </label>
                   <select
                     value={comparisonData.photoB?.id || ''}
                     onChange={(e) => {
-                      const photo = photos.find(p => p.id === e.target.value)
-                      setComparisonData({...comparisonData, photoB: (photo as unknown as PhotoData) || null})
+                      const photo = photos.find((p) => p.id === e.target.value);
+                      setComparisonData({
+                        ...comparisonData,
+                        photoB: (photo as unknown as PhotoData) || null,
+                      });
                     }}
                     className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-cyan focus:outline-none"
                   >
                     {photos
-                      .filter(p => p.type === comparisonData.selectedType)
-                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                      .map(photo => (
+                      .filter((p) => p.type === comparisonData.selectedType)
+                      .sort(
+                        (a, b) =>
+                          new Date(a.date).getTime() -
+                          new Date(b.date).getTime(),
+                      )
+                      .map((photo) => (
                         <option key={photo.id} value={photo.id}>
-                          {new Date(photo.date).toLocaleDateString('fr-FR')} 
-                          {photo.commentaire && ` - ${photo.commentaire.substring(0, 30)}${photo.commentaire.length > 30 ? '...' : ''}`}
+                          {new Date(photo.date).toLocaleDateString('fr-FR')}
+                          {photo.commentaire &&
+                            ` - ${photo.commentaire.substring(0, 30)}${photo.commentaire.length > 30 ? '...' : ''}`}
                         </option>
-                      ))
-                    }
+                      ))}
                   </select>
                 </div>
               </div>
@@ -557,9 +675,13 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                 {/* Photo Avant */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-lg font-semibold text-neon-cyan">📅 AVANT</h4>
+                    <h4 className="text-lg font-semibold text-neon-cyan">
+                      📅 AVANT
+                    </h4>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(comparisonData.photoA.date).toLocaleDateString('fr-FR')}
+                      {new Date(comparisonData.photoA.date).toLocaleDateString(
+                        'fr-FR',
+                      )}
                     </span>
                   </div>
                   <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-neon-cyan/30">
@@ -580,9 +702,13 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                 {/* Photo Après */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-lg font-semibold text-neon-green">✨ APRÈS</h4>
+                    <h4 className="text-lg font-semibold text-neon-green">
+                      ✨ APRÈS
+                    </h4>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(comparisonData.photoB.date).toLocaleDateString('fr-FR')}
+                      {new Date(comparisonData.photoB.date).toLocaleDateString(
+                        'fr-FR',
+                      )}
                     </span>
                   </div>
                   <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-neon-green/30">
@@ -604,20 +730,36 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
               {/* Statistiques de progression */}
               <div className="mt-6 pt-6 border-t border-white/10">
                 <div className="text-center">
-                  <h5 className="text-lg font-semibold text-white mb-3">📊 Progression</h5>
+                  <h5 className="text-lg font-semibold text-white mb-3">
+                    📊 Progression
+                  </h5>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div className="bg-white/5 rounded-lg p-3">
                       <div className="text-muted-foreground">Durée</div>
                       <div className="text-white font-semibold">
                         {Math.abs(
-                          Math.round((new Date(comparisonData.photoB.date).getTime() - new Date(comparisonData.photoA.date).getTime()) / (1000 * 60 * 60 * 24))
-                        )} jours
+                          Math.round(
+                            (new Date(comparisonData.photoB.date).getTime() -
+                              new Date(comparisonData.photoA.date).getTime()) /
+                              (1000 * 60 * 60 * 24),
+                          ),
+                        )}{' '}
+                        jours
                       </div>
                     </div>
                     <div className="bg-white/5 rounded-lg p-3">
                       <div className="text-muted-foreground">Type</div>
                       <div className="text-white font-semibold">
-                        {PHOTO_TYPES.find(t => t.value === comparisonData.selectedType)?.icon} {PHOTO_TYPES.find(t => t.value === comparisonData.selectedType)?.label}
+                        {
+                          PHOTO_TYPES.find(
+                            (t) => t.value === comparisonData.selectedType,
+                          )?.icon
+                        }{' '}
+                        {
+                          PHOTO_TYPES.find(
+                            (t) => t.value === comparisonData.selectedType,
+                          )?.label
+                        }
                       </div>
                     </div>
                     <div className="bg-white/5 rounded-lg p-3">
@@ -634,5 +776,5 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
         </div>
       )}
     </div>
-  )
+  );
 }

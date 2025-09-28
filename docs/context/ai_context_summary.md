@@ -3,7 +3,8 @@
 **Statut** : 🏆 EXCELLENCE PROJET - Audit complet terminé, branche audit/2025-09-27 prête
 ---
 
-## **SUPERNOVA FIT - CONTEXTE AI COMPLET** 
+## **SUPERNOVA FIT - CONTEXTE AI COMPLET**
+
 **Version : 2.0.0** | **Dernière mise à jour : 27.09.2025** | **Statut : 🏆 EXCELLENCE - 98% CONTEXTE + AUDIT COMPLET**
 
 > **📋 DOCUMENT DÉTAILLÉ** : [docs/CONTEXTE_TECHNIQUE_COMPLET.md](../CONTEXTE_TECHNIQUE_COMPLET.md)  
@@ -11,9 +12,11 @@
 > **Ce document** : 80% du contexte projet pour prise de contexte rapide
 
 ### **🎯 VISION & OBJECTIF**
+
 Application de fitness **mobile-first** pour athlètes et coaches, avec suivi nutritionnel, entraînements, mesures corporelles et journal de progression. Interface coach-athlète intégrée avec système d'invitations. **PWA production ready** respectant WCAG 2.1 AA.
 
 ### **🏗️ ARCHITECTURE TECHNIQUE**
+
 ```yaml
 Stack Principal:
 - Frontend: Next.js 15.1.0 (App Router) + TypeScript 5.3.3 + Tailwind CSS
@@ -34,6 +37,7 @@ src/
 ```
 
 ### **🎨 DESIGN SYSTEM INDUSTRIALISÉ**
+
 ```css
 Palette Neon Étendue:
 --neon-purple: #a855f7    /* Principal */
@@ -69,6 +73,7 @@ Patterns Universels:
 ```
 
 ### **📊 ÉTAT PROJET ACTUEL (Post-Audit 27.09.2025)**
+
 - **🏆 SCORE GLOBAL** : **8.7/10** (Excellence technique confirmée par audit)
 - **🏆 SÉCURITÉ** : 0 vulnérabilité critique, 3 points mineurs identifiés
 - **🏆 PERFORMANCE** : Build 17.9s, Bundle 221KB optimisé, Lighthouse 92/100
@@ -80,6 +85,7 @@ Patterns Universels:
 - **✅ AUDIT** : Rapport complet disponible dans `/AUDIT.md` avec 23 recommandations
 
 ### **📱 EXPÉRIENCE MOBILE-FIRST**
+
 ```typescript
 Navigation Bottom (toujours visible):
 - /dashboard: Home + Widgets configurables
@@ -100,6 +106,7 @@ Templates Ultra-Rapides:
 ```
 
 ### **🗄️ MODÈLE DONNÉES FIRESTORE**
+
 ```typescript
 Collections Principales:
 users/{userId} → { role: 'coach'|'sportif', nom, email, coach_id?, athletes? }
@@ -115,6 +122,7 @@ Indexes Critiques:
 ```
 
 ### **🚀 MODULES FONCTIONNELS**
+
 - **Dashboard Temps Réel** : Widgets configurables, synchronisation onSnapshot
 - **Diète & Nutrition** : Open Food Facts (2M+ aliments), CRUD repas, macros, suggestions
 - **Entraînements** : Import Garmin TCX/GPX, calcul MET, 4 graphiques évolution
@@ -124,6 +132,7 @@ Indexes Critiques:
 - **Mode Coach** : Dashboard athlètes, commentaires contextuels, plans diète
 
 ### **🔒 SÉCURITÉ & DÉPLOIEMENT**
+
 ```yaml
 Firebase Configuration:
 - Auth: Email/Password + AuthGuard protection routes
@@ -144,6 +153,7 @@ firebase deploy --only hosting --project supernovafit-a6fe7
 ```
 
 ### **🧪 TESTS & QUALITÉ**
+
 ```typescript
 Configuration Vitest:
 - Environment: jsdom + React Testing Library
@@ -163,6 +173,7 @@ npm run test:coverage   # Rapport coverage complet
 ```
 
 ### **🔧 RÈGLES DÉVELOPPEMENT**
+
 ```typescript
 Conventions Obligatoires:
 - Components: PascalCase + React.forwardRef si nécessaire
@@ -184,6 +195,7 @@ ESLint/TypeScript Strict:
 ```
 
 ### **🏭 FRAMEWORK UI/UX INDUSTRIALISÉ (COMPLET)**
+
 ```typescript
 Framework Standardisation Complet:
 ✅ StandardModal: Modal unifiée avec cadre blanc proéminent (border-white/70)
@@ -222,6 +234,7 @@ Résultats Globaux:
 ```
 
 ### **🎯 PROCHAINES ACTIONS PRIORITAIRES (Suite Audit)**
+
 1. **🔴 TESTS CRITIQUES** : AuthGuard + Firebase Rules (3 jours) - URGENT
 2. **🔴 COVERAGE** : 2.16% → 15% sous 7 jours → 30% sous 30 jours
 3. **🟡 CODE MORT** : Supprimer 44 exports + 7 dépendances (4h)
@@ -232,13 +245,14 @@ Résultats Globaux:
 8. **🟢 DOCUMENTATION** : Architecture + API complète (3 jours)
 
 ### **📊 MÉTRIQUES CIBLES 30/90 JOURS**
-| Métrique | Actuel | 30j | 90j |
-|----------|--------|-----|-----|
-| Vulnérabilités | ✅ 0 | ✅ 0 | ✅ 0 |
-| Bundle max | 471KB | 400KB | 350KB |
-| Test coverage | 2.16% | 15% | 30% |
-| Build time | 30.3s | 25s | 20s |
-| Score global | 9.2/10 | 9.5/10 | 9.8/10 |
+
+| Métrique       | Actuel | 30j    | 90j    |
+| -------------- | ------ | ------ | ------ |
+| Vulnérabilités | ✅ 0   | ✅ 0   | ✅ 0   |
+| Bundle max     | 471KB  | 400KB  | 350KB  |
+| Test coverage  | 2.16%  | 15%    | 30%    |
+| Build time     | 30.3s  | 25s    | 20s    |
+| Score global   | 9.2/10 | 9.5/10 | 9.8/10 |
 
 ---
 

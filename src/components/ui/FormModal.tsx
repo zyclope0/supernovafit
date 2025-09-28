@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { ReactNode } from 'react'
-import StandardModal from './StandardModal'
+import { ReactNode } from 'react';
+import StandardModal from './StandardModal';
 
 interface Tab {
-  id: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 interface FormModalProps {
-  title: string
-  tabs: Tab[]
-  activeTab: string
-  onTabChange: (tabId: string) => void
-  onSubmit: (e: React.FormEvent) => void
-  onCancel: () => void
-  isSubmitting?: boolean
-  submitLabel?: string
-  children: ReactNode
+  title: string;
+  tabs: Tab[];
+  activeTab: string;
+  onTabChange: (tabId: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
+  isSubmitting?: boolean;
+  submitLabel?: string;
+  children: ReactNode;
 }
 
 export default function FormModal({
@@ -30,7 +30,7 @@ export default function FormModal({
   onCancel,
   isSubmitting = false,
   submitLabel = 'Enregistrer',
-  children
+  children,
 }: FormModalProps) {
   const footerContent = (
     <div className="flex items-center justify-end gap-3 p-6">
@@ -50,7 +50,7 @@ export default function FormModal({
         {isSubmitting ? 'Enregistrement...' : submitLabel}
       </button>
     </div>
-  )
+  );
 
   return (
     <StandardModal
@@ -65,7 +65,7 @@ export default function FormModal({
       {/* Tabs Navigation */}
       <div className="flex border-b border-white/10">
         {tabs.map((tab) => {
-          const Icon = tab.icon
+          const Icon = tab.icon;
           return (
             <button
               key={tab.id}
@@ -79,16 +79,19 @@ export default function FormModal({
               <Icon className="h-4 w-4" />
               <span className="hidden sm:inline">{tab.label}</span>
             </button>
-          )
+          );
         })}
       </div>
 
       {/* Content */}
       <div className="flex-1 flex flex-col min-h-0">
-        <form onSubmit={onSubmit} className="flex-1 flex flex-col p-6 overflow-y-auto">
+        <form
+          onSubmit={onSubmit}
+          className="flex-1 flex flex-col p-6 overflow-y-auto"
+        >
           {children}
         </form>
       </div>
     </StandardModal>
-  )
+  );
 }

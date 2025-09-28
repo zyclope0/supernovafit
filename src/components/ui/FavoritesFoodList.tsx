@@ -1,34 +1,37 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Aliment } from '@/types'
-import { useFavoris } from '@/hooks/useFirestore'
-import { Star, Heart, Search, Plus } from 'lucide-react'
+import { useState } from 'react';
+import { Aliment } from '@/types';
+import { useFavoris } from '@/hooks/useFirestore';
+import { Star, Heart, Search, Plus } from 'lucide-react';
 
 interface FavoritesFoodListProps {
-  onSelectFood: (aliment: Omit<Aliment, 'id'>) => void
-  onClose?: () => void
+  onSelectFood: (aliment: Omit<Aliment, 'id'>) => void;
+  onClose?: () => void;
 }
 
-export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFoodListProps) {
-  const { favoris, loading } = useFavoris()
-  const [searchQuery, setSearchQuery] = useState('')
+export default function FavoritesFoodList({
+  onSelectFood,
+  onClose,
+}: FavoritesFoodListProps) {
+  const { favoris, loading } = useFavoris();
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Filtrer les favoris selon la recherche
-  const filteredFavoris = favoris.filter(aliment =>
-    aliment.nom.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredFavoris = favoris.filter((aliment) =>
+    aliment.nom.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   const handleSelectAliment = (aliment: Aliment) => {
     // Créer un nouvel aliment basé sur le favori (sans l'id)
-    const { id, ...alimentData } = aliment
-    void id
+    const { id, ...alimentData } = aliment;
+    void id;
     onSelectFood({
       ...alimentData,
       quantite: 100, // Quantité par défaut
-    })
-    if (onClose) onClose()
-  }
+    });
+    if (onClose) onClose();
+  };
 
   if (loading) {
     return (
@@ -38,12 +41,12 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
           <h3 className="text-lg font-semibold text-white">Mes Favoris</h3>
         </div>
         <div className="animate-pulse space-y-3">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="h-16 bg-white/5 rounded-lg"></div>
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -51,13 +54,18 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
       <div className="flex items-center gap-3 mb-4">
         <Star className="h-5 w-5 text-neon-purple" />
         <h3 className="text-lg font-semibold text-white">Mes Favoris</h3>
-        <span className="text-sm text-muted-foreground">({favoris.length})</span>
+        <span className="text-sm text-muted-foreground">
+          ({favoris.length})
+        </span>
       </div>
 
       {/* Barre de recherche dans les favoris */}
       {favoris.length > 5 && (
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+            aria-hidden="true"
+          />
           <label htmlFor="favorites-search" className="sr-only">
             Rechercher dans vos favoris
           </label>
@@ -82,18 +90,22 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
               <div className="text-muted-foreground">
                 <Heart className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Aucun favori encore</p>
-                <p className="text-xs mt-1">Utilisez ⭐ pour ajouter des aliments à vos favoris</p>
+                <p className="text-xs mt-1">
+                  Utilisez ⭐ pour ajouter des aliments à vos favoris
+                </p>
               </div>
             ) : (
               <div className="text-muted-foreground">
                 <Search className="h-6 w-6 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Aucun résultat pour &quot;{searchQuery}&quot;</p>
+                <p className="text-sm">
+                  Aucun résultat pour &quot;{searchQuery}&quot;
+                </p>
               </div>
             )}
           </div>
         ) : (
           filteredFavoris.map((aliment) => (
-            <div 
+            <div
               key={aliment.id}
               onClick={() => handleSelectAliment(aliment)}
               className="p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition-colors group"
@@ -127,5 +139,5 @@ export default function FavoritesFoodList({ onSelectFood, onClose }: FavoritesFo
         </div>
       )}
     </div>
-  )
+  );
 }

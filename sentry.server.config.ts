@@ -2,7 +2,7 @@
 // The config you add here will be used whenever the server handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from '@sentry/nextjs';
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -22,38 +22,44 @@ Sentry.init({
   beforeSend(event, hint) {
     // Filtrer erreurs non critiques côté serveur
     if (event.exception) {
-      const error = hint.originalException as Error
-      
+      const error = hint.originalException as Error;
+
       // Ignorer erreurs Firebase admin temporaires
-      if (error?.message?.includes('Firebase Admin') ||
-          error?.message?.includes('service account')) {
-        return null
+      if (
+        error?.message?.includes('Firebase Admin') ||
+        error?.message?.includes('service account')
+      ) {
+        return null;
       }
-      
+
       // Ignorer timeouts réseau côté serveur
-      if (error?.message?.includes('timeout') ||
-          error?.message?.includes('ETIMEDOUT')) {
-        return null
+      if (
+        error?.message?.includes('timeout') ||
+        error?.message?.includes('ETIMEDOUT')
+      ) {
+        return null;
       }
 
       // Ignorer erreurs de quota Firestore attendues
-      if (error?.message?.includes('quota-exceeded') ||
-          error?.message?.includes('rate-limit')) {
-        return null
+      if (
+        error?.message?.includes('quota-exceeded') ||
+        error?.message?.includes('rate-limit')
+      ) {
+        return null;
       }
     }
-    
-    return event
+
+    return event;
   },
 
   // Server scope configuration
   initialScope: {
     tags: {
-      component: "supernovafit-backend",
-      runtime: "nodejs"
+      component: 'supernovafit-backend',
+      runtime: 'nodejs',
     },
   },
 
   // Spotlight for local development
   spotlight: process.env.NODE_ENV === 'development',
-})
+});

@@ -1,4 +1,5 @@
 # ⚡ WEB VITALS MONITORING - Guide Performance
+
 ## Surveiller Performance Real Users SuperNovaFit
 
 ---
@@ -6,6 +7,7 @@
 ## 🎯 **QU'EST-CE QUE WEB VITALS**
 
 **Web Vitals** = Métriques Google pour mesurer **expérience utilisateur réelle** :
+
 - **Performance** : Vitesse chargement pages
 - **Interactivité** : Réactivité aux clics
 - **Stabilité visuelle** : Pages qui "bougent"
@@ -19,6 +21,7 @@
 ### **🚀 Core Web Vitals (3 critiques)**
 
 #### **1. LCP - Largest Contentful Paint**
+
 ```bash
 # ❓ Quoi : Temps affichage élément principal
 # 📏 Cible : < 2.5s (Good) | < 4s (Needs Improvement) | > 4s (Poor)
@@ -31,6 +34,7 @@
 ```
 
 #### **2. INP - Interaction to Next Paint**
+
 ```bash
 # ❓ Quoi : Délai entre clic et réaction visuelle (remplace FID)
 # 📏 Cible : < 200ms (Good) | < 500ms (Needs Improvement) | > 500ms (Poor)
@@ -43,6 +47,7 @@
 ```
 
 #### **3. CLS - Cumulative Layout Shift**
+
 ```bash
 # ❓ Quoi : Décalages éléments pendant chargement
 # 📏 Cible : < 0.1 (Good) | < 0.25 (Needs Improvement) | > 0.25 (Poor)
@@ -57,6 +62,7 @@
 ### **📈 Autres Métriques**
 
 #### **4. FCP - First Contentful Paint**
+
 ```bash
 # ❓ Quoi : Temps premier élément visible
 # 📏 Cible : < 1.8s (Good) | < 3s (Needs Improvement) | > 3s (Poor)
@@ -64,6 +70,7 @@
 ```
 
 #### **5. TTFB - Time to First Byte**
+
 ```bash
 # ❓ Quoi : Temps réponse serveur
 # 📏 Cible : < 800ms (Good) | < 1.8s (Needs Improvement) | > 1.8s (Poor)
@@ -75,6 +82,7 @@
 ## 🔍 **OÙ VOIR WEB VITALS**
 
 ### **1. Sentry Dashboard (Production)**
+
 ```bash
 # 📊 Sentry → Performance → Web Vitals
 
@@ -91,6 +99,7 @@
 ```
 
 ### **2. Console Développeur (Local)**
+
 ```bash
 # F12 → Console → Chercher "[Web Vital]"
 
@@ -107,6 +116,7 @@
 ```
 
 ### **3. Lighthouse (Audit Complet)**
+
 ```bash
 # Chrome DevTools → Lighthouse tab
 
@@ -123,6 +133,7 @@ npx lighthouse http://localhost:3000 --output=html
 ## 📊 **ANALYSER PERFORMANCE SENTRY**
 
 ### **Dashboard Web Vitals**
+
 ```bash
 # Sentry → Performance → Web Vitals
 
@@ -140,6 +151,7 @@ npx lighthouse http://localhost:3000 --output=html
 ```
 
 ### **Performance par Page**
+
 ```bash
 # Sentry → Performance → Web Vitals → "View All"
 
@@ -156,6 +168,7 @@ Page                LCP      INP      CLS      Score
 ```
 
 ### **Trends Temporelles**
+
 ```bash
 # Graphiques Sentry (7/30 jours) :
 
@@ -175,12 +188,13 @@ Page                LCP      INP      CLS      Score
 ## 🚨 **ALERTES PERFORMANCE**
 
 ### **Alertes Automatiques Sentry**
+
 ```bash
 # Configuré dans SuperNovaFit :
 
 # 🔴 Poor Performance (Auto alert) :
 # → LCP > 4s pendant 1h
-# → INP > 500ms pendant 1h  
+# → INP > 500ms pendant 1h
 # → CLS > 0.25 pendant 1h
 
 # 📧 Email notifications :
@@ -190,6 +204,7 @@ Page                LCP      INP      CLS      Score
 ```
 
 ### **Configurer Alertes Custom**
+
 ```bash
 # Sentry → Alerts → Create Alert
 
@@ -209,6 +224,7 @@ Page                LCP      INP      CLS      Score
 ## 🔧 **OPTIMISATIONS COURANTES**
 
 ### **⚡ Améliorer LCP (Largest Contentful Paint)**
+
 ```bash
 # 🎯 Problème : Chargement lent élément principal
 
@@ -233,6 +249,7 @@ const HeavyChart = dynamic(() => import('@/components/charts/HeavyChart'))
 ```
 
 ### **🚀 Améliorer INP (Interaction to Next Paint)**
+
 ```bash
 # 🎯 Problème : Clics lents à réagir
 
@@ -255,6 +272,7 @@ const handleClick = useCallback(() => {
 ```
 
 ### **📐 Améliorer CLS (Cumulative Layout Shift)**
+
 ```bash
 # 🎯 Problème : Layout qui "saute"
 
@@ -284,13 +302,14 @@ const handleClick = useCallback(() => {
 ## 📱 **MONITORING MOBILE vs DESKTOP**
 
 ### **Performance Device-Specific**
+
 ```bash
 # Sentry → Filters → "device.family"
 
 # 📊 Breakdown typical :
 Desktop (60% users) :
 - LCP: 1.5s (Good)
-- INP: 120ms (Good)  
+- INP: 120ms (Good)
 - CLS: 0.06 (Good)
 
 Mobile (40% users) :
@@ -305,6 +324,7 @@ Mobile (40% users) :
 ```
 
 ### **Network Conditions**
+
 ```bash
 # Chrome DevTools → Network tab → Throttling
 
@@ -323,6 +343,7 @@ Mobile (40% users) :
 ## 🎯 **WORKFLOW PERFORMANCE**
 
 ### **Daily Performance Check (2 min)**
+
 ```bash
 # 1. Sentry Web Vitals Dashboard
 # → All metrics "Good" ? ✅
@@ -336,6 +357,7 @@ Mobile (40% users) :
 ```
 
 ### **Weekly Performance Review (15 min)**
+
 ```bash
 # 1. Trends analysis :
 # → Amélioration ou dégradation ?
@@ -351,6 +373,7 @@ Mobile (40% users) :
 ```
 
 ### **Performance Budgets**
+
 ```bash
 # Objectifs SuperNovaFit 2025 :
 
@@ -371,6 +394,7 @@ FCP  : 800ms → Target 600ms (-200ms)
 ## 🔧 **OUTILS COMPLÉMENTAIRES**
 
 ### **PageSpeed Insights (Google)**
+
 ```bash
 # URL : https://pagespeed.web.dev/
 # Analyser : https://supernovafit.app
@@ -382,6 +406,7 @@ FCP  : 800ms → Target 600ms (-200ms)
 ```
 
 ### **WebPageTest**
+
 ```bash
 # URL : https://webpagetest.org/
 # Test advanced conditions :
@@ -392,6 +417,7 @@ FCP  : 800ms → Target 600ms (-200ms)
 ```
 
 ### **Lighthouse CI**
+
 ```bash
 # Ajouter à GitHub Actions :
 # → Performance regression detection
@@ -406,6 +432,7 @@ FCP  : 800ms → Target 600ms (-200ms)
 ## ✅ **WEB VITALS MAÎTRISÉS**
 
 **Tu comprends maintenant :**
+
 - ✅ Métriques Web Vitals (LCP, INP, CLS)
 - ✅ Monitoring Sentry Performance
 - ✅ Optimisations courantes

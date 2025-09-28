@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { renderHook } from '@testing-library/react'
-import { useEnergyBalance } from '../useEnergyBalance'
-import { User, Repas, Entrainement } from '@/types'
+import { describe, it, expect } from 'vitest';
+import { renderHook } from '@testing-library/react';
+import { useEnergyBalance } from '../useEnergyBalance';
+import { User, Repas, Entrainement } from '@/types';
 
 // Mock user profile
 const mockUser: User = {
@@ -15,8 +15,8 @@ const mockUser: User = {
   sexe: 'M',
   taille: 180,
   poids_initial: 80,
-  niveau_activite: 'modere'
-}
+  niveau_activite: 'modere',
+};
 
 // Mock data
 const mockRepas: Repas[] = [
@@ -26,7 +26,7 @@ const mockRepas: Repas[] = [
     date: '2025-09-21',
     repas: 'dejeuner',
     aliments: [],
-    macros: { kcal: 500, prot: 30, glucides: 40, lipides: 20 }
+    macros: { kcal: 500, prot: 30, glucides: 40, lipides: 20 },
   },
   {
     id: '2',
@@ -34,9 +34,9 @@ const mockRepas: Repas[] = [
     date: '2025-09-21',
     repas: 'diner',
     aliments: [],
-    macros: { kcal: 600, prot: 35, glucides: 50, lipides: 25 }
-  }
-]
+    macros: { kcal: 600, prot: 35, glucides: 50, lipides: 25 },
+  },
+];
 
 const mockEntrainements: Entrainement[] = [
   {
@@ -46,7 +46,7 @@ const mockEntrainements: Entrainement[] = [
     type: 'musculation',
     duree: 60,
     calories: 400,
-    source: 'manuel'
+    source: 'manuel',
   },
   {
     id: '2',
@@ -55,9 +55,9 @@ const mockEntrainements: Entrainement[] = [
     type: 'cardio',
     duree: 30,
     calories: 300,
-    source: 'manuel'
-  }
-]
+    source: 'manuel',
+  },
+];
 
 describe('useEnergyBalance', () => {
   it('should calculate energy balance correctly', () => {
@@ -66,35 +66,37 @@ describe('useEnergyBalance', () => {
         userProfile: mockUser,
         repas: mockRepas,
         entrainements: mockEntrainements,
-        periodDays: 1
-      })
-    )
+        periodDays: 1,
+      }),
+    );
 
-    const energyData = result.current
+    const energyData = result.current;
 
     // Test basic calculations
-    expect(energyData.periodStats.calories).toBe(1100) // 500 + 600
-    expect(energyData.periodStats.proteins).toBe(65) // 30 + 35
-    expect(energyData.rawSportCalories).toBe(700) // 400 + 300
-    expect(energyData.avgDailySportCalories).toBe(700) // 700 / 1 day
+    expect(energyData.periodStats.calories).toBe(1100); // 500 + 600
+    expect(energyData.periodStats.proteins).toBe(65); // 30 + 35
+    expect(energyData.rawSportCalories).toBe(700); // 400 + 300
+    expect(energyData.avgDailySportCalories).toBe(700); // 700 / 1 day
 
     // Test TDEE calculations
-    expect(energyData.baseTDEE).toBeGreaterThan(0)
-    expect(energyData.adjustedTDEE).toBeGreaterThan(energyData.baseTDEE)
+    expect(energyData.baseTDEE).toBeGreaterThan(0);
+    expect(energyData.adjustedTDEE).toBeGreaterThan(energyData.baseTDEE);
 
     // Test sport correction (modere = 0.5 factor)
-    expect(energyData.correctionFactor).toBe(0.5)
-    expect(energyData.adjustedSportCalories).toBe(350) // 700 * 0.5
+    expect(energyData.correctionFactor).toBe(0.5);
+    expect(energyData.adjustedSportCalories).toBe(350); // 700 * 0.5
 
     // Test adjusted trainings
-    expect(energyData.adjustedTrainings).toHaveLength(2)
-    expect(energyData.adjustedTrainings[0].calories).toBe(200) // 400 * 0.5
-    expect(energyData.adjustedTrainings[1].calories).toBe(150) // 300 * 0.5
+    expect(energyData.adjustedTrainings).toHaveLength(2);
+    expect(energyData.adjustedTrainings[0].calories).toBe(200); // 400 * 0.5
+    expect(energyData.adjustedTrainings[1].calories).toBe(150); // 300 * 0.5
 
     // Test energy balance
-    expect(energyData.energyBalance).toBe(energyData.periodStats.calories - energyData.adjustedTDEE)
-    expect(energyData.isDeficit).toBe(energyData.energyBalance < 0)
-  })
+    expect(energyData.energyBalance).toBe(
+      energyData.periodStats.calories - energyData.adjustedTDEE,
+    );
+    expect(energyData.isDeficit).toBe(energyData.energyBalance < 0);
+  });
 
   it('should handle missing user profile', () => {
     const { result } = renderHook(() =>
@@ -102,17 +104,17 @@ describe('useEnergyBalance', () => {
         userProfile: null,
         repas: mockRepas,
         entrainements: mockEntrainements,
-        periodDays: 1
-      })
-    )
+        periodDays: 1,
+      }),
+    );
 
-    const energyData = result.current
+    const energyData = result.current;
 
     // Should use defaults
-    expect(energyData.baseTDEE).toBe(2000)
-    expect(energyData.adjustedTDEE).toBe(2000)
-    expect(energyData.correctionFactor).toBe(0.7) // default
-  })
+    expect(energyData.baseTDEE).toBe(2000);
+    expect(energyData.adjustedTDEE).toBe(2000);
+    expect(energyData.correctionFactor).toBe(0.7); // default
+  });
 
   it('should handle multi-day periods correctly', () => {
     const { result } = renderHook(() =>
@@ -120,15 +122,15 @@ describe('useEnergyBalance', () => {
         userProfile: mockUser,
         repas: mockRepas,
         entrainements: mockEntrainements,
-        periodDays: 7 // Week
-      })
-    )
+        periodDays: 7, // Week
+      }),
+    );
 
-    const energyData = result.current
+    const energyData = result.current;
 
     // Average daily sport calories should be divided by period days
-    expect(energyData.avgDailySportCalories).toBe(100) // 700 / 7 days
-  })
+    expect(energyData.avgDailySportCalories).toBe(100); // 700 / 7 days
+  });
 
   it('should handle empty data', () => {
     const { result } = renderHook(() =>
@@ -136,15 +138,15 @@ describe('useEnergyBalance', () => {
         userProfile: mockUser,
         repas: [],
         entrainements: [],
-        periodDays: 1
-      })
-    )
+        periodDays: 1,
+      }),
+    );
 
-    const energyData = result.current
+    const energyData = result.current;
 
-    expect(energyData.periodStats.calories).toBe(0)
-    expect(energyData.rawSportCalories).toBe(0)
-    expect(energyData.adjustedSportCalories).toBe(0)
-    expect(energyData.adjustedTrainings).toHaveLength(0)
-  })
-})
+    expect(energyData.periodStats.calories).toBe(0);
+    expect(energyData.rawSportCalories).toBe(0);
+    expect(energyData.adjustedSportCalories).toBe(0);
+    expect(energyData.adjustedTrainings).toHaveLength(0);
+  });
+});

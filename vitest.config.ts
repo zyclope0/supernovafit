@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -26,24 +26,24 @@ export default defineConfig({
         'next.config.js',
         'tailwind.config.js',
         'src/app/layout.tsx', // Layout spécifique Next.js
-        '**/*.stories.tsx',   // Storybook si ajouté plus tard
-        '.next/**',           // Build Next.js
-        '.firebase/**',       // Firebase build
-        'dist/**',           // Distribution
-        'build/**',          // Build générique
-        'coverage/**',       // Éviter récursion
-        '**/.next/**',       // Build Next.js dans subdirs
-        '**/.firebase/**',   // Firebase dans subdirs
-        '**/*.config.*',     // Fichiers de config
+        '**/*.stories.tsx', // Storybook si ajouté plus tard
+        '.next/**', // Build Next.js
+        '.firebase/**', // Firebase build
+        'dist/**', // Distribution
+        'build/**', // Build générique
+        'coverage/**', // Éviter récursion
+        '**/.next/**', // Build Next.js dans subdirs
+        '**/.firebase/**', // Firebase dans subdirs
+        '**/*.config.*', // Fichiers de config
       ],
       thresholds: {
         global: {
           branches: 25,
           functions: 30,
           lines: 30,
-          statements: 30
-        }
-      }
+          statements: 30,
+        },
+      },
     },
     // Isolation pour éviter les fuites mémoire
     pool: 'forks',
@@ -51,8 +51,8 @@ export default defineConfig({
       forks: {
         singleFork: false,
         minForks: 1,
-        maxForks: 4
-      }
+        maxForks: 4,
+      },
     },
     // Timeout pour tests Firebase
     testTimeout: 10000,
@@ -63,4 +63,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+});

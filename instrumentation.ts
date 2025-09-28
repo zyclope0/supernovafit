@@ -5,24 +5,27 @@
 export async function register() {
   // Only initialize Sentry on the server/edge runtime
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await import('./sentry.server.config')
+    await import('./sentry.server.config');
   }
 
   if (process.env.NEXT_RUNTIME === 'edge') {
-    await import('./sentry.edge.config')
+    await import('./sentry.edge.config');
   }
 }
 
 export async function onRequestError(error: unknown) {
   try {
-    const Sentry = await import('@sentry/nextjs')
+    const Sentry = await import('@sentry/nextjs');
     // Prefer the dedicated helper when available
     // Fallback to captureException for older SDKs
-    if ('captureRequestError' in Sentry && typeof Sentry.captureRequestError === 'function') {
+    if (
+      'captureRequestError' in Sentry &&
+      typeof Sentry.captureRequestError === 'function'
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      Sentry.captureRequestError(error, {} as any, {} as any)
+      Sentry.captureRequestError(error, {} as any, {} as any);
     } else if (typeof Sentry.captureException === 'function') {
-      Sentry.captureException(error)
+      Sentry.captureException(error);
     }
   } catch {
     // Swallow to avoid breaking request pipeline in case of import issues

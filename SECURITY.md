@@ -12,10 +12,12 @@
 We take the security of SuperNovaFit seriously. If you believe you have found a security vulnerability, please report it to us as described below.
 
 ### Please do NOT:
+
 - Open a public GitHub issue
 - Disclose the vulnerability publicly before it has been addressed
 
 ### Please DO:
+
 - Email us at: security@supernovafit.com
 - Include the following information:
   - Type of vulnerability (e.g., XSS, SQL Injection, Authentication Bypass)
@@ -28,7 +30,7 @@ We take the security of SuperNovaFit seriously. If you believe you have found a 
 
 - **Acknowledgment**: Within 48 hours
 - **Initial Assessment**: Within 5 business days
-- **Resolution Timeline**: 
+- **Resolution Timeline**:
   - Critical: 7 days
   - High: 14 days
   - Medium: 30 days
@@ -37,23 +39,27 @@ We take the security of SuperNovaFit seriously. If you believe you have found a 
 ## Security Measures
 
 ### Authentication & Authorization
+
 - Firebase Authentication with secure session management
 - Role-based access control (Coach/Athlete)
 - AuthGuard protection on all routes
 
 ### Data Protection
+
 - HTTPS enforced on all connections
 - Firestore security rules with user isolation
 - Input validation using Zod schemas
 - XSS protection through React's built-in escaping
 
 ### Infrastructure
+
 - Firebase Hosting with DDoS protection
 - Automated security updates via Dependabot
 - Regular npm audit in CI/CD pipeline
 - Sentry for error monitoring
 
 ### Client-Side Security
+
 - Content Security Policy headers
 - Secure cookie settings
 - No sensitive data in localStorage

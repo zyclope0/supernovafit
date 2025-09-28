@@ -7,6 +7,7 @@
 ## 🎯 **OBJECTIF ATTEINT**
 
 **Standardiser l'apparence de TOUTES les modals** pour avoir exactement la même apparence que la modal Journal (qui était parfaite) :
+
 - ✅ **Cadre blanc** proéminent (`border-2 border-white/30`)
 - ✅ **Effet de glow** subtil (`shadow-2xl shadow-white/20 ring-1 ring-white/30`)
 - ✅ **Transparence** optimale (`bg-gradient-to-br from-white/5 via-transparent to-white/5`)
@@ -27,21 +28,21 @@ export default function StandardModal({
   subtitle,
   icon,
   children,
-  maxWidth = '4xl',
-  height = '85vh',
+  maxWidth = "4xl",
+  height = "85vh",
   showFooter = false,
   footerContent,
   onEdit,
-  editLabel = 'Modifier',
-  className = ''
-}: StandardModalProps)
+  editLabel = "Modifier",
+  className = "",
+}: StandardModalProps);
 ```
 
 ### **🎨 Style Standardisé (Identique à Journal) :**
 
 ```css
 /* Container principal */
-.bg-space-900 border-2 border-white/30 rounded-xl 
+.bg-space-900 border-2 border-white/30 rounded-xl
 shadow-2xl shadow-white/20 ring-1 ring-white/30
 
 /* Effet de glow subtil */
@@ -58,6 +59,7 @@ shadow-2xl shadow-white/20 ring-1 ring-white/30
 ## 🔄 **MIGRATION EFFECTUÉE**
 
 ### **1. TrainingFormModal → StandardModal**
+
 ```typescript
 // ❌ AVANT : Code dupliqué avec style différent
 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50...">
@@ -81,6 +83,7 @@ shadow-2xl shadow-white/20 ring-1 ring-white/30
 ```
 
 ### **2. DetailModal → StandardModal**
+
 ```typescript
 // ❌ AVANT : Code dupliqué
 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50...">
@@ -104,6 +107,7 @@ shadow-2xl shadow-white/20 ring-1 ring-white/30
 ```
 
 ### **3. FormModal → StandardModal**
+
 ```typescript
 // ❌ AVANT : Code dupliqué
 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50...">
@@ -128,41 +132,44 @@ shadow-2xl shadow-white/20 ring-1 ring-white/30
 
 ### **✅ Avant/Après :**
 
-| Aspect | Avant | Après |
-|--------|-------|-------|
+| Aspect            | Avant                       | Après                     |
+| ----------------- | --------------------------- | ------------------------- |
 | **Code dupliqué** | ❌ 3x structures identiques | ✅ **1 composant unifié** |
-| **Apparence** | ❌ Incohérente | ✅ **100% identique** |
-| **Maintenance** | ❌ 3 endroits à modifier | ✅ **1 seul endroit** |
-| **Cohérence** | ❌ Variables | ✅ **Parfaite** |
+| **Apparence**     | ❌ Incohérente              | ✅ **100% identique**     |
+| **Maintenance**   | ❌ 3 endroits à modifier    | ✅ **1 seul endroit**     |
+| **Cohérence**     | ❌ Variables                | ✅ **Parfaite**           |
 
 ### **🎯 Modals Standardisées :**
 
-| Modal | Statut | Apparence |
-|-------|--------|-----------|
-| **TrainingFormModal** | ✅ | **Identique à Journal** |
-| **DetailModal** | ✅ | **Identique à Journal** |
-| **FormModal** | ✅ | **Identique à Journal** |
-| **MesuresDetailModal** | ✅ | **Identique à Journal** |
-| **MesuresFormModal** | ✅ | **Identique à Journal** |
-| **DietDetailModal** | ✅ | **Identique à Journal** |
-| **DietFormModal** | ✅ | **Identique à Journal** |
-| **JournalForm** | ✅ | **Identique à Journal** |
+| Modal                  | Statut | Apparence               |
+| ---------------------- | ------ | ----------------------- |
+| **TrainingFormModal**  | ✅     | **Identique à Journal** |
+| **DetailModal**        | ✅     | **Identique à Journal** |
+| **FormModal**          | ✅     | **Identique à Journal** |
+| **MesuresDetailModal** | ✅     | **Identique à Journal** |
+| **MesuresFormModal**   | ✅     | **Identique à Journal** |
+| **DietDetailModal**    | ✅     | **Identique à Journal** |
+| **DietFormModal**      | ✅     | **Identique à Journal** |
+| **JournalForm**        | ✅     | **Identique à Journal** |
 
 ## 🏆 **BÉNÉFICES**
 
 ### **✅ UX/UI :**
+
 - **Cohérence parfaite** : Toutes les modals ont exactement la même apparence
 - **Apparence professionnelle** : Cadre blanc + effet de glow sur toutes les modals
 - **Focus optimal** : Même niveau de contraste et de visibilité
 - **Expérience unifiée** : L'utilisateur ne voit plus de différences
 
 ### **✅ Développement :**
+
 - **Code centralisé** : 1 seul composant pour toutes les modals
 - **Maintenance simplifiée** : Modifier l'apparence = 1 seul fichier
 - **Réutilisabilité** : StandardModal peut être utilisé partout
 - **Évolutivité** : Facile d'ajouter de nouvelles modals
 
 ### **✅ Performance :**
+
 - **Bundle réduit** : Moins de code dupliqué
 - **Rendu optimisé** : Composant unique réutilisé
 - **Mémoire** : Moins d'instances de composants
@@ -170,6 +177,7 @@ shadow-2xl shadow-white/20 ring-1 ring-white/30
 ## 🔧 **UTILISATION**
 
 ### **Pour une nouvelle modal :**
+
 ```typescript
 import StandardModal from '@/components/ui/StandardModal'
 
@@ -187,6 +195,7 @@ import StandardModal from '@/components/ui/StandardModal'
 ```
 
 ### **Avec bouton d'édition :**
+
 ```typescript
 <StandardModal
   isOpen={isOpen}
@@ -200,6 +209,7 @@ import StandardModal from '@/components/ui/StandardModal'
 ```
 
 ### **Avec footer personnalisé :**
+
 ```typescript
 <StandardModal
   isOpen={isOpen}
@@ -217,7 +227,7 @@ import StandardModal from '@/components/ui/StandardModal'
 **Mission accomplie !** Toutes les modals de SuperNovaFit ont maintenant **exactement la même apparence** que la modal Journal :
 
 - ✅ **Cadre blanc** proéminent et visible
-- ✅ **Effet de glow** subtil et élégant  
+- ✅ **Effet de glow** subtil et élégant
 - ✅ **Transparence** optimale
 - ✅ **Focus** parfait pour l'utilisateur
 - ✅ **Code centralisé** et maintenable

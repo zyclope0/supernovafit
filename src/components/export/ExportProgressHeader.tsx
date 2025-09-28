@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import React from 'react'
-import ProgressHeader from '@/components/ui/ProgressHeader'
+import React from 'react';
+import ProgressHeader from '@/components/ui/ProgressHeader';
 
 interface ExportData {
-  current: number
-  target: number
-  unit: string
+  current: number;
+  target: number;
+  unit: string;
 }
 
 interface ExportProgressHeaderProps {
-  title: string
-  emoji: string
+  title: string;
+  emoji: string;
   items: {
-    icon: React.ReactNode
-    label: string
-    data: ExportData
-    color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red'
-  }[]
-  advice?: string
-  lastExportDate?: string // NEW: Add lastExportDate prop
+    icon: React.ReactNode;
+    label: string;
+    data: ExportData;
+    color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red';
+  }[];
+  advice?: string;
+  lastExportDate?: string; // NEW: Add lastExportDate prop
 }
 
 export default function ExportProgressHeader({
@@ -27,7 +27,7 @@ export default function ExportProgressHeader({
   emoji,
   items,
   advice,
-  lastExportDate
+  lastExportDate,
 }: ExportProgressHeaderProps) {
   return (
     <ProgressHeader
@@ -38,7 +38,8 @@ export default function ExportProgressHeader({
       items={items}
       advice={advice}
       showPeriodSelector={false} // NEW: Hide period selector
-      extraContent={ // NEW: Add last export date
+      extraContent={
+        // NEW: Add last export date
         lastExportDate ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="text-neon-pink">Dernier export:</span>
@@ -47,5 +48,5 @@ export default function ExportProgressHeader({
         ) : null
       }
     />
-  )
+  );
 }

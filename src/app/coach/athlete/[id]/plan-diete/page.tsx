@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { useAuth } from '@/hooks/useAuth'
-import { useCoachDietPlans } from '@/hooks/useFirestore'
-import { CoachDietPlan } from '@/types'
-import { ArrowLeft, Save, Plus, Edit2, Trash2 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { useCoachDietPlans } from '@/hooks/useFirestore';
+import { CoachDietPlan } from '@/types';
+import { ArrowLeft, Save, Plus, Edit2, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-type AthleteLite = { id: string; nom?: string; email?: string }
+type AthleteLite = { id: string; nom?: string; email?: string };
 
 export default function CoachDietPlanPage() {
-  const params = useParams<{ id: string }>()
-  const athleteId: string = params.id
-  const router = useRouter()
-  const { user } = useAuth()
-  const [athlete, setAthlete] = useState<AthleteLite | null>(null)
-  const [currentPlan, setCurrentPlan] = useState<CoachDietPlan | null>(null)
-  const [isCreating, setIsCreating] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  
+  const params = useParams<{ id: string }>();
+  const athleteId: string = params.id;
+  const router = useRouter();
+  const { user } = useAuth();
+  const [athlete, setAthlete] = useState<AthleteLite | null>(null);
+  const [currentPlan, setCurrentPlan] = useState<CoachDietPlan | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     petit_dej: '',
     collation_matin: '',
@@ -27,29 +27,39 @@ export default function CoachDietPlanPage() {
     collation_apres_midi: '',
     diner: '',
     collation_soir: '',
-    notes_generales: ''
-  })
+    notes_generales: '',
+  });
 
   // Récupérer les plans diète de l'athlète
-  const { dietPlans, loading: loadingPlans, addDietPlan, updateDietPlan, deleteDietPlan } = useCoachDietPlans(athleteId as string)
+  const {
+    dietPlans,
+    loading: loadingPlans,
+    addDietPlan,
+    updateDietPlan,
+    deleteDietPlan,
+  } = useCoachDietPlans(athleteId as string);
 
   useEffect(() => {
-    if (!user || !athleteId) return
+    if (!user || !athleteId) return;
 
     // Récupérer les infos de l'athlète
     const fetchAthlete = async () => {
       try {
         // Ici on pourrait récupérer les détails de l'athlète
         // Pour l'instant on simule
-        setAthlete({ id: athleteId, nom: 'Yannick', email: 'test@supernovafit.com' })
+        setAthlete({
+          id: athleteId,
+          nom: 'Yannick',
+          email: 'test@supernovafit.com',
+        });
       } catch (error) {
-        console.error('Erreur récupération athlète:', error)
-        toast.error('Erreur lors du chargement des données athlète')
+        console.error('Erreur récupération athlète:', error);
+        toast.error('Erreur lors du chargement des données athlète');
       }
-    }
+    };
 
-    fetchAthlete()
-  }, [user, athleteId])
+    fetchAthlete();
+  }, [user, athleteId]);
 
   const mealTypes = [
     { key: 'petit_dej', label: 'Petit Déjeuner', icon: '🌅' },
@@ -57,46 +67,46 @@ export default function CoachDietPlanPage() {
     { key: 'dejeuner', label: 'Déjeuner', icon: '🍽️' },
     { key: 'collation_apres_midi', label: 'Collation Après-midi', icon: '🍎' },
     { key: 'diner', label: 'Dîner', icon: '🌙' },
-    { key: 'collation_soir', label: 'Collation Soir', icon: '🌃' }
-  ]
+    { key: 'collation_soir', label: 'Collation Soir', icon: '🌃' },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!user) return
+    e.preventDefault();
+    if (!user) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       if (currentPlan) {
         // Modification
         await updateDietPlan(currentPlan.id, {
           ...formData,
-          updated_at: new Date()
-        })
-        toast.success('Plan diète mis à jour avec succès !')
+          updated_at: new Date(),
+        });
+        toast.success('Plan diète mis à jour avec succès !');
       } else {
         // Création
         await addDietPlan({
           coach_id: user.uid,
           athlete_id: athleteId as string,
           date_creation: new Date().toISOString().split('T')[0],
-          ...formData
-        })
-        toast.success('Plan diète créé avec succès !')
+          ...formData,
+        });
+        toast.success('Plan diète créé avec succès !');
       }
-      
-      setIsCreating(false)
-      setCurrentPlan(null)
-      resetForm()
+
+      setIsCreating(false);
+      setCurrentPlan(null);
+      resetForm();
     } catch (error) {
-      console.error('Erreur sauvegarde plan diète:', error)
-      toast.error('Erreur lors de la sauvegarde')
+      console.error('Erreur sauvegarde plan diète:', error);
+      toast.error('Erreur lors de la sauvegarde');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleEdit = (plan: CoachDietPlan) => {
-    setCurrentPlan(plan)
+    setCurrentPlan(plan);
     setFormData({
       petit_dej: plan.petit_dej,
       collation_matin: plan.collation_matin,
@@ -104,22 +114,22 @@ export default function CoachDietPlanPage() {
       collation_apres_midi: plan.collation_apres_midi,
       diner: plan.diner,
       collation_soir: plan.collation_soir,
-      notes_generales: plan.notes_generales || ''
-    })
-    setIsCreating(true)
-  }
+      notes_generales: plan.notes_generales || '',
+    });
+    setIsCreating(true);
+  };
 
   const handleDelete = async (planId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce plan diète ?')) return
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce plan diète ?')) return;
 
     try {
-      await deleteDietPlan(planId)
-      toast.success('Plan diète supprimé avec succès !')
+      await deleteDietPlan(planId);
+      toast.success('Plan diète supprimé avec succès !');
     } catch (error) {
-      console.error('Erreur suppression plan:', error)
-      toast.error('Erreur lors de la suppression')
+      console.error('Erreur suppression plan:', error);
+      toast.error('Erreur lors de la suppression');
     }
-  }
+  };
 
   const resetForm = () => {
     setFormData({
@@ -129,9 +139,9 @@ export default function CoachDietPlanPage() {
       collation_apres_midi: '',
       diner: '',
       collation_soir: '',
-      notes_generales: ''
-    })
-  }
+      notes_generales: '',
+    });
+  };
 
   if (!athlete) {
     return (
@@ -140,7 +150,7 @@ export default function CoachDietPlanPage() {
           <div className="text-white">Chargement...</div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -160,12 +170,12 @@ export default function CoachDietPlanPage() {
               <p className="text-gray-400">Athlète : {athlete.nom}</p>
             </div>
           </div>
-          
+
           <button
             onClick={() => {
-              setIsCreating(true)
-              setCurrentPlan(null)
-              resetForm()
+              setIsCreating(true);
+              setCurrentPlan(null);
+              resetForm();
             }}
             className="flex items-center space-x-2 px-4 py-2 glass-effect rounded-lg border border-neon-green/20 hover:glow-green transition-all"
           >
@@ -177,26 +187,40 @@ export default function CoachDietPlanPage() {
         {/* Liste des plans existants */}
         {!isCreating && (
           <div className="space-y-4 mb-8">
-            <h2 className="text-xl font-bold text-white mb-4">Plans Existants</h2>
-            
+            <h2 className="text-xl font-bold text-white mb-4">
+              Plans Existants
+            </h2>
+
             {loadingPlans ? (
               <div className="glass-effect rounded-xl p-6 border border-white/10">
-                <p className="text-gray-400 text-center">Chargement des plans...</p>
+                <p className="text-gray-400 text-center">
+                  Chargement des plans...
+                </p>
               </div>
             ) : dietPlans.length === 0 ? (
               <div className="glass-effect rounded-xl p-6 border border-white/10">
-                <p className="text-gray-400 text-center">Aucun plan diète créé</p>
+                <p className="text-gray-400 text-center">
+                  Aucun plan diète créé
+                </p>
               </div>
             ) : (
               dietPlans.map((plan) => (
-                <div key={plan.id} className="glass-effect rounded-xl p-6 border border-white/10">
+                <div
+                  key={plan.id}
+                  className="glass-effect rounded-xl p-6 border border-white/10"
+                >
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-white">
-                        Plan du {new Date(plan.date_creation).toLocaleDateString('fr-FR')}
+                        Plan du{' '}
+                        {new Date(plan.date_creation).toLocaleDateString(
+                          'fr-FR',
+                        )}
                       </h3>
                       {plan.notes_generales && (
-                        <p className="text-gray-400 text-sm mt-1">{plan.notes_generales}</p>
+                        <p className="text-gray-400 text-sm mt-1">
+                          {plan.notes_generales}
+                        </p>
                       )}
                     </div>
                     <div className="flex space-x-2">
@@ -214,19 +238,21 @@ export default function CoachDietPlanPage() {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Aperçu du plan */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {mealTypes.map(({ key, label, icon }) => {
-                      const content = plan[key as keyof typeof plan] as string
+                      const content = plan[key as keyof typeof plan] as string;
                       return content ? (
                         <div key={key} className="bg-white/5 rounded-lg p-3">
                           <h4 className="text-sm font-medium text-neon-cyan mb-1">
                             {icon} {label}
                           </h4>
-                          <p className="text-xs text-gray-300 line-clamp-2">{content}</p>
+                          <p className="text-xs text-gray-300 line-clamp-2">
+                            {content}
+                          </p>
                         </div>
-                      ) : null
+                      ) : null;
                     })}
                   </div>
                 </div>
@@ -253,7 +279,12 @@ export default function CoachDietPlanPage() {
                     </label>
                     <textarea
                       value={formData[key as keyof typeof formData]}
-                      onChange={(e) => setFormData(prev => ({ ...prev, [key]: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          [key]: e.target.value,
+                        }))
+                      }
                       placeholder={`Indications pour le ${label.toLowerCase()}...`}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none focus:ring-1 focus:ring-neon-cyan/50 resize-none"
                       rows={4}
@@ -269,7 +300,12 @@ export default function CoachDietPlanPage() {
                 </label>
                 <textarea
                   value={formData.notes_generales}
-                  onChange={(e) => setFormData(prev => ({ ...prev, notes_generales: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      notes_generales: e.target.value,
+                    }))
+                  }
                   placeholder="Notes additionnelles, objectifs, recommandations générales..."
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-neon-purple focus:outline-none focus:ring-1 focus:ring-neon-purple/50 resize-none"
                   rows={3}
@@ -281,9 +317,9 @@ export default function CoachDietPlanPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    setIsCreating(false)
-                    setCurrentPlan(null)
-                    resetForm()
+                    setIsCreating(false);
+                    setCurrentPlan(null);
+                    resetForm();
                   }}
                   className="px-6 py-2 glass-effect rounded-lg border border-white/10 text-white hover:bg-white/5 transition-all"
                 >
@@ -296,7 +332,11 @@ export default function CoachDietPlanPage() {
                 >
                   <Save className="w-4 h-4 text-neon-green" />
                   <span className="text-white">
-                    {isSubmitting ? 'Sauvegarde...' : currentPlan ? 'Modifier' : 'Créer'}
+                    {isSubmitting
+                      ? 'Sauvegarde...'
+                      : currentPlan
+                        ? 'Modifier'
+                        : 'Créer'}
                   </span>
                 </button>
               </div>
@@ -305,5 +345,5 @@ export default function CoachDietPlanPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

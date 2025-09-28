@@ -1,123 +1,156 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { useAllAthletes } from '@/hooks/useFirestore'
-import { useRouter } from 'next/navigation'
-import MainLayout from '@/components/layout/MainLayout'
-import { Users, Search, UserCheck, UserX, Mail, Calendar, Filter, Target, Clock } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useAllAthletes } from '@/hooks/useFirestore';
+import { useRouter } from 'next/navigation';
+import MainLayout from '@/components/layout/MainLayout';
+import {
+  Users,
+  Search,
+  UserCheck,
+  UserX,
+  Mail,
+  Calendar,
+  Filter,
+  Target,
+  Clock,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
 
-type FilterType = 'all' | 'with-coach' | 'without-coach'
-type ObjectifType = 'all' | 'maintien' | 'prise_masse' | 'seche' | 'performance'
+type FilterType = 'all' | 'with-coach' | 'without-coach';
+type ObjectifType =
+  | 'all'
+  | 'maintien'
+  | 'prise_masse'
+  | 'seche'
+  | 'performance';
 
 // Type pour les athlètes dans la page
 interface AthleteData {
-  id: string
-  nom?: string
-  email?: string
-  objectif?: string
-  dernier_acces?: unknown
-  ownerCoachId?: string
-  date_invitation?: unknown
-  role?: string
+  id: string;
+  nom?: string;
+  email?: string;
+  objectif?: string;
+  dernier_acces?: unknown;
+  ownerCoachId?: string;
+  date_invitation?: unknown;
+  role?: string;
 }
 
 export default function AllAthletesPage() {
-  const { userProfile } = useAuth()
-  const router = useRouter()
-  const { athletes, loading } = useAllAthletes()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterType, setFilterType] = useState<FilterType>('all')
-  const [objectifFilter, setObjectifFilter] = useState<ObjectifType>('all')
-  const [showInviteModal, setShowInviteModal] = useState(false)
-  const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null)
+  const { userProfile } = useAuth();
+  const router = useRouter();
+  const { athletes, loading } = useAllAthletes();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [objectifFilter, setObjectifFilter] = useState<ObjectifType>('all');
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
 
   useEffect(() => {
     if (userProfile && userProfile.role !== 'coach') {
-      toast.error("Accès réservé aux coachs")
-      router.push('/')
+      toast.error('Accès réservé aux coachs');
+      router.push('/');
     }
-  }, [userProfile, router])
+  }, [userProfile, router]);
 
   // Fonction pour déterminer si un athlète est actif (7 jours)
   const isAthleteActive = (dernierAcces: unknown) => {
-    if (!dernierAcces) return false
-    
-    const lastAccess = typeof dernierAcces === 'object' && dernierAcces && 'seconds' in (dernierAcces as Record<string, unknown>)
-      ? new Date((dernierAcces as { seconds: number }).seconds * 1000)
-      : new Date(dernierAcces as string | number | Date)
-    
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    return lastAccess > sevenDaysAgo
-  }
+    if (!dernierAcces) return false;
+
+    const lastAccess =
+      typeof dernierAcces === 'object' &&
+      dernierAcces &&
+      'seconds' in (dernierAcces as Record<string, unknown>)
+        ? new Date((dernierAcces as { seconds: number }).seconds * 1000)
+        : new Date(dernierAcces as string | number | Date);
+
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    return lastAccess > sevenDaysAgo;
+  };
 
   // Fonction pour formater la date d'invitation
   const formatInvitationDate = (dateInvitation: unknown) => {
-    if (!dateInvitation) return 'Non disponible'
-    
-    const date = typeof dateInvitation === 'object' && dateInvitation && 'seconds' in (dateInvitation as Record<string, unknown>)
-      ? new Date((dateInvitation as { seconds: number }).seconds * 1000)
-      : new Date(dateInvitation as string | number | Date)
-    
+    if (!dateInvitation) return 'Non disponible';
+
+    const date =
+      typeof dateInvitation === 'object' &&
+      dateInvitation &&
+      'seconds' in (dateInvitation as Record<string, unknown>)
+        ? new Date((dateInvitation as { seconds: number }).seconds * 1000)
+        : new Date(dateInvitation as string | number | Date);
+
     return date.toLocaleDateString('fr-FR', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
-    })
-  }
+      year: 'numeric',
+    });
+  };
 
   // Fonction pour formater la dernière activité
   const formatLastActivity = (dernierAcces: unknown) => {
-    if (!dernierAcces) return 'Jamais'
-    
-    const lastAccess = typeof dernierAcces === 'object' && dernierAcces && 'seconds' in (dernierAcces as Record<string, unknown>)
-      ? new Date((dernierAcces as { seconds: number }).seconds * 1000)
-      : new Date(dernierAcces as string | number | Date)
-    
-    const now = new Date()
-    const diffInDays = Math.floor((now.getTime() - lastAccess.getTime()) / (1000 * 60 * 60 * 24))
-    
-    if (diffInDays === 0) return 'Aujourd\'hui'
-    if (diffInDays === 1) return 'Hier'
-    if (diffInDays < 7) return `Il y a ${diffInDays} jours`
-    if (diffInDays < 30) return `Il y a ${Math.floor(diffInDays / 7)} semaines`
-    return lastAccess.toLocaleDateString('fr-FR')
-  }
+    if (!dernierAcces) return 'Jamais';
+
+    const lastAccess =
+      typeof dernierAcces === 'object' &&
+      dernierAcces &&
+      'seconds' in (dernierAcces as Record<string, unknown>)
+        ? new Date((dernierAcces as { seconds: number }).seconds * 1000)
+        : new Date(dernierAcces as string | number | Date);
+
+    const now = new Date();
+    const diffInDays = Math.floor(
+      (now.getTime() - lastAccess.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (diffInDays === 0) return "Aujourd'hui";
+    if (diffInDays === 1) return 'Hier';
+    if (diffInDays < 7) return `Il y a ${diffInDays} jours`;
+    if (diffInDays < 30) return `Il y a ${Math.floor(diffInDays / 7)} semaines`;
+    return lastAccess.toLocaleDateString('fr-FR');
+  };
 
   // Filtrer les athlètes selon la recherche et les filtres
   const filteredAthletes = athletes.filter((athlete: AthleteData) => {
-    const matchesSearch = athlete.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         athlete.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    if (!matchesSearch) return false
+    const matchesSearch =
+      athlete.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      athlete.email?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (!matchesSearch) return false;
 
     // Filtre par statut coach
-    const matchesCoachFilter = filterType === 'all' || 
+    const matchesCoachFilter =
+      filterType === 'all' ||
       (filterType === 'with-coach' && athlete.ownerCoachId) ||
-      (filterType === 'without-coach' && !athlete.ownerCoachId)
+      (filterType === 'without-coach' && !athlete.ownerCoachId);
 
-    if (!matchesCoachFilter) return false
+    if (!matchesCoachFilter) return false;
 
     // Filtre par objectif
-    const matchesObjectifFilter = objectifFilter === 'all' || athlete.objectif === objectifFilter
+    const matchesObjectifFilter =
+      objectifFilter === 'all' || athlete.objectif === objectifFilter;
 
-    return matchesObjectifFilter
-  })
+    return matchesObjectifFilter;
+  });
 
   // Statistiques
   const stats = {
     total: athletes.length,
     withCoach: athletes.filter((a: AthleteData) => a.ownerCoachId).length,
     withoutCoach: athletes.filter((a: AthleteData) => !a.ownerCoachId).length,
-    active: athletes.filter((a: AthleteData) => isAthleteActive(a.dernier_acces)).length,
-    inactive: athletes.filter((a: AthleteData) => !isAthleteActive(a.dernier_acces)).length
-  }
+    active: athletes.filter((a: AthleteData) =>
+      isAthleteActive(a.dernier_acces),
+    ).length,
+    inactive: athletes.filter(
+      (a: AthleteData) => !isAthleteActive(a.dernier_acces),
+    ).length,
+  };
 
   const handleInvite = (athleteId: string) => {
-    setSelectedAthlete(athleteId)
-    setShowInviteModal(true)
-  }
+    setSelectedAthlete(athleteId);
+    setShowInviteModal(true);
+  };
 
   if (loading) {
     return (
@@ -131,7 +164,7 @@ export default function AllAthletesPage() {
           </div>
         </div>
       </MainLayout>
-    )
+    );
   }
 
   return (
@@ -140,7 +173,9 @@ export default function AllAthletesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Tous les Athlètes</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+              Tous les Athlètes
+            </h1>
             <p className="text-muted-foreground text-sm sm:text-base">
               Gérez et invitez des athlètes à rejoindre votre équipe
             </p>
@@ -161,22 +196,26 @@ export default function AllAthletesPage() {
               <Users className="w-8 h-8 text-neon-purple" />
             </div>
           </div>
-          
+
           <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Avec Coach</p>
-                <p className="text-2xl font-bold text-neon-green">{stats.withCoach}</p>
+                <p className="text-2xl font-bold text-neon-green">
+                  {stats.withCoach}
+                </p>
               </div>
               <UserCheck className="w-8 h-8 text-neon-green" />
             </div>
           </div>
-          
+
           <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Sans Coach</p>
-                <p className="text-2xl font-bold text-neon-cyan">{stats.withoutCoach}</p>
+                <p className="text-2xl font-bold text-neon-cyan">
+                  {stats.withoutCoach}
+                </p>
               </div>
               <UserX className="w-8 h-8 text-neon-cyan" />
             </div>
@@ -186,7 +225,9 @@ export default function AllAthletesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Actifs</p>
-                <p className="text-2xl font-bold text-neon-green">{stats.active}</p>
+                <p className="text-2xl font-bold text-neon-green">
+                  {stats.active}
+                </p>
               </div>
               <Clock className="w-8 h-8 text-neon-green" />
             </div>
@@ -196,7 +237,9 @@ export default function AllAthletesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Inactifs</p>
-                <p className="text-2xl font-bold text-gray-400">{stats.inactive}</p>
+                <p className="text-2xl font-bold text-gray-400">
+                  {stats.inactive}
+                </p>
               </div>
               <Clock className="w-8 h-8 text-gray-400" />
             </div>
@@ -208,7 +251,10 @@ export default function AllAthletesPage() {
           <div className="space-y-4">
             {/* Recherche */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" aria-hidden="true" />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground"
+                aria-hidden="true"
+              />
               <label htmlFor="all-athletes-search" className="sr-only">
                 Rechercher un athlète
               </label>
@@ -326,22 +372,28 @@ export default function AllAthletesPage() {
           {filteredAthletes.length === 0 ? (
             <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
               <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">Aucun athlète trouvé</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Aucun athlète trouvé
+              </h3>
               <p className="text-muted-foreground">
-                {searchTerm ? 'Aucun athlète ne correspond à votre recherche.' : 'Aucun athlète disponible.'}
+                {searchTerm
+                  ? 'Aucun athlète ne correspond à votre recherche.'
+                  : 'Aucun athlète disponible.'}
               </p>
             </div>
           ) : (
-                                      filteredAthletes.map((athlete: AthleteData) => (
-               <div
-                 key={athlete.id}
+            filteredAthletes.map((athlete: AthleteData) => (
+              <div
+                key={athlete.id}
                 className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-purple/50 
                          transition-all hover:transform hover:scale-[1.02]"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white">{athlete.nom || 'Utilisateur'}</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        {athlete.nom || 'Utilisateur'}
+                      </h3>
                       {athlete.ownerCoachId ? (
                         <span className="px-2 py-1 rounded-full text-xs bg-neon-green/20 text-neon-green flex items-center gap-1">
                           <UserCheck className="w-3 h-3" />
@@ -354,33 +406,45 @@ export default function AllAthletesPage() {
                         </span>
                       )}
                       {/* Badge actif/inactif dynamique */}
-                      <span className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${
-                        isAthleteActive(athlete.dernier_acces)
-                          ? 'bg-neon-green/20 text-neon-green'
-                          : 'bg-red-500/20 text-red-400'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${
+                          isAthleteActive(athlete.dernier_acces)
+                            ? 'bg-neon-green/20 text-neon-green'
+                            : 'bg-red-500/20 text-red-400'
+                        }`}
+                      >
                         <Clock className="w-3 h-3" />
-                        {isAthleteActive(athlete.dernier_acces) ? 'Actif' : 'Inactif'}
+                        {isAthleteActive(athlete.dernier_acces)
+                          ? 'Actif'
+                          : 'Inactif'}
                       </span>
                       {/* Icône objectif avec couleur distinctive */}
                       {athlete.objectif && (
-                        <span className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${
-                          athlete.objectif === 'maintien' ? 'bg-blue-500/20 text-blue-400' :
-                          athlete.objectif === 'prise_masse' ? 'bg-orange-500/20 text-orange-400' :
-                          athlete.objectif === 'seche' ? 'bg-red-500/20 text-red-400' :
-                          'bg-yellow-500/20 text-yellow-400'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 ${
+                            athlete.objectif === 'maintien'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : athlete.objectif === 'prise_masse'
+                                ? 'bg-orange-500/20 text-orange-400'
+                                : athlete.objectif === 'seche'
+                                  ? 'bg-red-500/20 text-red-400'
+                                  : 'bg-yellow-500/20 text-yellow-400'
+                          }`}
+                        >
                           <Target className="w-3 h-3" />
-                          {athlete.objectif === 'prise_masse' ? 'Prise de masse' :
-                           athlete.objectif === 'seche' ? 'Sèche' :
-                           athlete.objectif === 'performance' ? 'Performance' :
-                           'Maintien'}
+                          {athlete.objectif === 'prise_masse'
+                            ? 'Prise de masse'
+                            : athlete.objectif === 'seche'
+                              ? 'Sèche'
+                              : athlete.objectif === 'performance'
+                                ? 'Performance'
+                                : 'Maintien'}
                         </span>
                       )}
                     </div>
                     <p className="text-sm text-gray-400">{athlete.email}</p>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     {!athlete.ownerCoachId && (
                       <button
@@ -393,7 +457,9 @@ export default function AllAthletesPage() {
                       </button>
                     )}
                     <button
-                      onClick={() => router.push(`/coach/athlete/${athlete.id}`)}
+                      onClick={() =>
+                        router.push(`/coach/athlete/${athlete.id}`)
+                      }
                       className="px-3 py-2 bg-white/5 text-white rounded-lg hover:bg-white/10 
                                transition-colors flex items-center gap-2 text-sm"
                     >
@@ -406,14 +472,21 @@ export default function AllAthletesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    <span>Dernière activité: {formatLastActivity(athlete.dernier_acces)}</span>
+                    <span>
+                      Dernière activité:{' '}
+                      {formatLastActivity(athlete.dernier_acces)}
+                    </span>
                   </div>
-                  {athlete.date_invitation !== undefined && athlete.date_invitation !== null && (
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>Coach depuis: {formatInvitationDate(athlete.date_invitation)}</span>
-                    </div>
-                  )}
+                  {athlete.date_invitation !== undefined &&
+                    athlete.date_invitation !== null && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          Coach depuis:{' '}
+                          {formatInvitationDate(athlete.date_invitation)}
+                        </span>
+                      </div>
+                    )}
                 </div>
               </div>
             ))
@@ -424,7 +497,9 @@ export default function AllAthletesPage() {
         {showInviteModal && selectedAthlete && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="glass-effect p-6 rounded-xl border border-white/10 max-w-md w-full mx-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Inviter un athlète</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">
+                Inviter un athlète
+              </h3>
               <p className="text-muted-foreground mb-4">
                 Cette fonctionnalité sera bientôt disponible.
               </p>
@@ -441,5 +516,5 @@ export default function AllAthletesPage() {
         )}
       </div>
     </MainLayout>
-  )
+  );
 }

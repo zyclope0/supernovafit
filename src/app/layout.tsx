@@ -1,16 +1,17 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
-import ChunkGuard from '@/components/runtime/ChunkGuard'
-import InstallBanner from '@/components/pwa/InstallBanner'
-import VitalsReporterWrapper from '@/components/analytics/VitalsReporterWrapper'
-import '../styles/globals.css'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Toaster } from 'react-hot-toast';
+import ChunkGuard from '@/components/runtime/ChunkGuard';
+import InstallBanner from '@/components/pwa/InstallBanner';
+import VitalsReporterWrapper from '@/components/analytics/VitalsReporterWrapper';
+import '../styles/globals.css';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'SuperNovaFit - Plateforme Diète & Entraînement',
-  description: 'Suivez votre diète, vos entraînements et votre progression physique',
+  description:
+    'Suivez votre diète, vos entraînements et votre progression physique',
   icons: [
     { rel: 'icon', url: '/favicon.ico' },
     { rel: 'apple-touch-icon', url: '/icons/icon-192x192.svg' },
@@ -23,11 +24,12 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'SuperNovaFit',
-    description: 'Suivez votre diète, vos entraînements et votre progression physique',
+    description:
+      'Suivez votre diète, vos entraînements et votre progression physique',
     siteName: 'SuperNovaFit',
     type: 'website',
   },
-}
+};
 
 export const viewport = {
   width: 'device-width',
@@ -35,12 +37,12 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: '#3b82f6',
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="fr" className="dark">
@@ -67,14 +69,14 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-gradient-space min-h-screen`}>
         {/* Skip Links for Accessibility */}
-        <a 
-          href="#main-content" 
+        <a
+          href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-primary text-white px-4 py-2 rounded-md shadow-lg transition-all"
         >
           Aller au contenu principal
         </a>
-        <a 
-          href="#main-nav" 
+        <a
+          href="#main-nav"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-52 focus:z-50 bg-primary text-white px-4 py-2 rounded-md shadow-lg transition-all"
         >
           Aller à la navigation
@@ -118,10 +120,10 @@ export default function RootLayout({
             },
           }}
         />
-        
+
         {/* PWA Install Banner */}
         <InstallBanner />
       </body>
     </html>
-  )
-} 
+  );
+}

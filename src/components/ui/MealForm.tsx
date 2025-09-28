@@ -1,34 +1,51 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import toast from 'react-hot-toast'
-import { OpenFoodFactsProduct, MealType, Aliment, Macros } from '@/types'
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { OpenFoodFactsProduct, MealType, Aliment, Macros } from '@/types';
 // calculateMacros import removed - not used
-import { getMealName, generateId } from '@/lib/utils'
-import { repasSchema, validateData } from '@/lib/validation'
-import { useFavoris } from '@/hooks/useFirestore'
-import FoodSearch from './FoodSearch'
-import ManualFoodForm from './ManualFoodForm'
-import FavoritesFoodList from './FavoritesFoodList'
-import { Plus, Trash2, X, Edit3, Search, AlertCircle, Star } from 'lucide-react'
+import { getMealName, generateId } from '@/lib/utils';
+import { repasSchema, validateData } from '@/lib/validation';
+import { useFavoris } from '@/hooks/useFirestore';
+import FoodSearch from './FoodSearch';
+import ManualFoodForm from './ManualFoodForm';
+import FavoritesFoodList from './FavoritesFoodList';
+import {
+  Plus,
+  Trash2,
+  X,
+  Edit3,
+  Search,
+  AlertCircle,
+  Star,
+} from 'lucide-react';
 
 interface MealFormProps {
-  mealType: MealType
-  onSubmit: (aliments: Aliment[], macros: Macros) => void
-  onCancel: () => void
-  existingAliments?: Aliment[] // Pour l'édition
-  isEditing?: boolean // Mode édition
-  isSubmitting?: boolean // État de chargement
+  mealType: MealType;
+  onSubmit: (aliments: Aliment[], macros: Macros) => void;
+  onCancel: () => void;
+  existingAliments?: Aliment[]; // Pour l'édition
+  isEditing?: boolean; // Mode édition
+  isSubmitting?: boolean; // État de chargement
 }
 
-export default function MealForm({ mealType, onSubmit, onCancel, existingAliments, isEditing, isSubmitting }: MealFormProps) {
-  const [aliments, setAliments] = useState<Aliment[]>(existingAliments || [])
-  const [isAddingFood, setIsAddingFood] = useState(false)
-  const [addMode, setAddMode] = useState<'search' | 'manual' | 'favorites' | null>(null)
-  const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const [hasValidated, setHasValidated] = useState(false)
-  
-  const { favoris, addToFavoris, isFavori } = useFavoris()
+export default function MealForm({
+  mealType,
+  onSubmit,
+  onCancel,
+  existingAliments,
+  isEditing,
+  isSubmitting,
+}: MealFormProps) {
+  const [aliments, setAliments] = useState<Aliment[]>(existingAliments || []);
+  const [isAddingFood, setIsAddingFood] = useState(false);
+  const [addMode, setAddMode] = useState<
+    'search' | 'manual' | 'favorites' | null
+  >(null);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [hasValidated, setHasValidated] = useState(false);
+
+  const { favoris, addToFavoris, isFavori } = useFavoris();
 
   // Ajouter un aliment depuis Open Food Facts
   const handleAddProduct = (product: OpenFoodFactsProduct) => {
@@ -50,119 +67,127 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
         prot: product.nutriments.proteins_100g,
         glucides: product.nutriments.carbohydrates_100g,
         lipides: product.nutriments.fat_100g,
-      }
-    }
-    
-    setAliments([...aliments, newAliment])
-    setIsAddingFood(false)
-    setAddMode(null)
-  }
-  
+      },
+    };
+
+    setAliments([...aliments, newAliment]);
+    setIsAddingFood(false);
+    setAddMode(null);
+  };
+
   // Ajouter un aliment manuellement
   const handleAddManualFood = (aliment: Aliment) => {
-    setAliments([...aliments, aliment])
-    setIsAddingFood(false)
-    setAddMode(null)
-  }
+    setAliments([...aliments, aliment]);
+    setIsAddingFood(false);
+    setAddMode(null);
+  };
 
   // Mettre à jour la quantité d'un aliment
   const updateQuantity = (id: string, quantite: number) => {
-    setAliments(aliments.map(aliment => {
-      if (aliment.id === id && aliment.macros_base) {
-        // Recalculer les macros selon la nouvelle quantité en utilisant les valeurs de base
-        const factor = quantite / 100
-        return {
-          ...aliment,
-          quantite,
-          macros: {
-            kcal: Math.round(aliment.macros_base.kcal * factor),
-            prot: Math.round(aliment.macros_base.prot * factor * 10) / 10,
-            glucides: Math.round(aliment.macros_base.glucides * factor * 10) / 10,
-            lipides: Math.round(aliment.macros_base.lipides * factor * 10) / 10,
-          }
+    setAliments(
+      aliments.map((aliment) => {
+        if (aliment.id === id && aliment.macros_base) {
+          // Recalculer les macros selon la nouvelle quantité en utilisant les valeurs de base
+          const factor = quantite / 100;
+          return {
+            ...aliment,
+            quantite,
+            macros: {
+              kcal: Math.round(aliment.macros_base.kcal * factor),
+              prot: Math.round(aliment.macros_base.prot * factor * 10) / 10,
+              glucides:
+                Math.round(aliment.macros_base.glucides * factor * 10) / 10,
+              lipides:
+                Math.round(aliment.macros_base.lipides * factor * 10) / 10,
+            },
+          };
         }
-      }
-      return aliment
-    }))
-  }
+        return aliment;
+      }),
+    );
+  };
 
   // Supprimer un aliment
   const removeAliment = (id: string) => {
-    setAliments(aliments.filter(a => a.id !== id))
-  }
+    setAliments(aliments.filter((a) => a.id !== id));
+  };
 
   // Ajouter aux favoris
   const handleAddToFavoris = async (aliment: Aliment) => {
-    const alimentData: Omit<Aliment, 'id'> = { ...aliment }
+    const alimentData: Omit<Aliment, 'id'> = { ...aliment };
     // Retirer id du payload favoris
-    delete (alimentData as { id?: string }).id
-    const result = await addToFavoris(alimentData)
-    
+    delete (alimentData as { id?: string }).id;
+    const result = await addToFavoris(alimentData);
+
     if (result.success) {
-      toast.success(`${aliment.nom} ajouté aux favoris !`)
+      toast.success(`${aliment.nom} ajouté aux favoris !`);
     } else {
-      toast.error(result.error || 'Erreur')
+      toast.error(result.error || 'Erreur');
     }
-  }
+  };
 
   // Ajouter depuis les favoris
   const handleAddFromFavoris = (alimentData: Omit<Aliment, 'id'>) => {
     const newAliment: Aliment = {
       ...alimentData,
-      id: generateId()
-    }
-    setAliments([...aliments, newAliment])
-    setIsAddingFood(false)
-    setAddMode(null)
-  }
+      id: generateId(),
+    };
+    setAliments([...aliments, newAliment]);
+    setIsAddingFood(false);
+    setAddMode(null);
+  };
 
   // Calculer les macros totales (utiliser directement les valeurs calculées dans aliments)
   const calculateTotalMacros = (): Macros => {
-    return aliments.reduce((total, aliment) => {
-      if (aliment.macros) {
-        return {
-          kcal: total.kcal + aliment.macros.kcal,
-          prot: total.prot + aliment.macros.prot,
-          glucides: total.glucides + aliment.macros.glucides,
-          lipides: total.lipides + aliment.macros.lipides,
+    return aliments.reduce(
+      (total, aliment) => {
+        if (aliment.macros) {
+          return {
+            kcal: total.kcal + aliment.macros.kcal,
+            prot: total.prot + aliment.macros.prot,
+            glucides: total.glucides + aliment.macros.glucides,
+            lipides: total.lipides + aliment.macros.lipides,
+          };
         }
-      }
-      return total
-    }, { kcal: 0, prot: 0, glucides: 0, lipides: 0 })
-  }
+        return total;
+      },
+      { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
+    );
+  };
 
   const handleSubmit = () => {
-    setHasValidated(true)
-    const totalMacros = calculateTotalMacros()
-    
+    setHasValidated(true);
+    const totalMacros = calculateTotalMacros();
+
     // Validation avec Zod (création d'objet temporaire pour validation)
     const repasForValidation = {
       user_id: 'temp',
       date: new Date().toISOString().split('T')[0],
       repas: mealType,
       aliments,
-      macros: totalMacros
-    }
-    
-    const validation = validateData(repasSchema, repasForValidation)
-    
-    if (!validation.success && validation.errors) {
-      setValidationErrors(validation.errors)
-      toast.error(`Données invalides : ${validation.errors[0]}`)
-      return
-    }
-    
-    setValidationErrors([])
-    onSubmit(aliments, totalMacros)
-  }
+      macros: totalMacros,
+    };
 
-  const totalMacros = calculateTotalMacros()
+    const validation = validateData(repasSchema, repasForValidation);
+
+    if (!validation.success && validation.errors) {
+      setValidationErrors(validation.errors);
+      toast.error(`Données invalides : ${validation.errors[0]}`);
+      return;
+    }
+
+    setValidationErrors([]);
+    onSubmit(aliments, totalMacros);
+  };
+
+  const totalMacros = calculateTotalMacros();
 
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-white">
-          {isEditing ? 'Modifier le repas' : 'Ajouter un repas'} - {getMealName(mealType)}
+          {isEditing ? 'Modifier le repas' : 'Ajouter un repas'} -{' '}
+          {getMealName(mealType)}
         </h2>
         <button
           onClick={onCancel}
@@ -184,30 +209,43 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
                     <input
                       type="number"
                       value={aliment.quantite}
-                      onChange={(e) => updateQuantity(aliment.id, Number(e.target.value))}
+                      onChange={(e) =>
+                        updateQuantity(aliment.id, Number(e.target.value))
+                      }
                       className="w-20 px-2 py-1 bg-white/10 border border-white/10 rounded text-white text-sm"
                       min="1"
                     />
-                    <span className="text-sm text-muted-foreground">{aliment.unite}</span>
-                    
+                    <span className="text-sm text-muted-foreground">
+                      {aliment.unite}
+                    </span>
+
                     {/* Boutons portions rapides */}
                     <div className="flex gap-1 ml-2">
                       <button
-                        onClick={() => updateQuantity(aliment.id, Math.max(1, Math.round(aliment.quantite * 0.5)))}
+                        onClick={() =>
+                          updateQuantity(
+                            aliment.id,
+                            Math.max(1, Math.round(aliment.quantite * 0.5)),
+                          )
+                        }
                         className="px-2 py-1 bg-neon-purple/20 hover:bg-neon-purple/30 border border-neon-purple/30 rounded text-neon-purple text-xs font-medium transition-colors"
                         title="Diviser la portion par 2"
                       >
                         1/2
                       </button>
                       <button
-                        onClick={() => updateQuantity(aliment.id, aliment.quantite + 25)}
+                        onClick={() =>
+                          updateQuantity(aliment.id, aliment.quantite + 25)
+                        }
                         className="px-2 py-1 bg-neon-green/20 hover:bg-neon-green/30 border border-neon-green/30 rounded text-neon-green text-xs font-medium transition-colors"
                         title="Ajouter 25g/ml"
                       >
                         +25
                       </button>
                       <button
-                        onClick={() => updateQuantity(aliment.id, aliment.quantite * 2)}
+                        onClick={() =>
+                          updateQuantity(aliment.id, aliment.quantite * 2)
+                        }
                         className="px-2 py-1 bg-neon-cyan/20 hover:bg-neon-cyan/30 border border-neon-cyan/30 rounded text-neon-cyan text-xs font-medium transition-colors"
                         title="Doubler la portion"
                       >
@@ -266,7 +304,9 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
           {/* Choix du mode d'ajout */}
           {!addMode && (
             <div className="space-y-3">
-              <h3 className="text-lg font-medium text-white">Comment ajouter un aliment ?</h3>
+              <h3 className="text-lg font-medium text-white">
+                Comment ajouter un aliment ?
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {/* Favoris en premier si disponibles */}
                 {favoris.length > 0 && (
@@ -277,8 +317,13 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
                     <div className="flex items-center gap-3">
                       <Star className="h-5 w-5 text-yellow-400 fill-current" />
                       <div className="text-left">
-                        <div className="font-medium text-white">Mes Favoris</div>
-                        <div className="text-sm text-muted-foreground">{favoris.length} aliment{favoris.length > 1 ? 's' : ''}</div>
+                        <div className="font-medium text-white">
+                          Mes Favoris
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {favoris.length} aliment
+                          {favoris.length > 1 ? 's' : ''}
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -291,7 +336,9 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
                     <Search className="h-5 w-5 text-neon-green" />
                     <div className="text-left">
                       <div className="font-medium text-white">Rechercher</div>
-                      <div className="text-sm text-muted-foreground">Open Food Facts</div>
+                      <div className="text-sm text-muted-foreground">
+                        Open Food Facts
+                      </div>
                     </div>
                   </div>
                 </button>
@@ -302,8 +349,12 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
                   <div className="flex items-center gap-3">
                     <Edit3 className="h-5 w-5 text-neon-purple" />
                     <div className="text-left">
-                      <div className="font-medium text-white">Saisie manuelle</div>
-                      <div className="text-sm text-muted-foreground">Vos recettes</div>
+                      <div className="font-medium text-white">
+                        Saisie manuelle
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Vos recettes
+                      </div>
                     </div>
                   </div>
                 </button>
@@ -316,11 +367,11 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
               </button>
             </div>
           )}
-          
+
           {/* Mode favoris */}
           {addMode === 'favorites' && (
             <div>
-              <FavoritesFoodList 
+              <FavoritesFoodList
                 onSelectFood={handleAddFromFavoris}
                 onClose={() => setAddMode(null)}
               />
@@ -332,15 +383,15 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
               </button>
             </div>
           )}
-          
+
           {/* Mode recherche */}
           {addMode === 'search' && (
             <div>
               <FoodSearch onSelectProduct={handleAddProduct} autoFocus />
               <button
                 onClick={() => {
-                  setAddMode(null)
-                  setIsAddingFood(false)
+                  setAddMode(null);
+                  setIsAddingFood(false);
                 }}
                 className="mt-2 text-sm text-muted-foreground hover:text-white"
               >
@@ -348,14 +399,14 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
               </button>
             </div>
           )}
-          
+
           {/* Mode manuel */}
           {addMode === 'manual' && (
-            <ManualFoodForm 
+            <ManualFoodForm
               onSubmit={handleAddManualFood}
               onCancel={() => {
-                setAddMode(null)
-                setIsAddingFood(false)
+                setAddMode(null);
+                setIsAddingFood(false);
               }}
             />
           )}
@@ -376,7 +427,9 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
             <div className="space-y-1">
-              <h4 className="text-red-400 font-medium">Erreurs de validation :</h4>
+              <h4 className="text-red-400 font-medium">
+                Erreurs de validation :
+              </h4>
               <ul className="text-sm text-red-300 space-y-1">
                 {validationErrors.map((error, index) => (
                   <li key={index}>• {error}</li>
@@ -390,22 +443,32 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
       {/* Résumé des macros */}
       {aliments.length > 0 && (
         <div className="border-t border-white/10 pt-4 mb-6">
-          <h3 className="text-sm font-medium text-white mb-3">Total du repas</h3>
+          <h3 className="text-sm font-medium text-white mb-3">
+            Total du repas
+          </h3>
           <div className="grid grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-neon-green">{totalMacros.kcal}</div>
+              <div className="text-2xl font-bold text-neon-green">
+                {totalMacros.kcal}
+              </div>
               <div className="text-xs text-muted-foreground">Calories</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-neon-cyan">{totalMacros.prot}g</div>
+              <div className="text-2xl font-bold text-neon-cyan">
+                {totalMacros.prot}g
+              </div>
               <div className="text-xs text-muted-foreground">Protéines</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-neon-pink">{totalMacros.glucides}g</div>
+              <div className="text-2xl font-bold text-neon-pink">
+                {totalMacros.glucides}g
+              </div>
               <div className="text-xs text-muted-foreground">Glucides</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-neon-purple">{totalMacros.lipides}g</div>
+              <div className="text-2xl font-bold text-neon-purple">
+                {totalMacros.lipides}g
+              </div>
               <div className="text-xs text-muted-foreground">Lipides</div>
             </div>
           </div>
@@ -428,12 +491,13 @@ export default function MealForm({ mealType, onSubmit, onCancel, existingAliment
           {isSubmitting && (
             <div className="w-4 h-4 border-2 border-neon-cyan border-t-transparent rounded-full animate-spin"></div>
           )}
-          {isSubmitting 
-            ? 'Enregistrement...' 
-            : (isEditing ? 'Mettre à jour' : 'Enregistrer le repas')
-          }
+          {isSubmitting
+            ? 'Enregistrement...'
+            : isEditing
+              ? 'Mettre à jour'
+              : 'Enregistrer le repas'}
         </button>
       </div>
     </div>
-  )
-} 
+  );
+}

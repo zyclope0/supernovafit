@@ -1,103 +1,138 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import toast from 'react-hot-toast'
-import { Entrainement } from '@/types'
+import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { Entrainement } from '@/types';
 // generateId removed - not used
-import { getQuickCalorieEstimate, smartCalorieCalculation } from '@/lib/caloriesCalculator'
-import { entrainementSchema, validateData } from '@/lib/validation'
-import { Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react'
-import { useAuth } from '@/hooks/useAuth'
+import {
+  getQuickCalorieEstimate,
+  smartCalorieCalculation,
+} from '@/lib/caloriesCalculator';
+import { entrainementSchema, validateData } from '@/lib/validation';
+import { Timer, Target, Heart, Calculator, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface TrainingFormProps {
-  onSubmit: (training: Omit<Entrainement, 'id' | 'user_id'>) => void
-  onCancel: () => void
-  existingTraining?: Entrainement
-  isEditing?: boolean
-  isSubmitting?: boolean
+  onSubmit: (training: Omit<Entrainement, 'id' | 'user_id'>) => void;
+  onCancel: () => void;
+  existingTraining?: Entrainement;
+  isEditing?: boolean;
+  isSubmitting?: boolean;
 }
 
 const TRAINING_TYPES = [
   { value: 'cardio', label: 'Cardio', icon: '🏃', color: 'neon-green' },
-  { value: 'musculation', label: 'Musculation', icon: '💪', color: 'neon-cyan' },
+  {
+    value: 'musculation',
+    label: 'Musculation',
+    icon: '💪',
+    color: 'neon-cyan',
+  },
   { value: 'hiit', label: 'HIIT', icon: '🔥', color: 'neon-pink' },
   { value: 'yoga', label: 'Yoga', icon: '🧘', color: 'neon-purple' },
   { value: 'natation', label: 'Natation', icon: '🏊', color: 'neon-cyan' },
   { value: 'cyclisme', label: 'Cyclisme', icon: '🚴', color: 'neon-green' },
   { value: 'course', label: 'Course à pied', icon: '🏃', color: 'neon-pink' },
-  { value: 'autre', label: 'Autre', icon: '⚡', color: 'neon-purple' }
-]
+  { value: 'autre', label: 'Autre', icon: '⚡', color: 'neon-purple' },
+];
 
-export default function TrainingForm({ onSubmit, onCancel, existingTraining, isEditing, isSubmitting }: TrainingFormProps) {
+export default function TrainingForm({
+  onSubmit,
+  onCancel,
+  existingTraining,
+  isEditing,
+  isSubmitting,
+}: TrainingFormProps) {
   // Récupération des données utilisateur
-  const { userProfile } = useAuth()
+  const { userProfile } = useAuth();
 
   // États de base
-  const [type, setType] = useState(existingTraining?.type || 'cardio')
-  const [duree, setDuree] = useState(existingTraining?.duree || 30)
-  const [calories, setCalories] = useState(existingTraining?.calories || 0)
-  const [commentaire, setCommentaire] = useState(existingTraining?.commentaire || '')
-  const [date, setDate] = useState(existingTraining?.date || new Date().toISOString().split('T')[0])
-  
+  const [type, setType] = useState(existingTraining?.type || 'cardio');
+  const [duree, setDuree] = useState(existingTraining?.duree || 30);
+  const [calories, setCalories] = useState(existingTraining?.calories || 0);
+  const [commentaire, setCommentaire] = useState(
+    existingTraining?.commentaire || '',
+  );
+  const [date, setDate] = useState(
+    existingTraining?.date || new Date().toISOString().split('T')[0],
+  );
+
   // États avancés (style Garmin)
-  const [showAdvanced, setShowAdvanced] = useState(false)
-  const [fcMoyenne, setFcMoyenne] = useState(existingTraining?.fc_moyenne || 0)
-  const [fcMax, setFcMax] = useState(existingTraining?.fc_max || 0)
-  const [fcMin, setFcMin] = useState(existingTraining?.fc_min || 0)
-  const [distance, setDistance] = useState(existingTraining?.distance || 0)
-  const [vitesseMoy, setVitesseMoy] = useState(existingTraining?.vitesse_moy || 0)
-  const [vitesseMax, setVitesseMax] = useState(existingTraining?.vitesse_max || 0)
-  const [elevationGain, setElevationGain] = useState(existingTraining?.elevation_gain || 0)
-  const [cadenceMoy, setCadenceMoy] = useState(existingTraining?.cadence_moy || 0)
-  const [puissanceMoy, setPuissanceMoy] = useState(existingTraining?.puissance_moy || 0)
-  const [effortPercu, setEffortPercu] = useState(existingTraining?.effort_percu || 5)
-  const [fatigueAvant, setFatigueAvant] = useState(existingTraining?.fatigue_avant || 5)
-  const [fatigueApres, setFatigueApres] = useState(existingTraining?.fatigue_apres || 5)
-  
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [fcMoyenne, setFcMoyenne] = useState(existingTraining?.fc_moyenne || 0);
+  const [fcMax, setFcMax] = useState(existingTraining?.fc_max || 0);
+  const [fcMin, setFcMin] = useState(existingTraining?.fc_min || 0);
+  const [distance, setDistance] = useState(existingTraining?.distance || 0);
+  const [vitesseMoy, setVitesseMoy] = useState(
+    existingTraining?.vitesse_moy || 0,
+  );
+  const [vitesseMax, setVitesseMax] = useState(
+    existingTraining?.vitesse_max || 0,
+  );
+  const [elevationGain, setElevationGain] = useState(
+    existingTraining?.elevation_gain || 0,
+  );
+  const [cadenceMoy, setCadenceMoy] = useState(
+    existingTraining?.cadence_moy || 0,
+  );
+  const [puissanceMoy, setPuissanceMoy] = useState(
+    existingTraining?.puissance_moy || 0,
+  );
+  const [effortPercu, setEffortPercu] = useState(
+    existingTraining?.effort_percu || 5,
+  );
+  const [fatigueAvant, setFatigueAvant] = useState(
+    existingTraining?.fatigue_avant || 5,
+  );
+  const [fatigueApres, setFatigueApres] = useState(
+    existingTraining?.fatigue_apres || 5,
+  );
+
   // États pour calcul automatique calories
-  const [autoCalories, setAutoCalories] = useState(0)
-  const [calculationMethod, setCalculationMethod] = useState('')
-  const [useAutoCalories, setUseAutoCalories] = useState(false)
-  const [isCalculating, setIsCalculating] = useState(false)
+  const [autoCalories, setAutoCalories] = useState(0);
+  const [calculationMethod, setCalculationMethod] = useState('');
+  const [useAutoCalories, setUseAutoCalories] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // États pour validation
-  const [validationErrors, setValidationErrors] = useState<string[]>([])
-  const [hasValidated, setHasValidated] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [hasValidated, setHasValidated] = useState(false);
 
   // Le profil utilisateur est déjà disponible via useAuth
 
   // Synchroniser le formulaire quand une nouvelle séance est sélectionnée pour édition
   useEffect(() => {
-    if (!existingTraining) return
-    setType(existingTraining.type || 'cardio')
-    setDuree(existingTraining.duree || 30)
-    setCalories(existingTraining.calories || 0)
-    setCommentaire(existingTraining.commentaire || '')
-    setDate(existingTraining.date || new Date().toISOString().split('T')[0])
-    setFcMoyenne(existingTraining.fc_moyenne || 0)
-    setFcMax(existingTraining.fc_max || 0)
-    setFcMin(existingTraining.fc_min || 0)
-    setDistance(existingTraining.distance || 0)
-    setVitesseMoy(existingTraining.vitesse_moy || 0)
-    setVitesseMax(existingTraining.vitesse_max || 0)
-    setElevationGain(existingTraining.elevation_gain || 0)
-    setCadenceMoy(existingTraining.cadence_moy || 0)
-    setPuissanceMoy(existingTraining.puissance_moy || 0)
-    setEffortPercu(existingTraining.effort_percu || 5)
-    setFatigueAvant(existingTraining.fatigue_avant || 5)
-    setFatigueApres(existingTraining.fatigue_apres || 5)
-  }, [existingTraining])
+    if (!existingTraining) return;
+    setType(existingTraining.type || 'cardio');
+    setDuree(existingTraining.duree || 30);
+    setCalories(existingTraining.calories || 0);
+    setCommentaire(existingTraining.commentaire || '');
+    setDate(existingTraining.date || new Date().toISOString().split('T')[0]);
+    setFcMoyenne(existingTraining.fc_moyenne || 0);
+    setFcMax(existingTraining.fc_max || 0);
+    setFcMin(existingTraining.fc_min || 0);
+    setDistance(existingTraining.distance || 0);
+    setVitesseMoy(existingTraining.vitesse_moy || 0);
+    setVitesseMax(existingTraining.vitesse_max || 0);
+    setElevationGain(existingTraining.elevation_gain || 0);
+    setCadenceMoy(existingTraining.cadence_moy || 0);
+    setPuissanceMoy(existingTraining.puissance_moy || 0);
+    setEffortPercu(existingTraining.effort_percu || 5);
+    setFatigueAvant(existingTraining.fatigue_avant || 5);
+    setFatigueApres(existingTraining.fatigue_apres || 5);
+  }, [existingTraining]);
 
   // Calcul automatique des calories
   useEffect(() => {
     if (type && duree > 0) {
-      setIsCalculating(true)
-      
+      setIsCalculating(true);
+
       // Petit délai pour montrer l'effet de calcul
       const timer = setTimeout(() => {
         // Calculer la vitesse si on a distance et durée
-        const calculatedSpeed = distance && duree > 0 ? (distance * 60) / duree : vitesseMoy
-        
+        const calculatedSpeed =
+          distance && duree > 0 ? (distance * 60) / duree : vitesseMoy;
+
         const calculationData = {
           type,
           duree,
@@ -106,33 +141,44 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
           vitesse_moy: calculatedSpeed || undefined,
           age: userProfile?.age || 30, // Utilise le profil utilisateur réel
           poids_utilisateur: userProfile?.poids_initial || 70, // Utilise le poids réel du profil
-          sexe: (userProfile?.sexe || 'M') as 'M' | 'F' // Utilise le sexe réel du profil
-        }
-        
-          const result = smartCalorieCalculation(calculationData)
-          const computed = result.calories && result.calories > 0 
-            ? result.calories 
-            : getQuickCalorieEstimate(type, duree)
-        setAutoCalories(Math.round(computed))
-        setCalculationMethod(result.method || 'estimation')
-        setIsCalculating(false)
-        
+          sexe: (userProfile?.sexe || 'M') as 'M' | 'F', // Utilise le sexe réel du profil
+        };
+
+        const result = smartCalorieCalculation(calculationData);
+        const computed =
+          result.calories && result.calories > 0
+            ? result.calories
+            : getQuickCalorieEstimate(type, duree);
+        setAutoCalories(Math.round(computed));
+        setCalculationMethod(result.method || 'estimation');
+        setIsCalculating(false);
+
         // Auto-utiliser si pas de calories manuelles
         if (calories === 0 && !isEditing) {
-          setUseAutoCalories(true)
+          setUseAutoCalories(true);
         }
-      }, 200)
-      
-      return () => clearTimeout(timer)
+      }, 200);
+
+      return () => clearTimeout(timer);
     }
-  }, [type, duree, fcMoyenne, distance, calories, isEditing, vitesseMoy, effortPercu, userProfile])
+  }, [
+    type,
+    duree,
+    fcMoyenne,
+    distance,
+    calories,
+    isEditing,
+    vitesseMoy,
+    effortPercu,
+    userProfile,
+  ]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setHasValidated(true)
+    e.preventDefault();
+    setHasValidated(true);
 
-    const finalCalories = useAutoCalories ? autoCalories : calories
-    
+    const finalCalories = useAutoCalories ? autoCalories : calories;
+
     // Construire l'objet pour validation (avec user_id temporaire)
     const trainingDataForValidation: Record<string, unknown> = {
       user_id: 'temp', // Temporaire pour validation
@@ -140,56 +186,65 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
       duree,
       date,
       source: 'manuel',
-    }
-    
+    };
+
     // Ajouter seulement les champs avec des valeurs
-    if (finalCalories > 0) trainingDataForValidation.calories = finalCalories
-    if (commentaire.trim()) trainingDataForValidation.commentaire = commentaire.trim()
-    
+    if (finalCalories > 0) trainingDataForValidation.calories = finalCalories;
+    if (commentaire.trim())
+      trainingDataForValidation.commentaire = commentaire.trim();
+
     // Données avancées (seulement si > 0)
-    if (fcMoyenne > 0) trainingDataForValidation.fc_moyenne = fcMoyenne
-    if (fcMax > 0) trainingDataForValidation.fc_max = fcMax
-    if (fcMin > 0) trainingDataForValidation.fc_min = fcMin
-    if (distance > 0) trainingDataForValidation.distance = distance
-    if (vitesseMoy > 0) trainingDataForValidation.vitesse_moy = vitesseMoy
-    if (vitesseMax > 0) trainingDataForValidation.vitesse_max = vitesseMax
-    if (elevationGain > 0) trainingDataForValidation.elevation_gain = elevationGain
-    if (cadenceMoy > 0) trainingDataForValidation.cadence_moy = cadenceMoy
-    if (puissanceMoy > 0) trainingDataForValidation.puissance_moy = puissanceMoy
-    if (effortPercu !== 5) trainingDataForValidation.effort_percu = effortPercu
-    if (fatigueAvant !== 5) trainingDataForValidation.fatigue_avant = fatigueAvant
-    if (fatigueApres !== 5) trainingDataForValidation.fatigue_apres = fatigueApres
+    if (fcMoyenne > 0) trainingDataForValidation.fc_moyenne = fcMoyenne;
+    if (fcMax > 0) trainingDataForValidation.fc_max = fcMax;
+    if (fcMin > 0) trainingDataForValidation.fc_min = fcMin;
+    if (distance > 0) trainingDataForValidation.distance = distance;
+    if (vitesseMoy > 0) trainingDataForValidation.vitesse_moy = vitesseMoy;
+    if (vitesseMax > 0) trainingDataForValidation.vitesse_max = vitesseMax;
+    if (elevationGain > 0)
+      trainingDataForValidation.elevation_gain = elevationGain;
+    if (cadenceMoy > 0) trainingDataForValidation.cadence_moy = cadenceMoy;
+    if (puissanceMoy > 0)
+      trainingDataForValidation.puissance_moy = puissanceMoy;
+    if (effortPercu !== 5) trainingDataForValidation.effort_percu = effortPercu;
+    if (fatigueAvant !== 5)
+      trainingDataForValidation.fatigue_avant = fatigueAvant;
+    if (fatigueApres !== 5)
+      trainingDataForValidation.fatigue_apres = fatigueApres;
 
     // Validation avec Zod
-    const validation = validateData(entrainementSchema, trainingDataForValidation as unknown as Entrainement)
-    
+    const validation = validateData(
+      entrainementSchema,
+      trainingDataForValidation as unknown as Entrainement,
+    );
+
     if (!validation.success && validation.errors) {
-      setValidationErrors(validation.errors)
-      toast.error(`Données invalides : ${validation.errors[0]}`)
-      return
+      setValidationErrors(validation.errors);
+      toast.error(`Données invalides : ${validation.errors[0]}`);
+      return;
     }
-    
-    setValidationErrors([])
-    
+
+    setValidationErrors([]);
+
     // Retirer le user_id temporaire pour l'envoi final
     // retirer user_id temporaire
-    const { user_id, ...finalTrainingData } = trainingDataForValidation
-    void user_id
-    onSubmit(finalTrainingData as Omit<Entrainement, 'id' | 'user_id'>)
-  }
+    const { user_id, ...finalTrainingData } = trainingDataForValidation;
+    void user_id;
+    onSubmit(finalTrainingData as Omit<Entrainement, 'id' | 'user_id'>);
+  };
 
-  const selectedType = TRAINING_TYPES.find(t => t.value === type)
+  const selectedType = TRAINING_TYPES.find((t) => t.value === type);
 
   return (
     <div className="space-y-6">
-
       {/* Erreurs de validation */}
       {hasValidated && validationErrors.length > 0 && (
         <div className="glass-effect p-4 rounded-lg border border-red-500/20 bg-red-500/5">
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
             <div className="space-y-1">
-              <h4 className="text-red-400 font-medium">Erreurs de validation :</h4>
+              <h4 className="text-red-400 font-medium">
+                Erreurs de validation :
+              </h4>
               <ul className="text-sm text-red-300 space-y-1">
                 {validationErrors.map((error, index) => (
                   <li key={index}>• {error}</li>
@@ -233,9 +288,13 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
               >
                 <div className="text-center">
                   <div className="text-2xl mb-1">{trainingType.icon}</div>
-                  <div className={`text-xs font-medium ${
-                    type === trainingType.value ? `text-${trainingType.color}` : 'text-white'
-                  }`}>
+                  <div
+                    className={`text-xs font-medium ${
+                      type === trainingType.value
+                        ? `text-${trainingType.color}`
+                        : 'text-white'
+                    }`}
+                  >
                     {trainingType.label}
                   </div>
                 </div>
@@ -265,22 +324,32 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
               <Target className="inline h-4 w-4 mr-1" />
               Calories brûlées
             </label>
-            
+
             {/* Calcul automatique */}
             {autoCalories > 0 && (
-              <div className={`mb-3 p-3 border rounded-lg transition-all duration-300 ${
-                isCalculating 
-                  ? 'bg-neon-cyan/10 border-neon-cyan/20 animate-pulse' 
-                  : 'bg-neon-green/10 border-neon-green/20'
-              }`}>
+              <div
+                className={`mb-3 p-3 border rounded-lg transition-all duration-300 ${
+                  isCalculating
+                    ? 'bg-neon-cyan/10 border-neon-cyan/20 animate-pulse'
+                    : 'bg-neon-green/10 border-neon-green/20'
+                }`}
+              >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Calculator className={`h-4 w-4 ${isCalculating ? 'text-neon-cyan animate-spin' : 'text-neon-green'}`} />
-                    <span className={`text-sm font-medium ${isCalculating ? 'text-neon-cyan' : 'text-neon-green'}`}>
-                      {isCalculating ? 'Calcul en cours...' : 'Calcul automatique'}
+                    <Calculator
+                      className={`h-4 w-4 ${isCalculating ? 'text-neon-cyan animate-spin' : 'text-neon-green'}`}
+                    />
+                    <span
+                      className={`text-sm font-medium ${isCalculating ? 'text-neon-cyan' : 'text-neon-green'}`}
+                    >
+                      {isCalculating
+                        ? 'Calcul en cours...'
+                        : 'Calcul automatique'}
                     </span>
                   </div>
-                  <span className={`text-lg font-bold transition-colors ${isCalculating ? 'text-neon-cyan' : 'text-neon-green'}`}>
+                  <span
+                    className={`text-lg font-bold transition-colors ${isCalculating ? 'text-neon-cyan' : 'text-neon-green'}`}
+                  >
                     {isCalculating ? '⚡' : `${autoCalories} kcal`}
                   </span>
                 </div>
@@ -296,28 +365,32 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                         onChange={(e) => setUseAutoCalories(e.target.checked)}
                         className="rounded border-gray-300 text-neon-green focus:ring-neon-green"
                       />
-                      <span className="text-sm text-white">Utiliser le calcul automatique</span>
+                      <span className="text-sm text-white">
+                        Utiliser le calcul automatique
+                      </span>
                     </label>
                   </>
                 )}
               </div>
             )}
-            
+
             {/* Saisie manuelle */}
             <div className={useAutoCalories ? 'opacity-50' : ''}>
               <input
                 type="number"
                 value={calories}
                 onChange={(e) => {
-                  setCalories(Number(e.target.value))
+                  setCalories(Number(e.target.value));
                   if (Number(e.target.value) > 0) {
-                    setUseAutoCalories(false)
+                    setUseAutoCalories(false);
                   }
                 }}
                 disabled={useAutoCalories}
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white focus:outline-none focus:border-neon-pink disabled:opacity-50"
                 min="0"
-                placeholder={autoCalories > 0 ? "Ou saisie manuelle" : "Calories brûlées"}
+                placeholder={
+                  autoCalories > 0 ? 'Ou saisie manuelle' : 'Calories brûlées'
+                }
               />
             </div>
           </div>
@@ -331,15 +404,19 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
             className="flex items-center gap-2 text-sm text-neon-cyan hover:text-white transition-colors"
           >
             <span>{showAdvanced ? '📊' : '⚡'}</span>
-            {showAdvanced ? 'Masquer les données avancées' : 'Données avancées (FC, distance, etc.)'}
+            {showAdvanced
+              ? 'Masquer les données avancées'
+              : 'Données avancées (FC, distance, etc.)'}
           </button>
         </div>
 
         {/* Section avancée */}
         {showAdvanced && (
           <div className="space-y-4 p-4 bg-white/5 rounded-lg border border-neon-cyan/20">
-            <h3 className="text-sm font-medium text-neon-cyan mb-3">📊 Données style Garmin</h3>
-            
+            <h3 className="text-sm font-medium text-neon-cyan mb-3">
+              📊 Données style Garmin
+            </h3>
+
             {/* Fréquence cardiaque */}
             <div>
               <label className="block text-sm font-medium text-white mb-2">
@@ -348,7 +425,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
               </label>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">Min (bpm)</label>
+                  <label className="block text-xs text-muted-foreground mb-1">
+                    Min (bpm)
+                  </label>
                   <input
                     type="number"
                     value={fcMin}
@@ -359,7 +438,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">Moy (bpm)</label>
+                  <label className="block text-xs text-muted-foreground mb-1">
+                    Moy (bpm)
+                  </label>
                   <input
                     type="number"
                     value={fcMoyenne}
@@ -370,7 +451,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1">Max (bpm)</label>
+                  <label className="block text-xs text-muted-foreground mb-1">
+                    Max (bpm)
+                  </label>
                   <input
                     type="number"
                     value={fcMax}
@@ -386,7 +469,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
             {/* Distance et vitesse */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Distance (km)</label>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Distance (km)
+                </label>
                 <input
                   type="number"
                   step="0.1"
@@ -397,7 +482,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Vitesse moy (km/h)</label>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Vitesse moy (km/h)
+                </label>
                 <input
                   type="number"
                   step="0.1"
@@ -412,7 +499,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
             {/* Données spécialisées */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Dénivelé+ (m)</label>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Dénivelé+ (m)
+                </label>
                 <input
                   type="number"
                   value={elevationGain}
@@ -422,7 +511,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Cadence moy</label>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Cadence moy
+                </label>
                 <input
                   type="number"
                   value={cadenceMoy}
@@ -433,7 +524,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Puissance (W)</label>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Puissance (W)
+                </label>
                 <input
                   type="number"
                   value={puissanceMoy}
@@ -446,10 +539,14 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
 
             {/* Ressenti subjectif */}
             <div>
-              <label className="block text-sm font-medium text-white mb-3">Ressenti subjectif</label>
+              <label className="block text-sm font-medium text-white mb-3">
+                Ressenti subjectif
+              </label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-2">Effort perçu (1-10)</label>
+                  <label className="block text-xs text-muted-foreground mb-2">
+                    Effort perçu (1-10)
+                  </label>
                   <input
                     type="range"
                     min="1"
@@ -458,10 +555,14 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                     onChange={(e) => setEffortPercu(Number(e.target.value))}
                     className="w-full"
                   />
-                  <div className="text-center text-sm text-white mt-1">{effortPercu}/10</div>
+                  <div className="text-center text-sm text-white mt-1">
+                    {effortPercu}/10
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-2">Fatigue avant (1-10)</label>
+                  <label className="block text-xs text-muted-foreground mb-2">
+                    Fatigue avant (1-10)
+                  </label>
                   <input
                     type="range"
                     min="1"
@@ -470,10 +571,14 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                     onChange={(e) => setFatigueAvant(Number(e.target.value))}
                     className="w-full"
                   />
-                  <div className="text-center text-sm text-white mt-1">{fatigueAvant}/10</div>
+                  <div className="text-center text-sm text-white mt-1">
+                    {fatigueAvant}/10
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-2">Fatigue après (1-10)</label>
+                  <label className="block text-xs text-muted-foreground mb-2">
+                    Fatigue après (1-10)
+                  </label>
                   <input
                     type="range"
                     min="1"
@@ -482,7 +587,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
                     onChange={(e) => setFatigueApres(Number(e.target.value))}
                     className="w-full"
                   />
-                  <div className="text-center text-sm text-white mt-1">{fatigueApres}/10</div>
+                  <div className="text-center text-sm text-white mt-1">
+                    {fatigueApres}/10
+                  </div>
                 </div>
               </div>
             </div>
@@ -509,7 +616,9 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
             <div className="flex items-center gap-4 text-sm">
               <span className="flex items-center gap-1">
                 <span className="text-lg">{selectedType.icon}</span>
-                <span className={`text-${selectedType.color}`}>{selectedType.label}</span>
+                <span className={`text-${selectedType.color}`}>
+                  {selectedType.label}
+                </span>
               </span>
               <span className="text-muted-foreground">•</span>
               <span className="text-neon-green">{duree} min</span>
@@ -540,13 +649,14 @@ export default function TrainingForm({ onSubmit, onCancel, existingTraining, isE
             {isSubmitting && (
               <div className="w-4 h-4 border-2 border-neon-green border-t-transparent rounded-full animate-spin"></div>
             )}
-            {isSubmitting 
-              ? 'Enregistrement...' 
-              : (isEditing ? 'Mettre à jour' : 'Enregistrer l\'entraînement')
-            }
+            {isSubmitting
+              ? 'Enregistrement...'
+              : isEditing
+                ? 'Mettre à jour'
+                : "Enregistrer l'entraînement"}
           </button>
         </div>
       </form>
     </div>
-  )
+  );
 }

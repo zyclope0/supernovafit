@@ -8,25 +8,30 @@ export interface User {
   email: string;
   date_invitation: Date;
   dernier_acces: Date;
-  
+
   // Profil personnel étendu
   age?: number;
   sexe?: 'M' | 'F';
   taille?: number; // cm
   poids_initial?: number; // kg
   objectif?: 'maintien' | 'prise_masse' | 'seche' | 'performance';
-  niveau_activite?: 'sedentaire' | 'leger' | 'modere' | 'intense' | 'tres_intense';
-  
+  niveau_activite?:
+    | 'sedentaire'
+    | 'leger'
+    | 'modere'
+    | 'intense'
+    | 'tres_intense';
+
   // Préférences
   unite_poids?: 'kg' | 'lbs';
   unite_taille?: 'cm' | 'ft';
   langue?: 'fr' | 'en';
-  
+
   // Métadonnées
   profil_complete?: boolean;
   created_at?: Date | string;
   updated_at?: Date | string;
-  
+
   // Relation coach-athlète (v1 mono-coach)
   ownerCoachId?: string; // ID du coach propriétaire
 }
@@ -46,7 +51,13 @@ export interface Invite {
 }
 
 // Types pour les repas
-export type MealType = 'petit_dej' | 'collation_matin' | 'dejeuner' | 'collation_apres_midi' | 'diner' | 'collation_soir';
+export type MealType =
+  | 'petit_dej'
+  | 'collation_matin'
+  | 'dejeuner'
+  | 'collation_apres_midi'
+  | 'diner'
+  | 'collation_soir';
 
 export interface Aliment {
   id: string;
@@ -85,37 +96,37 @@ export interface Entrainement {
   duree: number; // en minutes
   commentaire?: string;
   source: TrainingSource;
-  
+
   // Données basiques
   calories?: number;
-  
+
   // Données cardio style Garmin
   fc_moyenne?: number; // Fréquence cardiaque moyenne
   fc_max?: number; // Fréquence cardiaque max
   fc_min?: number; // Fréquence cardiaque min
-  
+
   // Distance et vitesse
   distance?: number; // en km
   vitesse_moy?: number; // en km/h
   vitesse_max?: number; // en km/h
-  
+
   // Données avancées
   elevation_gain?: number; // dénivelé positif en mètres
   cadence_moy?: number; // cadence moyenne (course/vélo)
   puissance_moy?: number; // puissance moyenne en watts (vélo)
-  
+
   // Zones d'entraînement
   zone1_time?: number; // temps en zone 1 (minutes)
   zone2_time?: number; // temps en zone 2 (minutes)
   zone3_time?: number; // temps en zone 3 (minutes)
   zone4_time?: number; // temps en zone 4 (minutes)
   zone5_time?: number; // temps en zone 5 (minutes)
-  
+
   // Ressenti subjectif
   effort_percu?: number; // RPE 1-10
   fatigue_avant?: number; // 1-10
   fatigue_apres?: number; // 1-10
-  
+
   // Métadonnées import
   fichier_original?: string; // nom fichier .fit/.gpx
   device?: string; // appareil utilisé
@@ -317,22 +328,26 @@ export interface OpenFoodFactsProduct {
   };
 }
 
-// Interface StatsPeriode supprimée - non utilisée 
+// Interface StatsPeriode supprimée - non utilisée
 
 // Types pour les commentaires coach
-export type CoachCommentModule = 'diete' | 'entrainements' | 'journal' | 'mesures'
+export type CoachCommentModule =
+  | 'diete'
+  | 'entrainements'
+  | 'journal'
+  | 'mesures';
 
 export interface CoachComment {
-  id: string
-  coach_id: string
-  athlete_id: string
-  module: CoachCommentModule
+  id: string;
+  coach_id: string;
+  athlete_id: string;
+  module: CoachCommentModule;
   // Contexte facultatif selon module
-  date?: string // pour diete
-  training_id?: string // pour entrainements
-  entry_id?: string // pour journal
-  mesure_id?: string // réservé pour évolutions futures
-  comment: string
-  created_at?: Date | string
-  read_by_athlete?: boolean
+  date?: string; // pour diete
+  training_id?: string; // pour entrainements
+  entry_id?: string; // pour journal
+  mesure_id?: string; // réservé pour évolutions futures
+  comment: string;
+  created_at?: Date | string;
+  read_by_athlete?: boolean;
 }

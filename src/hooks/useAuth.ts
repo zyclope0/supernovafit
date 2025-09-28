@@ -1,120 +1,134 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { 
-  onAuthStateChanged, 
-  signInWithEmailAndPassword, 
+import { useState, useEffect } from 'react';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
   signOut,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
-  User as FirebaseUser
-} from 'firebase/auth'
-import { auth } from '@/lib/firebase'
-import { useFirebaseError } from './useFirebaseError'
-import type { User as UserType } from '@/types'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+  User as FirebaseUser,
+} from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useFirebaseError } from './useFirebaseError';
+import type { User as UserType } from '@/types';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export function useAuth() {
-  const [user, setUser] = useState<FirebaseUser | null>(null)
-  const [userProfile, setUserProfile] = useState<UserType | null>(null)
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [userProfile, setUserProfile] = useState<UserType | null>(null);
   // loading: état d'auth uniquement (ne bloque plus sur le profil)
-  const [loading, setLoading] = useState(true)
-  const [profileLoading, setProfileLoading] = useState(false)
-  
-  // Gestion d'erreurs Firebase centralisée
-  const authErrorHandler = useFirebaseError()
+  const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
-    useEffect(() => {
+  // Gestion d'erreurs Firebase centralisée
+  const authErrorHandler = useFirebaseError();
+
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user)
-      setLoading(false)
+      setUser(user);
+      setLoading(false);
 
       // Charger le profil utilisateur si connecté
       if (user) {
-        setProfileLoading(true)
+        setProfileLoading(true);
         try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid))
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
-            const profileData = userDoc.data() as UserType
-            setUserProfile(profileData)
+            const profileData = userDoc.data() as UserType;
+            setUserProfile(profileData);
           } else {
-            setUserProfile(null)
+            setUserProfile(null);
           }
         } catch (error) {
-          console.error('Erreur lors du chargement du profil:', error)
-          setUserProfile(null)
+          console.error('Erreur lors du chargement du profil:', error);
+          setUserProfile(null);
         } finally {
-          setProfileLoading(false)
+          setProfileLoading(false);
         }
       } else {
-        setUserProfile(null)
+        setUserProfile(null);
       }
-    })
+    });
 
-    return () => unsubscribe()
-  }, [])
+    return () => unsubscribe();
+  }, []);
 
   // Connexion par lien magique
   const sendMagicLink = async (email: string) => {
     const actionCodeSettings = {
       url: `${window.location.origin}/auth/verify`,
       handleCodeInApp: true,
-    }
+    };
 
     try {
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       // Sauvegarder l'email pour la vérification
-      window.localStorage.setItem('emailForSignIn', email)
-      return { success: true }
+      window.localStorage.setItem('emailForSignIn', email);
+      return { success: true };
     } catch (error: unknown) {
-      authErrorHandler.handleError(error)
-      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+      authErrorHandler.handleError(error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur inconnue',
+      };
     }
-  }
+  };
 
   // Vérifier et compléter la connexion par lien magique
   const verifyMagicLink = async () => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      let email = window.localStorage.getItem('emailForSignIn')
+      let email = window.localStorage.getItem('emailForSignIn');
       if (!email) {
-        email = window.prompt('Veuillez confirmer votre email pour la connexion')
+        email = window.prompt(
+          'Veuillez confirmer votre email pour la connexion',
+        );
       }
 
       if (email) {
         try {
-          await signInWithEmailLink(auth, email, window.location.href)
-          window.localStorage.removeItem('emailForSignIn')
-          return { success: true }
+          await signInWithEmailLink(auth, email, window.location.href);
+          window.localStorage.removeItem('emailForSignIn');
+          return { success: true };
         } catch (error: unknown) {
-          authErrorHandler.handleError(error)
-          return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+          authErrorHandler.handleError(error);
+          return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Erreur inconnue',
+          };
         }
       }
     }
-    return { success: false, error: 'Lien invalide' }
-  }
+    return { success: false, error: 'Lien invalide' };
+  };
 
   // Connexion classique (pour les tests)
   const signIn = async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-      return { success: true }
+      await signInWithEmailAndPassword(auth, email, password);
+      return { success: true };
     } catch (error: unknown) {
-      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur inconnue',
+      };
     }
-  }
+  };
 
   // Déconnexion
   const signOutUser = async () => {
     try {
-      await signOut(auth)
-      return { success: true }
+      await signOut(auth);
+      return { success: true };
     } catch (error: unknown) {
-      return { success: false, error: error instanceof Error ? error.message : 'Erreur inconnue' }
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur inconnue',
+      };
     }
-  }
+  };
 
   return {
     user,
@@ -124,6 +138,6 @@ export function useAuth() {
     sendMagicLink,
     verifyMagicLink,
     signIn,
-    signOut: signOutUser
-  }
-} 
+    signOut: signOutUser,
+  };
+}

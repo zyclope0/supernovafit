@@ -1,26 +1,26 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { useRouter } from 'next/navigation'
-import MainLayout from '@/components/layout/MainLayout'
-import { Calendar, Plus, FileText, Users, Target } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import MainLayout from '@/components/layout/MainLayout';
+import { Calendar, Plus, FileText, Users, Target } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function ProgrammesPage() {
-  const { userProfile } = useAuth()
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
+  const { userProfile } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (userProfile && userProfile.role !== 'coach') {
-      toast.error("Accès réservé aux coachs")
-      router.push('/')
+      toast.error('Accès réservé aux coachs');
+      router.push('/');
     }
     if (userProfile) {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [userProfile, router])
+  }, [userProfile, router]);
 
   if (loading) {
     return (
@@ -34,7 +34,7 @@ export default function ProgrammesPage() {
           </div>
         </div>
       </MainLayout>
-    )
+    );
   }
 
   return (
@@ -45,7 +45,8 @@ export default function ProgrammesPage() {
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Programmes</h1>
             <p className="text-muted-foreground">
-              Créez et gérez les programmes d&apos;entraînement pour vos athlètes
+              Créez et gérez les programmes d&apos;entraînement pour vos
+              athlètes
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -56,31 +57,40 @@ export default function ProgrammesPage() {
         {/* Placeholder Content */}
         <div className="glass-effect p-8 rounded-xl border border-white/10 text-center">
           <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">Fonctionnalité en développement</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            Fonctionnalité en développement
+          </h3>
           <p className="text-muted-foreground mb-6">
-            La gestion des programmes d&apos;entraînement sera bientôt disponible.
+            La gestion des programmes d&apos;entraînement sera bientôt
+            disponible.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="glass-effect p-4 rounded-lg border border-white/10">
               <Plus className="w-8 h-8 text-neon-purple mx-auto mb-2" />
-              <h4 className="font-semibold text-white mb-1">Créer des programmes</h4>
+              <h4 className="font-semibold text-white mb-1">
+                Créer des programmes
+              </h4>
               <p className="text-sm text-muted-foreground">
                 Concevez des programmes personnalisés
               </p>
             </div>
-            
+
             <div className="glass-effect p-4 rounded-lg border border-white/10">
               <Users className="w-8 h-8 text-neon-cyan mx-auto mb-2" />
-              <h4 className="font-semibold text-white mb-1">Assigner aux athlètes</h4>
+              <h4 className="font-semibold text-white mb-1">
+                Assigner aux athlètes
+              </h4>
               <p className="text-sm text-muted-foreground">
                 Distribuez les programmes à votre équipe
               </p>
             </div>
-            
+
             <div className="glass-effect p-4 rounded-lg border border-white/10">
               <Target className="w-8 h-8 text-neon-green mx-auto mb-2" />
-              <h4 className="font-semibold text-white mb-1">Suivre les progrès</h4>
+              <h4 className="font-semibold text-white mb-1">
+                Suivre les progrès
+              </h4>
               <p className="text-sm text-muted-foreground">
                 Surveillez l&apos;avancement des objectifs
               </p>
@@ -98,8 +108,12 @@ export default function ProgrammesPage() {
             <div className="flex items-center gap-4">
               <Plus className="w-12 h-12 text-neon-purple group-hover:scale-110 transition-transform" />
               <div>
-                <h3 className="text-lg font-semibold text-white">Nouveau Programme</h3>
-                <p className="text-sm text-gray-400">Créer un programme d&apos;entraînement</p>
+                <h3 className="text-lg font-semibold text-white">
+                  Nouveau Programme
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Créer un programme d&apos;entraînement
+                </p>
               </div>
             </div>
           </button>
@@ -113,12 +127,14 @@ export default function ProgrammesPage() {
               <FileText className="w-12 h-12 text-neon-cyan group-hover:scale-110 transition-transform" />
               <div>
                 <h3 className="text-lg font-semibold text-white">Templates</h3>
-                <p className="text-sm text-gray-400">Utiliser des modèles prédéfinis</p>
+                <p className="text-sm text-gray-400">
+                  Utiliser des modèles prédéfinis
+                </p>
               </div>
             </div>
           </button>
         </div>
       </div>
     </MainLayout>
-  )
+  );
 }

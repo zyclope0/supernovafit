@@ -11,7 +11,8 @@ SuperNovaFit utilise **4 dashboards principaux** selon le contexte utilisateur e
 
 ### **📱 DASHBOARDS ATHLÈTES**
 
-#### **1. MobileDashboard.tsx** 
+#### **1. MobileDashboard.tsx**
+
 ```typescript
 // Fichier: src/components/mobile/MobileDashboard.tsx
 // Condition: <xl (< 1280px) + utilisateur connecté
@@ -26,14 +27,15 @@ Fonctionnalités:
 
 Widgets:
 1. calories-today: Calories du jour
-2. weight-trend: Tendance poids  
+2. weight-trend: Tendance poids
 3. training-week: Entraînements semaine
 4. mood-today: Humeur du jour
 5. goals-progress: Progression objectifs
 6. quick-stats: Stats rapides
 ```
 
-#### **2. DesktopDashboard.tsx** 
+#### **2. DesktopDashboard.tsx**
+
 ```typescript
 // Fichier: src/components/desktop/DesktopDashboard.tsx
 // Condition: ≥xl (≥ 1280px) + utilisateur connecté
@@ -66,6 +68,7 @@ Graphiques spécialisés:
 ### **🏃‍♂️ DASHBOARDS COACHES**
 
 #### **3. CoachDashboard (page.tsx)**
+
 ```typescript
 // Fichier: src/app/coach/page.tsx
 // Condition: userProfile.role === 'coach'
@@ -79,12 +82,13 @@ Fonctionnalités:
 
 Stats:
 - Total athlètes
-- Athlètes actifs  
+- Athlètes actifs
 - Progression moyenne
 - Taux de réussite
 ```
 
 #### **4. AthleteDetailPage**
+
 ```typescript
 // Fichier: src/app/coach/athlete/[id]/page.tsx
 // Condition: Coach + ID athlète spécifique
@@ -104,6 +108,7 @@ Graphiques:
 ### **🌐 DASHBOARD PUBLIC**
 
 #### **5. LandingPage**
+
 ```typescript
 // Fichier: src/app/page.tsx (fonction LandingPage)
 // Condition: !user (non connecté)
@@ -124,6 +129,7 @@ Contenu:
 **OBLIGATOIRE** : Modifier TOUS les dashboards concernés :
 
 #### **Nouvelle donnée/métrique :**
+
 ```typescript
 // Exemple: Ajout "hydratation"
 ✅ À modifier:
@@ -134,6 +140,7 @@ Contenu:
 ```
 
 #### **Nouveau module fonctionnel :**
+
 ```typescript
 // Exemple: Module "Sommeil"
 ✅ À modifier:
@@ -144,6 +151,7 @@ Contenu:
 ```
 
 #### **Modification calculs :**
+
 ```typescript
 // Exemple: Nouveau calcul TDEE
 ✅ À modifier:
@@ -177,14 +185,14 @@ transition-all duration-200: Transitions fluides
 
 ## 📊 **MATRICE DE RESPONSABILITÉ**
 
-| Fonctionnalité | MobileDashboard | DesktopDashboard | CoachDashboard | AthleteDetail |
-|----------------|-----------------|------------------|----------------|---------------|
-| **Calories jour** | ✅ Widget | ✅ Stat + Graph | ✅ Stats globales | ✅ Overview |
-| **Poids** | ✅ Widget | ✅ Stat + Graph | ✅ Progression | ✅ Measures tab |
-| **Entraînements** | ✅ Widget | ✅ Stat + Activity | ✅ Stats globales | ✅ Training tab |
-| **Humeur** | ✅ Widget | ✅ Stat + Notifs | ❌ N/A | ✅ Overview |
-| **Actions rapides** | ❌ FAB externe | ✅ Sidebar | ✅ Boutons | ❌ N/A |
-| **Coach status** | ❌ Externe | ✅ Sidebar | ❌ N/A | ❌ N/A |
+| Fonctionnalité      | MobileDashboard | DesktopDashboard   | CoachDashboard    | AthleteDetail   |
+| ------------------- | --------------- | ------------------ | ----------------- | --------------- |
+| **Calories jour**   | ✅ Widget       | ✅ Stat + Graph    | ✅ Stats globales | ✅ Overview     |
+| **Poids**           | ✅ Widget       | ✅ Stat + Graph    | ✅ Progression    | ✅ Measures tab |
+| **Entraînements**   | ✅ Widget       | ✅ Stat + Activity | ✅ Stats globales | ✅ Training tab |
+| **Humeur**          | ✅ Widget       | ✅ Stat + Notifs   | ❌ N/A            | ✅ Overview     |
+| **Actions rapides** | ❌ FAB externe  | ✅ Sidebar         | ✅ Boutons        | ❌ N/A          |
+| **Coach status**    | ❌ Externe      | ✅ Sidebar         | ❌ N/A            | ❌ N/A          |
 
 ---
 
@@ -212,18 +220,21 @@ transition-all duration-200: Transitions fluides
 ## 💡 **BONNES PRATIQUES**
 
 ### **Ajout de nouvelles données :**
+
 1. **Hook centralisé** : useFirestore pour cohérence
 2. **Calculs partagés** : lib/calculations.ts
 3. **Types stricts** : Interfaces TypeScript
 4. **États de chargement** : Skeletons uniformes
 
 ### **Nouveaux graphiques :**
+
 1. **Dynamic import** : Optimisation bundle
 2. **ResponsiveContainer** : width="100%" height="100%"
-3. **Couleurs neon-*** : Cohérence palette
+3. **Couleurs neon-\*** : Cohérence palette
 4. **Tooltips personnalisés** : Glass-effect
 
 ### **Nouvelles actions :**
+
 1. **Quick actions** : DesktopDashboard sidebar
 2. **FAB contextuel** : Mobile navigation
 3. **Raccourcis** : Hooks useQuickActions

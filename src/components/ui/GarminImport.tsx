@@ -1,172 +1,223 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { garminParser } from '@/lib/garminParser'
-import { Entrainement } from '@/types'
-import { Upload, FileText, Activity, CheckCircle, AlertCircle, X } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState } from 'react';
+import { garminParser } from '@/lib/garminParser';
+import { Entrainement } from '@/types';
+import {
+  Upload,
+  FileText,
+  Activity,
+  CheckCircle,
+  AlertCircle,
+  X,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface GarminImportProps {
-  onImport: (entrainement: Omit<Entrainement, 'id' | 'created_at'>) => Promise<{success: boolean, error?: string, isDuplicate?: boolean}>
-  onClose: () => void
-  userId: string
+  onImport: (
+    entrainement: Omit<Entrainement, 'id' | 'created_at'>,
+  ) => Promise<{ success: boolean; error?: string; isDuplicate?: boolean }>;
+  onClose: () => void;
+  userId: string;
 }
 
 interface ImportResult {
-  success: boolean
-  fileName: string
-  error?: string
-  entrainement?: Omit<Entrainement, 'id' | 'created_at'>
-  selectedType?: string
+  success: boolean;
+  fileName: string;
+  error?: string;
+  entrainement?: Omit<Entrainement, 'id' | 'created_at'>;
+  selectedType?: string;
 }
 
 const TRAINING_TYPES = [
-  { value: 'cardio', label: '🏃 Cardio', description: 'Course, vélo elliptique, rameur...' },
-  { value: 'musculation', label: '💪 Musculation', description: 'Poids, haltères, machines...' },
-  { value: 'course', label: '🏃‍♂️ Course à pied', description: 'Running, jogging, trail...' },
-  { value: 'cyclisme', label: '🚴 Cyclisme', description: 'Vélo route, VTT, spinning...' },
-  { value: 'natation', label: '🏊 Natation', description: 'Piscine, eau libre...' },
-  { value: 'hiit', label: '🔥 HIIT', description: 'High Intensity Interval Training' },
-  { value: 'yoga', label: '🧘 Yoga', description: 'Yoga, pilates, stretching...' }
-]
+  {
+    value: 'cardio',
+    label: '🏃 Cardio',
+    description: 'Course, vélo elliptique, rameur...',
+  },
+  {
+    value: 'musculation',
+    label: '💪 Musculation',
+    description: 'Poids, haltères, machines...',
+  },
+  {
+    value: 'course',
+    label: '🏃‍♂️ Course à pied',
+    description: 'Running, jogging, trail...',
+  },
+  {
+    value: 'cyclisme',
+    label: '🚴 Cyclisme',
+    description: 'Vélo route, VTT, spinning...',
+  },
+  {
+    value: 'natation',
+    label: '🏊 Natation',
+    description: 'Piscine, eau libre...',
+  },
+  {
+    value: 'hiit',
+    label: '🔥 HIIT',
+    description: 'High Intensity Interval Training',
+  },
+  {
+    value: 'yoga',
+    label: '🧘 Yoga',
+    description: 'Yoga, pilates, stretching...',
+  },
+];
 
-export default function GarminImport({ onImport, onClose, userId }: GarminImportProps) {
-  const [isDragging, setIsDragging] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [results, setResults] = useState<ImportResult[]>([])
+export default function GarminImport({
+  onImport,
+  onClose,
+  userId,
+}: GarminImportProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [results, setResults] = useState<ImportResult[]>([]);
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }
+    e.preventDefault();
+    setIsDragging(false);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const files = Array.from(e.dataTransfer.files)
-    processFiles(files)
-  }
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    processFiles(files);
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    processFiles(files)
-  }
+    const files = Array.from(e.target.files || []);
+    processFiles(files);
+  };
 
   const processFiles = async (files: File[]) => {
-    setIsProcessing(true)
-    setResults([])
+    setIsProcessing(true);
+    setResults([]);
 
     // Filtrer les fichiers supportés
-    const supportedFiles = files.filter(file => {
-      const ext = file.name.split('.').pop()?.toLowerCase()
-      return ext === 'tcx' || ext === 'gpx'
-    })
+    const supportedFiles = files.filter((file) => {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      return ext === 'tcx' || ext === 'gpx';
+    });
 
     if (supportedFiles.length === 0) {
-      setResults([{
-        success: false,
-        fileName: 'Aucun fichier',
-        error: 'Aucun fichier .TCX ou .GPX trouvé'
-      }])
-      setIsProcessing(false)
-      return
+      setResults([
+        {
+          success: false,
+          fileName: 'Aucun fichier',
+          error: 'Aucun fichier .TCX ou .GPX trouvé',
+        },
+      ]);
+      setIsProcessing(false);
+      return;
     }
 
-    const importResults: ImportResult[] = []
+    const importResults: ImportResult[] = [];
 
     for (const file of supportedFiles) {
       try {
-        const content = await readFileContent(file)
-        const activity = await garminParser.parseFile(content, file.name)
-        const entrainement = garminParser.toEntrainement(activity, userId)
+        const content = await readFileContent(file);
+        const activity = await garminParser.parseFile(content, file.name);
+        const entrainement = garminParser.toEntrainement(activity, userId);
 
         importResults.push({
           success: true,
           fileName: file.name,
           entrainement,
-          selectedType: entrainement.type // Type par défaut détecté
-        })
+          selectedType: entrainement.type, // Type par défaut détecté
+        });
       } catch (error) {
         importResults.push({
           success: false,
           fileName: file.name,
-          error: error instanceof Error ? error.message : 'Erreur inconnue'
-        })
+          error: error instanceof Error ? error.message : 'Erreur inconnue',
+        });
       }
     }
 
-    setResults(importResults)
-    setIsProcessing(false)
-  }
+    setResults(importResults);
+    setIsProcessing(false);
+  };
 
   const readFileContent = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = () => reject(new Error('Erreur lecture fichier'))
-      reader.readAsText(file)
-    })
-  }
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Erreur lecture fichier'));
+      reader.readAsText(file);
+    });
+  };
 
   const updateResultType = (index: number, newType: string) => {
-    setResults(prev => prev.map((result, i) => {
-      if (i === index && result.entrainement) {
-        return {
-          ...result,
-          selectedType: newType,
-          entrainement: {
-            ...result.entrainement,
-            type: newType
-          }
+    setResults((prev) =>
+      prev.map((result, i) => {
+        if (i === index && result.entrainement) {
+          return {
+            ...result,
+            selectedType: newType,
+            entrainement: {
+              ...result.entrainement,
+              type: newType,
+            },
+          };
         }
-      }
-      return result
-    }))
-  }
+        return result;
+      }),
+    );
+  };
 
   const handleImportAll = async () => {
-    const successfulResults = results.filter(r => r.success && r.entrainement)
-    let importedCount = 0
-    let duplicateCount = 0
-    
+    const successfulResults = results.filter(
+      (r) => r.success && r.entrainement,
+    );
+    let importedCount = 0;
+    let duplicateCount = 0;
+
     for (const result of successfulResults) {
       if (result.entrainement) {
         try {
-          const importResult = await onImport(result.entrainement)
-          
+          const importResult = await onImport(result.entrainement);
+
           // Vérifier si c'est un doublon
           if (importResult.success) {
-            importedCount++
+            importedCount++;
           } else if (importResult.isDuplicate) {
-            duplicateCount++
+            duplicateCount++;
           }
         } catch (error) {
-          console.error(`❌ ERREUR IMPORT ${result.fileName}:`, error)
+          console.error(`❌ ERREUR IMPORT ${result.fileName}:`, error);
         }
       }
     }
-    
+
     // Afficher le résumé
     if (importedCount > 0) {
-      toast.success(`✅ ${importedCount} entraînement(s) importé(s) avec succès !`)
+      toast.success(
+        `✅ ${importedCount} entraînement(s) importé(s) avec succès !`,
+      );
     }
     if (duplicateCount > 0) {
-      toast.error(`⚠️ ${duplicateCount} doublon(s) détecté(s) et ignoré(s)`)
+      toast.error(`⚠️ ${duplicateCount} doublon(s) détecté(s) et ignoré(s)`);
     }
-    
-    onClose()
-  }
+
+    onClose();
+  };
 
   const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return hours > 0 ? `${hours}h${mins.toString().padStart(2, '0')}` : `${mins}min`
-  }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return hours > 0
+      ? `${hours}h${mins.toString().padStart(2, '0')}`
+      : `${mins}min`;
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -204,10 +255,15 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
             <p className="text-muted-foreground mb-4">
               Formats supportés: .TCX, .GPX
             </p>
-            
+
             <div className="text-sm text-muted-foreground mb-4">
-              <p>📊 <strong>.TCX</strong> : Données complètes (FC, calories, trackpoints)</p>
-              <p>🗺️ <strong>.GPX</strong> : Tracé GPS basique</p>
+              <p>
+                📊 <strong>.TCX</strong> : Données complètes (FC, calories,
+                trackpoints)
+              </p>
+              <p>
+                🗺️ <strong>.GPX</strong> : Tracé GPS basique
+              </p>
             </div>
 
             <label className="inline-flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors cursor-pointer">
@@ -254,10 +310,10 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
                   ) : (
                     <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
                   )}
-                  
+
                   <div className="flex-1">
                     <p className="font-medium text-white">{result.fileName}</p>
-                    
+
                     {result.success && result.entrainement && (
                       <div className="mt-3 space-y-3">
                         {/* Sélecteur de type */}
@@ -266,12 +322,20 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
                             Type d&apos;entraînement :
                           </label>
                           <select
-                            value={result.selectedType || result.entrainement.type}
-                            onChange={(e) => updateResultType(index, e.target.value)}
+                            value={
+                              result.selectedType || result.entrainement.type
+                            }
+                            onChange={(e) =>
+                              updateResultType(index, e.target.value)
+                            }
                             className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:border-neon-cyan focus:outline-none"
                           >
-                            {TRAINING_TYPES.map(type => (
-                              <option key={type.value} value={type.value} className="bg-space-800 text-white">
+                            {TRAINING_TYPES.map((type) => (
+                              <option
+                                key={type.value}
+                                value={type.value}
+                                className="bg-space-800 text-white"
+                              >
                                 {type.label}
                               </option>
                             ))}
@@ -280,23 +344,39 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
 
                         {/* Aperçu des données */}
                         <div className="text-sm text-muted-foreground space-y-1">
-                          <p><span className="text-neon-green">⏱️</span> {formatDuration(result.entrainement.duree)}</p>
+                          <p>
+                            <span className="text-neon-green">⏱️</span>{' '}
+                            {formatDuration(result.entrainement.duree)}
+                          </p>
                           {result.entrainement.calories && (
-                            <p><span className="text-neon-cyan">🔥</span> {result.entrainement.calories} kcal</p>
+                            <p>
+                              <span className="text-neon-cyan">🔥</span>{' '}
+                              {result.entrainement.calories} kcal
+                            </p>
                           )}
                           {result.entrainement.fc_moyenne && (
-                            <p><span className="text-red-400">💓</span> FC moy: {result.entrainement.fc_moyenne} bpm</p>
+                            <p>
+                              <span className="text-red-400">💓</span> FC moy:{' '}
+                              {result.entrainement.fc_moyenne} bpm
+                            </p>
                           )}
                           {result.entrainement.distance && (
-                            <p><span className="text-neon-pink">📏</span> {result.entrainement.distance} km</p>
+                            <p>
+                              <span className="text-neon-pink">📏</span>{' '}
+                              {result.entrainement.distance} km
+                            </p>
                           )}
-                          <p className="text-xs text-white/60">{result.entrainement.date}</p>
+                          <p className="text-xs text-white/60">
+                            {result.entrainement.date}
+                          </p>
                         </div>
                       </div>
                     )}
-                    
+
                     {!result.success && (
-                      <p className="text-red-400 text-sm mt-1">{result.error}</p>
+                      <p className="text-red-400 text-sm mt-1">
+                        {result.error}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -313,15 +393,15 @@ export default function GarminImport({ onImport, onClose, userId }: GarminImport
               </button>
               <button
                 onClick={handleImportAll}
-                disabled={!results.some(r => r.success)}
+                disabled={!results.some((r) => r.success)}
                 className="flex-1 px-4 py-2 bg-neon-green/20 text-neon-green rounded-lg hover:bg-neon-green/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Importer ({results.filter(r => r.success).length} activités)
+                Importer ({results.filter((r) => r.success).length} activités)
               </button>
             </div>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

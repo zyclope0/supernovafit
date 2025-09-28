@@ -1,20 +1,30 @@
-'use client'
+'use client';
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
-import type { TooltipProps, LegendProps } from 'recharts'
-import { Macros } from '@/types'
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from 'recharts';
+import type { TooltipProps, LegendProps } from 'recharts';
+import { Macros } from '@/types';
 
 interface MacrosChartProps {
-  macros: Macros
-  title?: string
+  macros: Macros;
+  title?: string;
 }
 
-export default function MacrosChart({ macros, title = "Répartition des macros" }: MacrosChartProps) {
+export default function MacrosChart({
+  macros,
+  title = 'Répartition des macros',
+}: MacrosChartProps) {
   // Calculer les calories par macronutriment
-  const proteinCalories = macros.prot * 4
-  const carbCalories = macros.glucides * 4
-  const fatCalories = macros.lipides * 9
-  const totalCalories = proteinCalories + carbCalories + fatCalories
+  const proteinCalories = macros.prot * 4;
+  const carbCalories = macros.glucides * 4;
+  const fatCalories = macros.lipides * 9;
+  const totalCalories = proteinCalories + carbCalories + fatCalories;
 
   // Données pour le graphique
   const data = [
@@ -23,42 +33,47 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
       value: proteinCalories,
       grams: macros.prot,
       color: '#06b6d4',
-      percentage: totalCalories > 0 ? Math.round((proteinCalories / totalCalories) * 100) : 0
+      percentage:
+        totalCalories > 0
+          ? Math.round((proteinCalories / totalCalories) * 100)
+          : 0,
     },
     {
       name: 'Glucides',
       value: carbCalories,
       grams: macros.glucides,
       color: '#ec4899',
-      percentage: totalCalories > 0 ? Math.round((carbCalories / totalCalories) * 100) : 0
+      percentage:
+        totalCalories > 0
+          ? Math.round((carbCalories / totalCalories) * 100)
+          : 0,
     },
     {
       name: 'Lipides',
       value: fatCalories,
       grams: macros.lipides,
       color: '#a855f7',
-      percentage: totalCalories > 0 ? Math.round((fatCalories / totalCalories) * 100) : 0
-    }
-  ].filter(item => item.value > 0)
+      percentage:
+        totalCalories > 0 ? Math.round((fatCalories / totalCalories) * 100) : 0,
+    },
+  ].filter((item) => item.value > 0);
 
   // Tooltip personnalisé
   const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = payload[0].payload;
       return (
         <div className="glass-effect p-3 rounded-lg border border-white/20 bg-space-800/95">
           <p className="text-white font-medium">{data.name}</p>
           <p className="text-sm" style={{ color: data.color }}>
             {data.grams.toFixed(1)}g ({data.percentage}%)
           </p>
-          <p className="text-xs text-muted-foreground">
-            {data.value} kcal
-          </p>
+          <p className="text-xs text-muted-foreground">{data.value} kcal</p>
         </div>
-      )
+      );
     }
-    return null
-  }
+    return null;
+  };
 
   // Légende personnalisée
   const CustomLegend = ({ payload }: LegendProps) => {
@@ -66,21 +81,23 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
       <div className="flex justify-center gap-6 mt-4">
         {payload?.map((entry, index: number) => (
           <div key={index} className="flex items-center gap-2">
-            <div 
+            <div
               className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: (entry as unknown as { color?: string }).color }}
+              style={{
+                backgroundColor: (entry as unknown as { color?: string }).color,
+              }}
             />
-            <span className="text-sm text-white">
-              {entry.value as string}
-            </span>
+            <span className="text-sm text-white">{entry.value as string}</span>
             <span className="text-xs text-muted-foreground">
-              ({(entry.payload as unknown as { percentage?: number }).percentage}%)
+              (
+              {(entry.payload as unknown as { percentage?: number }).percentage}
+              %)
             </span>
           </div>
         ))}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10">
@@ -123,7 +140,7 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
               </div>
               <div className="text-xs text-muted-foreground">Protéines</div>
               <div className="text-xs text-neon-cyan">
-                {data.find(d => d.name === 'Protéines')?.percentage || 0}%
+                {data.find((d) => d.name === 'Protéines')?.percentage || 0}%
               </div>
             </div>
             <div className="text-center">
@@ -132,7 +149,7 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
               </div>
               <div className="text-xs text-muted-foreground">Glucides</div>
               <div className="text-xs text-neon-pink">
-                {data.find(d => d.name === 'Glucides')?.percentage || 0}%
+                {data.find((d) => d.name === 'Glucides')?.percentage || 0}%
               </div>
             </div>
             <div className="text-center">
@@ -141,7 +158,7 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
               </div>
               <div className="text-xs text-muted-foreground">Lipides</div>
               <div className="text-xs text-neon-purple">
-                {data.find(d => d.name === 'Lipides')?.percentage || 0}%
+                {data.find((d) => d.name === 'Lipides')?.percentage || 0}%
               </div>
             </div>
           </div>
@@ -149,11 +166,14 @@ export default function MacrosChart({ macros, title = "Répartition des macros" 
       ) : (
         <div className="flex items-center justify-center h-48">
           <p className="text-muted-foreground text-center">
-            Aucune donnée nutritionnelle<br />
-            <span className="text-sm">Ajoutez des aliments pour voir la répartition</span>
+            Aucune donnée nutritionnelle
+            <br />
+            <span className="text-sm">
+              Ajoutez des aliments pour voir la répartition
+            </span>
           </p>
         </div>
       )}
     </div>
-  )
+  );
 }

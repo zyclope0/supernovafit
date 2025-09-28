@@ -14,12 +14,14 @@ Implémenter un système de navigation par breadcrumbs intelligent et accessible
 ## 📊 **IMPACT MESURABLE**
 
 ### Avant
+
 - ❌ Aucune navigation contextuelle
-- ❌ Utilisateurs perdus dans l'arborescence  
+- ❌ Utilisateurs perdus dans l'arborescence
 - ❌ Pas de structured data pour le SEO
 - ❌ Retour difficile aux sections parentes
 
 ### Après ✅
+
 - ✅ **Navigation contextuelle** sur toutes les pages
 - ✅ **Schema.org structured data** pour le SEO
 - ✅ **Génération automatique** basée sur l'URL
@@ -33,6 +35,7 @@ Implémenter un système de navigation par breadcrumbs intelligent et accessible
 ### Composants Créés
 
 #### 1. **Breadcrumbs.tsx** - Composant Principal
+
 ```typescript
 interface BreadcrumbItem {
   label: string
@@ -50,6 +53,7 @@ interface BreadcrumbItem {
 ```
 
 #### 2. **AthleteBreadcrumbs.tsx** - Spécialisé Coach
+
 ```typescript
 // Navigation contextuelle pour pages coach
 - Breadcrumbs avec nom d'athlète dynamique
@@ -58,6 +62,7 @@ interface BreadcrumbItem {
 ```
 
 #### 3. **CoachLayout.tsx** - Layout Contexte
+
 ```typescript
 // Layout spécialisé avec breadcrumbs automatiques
 - Breadcrumbs conditionnels selon le contexte
@@ -66,6 +71,7 @@ interface BreadcrumbItem {
 ```
 
 #### 4. **PageHeader.tsx** - Header Standardisé
+
 ```typescript
 // Composant header réutilisable
 - Titre + sous-titre + actions
@@ -77,12 +83,14 @@ interface BreadcrumbItem {
 ### Intégrations
 
 #### MainLayout.tsx
+
 ```typescript
 // Breadcrumbs automatiques sur toutes les pages
 <Breadcrumbs />
 ```
 
 #### Pages Spécifiques
+
 ```typescript
 // Page diète avec PageHeader
 <PageHeader
@@ -98,40 +106,46 @@ interface BreadcrumbItem {
 ## 🔧 **FONCTIONNALITÉS TECHNIQUES**
 
 ### 1. Génération Automatique
+
 ```typescript
 // Mapping routes → labels lisibles
 const routeLabels = {
-  '/diete': { label: 'Diète', icon: ChartBarIcon },
-  '/coach/athlete': { label: 'Athlète', icon: UserIcon },
+  "/diete": { label: "Diète", icon: ChartBarIcon },
+  "/coach/athlete": { label: "Athlète", icon: UserIcon },
   // ...
-}
+};
 
 // Génération basée sur pathname
-const pathSegments = pathname.split('/').filter(Boolean)
+const pathSegments = pathname.split("/").filter(Boolean);
 // /coach/athlete/123/diete → ["coach", "athlete", "123", "diete"]
 ```
 
 ### 2. Routes Dynamiques
+
 ```typescript
 // Gestion ID d'athlète
-if (currentPath.includes('/coach/athlete/') && !currentPath.endsWith('/athlete')) {
-  const athleteId = segment
-  label = `Athlète ${athleteId.slice(0, 8)}...` // Truncate ID
+if (
+  currentPath.includes("/coach/athlete/") &&
+  !currentPath.endsWith("/athlete")
+) {
+  const athleteId = segment;
+  label = `Athlète ${athleteId.slice(0, 8)}...`; // Truncate ID
 }
 
 // Sous-pages coach
 const subPageLabels = {
-  'diete': 'Diète',
-  'entrainements': 'Entraînements',
-  'mesures': 'Mesures'
-}
+  diete: "Diète",
+  entrainements: "Entraînements",
+  mesures: "Mesures",
+};
 ```
 
 ### 3. Schema.org SEO
+
 ```typescript
 <ol itemScope itemType="https://schema.org/BreadcrumbList">
   {breadcrumbItems.map((item, index) => (
-    <li 
+    <li
       itemProp="itemListElement"
       itemScope
       itemType="https://schema.org/ListItem"
@@ -146,15 +160,16 @@ const subPageLabels = {
 ```
 
 ### 4. Accessibilité WCAG
+
 ```typescript
 // Navigation clavier
 <nav aria-label="Breadcrumb">
   // Focus management
   focus:outline-none focus:ring-2 focus:ring-white/20
-  
+
   // Screen reader
   aria-current="page" // Page actuelle
-  
+
   // Truncation intelligente
   className="truncate max-w-[200px]"
 </nav>
@@ -165,15 +180,18 @@ const subPageLabels = {
 ## 📱 **RESPONSIVE DESIGN**
 
 ### Mobile (< 768px)
+
 - Breadcrumbs compacts
 - Truncation aggressive
 - Touch-friendly (44px min)
 
-### Tablet (768px - 1024px)  
+### Tablet (768px - 1024px)
+
 - Breadcrumbs normaux
 - Truncation modérée
 
 ### Desktop (> 1024px)
+
 - Breadcrumbs complets
 - Pas de truncation
 
@@ -182,6 +200,7 @@ const subPageLabels = {
 ## 🧪 **TESTS & VALIDATION**
 
 ### Tests Fonctionnels
+
 ```typescript
 // Navigation principale
 ✅ / → /diete : "Accueil → Diète"
@@ -194,6 +213,7 @@ const subPageLabels = {
 ```
 
 ### Tests Accessibilité
+
 ```typescript
 ✅ Navigation clavier (Tab + Enter)
 ✅ Screen reader compatible
@@ -203,6 +223,7 @@ const subPageLabels = {
 ```
 
 ### Tests SEO
+
 ```typescript
 ✅ Schema.org structured data présent
 ✅ Breadcrumbs dans HTML source
@@ -214,11 +235,13 @@ const subPageLabels = {
 ## 🚀 **PERFORMANCES**
 
 ### Impact Bundle
+
 - **Breadcrumbs** : +2KB (gzipped)
 - **PageHeader** : +1KB (gzipped)
 - **Total** : +3KB négligeable
 
 ### Optimisations
+
 - Composants légers
 - Pas de dépendances lourdes
 - Memoization avec useMemo
@@ -229,16 +252,19 @@ const subPageLabels = {
 ## 📈 **MÉTRIQUES D'IMPACT**
 
 ### UX Metrics
+
 - **Navigation contextuelle** : 100% pages couvertes
 - **Retour utilisateur** : -50% clics "retour navigateur"
 - **Temps de navigation** : -30% pour accès sections parentes
 
-### SEO Metrics  
+### SEO Metrics
+
 - **Structured data** : Schema.org breadcrumbs
 - **Crawl depth** : Amélioration indexation
 - **User signals** : Réduction bounce rate
 
 ### Accessibilité
+
 - **WCAG 2.4.1** : Navigation multiple ✅
 - **Keyboard navigation** : 100% fonctionnel
 - **Screen reader** : Compatible NVDA/JAWS
@@ -248,12 +274,14 @@ const subPageLabels = {
 ## 🔮 **ÉVOLUTIONS FUTURES**
 
 ### Phase 2 (optionnel)
+
 - **Breadcrumbs persistants** dans localStorage
 - **Historique navigation** avec back/forward
 - **Breadcrumbs personnalisables** par utilisateur
 - **Analytics** sur usage navigation
 
 ### Maintenance
+
 - **Tests automatisés** pour nouvelles routes
 - **Documentation** routes mapping
 - **Performance monitoring** impact bundle
@@ -262,11 +290,12 @@ const subPageLabels = {
 
 ## ✅ **CONCLUSION**
 
-L'implémentation des breadcrumbs apporte une **amélioration UX significative** avec un **effort minimal** (4h). 
+L'implémentation des breadcrumbs apporte une **amélioration UX significative** avec un **effort minimal** (4h).
 
 **Bénéfices immédiats** :
+
 - ✅ Navigation contextuelle professionnelle
-- ✅ SEO optimisé avec structured data  
+- ✅ SEO optimisé avec structured data
 - ✅ Accessibilité WCAG complète
 - ✅ Code maintenable et extensible
 
@@ -274,5 +303,5 @@ L'implémentation des breadcrumbs apporte une **amélioration UX significative**
 
 ---
 
-*Documentation technique - SuperNovaFit v1.9.4*  
-*Auteur : AI Assistant - 15/01/2025*
+_Documentation technique - SuperNovaFit v1.9.4_  
+_Auteur : AI Assistant - 15/01/2025_

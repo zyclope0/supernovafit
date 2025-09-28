@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 // Composant spécialisé pour les cards de profil utilisant ClickableCard universel
-import ClickableCard from './ClickableCard'
+import ClickableCard from './ClickableCard';
 
 interface ProfilCardData {
-  icon: React.ReactNode
-  label: string
-  value: string
-  subtitle?: string
-  color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red'
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  subtitle?: string;
+  color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red';
 }
 
 interface ProfilCardClickableProps {
-  data: ProfilCardData
-  onView: () => void
-  onEdit?: () => void
-  onDelete?: () => void
-  viewLabel?: string
-  className?: string
-  showActions?: boolean
+  data: ProfilCardData;
+  onView: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  viewLabel?: string;
+  className?: string;
+  showActions?: boolean;
 }
 
 export default function ProfilCardClickable({
@@ -29,7 +29,7 @@ export default function ProfilCardClickable({
   onDelete,
   viewLabel = 'Voir détails',
   className = '',
-  showActions = true
+  showActions = true,
 }: ProfilCardClickableProps) {
   return (
     <ClickableCard
@@ -41,19 +41,13 @@ export default function ProfilCardClickable({
       showActions={showActions}
     >
       <div className="flex items-center gap-3 mb-2">
-        <div className={`text-neon-${data.color}`}>
-          {data.icon}
-        </div>
+        <div className={`text-neon-${data.color}`}>{data.icon}</div>
         <span className="text-sm text-muted-foreground">{data.label}</span>
       </div>
-      <div className="text-lg font-semibold text-white">
-        {data.value}
-      </div>
+      <div className="text-lg font-semibold text-white">{data.value}</div>
       {data.subtitle && (
-        <div className="text-xs text-muted-foreground">
-          {data.subtitle}
-        </div>
+        <div className="text-xs text-muted-foreground">{data.subtitle}</div>
       )}
     </ClickableCard>
-  )
+  );
 }

@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { X, Clock, Star, Plus, Utensils } from 'lucide-react'
-import { MealType, Aliment, Macros } from '@/types'
-import { cn } from '@/lib/utils'
+import { useState } from 'react';
+import { X, Clock, Star, Plus, Utensils } from 'lucide-react';
+import { MealType, Aliment, Macros } from '@/types';
+import { cn } from '@/lib/utils';
 // import toast from 'react-hot-toast' // TODO: À utiliser pour feedback utilisateur
 
 interface QuickMealTemplate {
-  id: string
-  name: string
-  description: string
-  emoji: string
-  mealType: MealType
-  aliments: Aliment[]
-  macros: Macros
-  prepTime: string
-  category: 'petit-dej' | 'collation' | 'principal' | 'post-workout'
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  mealType: MealType;
+  aliments: Aliment[];
+  macros: Macros;
+  prepTime: string;
+  category: 'petit-dej' | 'collation' | 'principal' | 'post-workout';
 }
 
 interface QuickMealModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSelectTemplate: (template: QuickMealTemplate) => void
-  className?: string
+  isOpen: boolean;
+  onClose: () => void;
+  onSelectTemplate: (template: QuickMealTemplate) => void;
+  className?: string;
 }
 
 const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
@@ -34,13 +34,31 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍳',
     mealType: 'petit_dej',
     aliments: [
-      { id: '1', nom: 'Œufs entiers', quantite: 2, unite: 'unités', macros_base: { kcal: 155, prot: 13, glucides: 1.1, lipides: 11 } },
-      { id: '2', nom: 'Flocons d\'avoine', quantite: 50, unite: 'g', macros_base: { kcal: 389, prot: 17, glucides: 66, lipides: 7 } },
-      { id: '3', nom: 'Banane', quantite: 1, unite: 'unité', macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 } }
+      {
+        id: '1',
+        nom: 'Œufs entiers',
+        quantite: 2,
+        unite: 'unités',
+        macros_base: { kcal: 155, prot: 13, glucides: 1.1, lipides: 11 },
+      },
+      {
+        id: '2',
+        nom: "Flocons d'avoine",
+        quantite: 50,
+        unite: 'g',
+        macros_base: { kcal: 389, prot: 17, glucides: 66, lipides: 7 },
+      },
+      {
+        id: '3',
+        nom: 'Banane',
+        quantite: 1,
+        unite: 'unité',
+        macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 },
+      },
     ],
     macros: { kcal: 504, prot: 28, glucides: 45, lipides: 18 },
     prepTime: '10 min',
-    category: 'petit-dej'
+    category: 'petit-dej',
   },
   {
     id: 'quick-breakfast',
@@ -49,13 +67,31 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🥣',
     mealType: 'petit_dej',
     aliments: [
-      { id: '4', nom: 'Yaourt grec 0%', quantite: 150, unite: 'g', macros_base: { kcal: 59, prot: 10, glucides: 3.6, lipides: 0.4 } },
-      { id: '5', nom: 'Granola maison', quantite: 30, unite: 'g', macros_base: { kcal: 471, prot: 11, glucides: 48, lipides: 26 } },
-      { id: '6', nom: 'Miel', quantite: 15, unite: 'g', macros_base: { kcal: 304, prot: 0.3, glucides: 82, lipides: 0 } }
+      {
+        id: '4',
+        nom: 'Yaourt grec 0%',
+        quantite: 150,
+        unite: 'g',
+        macros_base: { kcal: 59, prot: 10, glucides: 3.6, lipides: 0.4 },
+      },
+      {
+        id: '5',
+        nom: 'Granola maison',
+        quantite: 30,
+        unite: 'g',
+        macros_base: { kcal: 471, prot: 11, glucides: 48, lipides: 26 },
+      },
+      {
+        id: '6',
+        nom: 'Miel',
+        quantite: 15,
+        unite: 'g',
+        macros_base: { kcal: 304, prot: 0.3, glucides: 82, lipides: 0 },
+      },
     ],
     macros: { kcal: 275, prot: 18, glucides: 31, lipides: 8 },
     prepTime: '2 min',
-    category: 'petit-dej'
+    category: 'petit-dej',
   },
 
   // Collations
@@ -66,26 +102,50 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🥜',
     mealType: 'collation_matin',
     aliments: [
-      { id: '7', nom: 'Fromage blanc 0%', quantite: 100, unite: 'g', macros_base: { kcal: 47, prot: 8, glucides: 4, lipides: 0.2 } },
-      { id: '8', nom: 'Amandes', quantite: 20, unite: 'g', macros_base: { kcal: 579, prot: 21, glucides: 22, lipides: 50 } }
+      {
+        id: '7',
+        nom: 'Fromage blanc 0%',
+        quantite: 100,
+        unite: 'g',
+        macros_base: { kcal: 47, prot: 8, glucides: 4, lipides: 0.2 },
+      },
+      {
+        id: '8',
+        nom: 'Amandes',
+        quantite: 20,
+        unite: 'g',
+        macros_base: { kcal: 579, prot: 21, glucides: 22, lipides: 50 },
+      },
     ],
     macros: { kcal: 163, prot: 12, glucides: 8, lipides: 10 },
     prepTime: '1 min',
-    category: 'collation'
+    category: 'collation',
   },
   {
     id: 'fruit-snack',
     name: 'Collation Fruits',
-    description: 'Pomme + Beurre d\'amande',
+    description: "Pomme + Beurre d'amande",
     emoji: '🍎',
     mealType: 'collation_apres_midi',
     aliments: [
-      { id: '9', nom: 'Pomme', quantite: 150, unite: 'g', macros_base: { kcal: 52, prot: 0.3, glucides: 14, lipides: 0.2 } },
-      { id: '10', nom: 'Beurre d\'amande', quantite: 15, unite: 'g', macros_base: { kcal: 614, prot: 25, glucides: 6, lipides: 56 } }
+      {
+        id: '9',
+        nom: 'Pomme',
+        quantite: 150,
+        unite: 'g',
+        macros_base: { kcal: 52, prot: 0.3, glucides: 14, lipides: 0.2 },
+      },
+      {
+        id: '10',
+        nom: "Beurre d'amande",
+        quantite: 15,
+        unite: 'g',
+        macros_base: { kcal: 614, prot: 25, glucides: 6, lipides: 56 },
+      },
     ],
     macros: { kcal: 170, prot: 4, glucides: 22, lipides: 9 },
     prepTime: '1 min',
-    category: 'collation'
+    category: 'collation',
   },
 
   // Repas principaux
@@ -96,13 +156,31 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍗',
     mealType: 'dejeuner',
     aliments: [
-      { id: '11', nom: 'Blanc de poulet', quantite: 150, unite: 'g', macros_base: { kcal: 165, prot: 31, glucides: 0, lipides: 3.6 } },
-      { id: '12', nom: 'Riz complet cuit', quantite: 100, unite: 'g', macros_base: { kcal: 111, prot: 2.6, glucides: 23, lipides: 0.9 } },
-      { id: '13', nom: 'Brocolis', quantite: 100, unite: 'g', macros_base: { kcal: 25, prot: 3, glucides: 4, lipides: 0.4 } }
+      {
+        id: '11',
+        nom: 'Blanc de poulet',
+        quantite: 150,
+        unite: 'g',
+        macros_base: { kcal: 165, prot: 31, glucides: 0, lipides: 3.6 },
+      },
+      {
+        id: '12',
+        nom: 'Riz complet cuit',
+        quantite: 100,
+        unite: 'g',
+        macros_base: { kcal: 111, prot: 2.6, glucides: 23, lipides: 0.9 },
+      },
+      {
+        id: '13',
+        nom: 'Brocolis',
+        quantite: 100,
+        unite: 'g',
+        macros_base: { kcal: 25, prot: 3, glucides: 4, lipides: 0.4 },
+      },
     ],
     macros: { kcal: 384, prot: 50, glucides: 27, lipides: 7 },
     prepTime: '15 min',
-    category: 'principal'
+    category: 'principal',
   },
   {
     id: 'salmon-quinoa',
@@ -111,13 +189,31 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🐟',
     mealType: 'diner',
     aliments: [
-      { id: '14', nom: 'Saumon', quantite: 120, unite: 'g', macros_base: { kcal: 208, prot: 25, glucides: 0, lipides: 12 } },
-      { id: '15', nom: 'Quinoa cuit', quantite: 80, unite: 'g', macros_base: { kcal: 120, prot: 4.4, glucides: 22, lipides: 1.9 } },
-      { id: '16', nom: 'Salade verte', quantite: 50, unite: 'g', macros_base: { kcal: 15, prot: 1.4, glucides: 2.9, lipides: 0.2 } }
+      {
+        id: '14',
+        nom: 'Saumon',
+        quantite: 120,
+        unite: 'g',
+        macros_base: { kcal: 208, prot: 25, glucides: 0, lipides: 12 },
+      },
+      {
+        id: '15',
+        nom: 'Quinoa cuit',
+        quantite: 80,
+        unite: 'g',
+        macros_base: { kcal: 120, prot: 4.4, glucides: 22, lipides: 1.9 },
+      },
+      {
+        id: '16',
+        nom: 'Salade verte',
+        quantite: 50,
+        unite: 'g',
+        macros_base: { kcal: 15, prot: 1.4, glucides: 2.9, lipides: 0.2 },
+      },
     ],
     macros: { kcal: 353, prot: 34, glucides: 20, lipides: 16 },
     prepTime: '20 min',
-    category: 'principal'
+    category: 'principal',
   },
 
   // Post-workout
@@ -128,48 +224,67 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '💪',
     mealType: 'collation_apres_midi',
     aliments: [
-      { id: '17', nom: 'Whey protéine', quantite: 30, unite: 'g', macros_base: { kcal: 380, prot: 80, glucides: 5, lipides: 2 } },
-      { id: '18', nom: 'Banane', quantite: 120, unite: 'g', macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 } },
-      { id: '19', nom: 'Lait d\'amande', quantite: 200, unite: 'ml', macros_base: { kcal: 17, prot: 0.6, glucides: 0.3, lipides: 1.1 } }
+      {
+        id: '17',
+        nom: 'Whey protéine',
+        quantite: 30,
+        unite: 'g',
+        macros_base: { kcal: 380, prot: 80, glucides: 5, lipides: 2 },
+      },
+      {
+        id: '18',
+        nom: 'Banane',
+        quantite: 120,
+        unite: 'g',
+        macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 },
+      },
+      {
+        id: '19',
+        nom: "Lait d'amande",
+        quantite: 200,
+        unite: 'ml',
+        macros_base: { kcal: 17, prot: 0.6, glucides: 0.3, lipides: 1.1 },
+      },
     ],
     macros: { kcal: 255, prot: 26, glucides: 30, lipides: 3 },
     prepTime: '2 min',
-    category: 'post-workout'
-  }
-]
+    category: 'post-workout',
+  },
+];
 
-export default function QuickMealModal({ 
-  isOpen, 
-  onClose, 
+export default function QuickMealModal({
+  isOpen,
+  onClose,
   onSelectTemplate,
-  className 
+  className,
 }: QuickMealModalProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   const categories = [
     { id: 'all', label: 'Tous', emoji: '🍽️' },
     { id: 'petit-dej', label: 'Matin', emoji: '🌅' },
     { id: 'collation', label: 'Collation', emoji: '🍎' },
     { id: 'principal', label: 'Principal', emoji: '🍗' },
-    { id: 'post-workout', label: 'Post-Sport', emoji: '💪' }
-  ]
+    { id: 'post-workout', label: 'Post-Sport', emoji: '💪' },
+  ];
 
-  const filteredTemplates = selectedCategory === 'all' 
-    ? QUICK_MEAL_TEMPLATES 
-    : QUICK_MEAL_TEMPLATES.filter(t => t.category === selectedCategory)
+  const filteredTemplates =
+    selectedCategory === 'all'
+      ? QUICK_MEAL_TEMPLATES
+      : QUICK_MEAL_TEMPLATES.filter((t) => t.category === selectedCategory);
 
   const toggleFavorite = (templateId: string) => {
-    setFavorites(prev => {
-      const newFavorites = new Set(prev)
+    setFavorites((prev) => {
+      const newFavorites = new Set(prev);
       if (newFavorites.has(templateId)) {
-        newFavorites.delete(templateId)
+        newFavorites.delete(templateId);
       } else {
-        newFavorites.add(templateId)
+        newFavorites.add(templateId);
       }
-      return newFavorites
-    })
-  }
+      return newFavorites;
+    });
+  };
 
   // Template selection - TODO: À implémenter si nécessaire
   /*
@@ -180,27 +295,29 @@ export default function QuickMealModal({
   }
   */
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
-      <div className={cn(
-        'fixed bottom-0 left-0 right-0 z-50',
-        'bg-black/95 backdrop-blur-xl',
-        'border-t border-white/10',
-        'rounded-t-3xl',
-        'max-h-[80vh] overflow-hidden',
-        'transform transition-all duration-300 ease-out',
-        isOpen ? 'translate-y-0' : 'translate-y-full',
-        className
-      )}>
+      <div
+        className={cn(
+          'fixed bottom-0 left-0 right-0 z-50',
+          'bg-black/95 backdrop-blur-xl',
+          'border-t border-white/10',
+          'rounded-t-3xl',
+          'max-h-[80vh] overflow-hidden',
+          'transform transition-all duration-300 ease-out',
+          isOpen ? 'translate-y-0' : 'translate-y-full',
+          className,
+        )}
+      >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-12 h-1 bg-white/20 rounded-full" />
@@ -210,9 +327,7 @@ export default function QuickMealModal({
         <div className="flex items-center justify-between px-6 pb-4">
           <div className="flex items-center gap-3">
             <Utensils className="w-6 h-6 text-orange-400" />
-            <h2 className="text-xl font-bold text-white">
-              Repas Rapides
-            </h2>
+            <h2 className="text-xl font-bold text-white">Repas Rapides</h2>
           </div>
           <button
             onClick={onClose}
@@ -233,7 +348,7 @@ export default function QuickMealModal({
                   'flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all',
                   selectedCategory === category.id
                     ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                    : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'
+                    : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10',
                 )}
               >
                 <span>{category.emoji}</span>
@@ -247,8 +362,8 @@ export default function QuickMealModal({
         <div className="px-6 pb-6 overflow-y-auto max-h-96">
           <div className="grid grid-cols-1 gap-3">
             {filteredTemplates.map((template) => {
-              const isFavorite = favorites.has(template.id)
-              
+              const isFavorite = favorites.has(template.id);
+
               return (
                 <div
                   key={template.id}
@@ -275,17 +390,22 @@ export default function QuickMealModal({
                           </div>
                         </div>
                       </div>
-                      
+
                       <button
                         onClick={() => toggleFavorite(template.id)}
                         className={cn(
                           'p-2 rounded-lg transition-colors',
-                          isFavorite 
-                            ? 'text-yellow-400 bg-yellow-500/10' 
-                            : 'text-white/40 hover:text-yellow-400 hover:bg-yellow-500/10'
+                          isFavorite
+                            ? 'text-yellow-400 bg-yellow-500/10'
+                            : 'text-white/40 hover:text-yellow-400 hover:bg-yellow-500/10',
                         )}
                       >
-                        <Star className={cn('w-4 h-4', isFavorite && 'fill-current')} />
+                        <Star
+                          className={cn(
+                            'w-4 h-4',
+                            isFavorite && 'fill-current',
+                          )}
+                        />
                       </button>
                     </div>
 
@@ -321,14 +441,16 @@ export default function QuickMealModal({
                     </button>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
           {filteredTemplates.length === 0 && (
             <div className="text-center py-8">
               <Utensils className="w-12 h-12 text-white/20 mx-auto mb-3" />
-              <p className="text-white/60">Aucun template dans cette catégorie</p>
+              <p className="text-white/60">
+                Aucun template dans cette catégorie
+              </p>
             </div>
           )}
         </div>
@@ -337,5 +459,5 @@ export default function QuickMealModal({
         <div className="h-safe-area-inset-bottom" />
       </div>
     </>
-  )
+  );
 }

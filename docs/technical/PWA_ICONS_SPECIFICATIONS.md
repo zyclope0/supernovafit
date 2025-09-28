@@ -1,11 +1,12 @@
 # 🎨 SPÉCIFICATIONS ICÔNES PWA - SuperNovaFit
 
 **Date :** 15.01.2025  
-**Version :** 1.10.0  
+**Version :** 1.10.0
 
 ## 🎯 **REQUIREMENTS PWA ICONS**
 
 ### **Tailles requises :**
+
 - ✅ **72x72px** - Android Chrome
 - ✅ **96x96px** - Android Chrome
 - ✅ **128x128px** - Android Chrome
@@ -16,6 +17,7 @@
 - ✅ **512x512px** - Android Chrome (standard)
 
 ### **Shortcuts (96x96px) :**
+
 - ✅ **shortcut-dashboard.png** - Dashboard principal
 - ✅ **shortcut-challenges.png** - Page challenges
 - ✅ **shortcut-diete.png** - Page diète
@@ -23,8 +25,9 @@
 ## 🎨 **DESIGN SPECIFICATIONS**
 
 ### **Style visuel :**
+
 - **Thème** : Space/Neon cohérent avec l'app
-- **Couleurs** : 
+- **Couleurs** :
   - Primary: `#3b82f6` (bleu)
   - Background: `#0f0f23` (space dark)
   - Accent: `#8b5cf6` (violet)
@@ -33,6 +36,7 @@
 - **Style** : Moderne, minimaliste, reconnaissable
 
 ### **Contraintes techniques :**
+
 - **Maskable** : Support des icônes adaptatives Android
 - **Contraste** : Minimum 3:1 pour accessibilité
 - **Lisibilité** : Reconnaissable à petite taille
@@ -62,6 +66,7 @@ public/
 ## 🚀 **GÉNÉRATION TEMPORAIRE**
 
 Pour les tests, des icônes temporaires peuvent être créées avec :
+
 - **Favicon existant** : Copié et redimensionné
 - **Placeholder** : Icônes simples avec texte "SNF"
 - **Outils** : GIMP, Photoshop, ou générateurs en ligne
@@ -69,12 +74,14 @@ Pour les tests, des icônes temporaires peuvent être créées avec :
 ## ✅ **VALIDATION**
 
 ### **Tests requis :**
+
 - ✅ **Lighthouse PWA** : Score 100/100
 - ✅ **Installation** : Banner d'installation fonctionnel
 - ✅ **Affichage** : Icônes visibles dans toutes les tailles
 - ✅ **Maskable** : Support Android adaptatif
 
 ### **Outils de validation :**
+
 - **Lighthouse** : Audit PWA complet
 - **PWA Builder** : Validation manifest et icônes
 - **Chrome DevTools** : Test installation

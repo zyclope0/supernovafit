@@ -1,4 +1,5 @@
 # Rapport de Sécurité - SuperNovaFit
+
 **Date**: 2025-09-27  
 **Version**: 2.0.0
 
@@ -11,14 +12,16 @@
 ## Analyse OWASP Top 10 (2021)
 
 ### A01: Broken Access Control ✅
+
 - **Status**: Sécurisé
-- **Implementation**: 
+- **Implementation**:
   - Firebase Auth avec AuthGuard sur toutes les routes
   - Règles Firestore strictes par user_id
   - Validation coach/athlete permissions
 - **Tests**: ⚠️ Non testés (0% coverage)
 
 ### A02: Cryptographic Failures ✅
+
 - **Status**: Sécurisé
 - **Implementation**:
   - HTTPS enforced via Firebase Hosting
@@ -26,6 +29,7 @@
   - Firebase Auth gère les passwords
 
 ### A03: Injection ✅
+
 - **Status**: Sécurisé
 - **Implementation**:
   - Firestore NoSQL (pas de SQL injection)
@@ -33,23 +37,27 @@
   - Sanitization des données utilisateur
 
 ### A04: Insecure Design ⚠️
+
 - **Risque**: MOYEN
 - **Problème**: Rate limiting client-side uniquement
 - **Impact**: DDoS possible sur les endpoints Firebase
 
 ### A05: Security Misconfiguration ⚠️
+
 - **Risque**: MOYEN
 - **Problèmes**:
-  1. Variables d'environnement publiques exposées (NEXT_PUBLIC_*)
+  1. Variables d'environnement publiques exposées (NEXT*PUBLIC*\*)
   2. Source maps en production
   3. Sentry DSN visible côté client
 
 ### A06: Vulnerable Components ✅
+
 - **Status**: Sécurisé
 - **0 vulnérabilité** dans les dépendances
 - npm audit clean
 
 ### A07: Authentication Failures ✅
+
 - **Status**: Sécurisé
 - **Firebase Auth** avec:
   - Session management
@@ -57,54 +65,66 @@
   - Logout sur inactivité
 
 ### A08: Data Integrity Failures ✅
+
 - **Status**: Sécurisé
 - **Firestore** transactions ACID
 - Validation des données avant écriture
 
 ### A09: Security Logging ⚠️
+
 - **Risque**: MOYEN
 - **Problème**: Pas de logging des tentatives d'accès non autorisées
 - **Impact**: Détection d'attaques impossible
 
 ### A10: SSRF ✅
+
 - **Status**: Non applicable
 - Pas d'appels serveur-to-serveur
 
 ## Findings Détaillés
 
 ### FINDING-001: Rate Limiting Client-Side
+
 **Sévérité**: P1 (Moyenne)  
 **Fichier**: `src/lib/security/RateLimiter.ts`  
 **Problème**: Le rate limiting est implémenté côté client uniquement
+
 ```typescript
 // Actuel - Facilement contournable
-const limiter = new RateLimiter(10, 60000)
+const limiter = new RateLimiter(10, 60000);
 ```
+
 **Fix Proposé**:
+
 ```typescript
 // Implémenter Firebase Security Rules
 // firestore.rules
 match /api/{document} {
-  allow read: if request.auth != null 
+  allow read: if request.auth != null
     && rateLimitCheck(request.auth.uid);
 }
 ```
 
 ### FINDING-002: Variables Publiques Exposées
+
 **Sévérité**: P2 (Faible)  
 **Fichier**: `.env.local`  
 **Problème**: Configuration Firebase visible
+
 ```typescript
 NEXT_PUBLIC_FIREBASE_API_KEY=...
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 ```
+
 **Note**: Normal pour Firebase mais à documenter
 
 ### FINDING-003: Absence de Security Headers
+
 **Sévérité**: P1 (Moyenne)  
 **Fichier**: `next.config.js`  
 **Problème**: Headers de sécurité manquants
 **Fix Proposé**:
+
 ```javascript
 // next.config.js
 async headers() {
@@ -116,7 +136,7 @@ async headers() {
         value: 'DENY'
       },
       {
-        key: 'X-Content-Type-Options', 
+        key: 'X-Content-Type-Options',
         value: 'nosniff'
       },
       {
@@ -135,6 +155,7 @@ async headers() {
 ## Analyse du Code
 
 ### Secrets Scan
+
 ```bash
 # Recherche effectuée
 grep -r "API_KEY\|SECRET\|PASSWORD\|TOKEN" src/
@@ -146,29 +167,31 @@ grep -r "API_KEY\|SECRET\|PASSWORD\|TOKEN" src/
 ```
 
 ### Input Validation
+
 ```typescript
 // ✅ Bonne pratique trouvée
-import { z } from 'zod'
+import { z } from "zod";
 
 const mealSchema = z.object({
   name: z.string().min(1).max(100),
   calories: z.number().positive(),
   // ...
-})
+});
 ```
 
 ### Authentication Flow
+
 ```typescript
 // ✅ Implementation correcte
 const AuthGuard = ({ children }) => {
   const { user, loading } = useAuth()
-  
+
   if (loading) return <Loading />
   if (!user) {
     router.push('/auth')
     return null
   }
-  
+
   return children
 }
 ```
@@ -176,9 +199,11 @@ const AuthGuard = ({ children }) => {
 ## Recommandations Prioritaires
 
 ### P0 - Critique (Aucune)
+
 ✅ Pas de vulnérabilité critique détectée
 
 ### P1 - Haute (À faire sous 7 jours)
+
 1. **Implémenter rate limiting Firebase**
    - Utiliser Firebase App Check
    - Ajouter rules Firestore avec quotas
@@ -192,6 +217,7 @@ const AuthGuard = ({ children }) => {
    - Intégrer avec Sentry
 
 ### P2 - Moyenne (À faire sous 30 jours)
+
 1. **Tests de sécurité**
    - Tests AuthGuard
    - Tests Firebase rules
@@ -207,12 +233,12 @@ const AuthGuard = ({ children }) => {
 
 ## Compliance Check
 
-| Standard | Status | Notes |
-|----------|--------|-------|
-| RGPD | ✅ | Privacy policy, data deletion |
-| WCAG 2.1 | ✅ | AAA accessibility |
-| OWASP | ⚠️ | 3 points mineurs |
-| ISO 27001 | N/A | Non requis |
+| Standard  | Status | Notes                         |
+| --------- | ------ | ----------------------------- |
+| RGPD      | ✅     | Privacy policy, data deletion |
+| WCAG 2.1  | ✅     | AAA accessibility             |
+| OWASP     | ⚠️     | 3 points mineurs              |
+| ISO 27001 | N/A    | Non requis                    |
 
 ## Scripts de Sécurité
 

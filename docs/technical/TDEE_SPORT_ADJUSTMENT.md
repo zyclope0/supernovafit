@@ -5,6 +5,7 @@
 ## 🚨 **PROBLÈME RÉSOLU**
 
 ### **❌ AVANT : Double Comptage**
+
 ```typescript
 TDEE = BMR × niveau_activité (ex: 1800 × 1.55 = 2790 kcal)
 + Sport = +500 kcal course
@@ -12,6 +13,7 @@ TDEE = BMR × niveau_activité (ex: 1800 × 1.55 = 2790 kcal)
 ```
 
 ### **✅ APRÈS : Ajustement Intelligent**
+
 ```typescript
 TDEE = 2790 kcal (inclut déjà activité modérée)
 + Sport ajusté = 500 × 0.5 = +250 kcal (50% car activité déjà prévue)
@@ -24,17 +26,18 @@ TDEE = 2790 kcal (inclut déjà activité modérée)
 
 ### **🎯 Facteurs de Correction par Niveau**
 
-| Niveau Activité | Facteur | Logique |
-|-----------------|---------|---------|
-| **Sédentaire** | 0.9 (90%) | Presque tout le sport est nouveau |
-| **Léger** | 0.7 (70%) | Une partie de l'activité était prévue |
-| **Modéré** | 0.5 (50%) | La moitié de l'activité était prévue |
-| **Intense** | 0.3 (30%) | La plupart de l'activité était prévue |
-| **Très Intense** | 0.1 (10%) | Presque tout était déjà prévu |
+| Niveau Activité  | Facteur   | Logique                               |
+| ---------------- | --------- | ------------------------------------- |
+| **Sédentaire**   | 0.9 (90%) | Presque tout le sport est nouveau     |
+| **Léger**        | 0.7 (70%) | Une partie de l'activité était prévue |
+| **Modéré**       | 0.5 (50%) | La moitié de l'activité était prévue  |
+| **Intense**      | 0.3 (30%) | La plupart de l'activité était prévue |
+| **Très Intense** | 0.1 (10%) | Presque tout était déjà prévu         |
 
 ### **📊 Exemples Concrets**
 
 #### **Utilisateur Sédentaire + Course 600 kcal**
+
 ```
 TDEE base : 2100 kcal (sédentaire)
 Sport ajusté : 600 × 0.9 = 540 kcal
@@ -43,6 +46,7 @@ Logique : Course très inhabituelle → compte presque entièrement
 ```
 
 #### **Utilisateur Très Actif + Course 600 kcal**
+
 ```
 TDEE base : 3300 kcal (très intense)
 Sport ajusté : 600 × 0.1 = 60 kcal
@@ -57,36 +61,44 @@ Logique : Course habituelle → compte très peu en plus
 ### **📁 Fichiers Modifiés**
 
 #### **1. `src/lib/userCalculations.ts`**
+
 ```typescript
 // Nouvelles fonctions
-export function getSportCorrectionFactor(niveau_activite: string): number
-export function calculateAdjustedTDEE(user: User, sportCalories: number): number
+export function getSportCorrectionFactor(niveau_activite: string): number;
+export function calculateAdjustedTDEE(
+  user: User,
+  sportCalories: number,
+): number;
 ```
 
 #### **2. `src/components/desktop/DesktopDashboard.tsx`**
+
 ```typescript
 // TDEE ajusté avec indicateur visuel
-const adjustedTDEE = calculateAdjustedTDEE(userProfile, periodCaloriesBurned)
+const adjustedTDEE = calculateAdjustedTDEE(userProfile, periodCaloriesBurned);
 // Badge "Ajusté sport" si entraînements présents
 ```
 
 #### **3. `src/components/mobile/MobileDashboard.tsx`**
+
 ```typescript
 // Même logique pour cohérence mobile/desktop
-const adjustedTDEE = calculateAdjustedTDEE(userProfile, weekCaloriesBurned)
+const adjustedTDEE = calculateAdjustedTDEE(userProfile, weekCaloriesBurned);
 ```
 
 #### **4. `src/app/diete/page.tsx`**
+
 ```typescript
 // Objectifs nutritionnels basés sur TDEE ajusté
-const finalTDEE = calculateAdjustedTDEE(userProfile, todayCaloriesBurned)
+const finalTDEE = calculateAdjustedTDEE(userProfile, todayCaloriesBurned);
 ```
 
 ### **🧪 Tests Validés**
+
 ```bash
 ✓ getSportCorrectionFactor > correct factors for each level
 ✓ calculateAdjustedTDEE > moderate user adjustment
-✓ calculateAdjustedTDEE > sedentary user high bonus  
+✓ calculateAdjustedTDEE > sedentary user high bonus
 ✓ calculateAdjustedTDEE > intense user minimal bonus
 ```
 
@@ -95,11 +107,13 @@ const finalTDEE = calculateAdjustedTDEE(userProfile, todayCaloriesBurned)
 ## 🎯 **IMPACT UTILISATEUR**
 
 ### **💪 Précision Nutritionnelle**
+
 - **Recommandations caloriques** 15-20% plus précises
 - **Objectifs personnalisés** selon profil + activité réelle
 - **Évite la surconsommation** due au double comptage
 
 ### **🎮 Interface Intelligente**
+
 - **Badge "Ajusté sport"** quand correction appliquée
 - **Objectifs dynamiques** dans tous les dashboards
 - **Cohérence parfaite** mobile/desktop/diète
@@ -107,6 +121,7 @@ const finalTDEE = calculateAdjustedTDEE(userProfile, todayCaloriesBurned)
 ### **📊 Exemples Utilisateur**
 
 #### **Scénario 1 : Utilisateur Modéré**
+
 ```
 Profil : Modéré (bureau + sport 3×/semaine)
 TDEE base : 2700 kcal
@@ -115,9 +130,10 @@ Objectif final : 2950 kcal ✅
 ```
 
 #### **Scénario 2 : Athlète Intensif**
+
 ```
 Profil : Très intense (sport quotidien)
-TDEE base : 3300 kcal  
+TDEE base : 3300 kcal
 Course 600 kcal → +60 kcal ajustés
 Objectif final : 3360 kcal ✅
 ```
@@ -127,16 +143,19 @@ Objectif final : 3360 kcal ✅
 ## 🚀 **AVANTAGES SCIENTIFIQUES**
 
 ### **✅ Précision Métabolique**
+
 - **Évite surestimation** de 200-400 kcal/jour
 - **Prévient prise de poids** non désirée
 - **Optimise composition corporelle**
 
 ### **✅ Personnalisation Avancée**
+
 - **S'adapte au profil** d'activité déclaré
 - **Évolue avec les habitudes** utilisateur
 - **Prend en compte la réalité** vs les intentions
 
 ### **✅ Motivation Préservée**
+
 - **Objectifs atteignables** et réalistes
 - **Pas de frustration** due à objectifs impossibles
 - **Progression visible** et mesurable
@@ -146,11 +165,13 @@ Objectif final : 3360 kcal ✅
 ## 📈 **MÉTRIQUES D'IMPACT**
 
 ### **🎯 Précision Améliorée**
+
 - **+20% précision** recommandations caloriques
 - **-15% risque** de surconsommation
 - **+30% satisfaction** objectifs atteignables
 
 ### **🔧 Couverture Technique**
+
 - **4 composants** mis à jour
 - **100% dashboards** cohérents
 - **4 tests** validés

@@ -11,6 +11,7 @@ Montrer comment appliquer l'industrialisation UI/UX sur la page Journal **EN PR�
 ## 🧘 **ESPRIT JOURNAL À PRÉSERVER**
 
 ### **🌟 Caractéristiques Uniques Identifiées :**
+
 - **Émojis expressifs** : EMOJI_LEVELS pour humeur/énergie
 - **Design chaleureux** : Dégradés purple/cyan, borders colorées
 - **Approche holistique** : Bien-être global (humeur, énergie, sommeil, stress)
@@ -19,6 +20,7 @@ Montrer comment appliquer l'industrialisation UI/UX sur la page Journal **EN PR�
 - **Transitions douces** : 300ms, hover effects subtils
 
 ### **🎨 Design Signature Journal :**
+
 ```css
 /* Couleurs émotionnelles spécifiques */
 .humeur { bg-neon-green/10 border-neon-green/20 text-neon-green }
@@ -35,6 +37,7 @@ Montrer comment appliquer l'industrialisation UI/UX sur la page Journal **EN PR�
 ## 🔄 **INTÉGRATION PROGRESSIVE**
 
 ### **Phase 1 : Header Bien-être (Nouveau)**
+
 ```typescript
 // Remplacer StatsDashboard par JournalWellnessHeader
 // AVANT (actuel)
@@ -59,13 +62,14 @@ Montrer comment appliquer l'industrialisation UI/UX sur la page Journal **EN PR�
 ```
 
 ### **Phase 2 : Cards Cliquables (Nouveau)**
+
 ```typescript
 // Remplacer EntryCard par JournalEntryClickable
 // AVANT (actuel)
-<EntryCard 
-  entry={entry} 
-  onEdit={handleEdit} 
-  onDelete={handleDelete} 
+<EntryCard
+  entry={entry}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
 />
 
 // APRÈS (industrialisé avec vue détaillée)
@@ -87,6 +91,7 @@ const handleEntryView = (entry: JournalEntry) => {
 ```
 
 ### **Phase 3 : Modal Vue Détaillée (Nouveau)**
+
 ```typescript
 // Ajouter modal de vue détaillée
 <JournalDetailModal
@@ -104,6 +109,7 @@ const handleEntryView = (entry: JournalEntry) => {
 ```
 
 ### **Phase 4 : Historique Multi-Modes (Optionnel)**
+
 ```typescript
 // Remplacer HistoriqueJournalModal par MultiModeHistoryModal
 <MultiModeHistoryModal
@@ -148,12 +154,14 @@ const handleEntryView = (entry: JournalEntry) => {
 ## 🎨 **ADAPTATIONS POUR L'ESPRIT JOURNAL**
 
 ### **1. JournalWellnessHeader (Créé)**
+
 - **Émojis** au lieu d'icônes Lucide : 📝 😊 ⚡ 🌙
 - **Dégradé chaleureux** : `from-purple-500/5 to-pink-500/5`
 - **Conseils bienveillants** : Ton personnel et émotionnel
 - **Design cohérent** : Préserve l'identité visuelle Journal
 
 ### **2. JournalEntryClickable (Créé)**
+
 - **Style EXACT** de l'EntryCard existant
 - **Émojis préservés** : ✏️ 🗑️ 👁️ au lieu d'icônes
 - **Transitions identiques** : 300ms, hover cyan
@@ -161,6 +169,7 @@ const handleEntryView = (entry: JournalEntry) => {
 - **Actions discrètes** : Opacity sur hover comme l'original
 
 ### **3. JournalDetailModal (Créé)**
+
 - **Vue complète** : Toutes les métriques bien-être
 - **Design émotionnel** : Émojis, couleurs, barres de progression
 - **Sections logiques** : Métriques, Note, Activités, Sommeil, Stress, Photos
@@ -169,12 +178,14 @@ const handleEntryView = (entry: JournalEntry) => {
 ## 🚀 **AVANTAGES DE L'INDUSTRIALISATION**
 
 ### **✅ Préservation Totale :**
+
 - **Esprit émotionnel** : 100% conservé
 - **Design signature** : Identique visuellement
 - **UX familière** : Aucune perturbation utilisateur
 - **Fonctionnalités** : Toutes préservées
 
 ### **✅ Améliorations Apportées :**
+
 - **Vue détaillée** : Modal complet pour chaque entrée
 - **Toggle période** : Analyse sur aujourd'hui/semaine/mois
 - **Conseils IA** : Suggestions bienveillantes adaptatives
@@ -182,6 +193,7 @@ const handleEntryView = (entry: JournalEntry) => {
 - **Accessibilité** : Navigation clavier, focus trap
 
 ### **✅ Cohérence Globale :**
+
 - **Patterns uniformes** : Même logique que Entraînements
 - **États standardisés** : selectedEntry, showEntryDetail, period
 - **Handlers uniformes** : handleEntryView, handleEntryEdit
@@ -190,49 +202,59 @@ const handleEntryView = (entry: JournalEntry) => {
 ## 📋 **PLAN D'IMPLÉMENTATION RESPECTUEUX**
 
 ### **Étape 1 : Préparation (5 min)**
+
 ```typescript
 // Ajouter les imports
-import JournalWellnessHeader from '@/components/journal/JournalWellnessHeader'
-import JournalEntryClickable from '@/components/ui/JournalEntryClickable'
-import JournalDetailModal from '@/components/ui/JournalDetailModal'
+import JournalWellnessHeader from "@/components/journal/JournalWellnessHeader";
+import JournalEntryClickable from "@/components/ui/JournalEntryClickable";
+import JournalDetailModal from "@/components/ui/JournalDetailModal";
 
 // Ajouter les états
-const [wellnessPeriod, setWellnessPeriod] = useState<'today' | 'week' | 'month'>('week')
-const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null)
-const [showEntryDetail, setShowEntryDetail] = useState(false)
+const [wellnessPeriod, setWellnessPeriod] = useState<
+  "today" | "week" | "month"
+>("week");
+const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+const [showEntryDetail, setShowEntryDetail] = useState(false);
 
 // Ajouter les handlers
 const handleEntryView = (entry: JournalEntry) => {
-  setSelectedEntry(entry)
-  setShowEntryDetail(true)
-}
+  setSelectedEntry(entry);
+  setShowEntryDetail(true);
+};
 
 const handleEntryEdit = () => {
   if (selectedEntry) {
-    setEditingEntry(selectedEntry)
-    setShowForm(true)
-    setShowEntryDetail(false)
+    setEditingEntry(selectedEntry);
+    setShowForm(true);
+    setShowEntryDetail(false);
   }
-}
+};
 ```
 
 ### **Étape 2 : Remplacement Header (10 min)**
+
 ```typescript
 // Remplacer StatsDashboard par JournalWellnessHeader
 // Calculer les données de période
-const periodEntries = wellnessPeriod === 'today' 
-  ? entries.filter(e => e.date === today)
-  : wellnessPeriod === 'week'
-    ? entries.filter(e => e.date >= weekStart)
-    : entries.filter(e => e.date >= monthStart)
+const periodEntries =
+  wellnessPeriod === "today"
+    ? entries.filter((e) => e.date === today)
+    : wellnessPeriod === "week"
+      ? entries.filter((e) => e.date >= weekStart)
+      : entries.filter((e) => e.date >= monthStart);
 
 // Calculer moyennes pour la période
-const periodAvgMood = periodEntries.filter(e => e.humeur).length > 0
-  ? Math.round(periodEntries.reduce((sum, e) => sum + (e.humeur || 0), 0) / periodEntries.filter(e => e.humeur).length)
-  : 0
+const periodAvgMood =
+  periodEntries.filter((e) => e.humeur).length > 0
+    ? Math.round(
+        periodEntries.reduce((sum, e) => sum + (e.humeur || 0), 0) /
+          periodEntries.filter((e) => e.humeur).length,
+      )
+    : 0;
 ```
 
 ### **Étape 3 : Cards Cliquables (15 min)**
+
 ```typescript
 // Dans PaginatedEntries, remplacer EntryCardMemo par JournalEntryClickable
 {pageItems.map((entry) => (
@@ -247,6 +269,7 @@ const periodAvgMood = periodEntries.filter(e => e.humeur).length > 0
 ```
 
 ### **Étape 4 : Modal Détaillé (5 min)**
+
 ```typescript
 // Ajouter le modal à la fin de la page
 <JournalDetailModal
@@ -260,18 +283,21 @@ const periodAvgMood = periodEntries.filter(e => e.humeur).length > 0
 ## 🏆 **RÉSULTAT ATTENDU**
 
 ### **🌟 Expérience Utilisateur :**
+
 - **Familiarité** : Interface identique, zéro perturbation
 - **Richesse** : Vue détaillée complète pour chaque entrée
 - **Fluidité** : Transitions et animations préservées
 - **Cohérence** : Patterns alignés avec Entraînements
 
 ### **🔧 Code :**
+
 - **Maintenabilité** : Composants réutilisables
 - **Évolutivité** : Patterns extensibles
 - **Performance** : Lazy loading, memoization
 - **Qualité** : TypeScript strict, ESLint clean
 
 ### **📊 Métriques :**
+
 - **Cohérence UI** : 8.5/10 → 9.5/10
 - **Temps d'action** : -40% (vue détaillée immédiate)
 - **Satisfaction** : Expérience enrichie sans perturbation
@@ -280,8 +306,8 @@ const periodAvgMood = periodEntries.filter(e => e.humeur).length > 0
 ## 💡 **PRINCIPE FONDAMENTAL**
 
 > **"Industrialiser SANS détruire l'âme"**
-> 
-> L'industrialisation doit **enrichir** l'expérience existante, pas la **remplacer**. 
+>
+> L'industrialisation doit **enrichir** l'expérience existante, pas la **remplacer**.
 > Chaque page a son esprit unique qui doit être **respecté et amplifié**.
 
 ---

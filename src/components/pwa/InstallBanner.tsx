@@ -1,42 +1,48 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { usePWA } from '@/hooks/usePWA'
-import { Download, X, Smartphone } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState, useEffect } from 'react';
+import { usePWA } from '@/hooks/usePWA';
+import { Download, X, Smartphone } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function InstallBanner() {
-  const { isInstallable, isInstalled, isOnline, isServiceWorkerReady, installApp } = usePWA()
-  const [isDismissed, setIsDismissed] = useState(false)
+  const {
+    isInstallable,
+    isInstalled,
+    isOnline,
+    isServiceWorkerReady,
+    installApp,
+  } = usePWA();
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     // Vérifier si l'utilisateur a déjà dismissé le banner
-    const dismissed = localStorage.getItem('pwa-install-dismissed')
+    const dismissed = localStorage.getItem('pwa-install-dismissed');
     if (dismissed === 'true') {
-      setIsDismissed(true)
+      setIsDismissed(true);
     }
-  }, [])
+  }, []);
 
   // Ne pas afficher si déjà installé, dismissé, ou pas installable
   if (isInstalled || isDismissed || !isInstallable || !isServiceWorkerReady) {
-    return null
+    return null;
   }
 
   const handleInstall = async () => {
     try {
-      await installApp()
-      toast.success('SuperNovaFit installé avec succès ! 🎉')
+      await installApp();
+      toast.success('SuperNovaFit installé avec succès ! 🎉');
     } catch (error) {
-      console.error('Erreur installation PWA:', error)
-      toast.error('Erreur lors de l&apos;installation')
+      console.error('Erreur installation PWA:', error);
+      toast.error('Erreur lors de l&apos;installation');
     }
-  }
+  };
 
   const handleDismiss = () => {
-    setIsDismissed(true)
+    setIsDismissed(true);
     // Stocker en localStorage pour ne pas re-afficher
-    localStorage.setItem('pwa-install-dismissed', 'true')
-  }
+    localStorage.setItem('pwa-install-dismissed', 'true');
+  };
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:max-w-sm">
@@ -51,7 +57,11 @@ export default function InstallBanner() {
             </h3>
             <p className="text-xs text-white/70 mb-3">
               Accédez rapidement à votre app depuis votre écran d&apos;accueil
-              {!isOnline && <span className="block text-yellow-400 mt-1">⚠️ Mode hors ligne disponible</span>}
+              {!isOnline && (
+                <span className="block text-yellow-400 mt-1">
+                  ⚠️ Mode hors ligne disponible
+                </span>
+              )}
             </p>
             <div className="flex gap-2">
               <button
@@ -78,5 +88,5 @@ export default function InstallBanner() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -12,6 +12,7 @@
 ## ✨ Modules livrés
 
 ### 📱 **Interface Mobile-First Révolutionnaire (v1.11)**
+
 - **Bottom Navigation** : Navigation principale toujours accessible en bas d'écran
 - **FAB Contextuel** : Bouton flottant intelligent qui s'adapte à chaque page
 - **Templates Ultra-Rapides** : Repas en 30s, entraînements en 45s, poids instantané
@@ -19,6 +20,7 @@
 - **Quick Actions** : Actions contextuelles selon la page visitée
 
 ### 🏃‍♂️ **Modules Core**
+
 - **Dashboard temps réel** : Calories, protéines jour, séances semaine, poids récent avec widgets interactifs
 - **Diète & Nutrition** : Recherche Open Food Facts, saisie manuelle, CRUD repas, favoris, historiques 30j, macros, portions rapides, suggestions intelligentes
 - **Entraînements** : CRUD complet, calcul calories (MET + FC), import Garmin (TCX/GPX), 4 graphiques, templates rapides
@@ -39,20 +41,27 @@
 
 ## ⚙️ Démarrage
 
-1) Installer
+1. Installer
+
 ```
 npm install
 ```
-2) Variables d’env (copier puis éditer selon votre projet Firebase)
+
+2. Variables d’env (copier puis éditer selon votre projet Firebase)
+
 ```
 cp .env.local.example .env.local
 ```
-3) Dev
+
+3. Dev
+
 ```
 npm run dev
 # http://localhost:3000
 ```
-4) Build/Prod local
+
+4. Build/Prod local
+
 ```
 npm run build && npm run start
 ```
@@ -73,10 +82,13 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 ## 🔐 Firebase (prod)
 
 - Règles & Indexes
+
 ```
 firebase deploy --only firestore:rules,firestore:indexes --project supernovafit-a6fe7
 ```
+
 - Storage rules (si utilisé)
+
 ```
 firebase deploy --only storage --project supernovafit-a6fe7
 ```
@@ -86,6 +98,7 @@ firebase deploy --only storage --project supernovafit-a6fe7
 ## 🚀 Hébergement (Firebase Hosting SSR + GitHub Actions)
 
 ### Prérequis GCP/Firebase
+
 - Activer APIs: Cloud Functions, Cloud Run, Cloud Build, Artifact Registry, Firebase Extensions, Compute Engine
 - Lier la facturation (plan Blaze)
 - IAM (compte de service GitHub Actions):
@@ -98,6 +111,7 @@ firebase deploy --only storage --project supernovafit-a6fe7
   - (optionnel) roles/serviceusage.serviceUsageAdmin
 
 ### Secrets GitHub (Settings → Actions → Secrets)
+
 - `NEXT_PUBLIC_FIREBASE_API_KEY`
 - `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
@@ -109,12 +123,14 @@ firebase deploy --only storage --project supernovafit-a6fe7
 - `FIREBASE_SERVICE_ACCOUNT_SUPERNOVAFIT_A6FE7` (JSON clé compte de service)
 
 ### Workflows fournis
+
 - `.github/workflows/firebase-hosting-merge.yml` (déploiement live sur main)
 - `.github/workflows/firebase-hosting-pull-request.yml` (préviews PR)
 
 Les workflows construisent l’app (Node 20), injectent les variables, appliquent une policy de cleanup Artifact Registry, puis déploient Hosting avec l’intégration frameworks.
 
 ### Commandes locales utiles
+
 ```
 # Déployer Hosting (si besoin local)
 firebase deploy --only hosting --project supernovafit-a6fe7
@@ -127,10 +143,12 @@ firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force
 ```
 
 ### Domaines
+
 - Canonique: `https://supernovafit-a6fe7.web.app`
 - Alias legacy: `https://supernovafit-a6fe7.firebaseapp.com`
 
 ## 🗄️ Modèle de données (Firestore)
+
 - `users/{userId}`: { id, role: 'coach'|'sportif', nom, email, ... }
 - `repas/{id}`: { user_id, date, repas: 'petit_dej'|'collation_matin'|'dejeuner'|'collation_apres_midi'|'diner'|'collation_soir', aliments[], macros }
 - `entrainements/{id}`: { user_id, date, type, duree, calories, ... }
@@ -150,15 +168,18 @@ Indexes: voir `config/firestore.indexes.json` (coach_comments, coach_diet_plans,
 - Branches: `feature/*`, commits conventionnels (`feat:`, `fix:`, `docs:`)
 
 ## 🧭 Runbook Prod
+
 - Déploiement: via GitHub Actions (merge → prod). En cas d’échec, consulter Actions logs.
 - Actifs GCP: Cloud Functions v2, Cloud Run images (Artifact Registry). Nettoyage: `firebase functions:artifacts:setpolicy --location europe-west1 --days 30 --force`.
 - Rotation secrets: régénérer la clé du compte de service dans GCP, mettre à jour le secret GitHub.
 - Restauration: re-run d’un workflow réussi précédent ou rollback du commit.
 
 ## 🧑‍⚖️ Légal
+
 - Privacy Policy, Terms, Cookies: pages `/legal/*` (placeholders) et liens depuis le Guide.
 
 ## 🧪 CI Qualité
+
 - Jobs recommandés: lint, typecheck, build sur PR. Badge Actions ajouté en tête.
 
 ## 📁 Structure

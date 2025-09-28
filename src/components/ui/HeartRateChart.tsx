@@ -1,43 +1,58 @@
-'use client'
+'use client';
 
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts'
-import { format, parseISO } from 'date-fns'
-import { fr } from 'date-fns/locale'
-import { Entrainement } from '@/types'
-import type { TooltipProps } from 'recharts'
+import {
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Area,
+  AreaChart,
+} from 'recharts';
+import { format, parseISO } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Entrainement } from '@/types';
+import type { TooltipProps } from 'recharts';
 
 interface HeartRateChartProps {
-  entrainements: Entrainement[]
+  entrainements: Entrainement[];
 }
 
-const CustomTooltip = ({ active, payload, label }: TooltipProps<string | number, string>) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<string | number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass-effect p-3 rounded-lg border border-white/10 text-sm text-white">
-        <p className="font-bold mb-1">{format(parseISO(label), 'EEEE d MMMM', { locale: fr })}</p>
+        <p className="font-bold mb-1">
+          {format(parseISO(label), 'EEEE d MMMM', { locale: fr })}
+        </p>
         {payload.map((entry, index: number) => (
           <p key={index} style={{ color: entry.color }}>
             {`${entry.name}: ${entry.value} bpm`}
           </p>
         ))}
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
   // Filtrer seulement les entraînements avec données FC
   const hrData = entrainements
-    .filter(e => e.fc_moyenne || e.fc_max || e.fc_min)
+    .filter((e) => e.fc_moyenne || e.fc_max || e.fc_min)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map(e => ({
+    .map((e) => ({
       date: e.date,
       fc_moyenne: e.fc_moyenne || null,
       fc_max: e.fc_max || null,
       fc_min: e.fc_min || null,
-      type: e.type
-    }))
+      type: e.type,
+    }));
 
   if (hrData.length === 0) {
     return (
@@ -54,7 +69,7 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -65,13 +80,18 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
           ({hrData.length} séances avec FC)
         </span>
       </h2>
-      
+
       <ResponsiveContainer width="100%" height={250}>
-        <AreaChart data={hrData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+        <AreaChart
+          data={hrData}
+          margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
           <XAxis
             dataKey="date"
-            tickFormatter={(tick) => format(parseISO(tick), 'dd/MM', { locale: fr })}
+            tickFormatter={(tick) =>
+              format(parseISO(tick), 'dd/MM', { locale: fr })
+            }
             stroke="#ffffff80"
             tickLine={false}
             axisLine={false}
@@ -83,10 +103,15 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
             domain={['dataMin - 10', 'dataMax + 10']}
             width={44}
             tickFormatter={(value) => `${Math.round(value as number)}`}
-            label={{ value: 'bpm', angle: -90, position: 'insideLeft', style: { fill: 'rgba(255,255,255,0.6)' } }}
+            label={{
+              value: 'bpm',
+              angle: -90,
+              position: 'insideLeft',
+              style: { fill: 'rgba(255,255,255,0.6)' },
+            }}
           />
           <Tooltip content={<CustomTooltip />} />
-          
+
           {/* Zone entre FC min et max */}
           <Area
             type="monotone"
@@ -102,7 +127,7 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
             fill="#ffffff00"
             fillOpacity={0}
           />
-          
+
           {/* Lignes FC */}
           <Line
             type="monotone"
@@ -131,19 +156,19 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
             dot={false}
             connectNulls={false}
           />
-          
+
           <defs>
             <linearGradient id="colorHRAvg" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#f87171" stopOpacity={0.8}/>
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#f87171" stopOpacity={0.8} />
             </linearGradient>
             <linearGradient id="colorHRZone" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1}/>
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05}/>
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05} />
             </linearGradient>
           </defs>
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

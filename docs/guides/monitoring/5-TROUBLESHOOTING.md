@@ -1,4 +1,5 @@
 # 🔧 TROUBLESHOOTING GUIDE - SuperNovaFit
+
 ## Solutions aux problèmes courants de monitoring
 
 ---
@@ -8,6 +9,7 @@
 ### **1. "DSN pas configuré" / Erreurs pas reçues**
 
 #### **Symptômes :**
+
 ```bash
 ❌ Console log : "Sentry DSN not configured"
 ❌ Erreurs provoquées n'apparaissent pas dans Sentry
@@ -15,6 +17,7 @@
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Vérifier DSN dans .env.local
 cat .env.local | grep SENTRY
@@ -41,6 +44,7 @@ throw new Error("Test Sentry configuration")
 ### **2. Warnings Prisma/OpenTelemetry persistants**
 
 #### **Symptômes :**
+
 ```bash
 ⚠️ Console : "Critical dependency: the request of a dependency is an expression"
 ⚠️ Logs répétitifs @prisma/instrumentation
@@ -48,6 +52,7 @@ throw new Error("Test Sentry configuration")
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Configuration next.config.js (SOLUTION RECOMMANDÉE)
 webpack: (config, { isServer }) => {
@@ -56,14 +61,14 @@ webpack: (config, { isServer }) => {
     ...config.module,
     exprContextCritical: false,
   }
-  
+
   // Ignorer warnings patterns
   config.ignoreWarnings = [
     /Critical dependency: the request of a dependency is an expression/,
     /node_modules\/@prisma\/instrumentation/,
     /node_modules\/@opentelemetry/
   ]
-  
+
   return config
 }
 
@@ -80,6 +85,7 @@ npm run dev
 ### **3. "Too Many Requests" / Rate Limiting**
 
 #### **Symptômes :**
+
 ```bash
 ⚠️ Console : "HTTP 429 Too Many Requests"
 ⚠️ Sentry events manqués
@@ -87,6 +93,7 @@ npm run dev
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Check quota Sentry
 # Dashboard Sentry → Settings → Quotas
@@ -97,14 +104,14 @@ npm run dev
 
 beforeSend(event, hint) {
   const error = hint.originalException as Error
-  
+
   // Ignorer erreurs développement
   if (process.env.NODE_ENV === 'development') {
     if (error?.message?.includes('ChunkLoadError')) {
       return null  // Pas d'envoi Sentry
     }
   }
-  
+
   return event
 }
 
@@ -119,6 +126,7 @@ tracesSampleRate: 0.1  // 10% au lieu de 100%
 ### **3. Erreurs Spam / Bruit**
 
 #### **Symptômes :**
+
 ```bash
 📧 Email alerts multiples pour même erreur
 📧 Erreurs non critiques noyent les importantes
@@ -126,6 +134,7 @@ tracesSampleRate: 0.1  // 10% au lieu de 100%
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Grouping améliorer
 # Sentry → Issues → Merge similar issues
@@ -153,6 +162,7 @@ tracesSampleRate: 0.1  // 10% au lieu de 100%
 ### **1. Events pas tracking / Dashboard vide**
 
 #### **Symptômes :**
+
 ```bash
 ❌ Firebase Analytics Dashboard : 0 événements
 ❌ Events custom (meal_added) n'apparaissent pas
@@ -160,6 +170,7 @@ tracesSampleRate: 0.1  // 10% au lieu de 100%
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Vérifier Firebase config
 # .env.local doit contenir :
@@ -188,6 +199,7 @@ trackEvent('test_event', { test: 'manual' })
 ### **2. Data Retention / Historical Data**
 
 #### **Symptômes :**
+
 ```bash
 ⚠️ Données disparaissent après 2 mois
 ⚠️ Rapports historiques incomplets
@@ -195,6 +207,7 @@ trackEvent('test_event', { test: 'manual' })
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Configurer Data Retention
 # Firebase Console → Analytics → Data Settings
@@ -219,6 +232,7 @@ trackEvent('test_event', { test: 'manual' })
 ### **3. Real-time Data Delays**
 
 #### **Symptômes :**
+
 ```bash
 ⏰ Events apparaissent avec 10-30 min delay
 ⏰ Real-time dashboard pas vraiment "real-time"
@@ -226,6 +240,7 @@ trackEvent('test_event', { test: 'manual' })
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Console browser debugging
 # F12 → Console → Logs immédiats :
@@ -255,6 +270,7 @@ trackEvent('test_event', { test: 'manual' })
 ### **1. Métriques pas collectées**
 
 #### **Symptômes :**
+
 ```bash
 ❌ Sentry Performance tab vide
 ❌ Console : Pas de logs "[Web Vital]"
@@ -262,6 +278,7 @@ trackEvent('test_event', { test: 'manual' })
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Vérifier VitalsReporter activé
 # src/app/layout.tsx doit contenir :
@@ -290,6 +307,7 @@ onLCP((metric) => console.log('LCP:', metric.value))
 ### **2. Métriques Poor / Performance dégradée**
 
 #### **Symptômes :**
+
 ```bash
 🔴 LCP > 4s (Poor rating)
 🔴 INP > 500ms (Poor rating)
@@ -298,6 +316,7 @@ onLCP((metric) => console.log('LCP:', metric.value))
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Diagnostic immédiat
 npm run analyze:win
@@ -329,6 +348,7 @@ npx lighthouse http://localhost:3000 --output=html
 ### **3. Mobile Performance vs Desktop**
 
 #### **Symptômes :**
+
 ```bash
 📱 Mobile metrics significantly worse
 📱 LCP Mobile: 4s vs Desktop: 1.5s
@@ -337,6 +357,7 @@ npx lighthouse http://localhost:3000 --output=html
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Device emulation testing
 # Chrome DevTools → Device Toolbar
@@ -360,7 +381,7 @@ npx lighthouse http://localhost:3000 --output=html
 # 3. Bundle splitting mobile
 const MobileOptimizedComponent = dynamic(
   () => import('@/components/mobile/MobileComponent'),
-  { 
+  {
     ssr: false,
     loading: () => <MobileSkeleton />
   }
@@ -379,13 +400,15 @@ const MobileOptimizedComponent = dynamic(
 ### **1. GitHub Actions Failures**
 
 #### **Symptômes :**
+
 ```bash
 🔴 Build failed: TypeScript errors
-🔴 Build failed: Tests failing  
+🔴 Build failed: Tests failing
 🔴 Deploy failed: Firebase error
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. TypeScript errors
 # Local check first :
@@ -415,6 +438,7 @@ npm run test:lib
 ### **2. Deploy Successful but Site Not Updated**
 
 #### **Symptômes :**
+
 ```bash
 ✅ GitHub Actions green
 ✅ Firebase deploy successful
@@ -423,6 +447,7 @@ npm run test:lib
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Cache busting
 # Hard refresh : Ctrl+F5 (Windows) / Cmd+Shift+R (Mac)
@@ -450,6 +475,7 @@ console.log('App version:', process.env.NEXT_PUBLIC_APP_VERSION)
 ### **3. Bundle Size Increased Dramatically**
 
 #### **Symptômes :**
+
 ```bash
 ⚠️ npm run analyze shows pages >500kB
 ⚠️ First Load JS increased 50%+
@@ -458,6 +484,7 @@ console.log('App version:', process.env.NEXT_PUBLIC_APP_VERSION)
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Bundle analysis comparison
 npm run analyze:win
@@ -491,6 +518,7 @@ git push origin main
 ### **1. Environment Variables Issues**
 
 #### **Symptômes :**
+
 ```bash
 ❌ Firebase connection fails
 ❌ Sentry not working locally
@@ -499,6 +527,7 @@ git push origin main
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Verify .env.local exists
 ls -la .env.local
@@ -524,6 +553,7 @@ cp .env.local.example .env.local
 ### **2. Node/NPM Version Issues**
 
 #### **Symptômes :**
+
 ```bash
 ❌ npm install fails
 ❌ npm run dev fails
@@ -532,12 +562,13 @@ cp .env.local.example .env.local
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Check Node.js version
 node --version
 # → Should be 20.x or 18.x
 
-# 2. Check NPM version  
+# 2. Check NPM version
 npm --version
 # → Should be 9.x or 10.x
 
@@ -557,6 +588,7 @@ npm install
 ### **3. Port/Process Issues**
 
 #### **Symptômes :**
+
 ```bash
 ❌ Error: Port 3000 already in use
 ❌ EADDRINUSE :::3000
@@ -564,6 +596,7 @@ npm install
 ```
 
 #### **Solutions :**
+
 ```bash
 # 1. Kill process on port 3000
 # Windows :
@@ -589,6 +622,7 @@ ps aux | grep node
 ## 📞 **ESCALATION & SUPPORT**
 
 ### **🆘 When to Escalate**
+
 ```bash
 # Immediate escalation (< 1 hour) :
 ❌ Site completely down >30 minutes
@@ -604,6 +638,7 @@ ps aux | grep node
 ```
 
 ### **📋 Escalation Checklist**
+
 ```bash
 # Before escalating, gather :
 ✅ Timeline of issue (when started)
@@ -615,6 +650,7 @@ ps aux | grep node
 ```
 
 ### **🔗 Support Resources**
+
 ```bash
 # Firebase Support :
 # → https://firebase.google.com/support/contact/troubleshooting
@@ -635,6 +671,7 @@ ps aux | grep node
 ## ✅ **TROUBLESHOOTING MAÎTRISÉ**
 
 **Tu sais maintenant :**
+
 - ✅ Diagnostiquer problèmes Sentry
 - ✅ Résoudre issues Firebase Analytics
 - ✅ Fixer problèmes Web Vitals

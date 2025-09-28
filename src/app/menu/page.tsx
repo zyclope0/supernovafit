@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/hooks/useAuth'
-import { 
-  BookOpen, 
-  Trophy, 
-  User, 
-  Download, 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  BookOpen,
+  Trophy,
+  User,
+  Download,
   HelpCircle,
   LogOut,
   ChevronRight,
@@ -15,54 +15,54 @@ import {
   Sparkles,
   BarChart3,
   Users,
-  ArrowLeft
-} from 'lucide-react'
-import { usePWA } from '@/hooks/usePWA'
-import toast from 'react-hot-toast'
+  ArrowLeft,
+} from 'lucide-react';
+import { usePWA } from '@/hooks/usePWA';
+import toast from 'react-hot-toast';
 
 interface MenuSection {
-  title: string
-  items: MenuItem[]
+  title: string;
+  items: MenuItem[];
 }
 
 interface MenuItem {
-  id: string
-  label: string
-  description?: string
-  icon: React.ElementType
-  href?: string
-  action?: () => void
-  badge?: string
-  color?: 'default' | 'primary' | 'success' | 'warning' | 'danger'
+  id: string;
+  label: string;
+  description?: string;
+  icon: React.ElementType;
+  href?: string;
+  action?: () => void;
+  badge?: string;
+  color?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
 }
 
 export default function MenuPage() {
-  const router = useRouter()
-  const { userProfile, signOut } = useAuth()
-  const { isInstallable, installApp } = usePWA()
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const router = useRouter();
+  const { userProfile, signOut } = useAuth();
+  const { isInstallable, installApp } = usePWA();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggingOut(true)
+    setIsLoggingOut(true);
     try {
-      await signOut()
-      toast.success('Déconnexion réussie')
-      router.push('/')
+      await signOut();
+      toast.success('Déconnexion réussie');
+      router.push('/');
     } catch {
-      toast.error('Erreur lors de la déconnexion')
+      toast.error('Erreur lors de la déconnexion');
     } finally {
-      setIsLoggingOut(false)
+      setIsLoggingOut(false);
     }
-  }
+  };
 
   const handleInstallPWA = async () => {
     try {
-      await installApp()
-      toast.success('Application installée ! 🎉')
+      await installApp();
+      toast.success('Application installée ! 🎉');
     } catch {
-      toast.error('Erreur lors de l&apos;installation')
+      toast.error('Erreur lors de l&apos;installation');
     }
-  }
+  };
 
   const menuSections: MenuSection[] = [
     {
@@ -73,7 +73,7 @@ export default function MenuPage() {
           label: 'Journal',
           description: 'Humeur, énergie, notes',
           icon: BookOpen,
-          href: '/journal'
+          href: '/journal',
         },
         {
           id: 'challenges',
@@ -81,23 +81,23 @@ export default function MenuPage() {
           description: 'Défis et récompenses',
           icon: Trophy,
           href: '/challenges',
-          badge: 'Nouveau'
+          badge: 'Nouveau',
         },
         {
           id: 'export',
           label: 'Mes Données',
           description: 'Exporter mes statistiques',
           icon: BarChart3,
-          href: '/export'
+          href: '/export',
         },
         {
           id: 'guide',
           label: 'Guide',
-          description: 'Comment utiliser l\'application',
+          description: "Comment utiliser l'application",
           icon: HelpCircle,
-          href: '/guide'
-        }
-      ]
+          href: '/guide',
+        },
+      ],
     },
     {
       title: 'Compte & Paramètres',
@@ -107,29 +107,29 @@ export default function MenuPage() {
           label: 'Mon Profil',
           description: 'Informations personnelles',
           icon: User,
-          href: '/profil'
+          href: '/profil',
         },
         {
           id: 'notifications',
           label: 'Notifications',
           description: 'Rappels et alertes',
           icon: Bell,
-          href: '/notifications'
-        }
-      ]
-    }
-  ]
+          href: '/notifications',
+        },
+      ],
+    },
+  ];
 
   // Ajouter l'installation PWA si disponible
   if (isInstallable) {
     menuSections[1].items.push({
       id: 'install',
-      label: 'Installer l\'app',
-      description: 'Accès rapide depuis l\'écran d\'accueil',
+      label: "Installer l'app",
+      description: "Accès rapide depuis l'écran d'accueil",
       icon: Download,
       action: handleInstallPWA,
-      color: 'primary'
-    })
+      color: 'primary',
+    });
   }
 
   // Ajouter section coach si applicable
@@ -143,26 +143,26 @@ export default function MenuPage() {
           description: 'Gérer mes athlètes',
           icon: Users,
           href: '/coach',
-          color: 'success'
-        }
-      ]
-    })
+          color: 'success',
+        },
+      ],
+    });
   }
 
   const getItemColor = (color: string = 'default') => {
     switch (color) {
       case 'primary':
-        return 'text-blue-400 bg-blue-500/10'
+        return 'text-blue-400 bg-blue-500/10';
       case 'success':
-        return 'text-green-400 bg-green-500/10'
+        return 'text-green-400 bg-green-500/10';
       case 'warning':
-        return 'text-yellow-400 bg-yellow-500/10'
+        return 'text-yellow-400 bg-yellow-500/10';
       case 'danger':
-        return 'text-red-400 bg-red-500/10'
+        return 'text-red-400 bg-red-500/10';
       default:
-        return 'text-white/80 bg-white/5'
+        return 'text-white/80 bg-white/5';
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-space pb-20 md:pb-0">
@@ -176,9 +176,7 @@ export default function MenuPage() {
             <ArrowLeft className="w-5 h-5" />
             <span>Retour</span>
           </button>
-          
           <h1 className="text-xl font-bold text-white">Menu</h1>
-          
           <div className="w-16" /> {/* Spacer */}
         </div>
       </div>
@@ -195,7 +193,7 @@ export default function MenuPage() {
                 {userProfile?.nom || 'Utilisateur'}
               </h2>
               <p className="text-sm text-white/60">
-                {userProfile?.role === 'coach' ? 'Coach' : 'Athlète'} • 
+                {userProfile?.role === 'coach' ? 'Coach' : 'Athlète'} •
                 {userProfile?.objectif || 'Aucun objectif'}
               </p>
             </div>
@@ -209,29 +207,31 @@ export default function MenuPage() {
             <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider px-2">
               {section.title}
             </h3>
-            
+
             <div className="space-y-2">
               {section.items.map((item) => {
-                const Icon = item.icon
-                const colorClasses = getItemColor(item.color)
-                
+                const Icon = item.icon;
+                const colorClasses = getItemColor(item.color);
+
                 return (
                   <button
                     key={item.id}
                     onClick={() => {
                       if (item.action) {
-                        item.action()
+                        item.action();
                       } else if (item.href) {
-                        router.push(item.href)
+                        router.push(item.href);
                       }
                     }}
                     className="w-full glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-[1.02]"
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses}`}>
+                      <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${colorClasses}`}
+                      >
                         <Icon className="w-5 h-5" />
                       </div>
-                      
+
                       <div className="flex-1 text-left">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-white">
@@ -249,11 +249,11 @@ export default function MenuPage() {
                           </p>
                         )}
                       </div>
-                      
+
                       <ChevronRight className="w-5 h-5 text-white/40" />
                     </div>
                   </button>
-                )
+                );
               })}
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function MenuPage() {
           <h3 className="text-sm font-medium text-white/60 uppercase tracking-wider px-2">
             Support
           </h3>
-          
+
           <div className="space-y-2">
             <button
               onClick={() => router.push('/guide')}
@@ -275,7 +275,9 @@ export default function MenuPage() {
                   <HelpCircle className="w-5 h-5 text-white/80" />
                 </div>
                 <div className="flex-1 text-left">
-                  <span className="font-medium text-white">Guide d&apos;utilisation</span>
+                  <span className="font-medium text-white">
+                    Guide d&apos;utilisation
+                  </span>
                   <p className="text-sm text-white/60 mt-1">
                     Comment utiliser l&apos;application
                   </p>
@@ -310,5 +312,5 @@ export default function MenuPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

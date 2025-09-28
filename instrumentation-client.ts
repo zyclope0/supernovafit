@@ -2,13 +2,14 @@
 // The config you add here will be used whenever users load a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from '@sentry/nextjs';
 
 // Hook pour instrumenter les transitions de navigation
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
 
 // DSN Sentry hardcodé pour production (plus fiable que les variables d'environnement)
-const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
+const SENTRY_DSN =
+  'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456';
 
 // Configuration simplifiée pour éviter les erreurs de syntaxe au premier chargement
 
@@ -35,46 +36,54 @@ Sentry.init({
   beforeSend(event, hint) {
     // Filtrer erreurs non critiques
     if (event.exception) {
-      const error = hint.originalException as Error
-      
+      const error = hint.originalException as Error;
+
       // Ne PAS filtrer ChunkLoadError: on souhaite les voir pour détecter des versions en cache
-      
+
       // Ignorer erreurs network temporaires
-      if (error?.message?.includes('Network Error') || 
-          error?.message?.includes('fetch') ||
-          error?.message?.includes('Failed to fetch')) {
-        return null
+      if (
+        error?.message?.includes('Network Error') ||
+        error?.message?.includes('fetch') ||
+        error?.message?.includes('Failed to fetch')
+      ) {
+        return null;
       }
-      
+
       // Ignorer erreurs Firebase quota (attendues)
-      if (error?.message?.includes('quota-exceeded') ||
-          error?.message?.includes('permission-denied') ||
-          error?.message?.includes('unavailable')) {
-        return null
+      if (
+        error?.message?.includes('quota-exceeded') ||
+        error?.message?.includes('permission-denied') ||
+        error?.message?.includes('unavailable')
+      ) {
+        return null;
       }
 
       // Ignorer erreurs d'extension navigateur
-      if (error?.message?.includes('Non-Error promise rejection') ||
-          error?.message?.includes('chrome-extension://') ||
-          error?.message?.includes('moz-extension://')) {
-        return null
+      if (
+        error?.message?.includes('Non-Error promise rejection') ||
+        error?.message?.includes('chrome-extension://') ||
+        error?.message?.includes('moz-extension://')
+      ) {
+        return null;
       }
-      
+
       // Ignorer erreurs de timeout
-      if (error?.message?.includes('timeout') ||
-          error?.message?.includes('aborted')) {
-        return null
+      if (
+        error?.message?.includes('timeout') ||
+        error?.message?.includes('aborted')
+      ) {
+        return null;
       }
     }
-    
-    return event
+
+    return event;
   },
 
   // Initial scope configuration
   initialScope: {
     tags: {
-      component: "supernovafit-frontend",
-      module: "fitness-app"
+      component: 'supernovafit-frontend',
+      module: 'fitness-app',
     },
   },
 
@@ -89,8 +98,8 @@ Sentry.init({
   ],
   tracesSampler: (samplingContext) => {
     // Échantillonnage plus élevé pour capter les transactions où Web Vitals seront attachés
-    const url = samplingContext?.location?.href || ''
-    if (url.includes('localhost')) return 1.0
-    return 0.2
+    const url = samplingContext?.location?.href || '';
+    if (url.includes('localhost')) return 1.0;
+    return 0.2;
   },
-})
+});

@@ -1,4 +1,5 @@
 # 🎯 OPTION A - PLAN DE CONSOLIDATION & QUALITÉ
+
 ## SuperNovaFit - Documentation Exhaustive
 
 > **Objectif** : Transformer l'application déjà excellente (9.7/10) en plateforme de niveau entreprise avec tests, monitoring et optimisations professionnelles.
@@ -8,6 +9,7 @@
 ## 📋 **RÉSUMÉ EXÉCUTIF**
 
 ### **État actuel (Janvier 2025)**
+
 - **6 modules production-ready** : Dashboard, Diète, Entraînements, Mesures, Journal, Profil
 - **Score qualité** : 9.7/10 - Standards professionnels
 - **Stack** : Next.js 14, TypeScript 5.3, React 18, Firebase 10.7
@@ -15,6 +17,7 @@
 - **Déploiement** : GitHub Actions → Firebase Hosting SSR
 
 ### **Objectifs Option A**
+
 1. **Tests automatisés** : Couverture 80%+ des composants critiques
 2. **Migrations sécurisées** : Next.js 15, TypeScript 5.7, React 18.3
 3. **Optimisations bundle** : Réduction 20%+ First Load JS
@@ -22,6 +25,7 @@
 5. **Documentation complète** : Guide technique professionnel
 
 ### **Durée estimée** : 2-3 semaines
+
 ### **ROI** : Stabilité production + Base solide pour évolutions futures
 
 ---
@@ -31,6 +35,7 @@
 ### **1.1 Configuration Testing Framework**
 
 #### **Technologies recommandées**
+
 ```json
 {
   "testing": {
@@ -45,6 +50,7 @@
 ```
 
 #### **Installation & Configuration**
+
 ```bash
 # Installation recommandée
 npm install -D vitest @vitejs/plugin-react
@@ -60,40 +66,42 @@ npm install -D ts-jest @types/jest
 #### **Fichiers de configuration à créer**
 
 **`vitest.config.ts`**
+
 ```typescript
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
     globals: true,
     css: true,
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      reporter: ["text", "json", "html"],
       exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        'src/types/',
-        'next.config.js',
-        'tailwind.config.js'
-      ]
-    }
+        "node_modules/",
+        "src/test/",
+        "**/*.d.ts",
+        "src/types/",
+        "next.config.js",
+        "tailwind.config.js",
+      ],
+    },
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+});
 ```
 
 **`src/test/setup.ts`**
+
 ```typescript
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
@@ -152,6 +160,7 @@ vi.mock('react-hot-toast', () => ({
 ```
 
 **Scripts package.json à ajouter**
+
 ```json
 {
   "scripts": {
@@ -169,10 +178,11 @@ vi.mock('react-hot-toast', () => ({
 #### **Hooks critiques (src/hooks/)**
 
 **`src/hooks/__tests__/useAuth.test.ts`**
+
 ```typescript
-import { renderHook } from '@testing-library/react'
-import { useAuth } from '../useAuth'
-import { vi } from 'vitest'
+import { renderHook } from "@testing-library/react";
+import { useAuth } from "../useAuth";
+import { vi } from "vitest";
 
 // Tests à implémenter :
 // ✅ Hook retourne user null par défaut
@@ -183,9 +193,10 @@ import { vi } from 'vitest'
 ```
 
 **`src/hooks/__tests__/useFirestore.test.ts`**
+
 ```typescript
-import { renderHook } from '@testing-library/react'
-import { useFirestore } from '../useFirestore'
+import { renderHook } from "@testing-library/react";
+import { useFirestore } from "../useFirestore";
 
 // Tests critiques CRUD :
 // ✅ addDocument retourne ID valide
@@ -198,10 +209,11 @@ import { useFirestore } from '../useFirestore'
 #### **Composants UI critiques (src/components/ui/)**
 
 **`src/components/ui/__tests__/MealForm.test.tsx`**
+
 ```typescript
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MealForm } from '../MealForm'
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MealForm } from "../MealForm";
 
 // Tests essentiels :
 // ✅ Rendu formulaire vide
@@ -214,6 +226,7 @@ import { MealForm } from '../MealForm'
 ```
 
 **`src/components/ui/__tests__/FoodSearch.test.tsx`**
+
 ```typescript
 // Tests recherche Open Food Facts :
 // ✅ Recherche avec debounce
@@ -227,8 +240,13 @@ import { MealForm } from '../MealForm'
 #### **Calculs métier critiques (src/lib/)**
 
 **`src/lib/__tests__/calculations.test.ts`**
+
 ```typescript
-import { calculateBMR, calculateTDEE, calculateMETCalories } from '../calculations'
+import {
+  calculateBMR,
+  calculateTDEE,
+  calculateMETCalories,
+} from "../calculations";
 
 // Tests calculs précis :
 // ✅ BMR Mifflin-St Jeor H/F
@@ -241,6 +259,7 @@ import { calculateBMR, calculateTDEE, calculateMETCalories } from '../calculatio
 ### **1.3 Configuration CI/CD avec tests**
 
 **`.github/workflows/quality.yml`**
+
 ```yaml
 name: Quality Checks
 
@@ -253,31 +272,31 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          
+          node-version: "20"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Type checking
         run: npm run typecheck
-        
+
       - name: Linting
         run: npm run lint
-        
+
       - name: Tests
         run: npm run test:coverage
-        
+
       - name: Build
         run: npm run build
-        
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
@@ -291,6 +310,7 @@ jobs:
 ### **2.1 Migration Next.js 14 → 15**
 
 #### **Préparation & Vérification**
+
 ```bash
 # Vérifier compatibilité actuelle
 npm ls next react react-dom typescript
@@ -301,6 +321,7 @@ git tag v1.2.0-backup
 ```
 
 #### **Migration étape par étape**
+
 ```bash
 # 1. Mise à jour Next.js
 npm install next@15.1.0
@@ -316,35 +337,38 @@ npm install @types/react@^18.3.12 @types/react-dom@^18.3.1
 #### **Changements Next.js 15 à adapter**
 
 **`next.config.js` - Nouvelles options**
+
 ```javascript
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Nouveauté Next.js 15
   experimental: {
-    reactCompiler: true,  // Nouveau compilateur React
-    turbo: {              // Turbopack pour dev (opt-in)
+    reactCompiler: true, // Nouveau compilateur React
+    turbo: {
+      // Turbopack pour dev (opt-in)
       resolveAlias: {
-        canvas: './empty-module.js',
+        canvas: "./empty-module.js",
       },
     },
   },
-  
+
   // Configurations existantes à maintenir
   images: {
     remotePatterns: [
-      { hostname: 'static.openfoodfacts.org' },
-      { hostname: 'world.openfoodfacts.org' },
-      { hostname: 'images.openfoodfacts.org' },
+      { hostname: "static.openfoodfacts.org" },
+      { hostname: "world.openfoodfacts.org" },
+      { hostname: "images.openfoodfacts.org" },
     ],
   },
-  
+
   // Optimisations bundle (nouveau)
   bundlePagesRouterDependencies: true,
-  transpilePackages: ['recharts'],
-}
+  transpilePackages: ["recharts"],
+};
 ```
 
 #### **Tests post-migration**
+
 - [ ] `npm run dev` - Serveur développement
 - [ ] `npm run build` - Build production
 - [ ] Tests E2E critiques (auth, CRUD)
@@ -354,14 +378,15 @@ const nextConfig = {
 ### **2.2 Migration TypeScript 5.3 → 5.7**
 
 #### **Nouvelles features TS 5.7 à exploiter**
+
 ```typescript
 // 1. Preserved narrowing in closures
 function example(x: string | number) {
-  if (typeof x === 'string') {
+  if (typeof x === "string") {
     // TS 5.7 : type préservé dans closure
     setTimeout(() => {
-      console.log(x.toUpperCase()) // ✅ Pas d'erreur
-    }, 1000)
+      console.log(x.toUpperCase()); // ✅ Pas d'erreur
+    }, 1000);
   }
 }
 
@@ -373,6 +398,7 @@ function example(x: string | number) {
 ```
 
 #### **Migration**
+
 ```bash
 # Mise à jour TypeScript
 npm install -D typescript@5.7.2
@@ -385,6 +411,7 @@ npm run typecheck -- --strict
 ```
 
 **`tsconfig.json` - Optimisations TS 5.7**
+
 ```json
 {
   "compilerOptions": {
@@ -422,6 +449,7 @@ npm run typecheck -- --strict
 ### **2.3 Optimisations React 18.3**
 
 #### **Features React 18 à mieux exploiter**
+
 ```typescript
 // 1. Concurrent Features
 import { startTransition, useDeferredValue } from 'react'
@@ -430,10 +458,10 @@ import { startTransition, useDeferredValue } from 'react'
 function FoodSearch() {
   const [query, setQuery] = useState('')
   const deferredQuery = useDeferredValue(query)
-  
+
   // Recherche non-bloquante
   const results = useOpenFoodFacts(deferredQuery)
-  
+
   const handleSearch = (newQuery: string) => {
     startTransition(() => {
       setQuery(newQuery)
@@ -460,6 +488,7 @@ function DataBoundary({ children }: { children: React.ReactNode }) {
 ### **3.1 Analyse bundle actuel**
 
 #### **Installation outils analyse**
+
 ```bash
 # Bundle analyzer
 npm install -D @next/bundle-analyzer
@@ -472,18 +501,21 @@ npm install -D source-map-explorer
 ```
 
 #### **Configuration analyse**
+
 **`next.config.js` - Ajout analyzer**
+
 ```javascript
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
 
 module.exports = withBundleAnalyzer({
   // Config existante...
-})
+});
 ```
 
 **Scripts analyse à ajouter**
+
 ```json
 {
   "scripts": {
@@ -497,18 +529,19 @@ module.exports = withBundleAnalyzer({
 ### **3.2 Optimisations identifiées**
 
 #### **Dynamic imports avancés**
+
 ```typescript
 // Optimiser imports charts
-const CaloriesChart = dynamic(() => 
+const CaloriesChart = dynamic(() =>
   import('@/components/ui/CaloriesChart').then(mod => ({ default: mod.CaloriesChart })),
-  { 
+  {
     ssr: false,
     loading: () => <ChartSkeleton />
   }
 )
 
 // Grouper imports related
-const ChartsComponents = dynamic(() => 
+const ChartsComponents = dynamic(() =>
   import('@/components/charts').then(mod => ({
     CaloriesChart: mod.CaloriesChart,
     MacrosChart: mod.MacrosChart,
@@ -519,6 +552,7 @@ const ChartsComponents = dynamic(() =>
 ```
 
 #### **Code splitting par route**
+
 ```typescript
 // src/app/loading.tsx - Global loading
 export default function Loading() {
@@ -532,20 +566,22 @@ const DietePageLazy = dynamic(() => import('./diete/page'), {
 ```
 
 #### **Tree shaking optimisations**
+
 ```typescript
 // Imports spécifiques vs barrel exports
 // ❌ Éviter
-import { Button, Dialog, Select } from '@/components/ui'
+import { Button, Dialog, Select } from "@/components/ui";
 
 // ✅ Préférer
-import { Button } from '@/components/ui/Button'
-import { Dialog } from '@/components/ui/Dialog'
-import { Select } from '@/components/ui/Select'
+import { Button } from "@/components/ui/Button";
+import { Dialog } from "@/components/ui/Dialog";
+import { Select } from "@/components/ui/Select";
 ```
 
 ### **3.3 Images & Assets optimisation**
 
 #### **next/image configuration avancée**
+
 ```typescript
 // src/components/ui/OptimizedImage.tsx
 import Image from 'next/image'
@@ -559,13 +595,13 @@ interface OptimizedImageProps {
   className?: string
 }
 
-export function OptimizedImage({ 
-  src, 
-  alt, 
-  width = 400, 
+export function OptimizedImage({
+  src,
+  alt,
+  width = 400,
   height = 300,
   priority = false,
-  className 
+  className
 }: OptimizedImageProps) {
   return (
     <Image
@@ -591,146 +627,160 @@ export function OptimizedImage({
 ### **4.1 Error Tracking avec Sentry**
 
 #### **Installation & Configuration**
+
 ```bash
 npm install @sentry/nextjs
 ```
 
 **`sentry.client.config.ts`**
+
 ```typescript
-import * as Sentry from "@sentry/nextjs"
+import * as Sentry from "@sentry/nextjs";
 
 // DSN Sentry hardcodé pour production (plus fiable que les variables d'environnement)
-const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
+const SENTRY_DSN =
+  "https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456";
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  
+
   // Performance monitoring
-  tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
-  
+  tracesSampleRate: process.env.NODE_ENV === "development" ? 1.0 : 0.1,
+
   // Release tracking
-  release: process.env.NEXT_PUBLIC_APP_VERSION || '1.2.0',
+  release: process.env.NEXT_PUBLIC_APP_VERSION || "1.2.0",
   environment: process.env.NODE_ENV,
-  
+
   // Error filtering avancé pour SuperNovaFit
   beforeSend(event, hint) {
     // Filtrer erreurs non critiques
     if (event.exception) {
-      const error = hint.originalException as Error
-      
+      const error = hint.originalException as Error;
+
       // Ignorer erreurs network temporaires
-      if (error?.message?.includes('Network Error') || 
-          error?.message?.includes('fetch') ||
-          error?.message?.includes('Failed to fetch')) {
-        return null
+      if (
+        error?.message?.includes("Network Error") ||
+        error?.message?.includes("fetch") ||
+        error?.message?.includes("Failed to fetch")
+      ) {
+        return null;
       }
-      
+
       // Ignorer erreurs Firebase quota (attendues)
-      if (error?.message?.includes('quota-exceeded') ||
-          error?.message?.includes('permission-denied') ||
-          error?.message?.includes('unavailable')) {
-        return null
+      if (
+        error?.message?.includes("quota-exceeded") ||
+        error?.message?.includes("permission-denied") ||
+        error?.message?.includes("unavailable")
+      ) {
+        return null;
       }
     }
-    return event
+    return event;
   },
-  
+
   // User context
   initialScope: {
     tags: {
       component: "supernovafit-frontend",
-      module: "fitness-app"
+      module: "fitness-app",
     },
   },
-})
+});
 ```
 
 **`sentry.server.config.ts`**
+
 ```typescript
-import * as Sentry from "@sentry/nextjs"
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
   tracesSampleRate: 1.0,
-  
+
   // Server-specific config
-  debug: process.env.NODE_ENV === 'development',
-})
+  debug: process.env.NODE_ENV === "development",
+});
 ```
 
 #### **Intégration dans l'app**
+
 ```typescript
 // src/hooks/useAuth.ts - Ajout Sentry context
-import * as Sentry from "@sentry/nextjs"
+import * as Sentry from "@sentry/nextjs";
 
 export function useAuth() {
   // ... code existant
-  
+
   useEffect(() => {
     if (user) {
       Sentry.setUser({
         id: user.uid,
         email: user.email,
-      })
+      });
     } else {
-      Sentry.setUser(null)
+      Sentry.setUser(null);
     }
-  }, [user])
+  }, [user]);
 }
 ```
 
 ### **4.2 Analytics & Performance**
 
 #### **Google Analytics 4 + Firebase Analytics**
+
 ```typescript
 // src/lib/analytics.ts
-import { getAnalytics, logEvent } from 'firebase/analytics'
-import { app } from './firebase'
+import { getAnalytics, logEvent } from "firebase/analytics";
+import { app } from "./firebase";
 
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null
+const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
 
-export const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
+export const trackEvent = (
+  eventName: string,
+  parameters?: Record<string, any>,
+) => {
   if (analytics) {
-    logEvent(analytics, eventName, parameters)
+    logEvent(analytics, eventName, parameters);
   }
-}
+};
 
 // Events personnalisés
 export const trackMealAdded = (mealType: string, foodCount: number) => {
-  trackEvent('meal_added', {
+  trackEvent("meal_added", {
     meal_type: mealType,
     food_count: foodCount,
-  })
-}
+  });
+};
 
-export const trackTrainingImported = (source: 'manual' | 'garmin') => {
-  trackEvent('training_imported', { source })
-}
+export const trackTrainingImported = (source: "manual" | "garmin") => {
+  trackEvent("training_imported", { source });
+};
 ```
 
 #### **Web Vitals monitoring**
+
 ```typescript
 // src/lib/vitals.ts
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals'
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from "web-vitals";
 
 export function reportWebVitals() {
-  getCLS(metric => {
+  getCLS((metric) => {
     // Log to analytics
-    trackEvent('web_vital', {
+    trackEvent("web_vital", {
       name: metric.name,
       value: metric.value,
       rating: metric.rating,
-    })
-  })
-  
-  getFID(metric => {
-    trackEvent('web_vital', {
+    });
+  });
+
+  getFID((metric) => {
+    trackEvent("web_vital", {
       name: metric.name,
       value: metric.value,
       rating: metric.rating,
-    })
-  })
-  
+    });
+  });
+
   // ... autres métriques
 }
 ```
@@ -742,17 +792,22 @@ export function reportWebVitals() {
 ### **5.1 Documentation technique complète**
 
 #### **Architecture Decision Records (ADR)**
+
 **`docs/adr/001-tech-stack.md`**
+
 ```markdown
 # ADR-001: Choix Stack Technique
 
 ## Statut
+
 Accepté
 
 ## Contexte
+
 Développement application fitness personnelle avec mode coach.
 
 ## Décision
+
 - **Frontend**: Next.js 15 (App Router, SSR, performances)
 - **Database**: Firebase Firestore (temps réel, offline)
 - **Auth**: Firebase Auth (sécurité, intégrations)
@@ -760,12 +815,15 @@ Développement application fitness personnelle avec mode coach.
 - **Charts**: Recharts (React native, personnalisable)
 
 ## Conséquences
+
 - **Positives**: Développement rapide, déploiement simple, scalabilité
 - **Négatives**: Vendor lock-in Firebase, coûts potentiels volume
 ```
 
 #### **Guide développeur complet**
+
 **`docs/DEVELOPER_GUIDE.md`**
+
 ```markdown
 # Guide Développeur SuperNovaFit
 
@@ -773,19 +831,21 @@ Développement application fitness personnelle avec mode coach.
 
 ### Structure Projet
 ```
+
 src/
-├── app/              # Pages Next.js App Router
-│   ├── (auth)/      # Groupe routes auth
-│   ├── api/         # API routes (si besoin)
-│   └── globals.css  # Styles globaux
-├── components/       # Composants réutilisables
-│   ├── ui/          # Composants UI purs
-│   ├── layout/      # Composants layout
-│   └── charts/      # Composants graphiques
-├── hooks/           # Custom React hooks
-├── lib/             # Utilities & services
-├── types/           # Définitions TypeScript
-└── test/            # Configuration tests
+├── app/ # Pages Next.js App Router
+│ ├── (auth)/ # Groupe routes auth
+│ ├── api/ # API routes (si besoin)
+│ └── globals.css # Styles globaux
+├── components/ # Composants réutilisables
+│ ├── ui/ # Composants UI purs
+│ ├── layout/ # Composants layout
+│ └── charts/ # Composants graphiques
+├── hooks/ # Custom React hooks
+├── lib/ # Utilities & services
+├── types/ # Définitions TypeScript
+└── test/ # Configuration tests
+
 ```
 
 ### Patterns & Conventions
@@ -812,16 +872,17 @@ src/
 ### **5.2 API Documentation**
 
 #### **Hooks Documentation**
-```typescript
+
+````typescript
 // src/hooks/useFirestore.ts
 
 /**
  * Hook de gestion CRUD Firestore
- * 
+ *
  * @example
  * ```tsx
  * const { addDocument, loading, error } = useFirestore()
- * 
+ *
  * const handleSubmit = async (data) => {
  *   const id = await addDocument('repas', data)
  *   if (id) {
@@ -840,16 +901,21 @@ export function useFirestore() {
  * @param data - Données à insérer
  * @returns Promise<string | null> - ID du document créé ou null si erreur
  */
-async function addDocument(collection: string, data: any): Promise<string | null>
-```
+async function addDocument(
+  collection: string,
+  data: any,
+): Promise<string | null>;
+````
 
 ### **5.3 Runbook Production**
 
 #### **Deployment Checklist**
+
 ```markdown
 # Checklist Déploiement Production
 
 ## Pré-déploiement
+
 - [ ] Tests passent (`npm run test`)
 - [ ] Build réussit (`npm run build`)
 - [ ] TypeCheck OK (`npm run typecheck`)
@@ -857,11 +923,13 @@ async function addDocument(collection: string, data: any): Promise<string | null
 - [ ] Bundle size analysé (`npm run analyze`)
 
 ## Variables d'environnement
+
 - [ ] Firebase config mise à jour
 - [ ] Sentry DSN configuré
 - [ ] Analytics ID vérifié
 
 ## Post-déploiement
+
 - [ ] Health check pages principales
 - [ ] Sentry errors monitoring
 - [ ] Analytics tracking vérifié
@@ -873,6 +941,7 @@ async function addDocument(collection: string, data: any): Promise<string | null
 ## 🎯 **CHECKLIST COMPLÉTION OPTION A**
 
 ### **Phase 1 - Tests & Qualité** ✅
+
 - [ ] Vitest configuré avec coverage
 - [ ] Tests hooks critiques (useAuth, useFirestore)
 - [ ] Tests composants UI (MealForm, FoodSearch)
@@ -881,6 +950,7 @@ async function addDocument(collection: string, data: any): Promise<string | null
 - [ ] Coverage > 80% composants critiques
 
 ### **Phase 2 - Migrations** ✅
+
 - [ ] Next.js 15.1.0 migré et testé
 - [ ] TypeScript 5.7.2 avec nouvelles features
 - [ ] React 18.3 optimisations (Concurrent)
@@ -888,6 +958,7 @@ async function addDocument(collection: string, data: any): Promise<string | null
 - [ ] Performance maintenue/améliorée
 
 ### **Phase 3 - Optimisations** ✅
+
 - [ ] Bundle analyzer configuré
 - [ ] Dynamic imports optimisés
 - [ ] Tree shaking amélioré
@@ -895,12 +966,14 @@ async function addDocument(collection: string, data: any): Promise<string | null
 - [ ] First Load JS < 250kb
 
 ### **Phase 4 - Monitoring** ✅
+
 - [ ] Sentry error tracking
 - [ ] Analytics Firebase + GA4
 - [ ] Web Vitals monitoring
 - [ ] Performance alerts configurées
 
 ### **Phase 5 - Documentation** ✅
+
 - [ ] ADR stack technique
 - [ ] Guide développeur complet
 - [ ] API documentation (JSDoc)
@@ -912,6 +985,7 @@ async function addDocument(collection: string, data: any): Promise<string | null
 ## 🚀 **RÉSULTAT ATTENDU**
 
 ### **Application de niveau entreprise**
+
 - **Stabilité** : Tests automatisés 80%+ coverage
 - **Performance** : Lighthouse 95+ toutes métriques
 - **Monitoring** : Error tracking + Analytics pro
@@ -919,6 +993,7 @@ async function addDocument(collection: string, data: any): Promise<string | null
 - **Évolutivité** : Base solide pour Mode Coach
 
 ### **Métriques cibles**
+
 - **Tests coverage** : 80%+ composants critiques
 - **Lighthouse Performance** : 95+
 - **First Load JS** : < 250kb
@@ -927,6 +1002,7 @@ async function addDocument(collection: string, data: any): Promise<string | null
 - **TBT** : < 200ms
 
 ### **Livrable final**
+
 - **Codebase production-ready** avec monitoring
 - **Documentation complète** pour handover
 - **Base technique solide** pour évolutions futures

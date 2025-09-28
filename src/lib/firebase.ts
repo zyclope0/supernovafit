@@ -18,23 +18,32 @@ const firebaseConfig = {
 function validateFirebaseConfig() {
   const requiredVars = [
     'apiKey',
-    'authDomain', 
+    'authDomain',
     'projectId',
     'storageBucket',
     'messagingSenderId',
     'appId',
-    'measurementId'
+    'measurementId',
   ];
-  
-  const missingVars = requiredVars.filter(key => !firebaseConfig[key as keyof typeof firebaseConfig]);
-  
+
+  const missingVars = requiredVars.filter(
+    (key) => !firebaseConfig[key as keyof typeof firebaseConfig],
+  );
+
   if (missingVars.length > 0) {
-    console.error('Firebase configuration error: Missing environment variables:', missingVars);
-    console.error('Please ensure these environment variables are set in your production environment:');
-    missingVars.forEach(varName => {
+    console.error(
+      'Firebase configuration error: Missing environment variables:',
+      missingVars,
+    );
+    console.error(
+      'Please ensure these environment variables are set in your production environment:',
+    );
+    missingVars.forEach((varName) => {
       console.error(`- NEXT_PUBLIC_FIREBASE_${varName.toUpperCase()}`);
     });
-    throw new Error('Firebase configuration is incomplete. Please check your environment variables.');
+    throw new Error(
+      'Firebase configuration is incomplete. Please check your environment variables.',
+    );
   }
 }
 
@@ -45,12 +54,21 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'test') {
 
 // Initialiser Firebase uniquement côté client pour éviter les erreurs SSR/prerender
 const isBrowser = typeof window !== 'undefined';
-const app = isBrowser ? (!getApps().length ? initializeApp(firebaseConfig) : getApp()) : (undefined as unknown as ReturnType<typeof initializeApp>);
+const app = isBrowser
+  ? !getApps().length
+    ? initializeApp(firebaseConfig)
+    : getApp()
+  : (undefined as unknown as ReturnType<typeof initializeApp>);
 
 // Services Firebase
-export const auth = isBrowser ? getAuth(app) : (undefined as unknown as ReturnType<typeof getAuth>);
-export const db = isBrowser ? getFirestore(app) : (undefined as unknown as ReturnType<typeof getFirestore>);
-export const storage = isBrowser ? getStorage(app) : (undefined as unknown as ReturnType<typeof getStorage>);
+export const auth = isBrowser
+  ? getAuth(app)
+  : (undefined as unknown as ReturnType<typeof getAuth>);
+export const db = isBrowser
+  ? getFirestore(app)
+  : (undefined as unknown as ReturnType<typeof getFirestore>);
+export const storage = isBrowser
+  ? getStorage(app)
+  : (undefined as unknown as ReturnType<typeof getStorage>);
 
-
-export default app; 
+export default app;

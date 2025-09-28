@@ -1,34 +1,42 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { doc, setDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
-import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
-import MainLayout from '@/components/layout/MainLayout'
-import { UserPlus, Mail, Lock, User } from 'lucide-react'
+import { useState } from 'react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+} from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import MainLayout from '@/components/layout/MainLayout';
+import { UserPlus, Mail, Lock, User } from 'lucide-react';
 
 export default function CreateCoachPage() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     nom: 'Coach Test',
     email: 'coach@supernovafit.com',
-    password: 'Coach123!'
-  })
+    password: 'Coach123!',
+  });
 
   const createCoachAccount = async () => {
-    setLoading(true)
-    
+    setLoading(true);
+
     try {
       // Créer l'utilisateur dans Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
-        auth, 
-        formData.email, 
-        formData.password
-      )
-      const user = userCredential.user
+        auth,
+        formData.email,
+        formData.password,
+      );
+      const user = userCredential.user;
 
       // Créer le profil dans Firestore
       await setDoc(doc(db, 'users', user.uid), {
@@ -44,53 +52,55 @@ export default function CreateCoachPage() {
         taille: 180,
         poids_initial: 75,
         objectif: 'performance',
-        niveau_activite: 'intense'
-      })
+        niveau_activite: 'intense',
+      });
 
       // Mettre à jour l'utilisateur test@supernovafit.com pour lui assigner ce coach
       // Note: En production, cela se ferait via le système d'invitation
       try {
         const testUserQuery = await getDocs(
-          query(collection(db, 'users'), where('email', '==', 'test@supernovafit.com'))
-        )
-        
+          query(
+            collection(db, 'users'),
+            where('email', '==', 'test@supernovafit.com'),
+          ),
+        );
+
         if (!testUserQuery.empty) {
-          const testUserDoc = testUserQuery.docs[0]
+          const testUserDoc = testUserQuery.docs[0];
           await updateDoc(doc(db, 'users', testUserDoc.id), {
-            coach_id: user.uid
-          })
-          toast.success('Utilisateur test lié au coach !')
+            coach_id: user.uid,
+          });
+          toast.success('Utilisateur test lié au coach !');
         }
       } catch (error) {
-        console.error('Erreur liaison utilisateur test:', error)
+        console.error('Erreur liaison utilisateur test:', error);
       }
 
-      toast.success('Compte coach créé avec succès !')
-      
+      toast.success('Compte coach créé avec succès !');
+
       // Afficher les informations
-      toast.success(`Email: ${formData.email}`, { duration: 10000 })
-      toast.success(`Mot de passe: ${formData.password}`, { duration: 10000 })
-      
+      toast.success(`Email: ${formData.email}`, { duration: 10000 });
+      toast.success(`Mot de passe: ${formData.password}`, { duration: 10000 });
+
       // Rediriger vers la page de connexion après 3 secondes
       setTimeout(() => {
-        router.push('/auth')
-      }, 3000)
-      
+        router.push('/auth');
+      }, 3000);
     } catch (error: unknown) {
-      console.error('Erreur création compte coach:', error)
-      const err = error as { code?: string }
-      
+      console.error('Erreur création compte coach:', error);
+      const err = error as { code?: string };
+
       if (err.code === 'auth/email-already-in-use') {
-        toast.error('Cet email est déjà utilisé')
+        toast.error('Cet email est déjà utilisé');
       } else if (err.code === 'auth/weak-password') {
-        toast.error('Le mot de passe est trop faible')
+        toast.error('Le mot de passe est trop faible');
       } else {
-        toast.error('Erreur lors de la création du compte')
+        toast.error('Erreur lors de la création du compte');
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <MainLayout>
@@ -104,7 +114,8 @@ export default function CreateCoachPage() {
               Créer un Compte Coach de Test
             </h1>
             <p className="text-gray-400">
-              Cet outil permet de créer rapidement un compte coach pour les tests
+              Cet outil permet de créer rapidement un compte coach pour les
+              tests
             </p>
           </div>
 
@@ -118,7 +129,9 @@ export default function CreateCoachPage() {
               <input
                 type="text"
                 value={formData.nom}
-                onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, nom: e.target.value })
+                }
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg
                          text-white placeholder-gray-400 focus:outline-none focus:border-neon-purple"
               />
@@ -133,7 +146,9 @@ export default function CreateCoachPage() {
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg
                          text-white placeholder-gray-400 focus:outline-none focus:border-neon-purple"
               />
@@ -148,7 +163,9 @@ export default function CreateCoachPage() {
               <input
                 type="text"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg
                          text-white placeholder-gray-400 focus:outline-none focus:border-neon-purple"
               />
@@ -163,13 +180,28 @@ export default function CreateCoachPage() {
                 Informations du compte qui sera créé :
               </h3>
               <ul className="text-sm text-gray-300 space-y-1">
-                <li>• Rôle : <span className="text-white">Coach</span></li>
-                <li>• Âge : <span className="text-white">35 ans</span></li>
-                <li>• Sexe : <span className="text-white">Homme</span></li>
-                <li>• Taille : <span className="text-white">180 cm</span></li>
-                <li>• Poids : <span className="text-white">75 kg</span></li>
-                <li>• Objectif : <span className="text-white">Performance</span></li>
-                <li>• Niveau d&apos;activité : <span className="text-white">Intense</span></li>
+                <li>
+                  • Rôle : <span className="text-white">Coach</span>
+                </li>
+                <li>
+                  • Âge : <span className="text-white">35 ans</span>
+                </li>
+                <li>
+                  • Sexe : <span className="text-white">Homme</span>
+                </li>
+                <li>
+                  • Taille : <span className="text-white">180 cm</span>
+                </li>
+                <li>
+                  • Poids : <span className="text-white">75 kg</span>
+                </li>
+                <li>
+                  • Objectif : <span className="text-white">Performance</span>
+                </li>
+                <li>
+                  • Niveau d&apos;activité :{' '}
+                  <span className="text-white">Intense</span>
+                </li>
               </ul>
             </div>
 
@@ -195,13 +227,13 @@ export default function CreateCoachPage() {
             {/* Avertissement */}
             <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/30">
               <p className="text-sm text-red-400">
-                ⚠️ <span className="font-medium">Attention :</span> Cette page est uniquement pour les tests. 
-                Ne pas utiliser en production.
+                ⚠️ <span className="font-medium">Attention :</span> Cette page
+                est uniquement pour les tests. Ne pas utiliser en production.
               </p>
             </div>
           </div>
         </div>
       </div>
     </MainLayout>
-  )
+  );
 }

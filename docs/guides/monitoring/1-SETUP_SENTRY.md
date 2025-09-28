@@ -1,10 +1,13 @@
 # 🚨 SETUP SENTRY - Guide Étape par Étape
+
 ## Configuration complète Sentry pour SuperNovaFit
 
 ---
 
 ## 🎯 **OBJECTIF**
+
 Configurer Sentry pour recevoir automatiquement :
+
 - **Erreurs JavaScript** en temps réel
 - **Performance metrics** (Web Vitals)
 - **User context** (qui a eu l'erreur)
@@ -15,6 +18,7 @@ Configurer Sentry pour recevoir automatiquement :
 ## 📝 **ÉTAPE 1 : CRÉER COMPTE SENTRY**
 
 ### **1.1 Inscription (Gratuite)**
+
 ```bash
 # 1. Aller sur https://sentry.io/signup/
 # 2. Choisir "Sign up with email"
@@ -26,6 +30,7 @@ Configurer Sentry pour recevoir automatiquement :
 ```
 
 ### **1.2 Créer Organisation**
+
 ```bash
 # Après connexion :
 # 1. "Create Organization"
@@ -38,11 +43,12 @@ Configurer Sentry pour recevoir automatiquement :
 ## 🔧 **ÉTAPE 2 : CRÉER PROJET NEXT.JS**
 
 ### **2.1 Setup Projet**
+
 ```bash
 # Dans Sentry Dashboard :
 # 1. Cliquer "Create Project"
 # 2. Sélectionner plateforme : "Next.js"
-# 3. Project name : "supernovafit" 
+# 3. Project name : "supernovafit"
 # 4. Team : "Default"
 # 5. Cliquer "Create Project"
 ```
@@ -52,6 +58,7 @@ Configurer Sentry pour recevoir automatiquement :
 **📋 Comment trouver ton DSN :**
 
 #### **Méthode A : Page Setup (directement après création)**
+
 ```bash
 # Après "Create Project", tu vois :
 # ┌─────────────────────────────────────────┐
@@ -67,11 +74,12 @@ Configurer Sentry pour recevoir automatiquement :
 ```
 
 #### **Méthode B : Settings → Client Keys**
+
 ```bash
 # Si tu as fermé la page :
 # 1. Sentry Dashboard → Sélectionner projet "supernovafit"
 # 2. Menu gauche → Settings ⚙️
-# 3. Cliquer "Client Keys (DSN)" 
+# 3. Cliquer "Client Keys (DSN)"
 # 4. Copier "DSN" (Public Key)
 
 # Format DSN :
@@ -80,6 +88,7 @@ Configurer Sentry pour recevoir automatiquement :
 ```
 
 #### **Méthode C : Project Settings**
+
 ```bash
 # Alternative :
 # 1. Project → Settings → General Settings
@@ -97,7 +106,8 @@ Configurer Sentry pour recevoir automatiquement :
 
 ```typescript
 // sentry.client.config.ts
-const SENTRY_DSN = 'https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456'
+const SENTRY_DSN =
+  "https://6a6884fb3ee7188800e6d7a5a521ac4f@o4509835502813184.ingest.de.sentry.io/4509835686117456";
 ```
 
 **⚠️ POUR TON PROJET :** Remplace le DSN ci-dessus par ton DSN Sentry personnel.
@@ -120,6 +130,7 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-RV0RK8JWN4
 ```
 
 ### **3.3 Redémarrer Application**
+
 ```bash
 # Terminal dans SuperNovaFit :
 # Ctrl+C pour arrêter serveur dev
@@ -132,6 +143,7 @@ npm run dev
 ## ✅ **ÉTAPE 4 : TESTER SENTRY**
 
 ### **4.1 Test Erreur JavaScript**
+
 ```bash
 # 1. Ouvrir SuperNovaFit dans navigateur
 # → http://localhost:3000
@@ -146,6 +158,7 @@ setTimeout(() => { throw new Error('SentryPing') }, 0)
 ```
 
 ### **4.2 Test Navigation (Web Vitals)**
+
 ```bash
 # 1. Naviguer dans l'app :
 # → Dashboard → Diète → Entraînements → Retour Dashboard
@@ -160,6 +173,7 @@ setTimeout(() => { throw new Error('SentryPing') }, 0)
 ```
 
 ### **4.3 Test User Context**
+
 ```bash
 # 1. Se connecter dans SuperNovaFit :
 # → Email: test@supernovafit.com
@@ -177,6 +191,7 @@ setTimeout(() => { throw new Error('SentryPing') }, 0)
 ## 📊 **ÉTAPE 5 : CONFIGURER ALERTES**
 
 ### **5.1 Email Notifications**
+
 ```bash
 # 1. Sentry → Settings → Notifications
 # 2. "Email" → Enabled
@@ -189,6 +204,7 @@ setTimeout(() => { throw new Error('SentryPing') }, 0)
 ```
 
 ### **5.2 Alertes Rules (Optionnel)**
+
 ```bash
 # Pour setup avancé :
 # 1. Project → Alerts → "Create Alert Rule"
@@ -207,6 +223,7 @@ setTimeout(() => { throw new Error('SentryPing') }, 0)
 ## 🎯 **ÉTAPE 6 : VÉRIFIER CONFIGURATION**
 
 ### **6.1 Checklist Final**
+
 ```bash
 ✅ Compte Sentry créé
 ✅ Projet "supernovafit" créé
@@ -219,6 +236,7 @@ setTimeout(() => { throw new Error('SentryPing') }, 0)
 ```
 
 ### **6.2 Troubleshooting**
+
 ```bash
 # Si erreurs n'apparaissent pas :
 
@@ -243,6 +261,7 @@ rm -rf .next && npm run dev
 ## 📱 **UTILISATION SENTRY**
 
 ### **Dashboard Principal**
+
 ```bash
 # https://sentry.io → Sélectionner projet "supernovafit"
 
@@ -265,6 +284,7 @@ rm -rf .next && npm run dev
 ```
 
 ### **Workflow Typique**
+
 ```bash
 # 1. Recevoir email "New Issue in SuperNovaFit"
 # 2. Cliquer lien → Voir détails erreur
@@ -286,6 +306,7 @@ rm -rf .next && npm run dev
 **Prochaine étape : [2. Firebase Analytics →](./2-FIREBASE_ANALYTICS.md)**
 
 ### **Liens Utiles**
+
 - **Dashboard Sentry** : https://sentry.io
 - **Docs Sentry Next.js** : https://docs.sentry.io/platforms/javascript/guides/nextjs/
 - **Status Sentry** : https://status.sentry.io/

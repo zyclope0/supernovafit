@@ -1,115 +1,121 @@
 /**
  * Rate Limiter pour SuperNovaFit
  * Implémentation multi-couches selon OWASP guidelines
- * 
+ *
  * @author AI Assistant
  * @date 14.01.2025
  * @version 1.0.0
  */
 
 interface RateLimitConfig {
-  windowMs: number
-  maxRequests: number
-  keyGenerator: (req: Request) => string
-  skipSuccessfulRequests?: boolean
-  onLimitReached?: (key: string) => void
+  windowMs: number;
+  maxRequests: number;
+  keyGenerator: (req: Request) => string;
+  skipSuccessfulRequests?: boolean;
+  onLimitReached?: (key: string) => void;
 }
 
 interface RateLimitResult {
-  allowed: boolean
-  remaining: number
-  resetTime: number
-  totalHits: number
+  allowed: boolean;
+  remaining: number;
+  resetTime: number;
+  totalHits: number;
 }
 
 export class RateLimiter {
-  private store = new Map<string, number[]>()
-  private config: RateLimitConfig
-  private cleanupInterval: NodeJS.Timeout | null = null
+  private store = new Map<string, number[]>();
+  private config: RateLimitConfig;
+  private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor(config: RateLimitConfig) {
-    this.config = config
-    this.startCleanup()
+    this.config = config;
+    this.startCleanup();
   }
 
   async isAllowed(req: Request): Promise<RateLimitResult> {
     try {
-      const key = this.config.keyGenerator(req)
-      const now = Date.now()
-      const windowStart = now - this.config.windowMs
+      const key = this.config.keyGenerator(req);
+      const now = Date.now();
+      const windowStart = now - this.config.windowMs;
 
-    // Nettoyer les anciennes requêtes pour cette clé
-    const requests = this.store.get(key)?.filter(time => time > windowStart) || []
-    
-    const allowed = requests.length < this.config.maxRequests
-    const remaining = Math.max(0, this.config.maxRequests - requests.length)
-    const resetTime = now + this.config.windowMs
+      // Nettoyer les anciennes requêtes pour cette clé
+      const requests =
+        this.store.get(key)?.filter((time) => time > windowStart) || [];
 
-    if (!allowed) {
-      this.config.onLimitReached?.(key)
-      return {
-        allowed: false,
-        remaining: 0,
-        resetTime,
-        totalHits: requests.length
+      const allowed = requests.length < this.config.maxRequests;
+      const remaining = Math.max(0, this.config.maxRequests - requests.length);
+      const resetTime = now + this.config.windowMs;
+
+      if (!allowed) {
+        this.config.onLimitReached?.(key);
+        return {
+          allowed: false,
+          remaining: 0,
+          resetTime,
+          totalHits: requests.length,
+        };
       }
-    }
 
-    // Ajouter la requête actuelle
-    requests.push(now)
-    this.store.set(key, requests)
+      // Ajouter la requête actuelle
+      requests.push(now);
+      this.store.set(key, requests);
 
-    return {
-      allowed: true,
-      remaining: remaining - 1,
-      resetTime,
-      totalHits: requests.length
-    }
+      return {
+        allowed: true,
+        remaining: remaining - 1,
+        resetTime,
+        totalHits: requests.length,
+      };
     } catch (error) {
       // En cas d'erreur, on log et on autorise par défaut (fail-open)
-      console.error('[RATE_LIMITER] Error processing request:', error)
+      console.error('[RATE_LIMITER] Error processing request:', error);
       return {
         allowed: true,
         remaining: this.config.maxRequests - 1,
         resetTime: Date.now() + this.config.windowMs,
-        totalHits: 0
-      }
+        totalHits: 0,
+      };
     }
   }
 
   private startCleanup() {
     // Nettoyer le store toutes les minutes
     this.cleanupInterval = setInterval(() => {
-      const now = Date.now()
+      const now = Date.now();
       for (const [key, requests] of Array.from(this.store.entries())) {
-        const validRequests = requests.filter((time: number) => now - time < this.config.windowMs)
+        const validRequests = requests.filter(
+          (time: number) => now - time < this.config.windowMs,
+        );
         if (validRequests.length === 0) {
-          this.store.delete(key)
+          this.store.delete(key);
         } else {
-          this.store.set(key, validRequests)
+          this.store.set(key, validRequests);
         }
       }
-    }, 60000) // Cleanup toutes les minutes
+    }, 60000); // Cleanup toutes les minutes
   }
 
   destroy() {
     if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval)
-      this.cleanupInterval = null
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
     }
-    this.store.clear()
+    this.store.clear();
   }
 
   // Méthodes utilitaires pour monitoring
   getStats() {
     return {
       totalKeys: this.store.size,
-      totalRequests: Array.from(this.store.values()).reduce((sum, requests) => sum + requests.length, 0)
-    }
+      totalRequests: Array.from(this.store.values()).reduce(
+        (sum, requests) => sum + requests.length,
+        0,
+      ),
+    };
   }
 
   resetKey(key: string) {
-    this.store.delete(key)
+    this.store.delete(key);
   }
 }
 
@@ -121,22 +127,23 @@ export class RateLimiterFactory {
       maxRequests: 100, // 100 requêtes par IP
       keyGenerator: (req) => {
         try {
-          const ip = req?.headers?.get('x-forwarded-for') || 
-                    req?.headers?.get('x-real-ip') || 
-                    'unknown'
-          return `api:${ip}`
+          const ip =
+            req?.headers?.get('x-forwarded-for') ||
+            req?.headers?.get('x-real-ip') ||
+            'unknown';
+          return `api:${ip}`;
         } catch {
-          return 'api:unknown'
+          return 'api:unknown';
         }
       },
       onLimitReached: (key) => {
         console.warn(`[SECURITY] Rate limit exceeded for ${key}`, {
           timestamp: new Date().toISOString(),
           key,
-          type: 'api_rate_limit'
-        })
-      }
-    })
+          type: 'api_rate_limit',
+        });
+      },
+    });
   }
 
   static createAuthLimiter(): RateLimiter {
@@ -145,12 +152,13 @@ export class RateLimiterFactory {
       maxRequests: 5, // Plus strict pour auth
       keyGenerator: (req) => {
         try {
-          const ip = req?.headers?.get('x-forwarded-for') || 
-                    req?.headers?.get('x-real-ip') || 
-                    'unknown'
-          return `auth:${ip}`
+          const ip =
+            req?.headers?.get('x-forwarded-for') ||
+            req?.headers?.get('x-real-ip') ||
+            'unknown';
+          return `auth:${ip}`;
         } catch {
-          return 'auth:unknown'
+          return 'auth:unknown';
         }
       },
       onLimitReached: (key) => {
@@ -158,10 +166,10 @@ export class RateLimiterFactory {
           timestamp: new Date().toISOString(),
           key,
           type: 'auth_rate_limit',
-          severity: 'high'
-        })
-      }
-    })
+          severity: 'high',
+        });
+      },
+    });
   }
 
   static createFirestoreLimiter(): RateLimiter {
@@ -171,26 +179,25 @@ export class RateLimiterFactory {
       keyGenerator: (req) => {
         try {
           // Extraire l'user ID du token Firebase si disponible
-          const authHeader = req?.headers?.get('authorization')
+          const authHeader = req?.headers?.get('authorization');
           if (authHeader) {
             // Ici on pourrait décoder le JWT pour extraire l'UID
             // Pour l'instant on utilise l'IP
-            const ip = req?.headers?.get('x-forwarded-for') || 'unknown'
-            return `firestore:${ip}`
+            const ip = req?.headers?.get('x-forwarded-for') || 'unknown';
+            return `firestore:${ip}`;
           }
-          return `firestore:anonymous`
+          return `firestore:anonymous`;
         } catch {
-          return 'firestore:unknown'
+          return 'firestore:unknown';
         }
       },
       onLimitReached: (key) => {
         console.warn(`[SECURITY] Firestore rate limit exceeded for ${key}`, {
           timestamp: new Date().toISOString(),
           key,
-          type: 'firestore_rate_limit'
-        })
-      }
-    })
+          type: 'firestore_rate_limit',
+        });
+      },
+    });
   }
 }
-

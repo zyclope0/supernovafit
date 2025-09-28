@@ -1,58 +1,65 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Users, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
-import { useInviteClaim } from '@/hooks/useInvites'
-import { validateInviteCode } from '@/lib/inviteUtils'
-import { useAuth } from '@/hooks/useAuth'
+import { useState } from 'react';
+import { Users, CheckCircle, XCircle, ArrowRight } from 'lucide-react';
+import { useInviteClaim } from '@/hooks/useInvites';
+import { validateInviteCode } from '@/lib/inviteUtils';
+import { useAuth } from '@/hooks/useAuth';
 
 interface InviteCodeInputProps {
-  onSuccess?: () => void
-  className?: string
+  onSuccess?: () => void;
+  className?: string;
 }
 
-export default function InviteCodeInput({ onSuccess, className = '' }: InviteCodeInputProps) {
-  const { user } = useAuth()
-  const { claiming, claimInvite } = useInviteClaim()
-  const [code, setCode] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+export default function InviteCodeInput({
+  onSuccess,
+  className = '',
+}: InviteCodeInputProps) {
+  const { user } = useAuth();
+  const { claiming, claimInvite } = useInviteClaim();
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!user) {
-      setError('Vous devez être connecté pour utiliser un code d\'invitation')
-      return
+      setError("Vous devez être connecté pour utiliser un code d'invitation");
+      return;
     }
 
     if (!validateInviteCode(code)) {
-      setError('Format de code invalide. Utilisez 6 caractères A-Z/2-9 (sans O/0/I/1)')
-      return
+      setError(
+        'Format de code invalide. Utilisez 6 caractères A-Z/2-9 (sans O/0/I/1)',
+      );
+      return;
     }
 
-    setError('')
-    const success = await claimInvite(code, user.uid)
-    
+    setError('');
+    const success = await claimInvite(code, user.uid);
+
     if (success) {
-      setSuccess(true)
-      setCode('')
-      onSuccess?.()
+      setSuccess(true);
+      setCode('');
+      onSuccess?.();
       // Reset success state after 3 seconds
-      setTimeout(() => setSuccess(false), 3000)
+      setTimeout(() => setSuccess(false), 3000);
     }
-  }
+  };
 
   const handleCodeChange = (value: string) => {
     // Convertir en majuscules et limiter à 6 caractères
-    const upperValue = value.toUpperCase().slice(0, 6)
-    setCode(upperValue)
-    setError('')
-  }
+    const upperValue = value.toUpperCase().slice(0, 6);
+    setCode(upperValue);
+    setError('');
+  };
 
   if (success) {
     return (
-      <div className={`glass-effect p-4 rounded-lg border border-green-500/20 ${className}`}>
+      <div
+        className={`glass-effect p-4 rounded-lg border border-green-500/20 ${className}`}
+      >
         <div className="flex items-center gap-3">
           <CheckCircle className="h-5 w-5 text-green-400" />
           <div>
@@ -63,11 +70,13 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className={`glass-effect p-4 rounded-lg border border-white/10 ${className}`}>
+    <div
+      className={`glass-effect p-4 rounded-lg border border-white/10 ${className}`}
+    >
       <div className="flex items-center gap-3 mb-4">
         <Users className="h-5 w-5 text-neon-cyan" />
         <div>
@@ -80,7 +89,10 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label htmlFor="invite-code" className="block text-sm font-medium text-white mb-2">
+          <label
+            htmlFor="invite-code"
+            className="block text-sm font-medium text-white mb-2"
+          >
             Code d&apos;invitation
           </label>
           <div className="relative">
@@ -116,7 +128,9 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
 
         <button
           type="submit"
-          disabled={!code || code.length !== 6 || !validateInviteCode(code) || claiming}
+          disabled={
+            !code || code.length !== 6 || !validateInviteCode(code) || claiming
+          }
           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {claiming ? (
@@ -135,9 +149,10 @@ export default function InviteCodeInput({ onSuccess, className = '' }: InviteCod
 
       <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
         <p className="text-xs text-blue-400">
-          <strong>Info :</strong> Le code expire dans 72h et ne peut être utilisé qu&apos;une seule fois.
+          <strong>Info :</strong> Le code expire dans 72h et ne peut être
+          utilisé qu&apos;une seule fois.
         </p>
       </div>
     </div>
-  )
+  );
 }

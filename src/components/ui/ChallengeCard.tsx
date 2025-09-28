@@ -1,69 +1,78 @@
-'use client'
+'use client';
 
-import React from 'react'
-import type { Challenge } from '@/types'
-import { getDifficultyColor, getProgressPercentage } from '@/lib/challenges'
-import { Trophy, Clock, Target, Zap } from 'lucide-react'
+import React from 'react';
+import type { Challenge } from '@/types';
+import { getDifficultyColor, getProgressPercentage } from '@/lib/challenges';
+import { Trophy, Clock, Target, Zap } from 'lucide-react';
 
 interface ChallengeCardProps {
-  challenge: Challenge
-  onComplete?: (challengeId: string) => void
-  onPause?: (challengeId: string) => void
-  onDelete?: (challengeId: string) => void
-  showActions?: boolean
+  challenge: Challenge;
+  onComplete?: (challengeId: string) => void;
+  onPause?: (challengeId: string) => void;
+  onDelete?: (challengeId: string) => void;
+  showActions?: boolean;
 }
 
-export default function ChallengeCard({ 
-  challenge, 
-  onComplete, 
-  onPause, 
-  onDelete, 
-  showActions = true 
+export default function ChallengeCard({
+  challenge,
+  onComplete,
+  onPause,
+  onDelete,
+  showActions = true,
 }: ChallengeCardProps) {
-  const progressPercentage = getProgressPercentage(challenge.current, challenge.target)
-  const isCompleted = challenge.status === 'completed'
-  const isExpired = challenge.status === 'expired'
-  const isPaused = challenge.status === 'paused'
-  
+  const progressPercentage = getProgressPercentage(
+    challenge.current,
+    challenge.target,
+  );
+  const isCompleted = challenge.status === 'completed';
+  const isExpired = challenge.status === 'expired';
+  const isPaused = challenge.status === 'paused';
+
   const getStatusColor = () => {
-    if (isCompleted) return 'border-green-500 bg-green-500/10'
-    if (isExpired) return 'border-red-500 bg-red-500/10'
-    if (isPaused) return 'border-yellow-500 bg-yellow-500/10'
-    return 'border-white/20 bg-white/5'
-  }
+    if (isCompleted) return 'border-green-500 bg-green-500/10';
+    if (isExpired) return 'border-red-500 bg-red-500/10';
+    if (isPaused) return 'border-yellow-500 bg-yellow-500/10';
+    return 'border-white/20 bg-white/5';
+  };
 
   const getStatusText = () => {
-    if (isCompleted) return 'Terminé'
-    if (isExpired) return 'Expiré'
-    if (isPaused) return 'En pause'
-    return 'Actif'
-  }
+    if (isCompleted) return 'Terminé';
+    if (isExpired) return 'Expiré';
+    if (isPaused) return 'En pause';
+    return 'Actif';
+  };
 
   const getStatusIcon = () => {
-    if (isCompleted) return <Trophy className="w-4 h-4 text-green-400" />
-    if (isExpired) return <Clock className="w-4 h-4 text-red-400" />
-    if (isPaused) return <Clock className="w-4 h-4 text-yellow-400" />
-    return <Target className="w-4 h-4 text-blue-400" />
-  }
+    if (isCompleted) return <Trophy className="w-4 h-4 text-green-400" />;
+    if (isExpired) return <Clock className="w-4 h-4 text-red-400" />;
+    if (isPaused) return <Clock className="w-4 h-4 text-yellow-400" />;
+    return <Target className="w-4 h-4 text-blue-400" />;
+  };
 
   return (
-    <div className={`glass-effect rounded-xl p-6 border transition-all duration-300 hover:scale-105 ${getStatusColor()}`}>
+    <div
+      className={`glass-effect rounded-xl p-6 border transition-all duration-300 hover:scale-105 ${getStatusColor()}`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="text-3xl">{challenge.icon}</div>
           <div>
-            <h3 className="text-lg font-bold text-white mb-1">{challenge.title}</h3>
+            <h3 className="text-lg font-bold text-white mb-1">
+              {challenge.title}
+            </h3>
             <div className="flex items-center gap-2 text-sm">
               {getStatusIcon()}
               <span className="text-white/70">{getStatusText()}</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(challenge.difficulty)} bg-white/10`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(challenge.difficulty)} bg-white/10`}
+              >
                 {challenge.difficulty}
               </span>
             </div>
           </div>
         </div>
-        
+
         {showActions && !isCompleted && !isExpired && (
           <div className="flex gap-2">
             {!isPaused && (
@@ -80,8 +89,18 @@ export default function ChallengeCard({
               className="p-2 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors"
               title="Supprimer"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
               </svg>
             </button>
           </div>
@@ -102,11 +121,13 @@ export default function ChallengeCard({
           </span>
         </div>
         <div className="w-full bg-white/10 rounded-full h-2">
-          <div 
+          <div
             className={`h-2 rounded-full transition-all duration-500 ${
-              isCompleted ? 'bg-green-400' : 
-              isExpired ? 'bg-red-400' : 
-              'bg-gradient-to-r from-blue-400 to-purple-400'
+              isCompleted
+                ? 'bg-green-400'
+                : isExpired
+                  ? 'bg-red-400'
+                  : 'bg-gradient-to-r from-blue-400 to-purple-400'
             }`}
             style={{ width: `${progressPercentage}%` }}
           />
@@ -126,13 +147,14 @@ export default function ChallengeCard({
           <div className="flex items-center gap-1">
             <Clock className="w-4 h-4" />
             <span>
-              {challenge.endDate && challenge.endDate !== '' && !isNaN(new Date(challenge.endDate).getTime())
+              {challenge.endDate &&
+              challenge.endDate !== '' &&
+              !isNaN(new Date(challenge.endDate).getTime())
                 ? new Date(challenge.endDate).toLocaleDateString('fr-FR', {
                     day: 'numeric',
-                    month: 'short'
+                    month: 'short',
                   })
-                : 'En cours'
-              }
+                : 'En cours'}
             </span>
           </div>
         </div>
@@ -162,5 +184,5 @@ export default function ChallengeCard({
         </div>
       )}
     </div>
-  )
+  );
 }

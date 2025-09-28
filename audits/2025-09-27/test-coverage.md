@@ -1,4 +1,5 @@
 # Rapport de Couverture des Tests - SuperNovaFit
+
 **Date**: 2025-09-27  
 **Version**: 2.0.0
 
@@ -7,6 +8,7 @@
 ⚠️ **COUVERTURE CRITIQUE**: 2.16% (objectif minimum: 30%)
 
 ### Statistiques des Tests
+
 - **Tests totaux**: 180
 - **Tests passés**: 179 ✅
 - **Tests échoués**: 1 ❌
@@ -15,6 +17,7 @@
 ## Analyse par Module
 
 ### ✅ Bien Testés (>70% coverage)
+
 1. **lib/calculations** - 76.35% ✅
    - BMR, TDEE, MET calculations
    - 8/8 tests passent
@@ -28,6 +31,7 @@
    - Fonctions core testées
 
 ### ⚠️ Partiellement Testés (10-70%)
+
 1. **hooks/useAuth** - ~40%
    - 7 tests, manque edge cases
    - Erreurs Firebase non testées
@@ -41,6 +45,7 @@
    - Manque tests d'interaction
 
 ### ❌ Non Testés (0-10%)
+
 1. **app/** - 0% ❌
    - Aucun test de pages
    - Routes critiques non vérifiées
@@ -65,16 +70,19 @@ FAIL: src/__tests__/hooks/useFocusTrap.test.ts
 ## Zones Critiques Non Testées
 
 ### PRIORITÉ P0 (Sécurité/Auth)
+
 1. **AuthGuard** - Protection des routes
 2. **Firebase Rules** - Validation côté client
 3. **Rate Limiting** - Protection DDoS
 
 ### PRIORITÉ P1 (Business Logic)
+
 1. **Calculs nutritionnels** - Macros, calories
 2. **Export de données** - PDF, Excel, CSV
 3. **Mode Coach** - Permissions, invitations
 
 ### PRIORITÉ P2 (UX Critical)
+
 1. **PWA Installation** - Service Worker
 2. **Offline Mode** - Cache strategy
 3. **Mobile Navigation** - Responsive behavior
@@ -82,35 +90,38 @@ FAIL: src/__tests__/hooks/useFocusTrap.test.ts
 ## Plan d'Action Immédiat
 
 ### Semaine 1 - Tests Critiques (→15% coverage)
+
 ```typescript
 // 1. AuthGuard.test.tsx
-describe('AuthGuard', () => {
-  test('redirects unauthenticated users')
-  test('allows authenticated access')
-  test('handles loading states')
-})
+describe("AuthGuard", () => {
+  test("redirects unauthenticated users");
+  test("allows authenticated access");
+  test("handles loading states");
+});
 
 // 2. FirebaseRules.test.ts
-describe('Firestore Rules', () => {
-  test('user can only read own data')
-  test('coach can read athlete data')
-  test('prevents unauthorized writes')
-})
+describe("Firestore Rules", () => {
+  test("user can only read own data");
+  test("coach can read athlete data");
+  test("prevents unauthorized writes");
+});
 
 // 3. ExportData.test.ts
-describe('Export Functions', () => {
-  test('exports valid CSV format')
-  test('generates PDF with data')
-  test('handles empty datasets')
-})
+describe("Export Functions", () => {
+  test("exports valid CSV format");
+  test("generates PDF with data");
+  test("handles empty datasets");
+});
 ```
 
 ### Semaine 2 - Tests Business (→25% coverage)
+
 - Calculateurs nutritionnels complets
 - Workflows coach-athlète
 - Synchronisation Firestore
 
 ### Semaine 3 - Tests E2E (→30% coverage)
+
 - Parcours utilisateur critique
 - Tests mobile responsive
 - Performance monitoring
@@ -122,28 +133,23 @@ describe('Export Functions', () => {
 export default defineConfig({
   test: {
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'lcov'],
-      exclude: [
-        'node_modules/',
-        'test/',
-        '*.config.*',
-        '**/*.d.ts'
-      ],
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      exclude: ["node_modules/", "test/", "*.config.*", "**/*.d.ts"],
       thresholds: {
         global: {
           branches: 30,
           functions: 30,
           lines: 30,
-          statements: 30
-        }
-      }
+          statements: 30,
+        },
+      },
     },
-    setupFiles: ['./src/test/setup.ts'],
-    environment: 'jsdom',
-    globals: true
-  }
-})
+    setupFiles: ["./src/test/setup.ts"],
+    environment: "jsdom",
+    globals: true,
+  },
+});
 ```
 
 ## Scripts de Test
@@ -163,17 +169,18 @@ export default defineConfig({
 
 ## Métriques Cibles
 
-| Module | Actuel | 7 jours | 30 jours |
-|--------|--------|---------|----------|
-| Global | 2.16% | 15% | 30% |
-| Auth/Security | 0% | 80% | 90% |
-| Business Logic | 35% | 60% | 80% |
-| UI Components | 25% | 40% | 60% |
-| Pages/Routes | 0% | 30% | 50% |
+| Module         | Actuel | 7 jours | 30 jours |
+| -------------- | ------ | ------- | -------- |
+| Global         | 2.16%  | 15%     | 30%      |
+| Auth/Security  | 0%     | 80%     | 90%      |
+| Business Logic | 35%    | 60%     | 80%      |
+| UI Components  | 25%    | 40%     | 60%      |
+| Pages/Routes   | 0%     | 30%     | 50%      |
 
 ## Conclusion
 
 La couverture actuelle de **2.16%** est critique pour une application en production. Les zones les plus sensibles (auth, sécurité, calculs) nécessitent une attention immédiate. L'investissement dans les tests permettra de:
+
 - Réduire les bugs en production de 70%
 - Accélérer les déploiements de 50%
 - Améliorer la confiance dans les refactoring

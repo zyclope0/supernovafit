@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { Edit, Trash2, Copy, Star } from 'lucide-react'
-import SwipeableCard from './SwipeableCard'
-import { MealType, Aliment, Macros } from '@/types'
+import { Edit, Trash2, Copy, Star } from 'lucide-react';
+import SwipeableCard from './SwipeableCard';
+import { MealType, Aliment, Macros } from '@/types';
 // import { cn } from '@/lib/utils' // TODO: À utiliser si nécessaire
 
 interface SwipeableMealCardProps {
-  mealName: string
-  mealIcon: string
-  time: string
-  mealType: MealType
-  aliments?: Aliment[]
-  macros?: Macros
-  mealId?: string
-  onEdit?: (mealId: string) => void
-  onDelete?: (mealId: string) => void
-  onDuplicate?: (mealId: string) => void
-  onFavorite?: (mealId: string) => void
-  isFavorite?: boolean
-  className?: string
+  mealName: string;
+  mealIcon: string;
+  time: string;
+  mealType: MealType;
+  aliments?: Aliment[];
+  macros?: Macros;
+  mealId?: string;
+  onEdit?: (mealId: string) => void;
+  onDelete?: (mealId: string) => void;
+  onDuplicate?: (mealId: string) => void;
+  onFavorite?: (mealId: string) => void;
+  isFavorite?: boolean;
+  className?: string;
 }
 
 export default function SwipeableMealCard({
@@ -34,25 +34,24 @@ export default function SwipeableMealCard({
   onDuplicate,
   onFavorite,
   isFavorite = false,
-  className
+  className,
 }: SwipeableMealCardProps) {
-  
   const leftActions = [
     {
       id: 'favorite',
       label: isFavorite ? 'Retirer' : 'Favoris',
       icon: Star,
       color: 'warning' as const,
-      action: () => mealId && onFavorite?.(mealId)
+      action: () => mealId && onFavorite?.(mealId),
     },
     {
       id: 'duplicate',
       label: 'Dupliquer',
       icon: Copy,
       color: 'primary' as const,
-      action: () => mealId && onDuplicate?.(mealId)
-    }
-  ]
+      action: () => mealId && onDuplicate?.(mealId),
+    },
+  ];
 
   const rightActions = [
     {
@@ -60,19 +59,19 @@ export default function SwipeableMealCard({
       label: 'Modifier',
       icon: Edit,
       color: 'secondary' as const,
-      action: () => mealId && onEdit?.(mealId)
+      action: () => mealId && onEdit?.(mealId),
     },
     {
       id: 'delete',
       label: 'Supprimer',
       icon: Trash2,
       color: 'danger' as const,
-      action: () => mealId && onDelete?.(mealId)
-    }
-  ]
+      action: () => mealId && onDelete?.(mealId),
+    },
+  ];
 
-  const totalCalories = macros?.kcal || 0
-  const hasAliments = aliments.length > 0
+  const totalCalories = macros?.kcal || 0;
+  const hasAliments = aliments.length > 0;
 
   return (
     <SwipeableCard
@@ -90,7 +89,7 @@ export default function SwipeableMealCard({
               <p className="text-sm text-white/60">{time}</p>
             </div>
           </div>
-          
+
           {isFavorite && (
             <Star className="w-5 h-5 text-yellow-400 fill-current" />
           )}
@@ -130,19 +129,21 @@ export default function SwipeableMealCard({
         {hasAliments ? (
           <div className="space-y-2">
             {aliments.slice(0, 3).map((aliment, index) => (
-              <div key={index} className="flex items-center justify-between text-sm">
+              <div
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <div className="w-2 h-2 bg-blue-400 rounded-full flex-shrink-0" />
-                  <span className="text-white/80 truncate">
-                    {aliment.nom}
-                  </span>
+                  <span className="text-white/80 truncate">{aliment.nom}</span>
                 </div>
                 <div className="text-white/60 text-xs">
-                  {aliment.quantite}{aliment.unite}
+                  {aliment.quantite}
+                  {aliment.unite}
                 </div>
               </div>
             ))}
-            
+
             {aliments.length > 3 && (
               <div className="text-xs text-white/50 text-center pt-2">
                 +{aliments.length - 3} autres aliments
@@ -151,9 +152,7 @@ export default function SwipeableMealCard({
           </div>
         ) : (
           <div className="text-center py-4">
-            <div className="text-white/40 text-sm">
-              Aucun aliment ajouté
-            </div>
+            <div className="text-white/40 text-sm">Aucun aliment ajouté</div>
             <div className="text-xs text-white/30 mt-1">
               Tap pour ajouter des aliments
             </div>
@@ -170,5 +169,5 @@ export default function SwipeableMealCard({
         </div>
       </div>
     </SwipeableCard>
-  )
+  );
 }

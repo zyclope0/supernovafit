@@ -1,4 +1,5 @@
 # 🔑 RÉCUPÉRER DSN SENTRY - Guide Visuel
+
 ## Étapes détaillées avec descriptions visuelles
 
 ---
@@ -12,6 +13,7 @@ Tu peux récupérer ton DSN Sentry de **3 façons différentes**. Voici les mét
 ## 🎯 **MÉTHODE 1 : Lors de la création du projet (PLUS SIMPLE)**
 
 ### **Étape 1 : Créer le projet**
+
 ```bash
 # Sur https://sentry.io
 # Après connexion, cliquer "Create Project"
@@ -32,6 +34,7 @@ Interface visible :
 ```
 
 ### **Étape 2 : DSN affiché immédiatement**
+
 ```bash
 # Directement après "Create Project", page automatique :
 
@@ -55,6 +58,7 @@ Interface visible :
 ```
 
 ### **✅ Action : Copier le DSN complet**
+
 ```bash
 # Exemple DSN complet :
 https://a1b2c3d4e5f6@o987654321.ingest.sentry.io/123456789
@@ -70,6 +74,7 @@ https://a1b2c3d4e5f6@o987654321.ingest.sentry.io/123456789
 ## 🔧 **MÉTHODE 2 : Via Settings → Client Keys**
 
 ### **Étape 1 : Naviguer vers Settings**
+
 ```bash
 # Dans ton projet Sentry existant :
 
@@ -86,6 +91,7 @@ Interface Sentry Dashboard :
 ```
 
 ### **Étape 2 : Menu Settings gauche**
+
 ```bash
 # Page Settings ouverte, menu gauche :
 
@@ -105,6 +111,7 @@ Interface Sentry Dashboard :
 ```
 
 ### **Étape 3 : Copier DSN dans Client Keys**
+
 ```bash
 # Page Client Keys (DSN) :
 
@@ -120,7 +127,7 @@ Interface Sentry Dashboard :
 │ Public Key                                              │
 │ abc123def456ghi789                                      │
 │                                                         │
-│ Secret Key                                              │ 
+│ Secret Key                                              │
 │ [Hidden - Click to reveal]                              │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -130,6 +137,7 @@ Interface Sentry Dashboard :
 ## ⚙️ **MÉTHODE 3 : Via Project Settings**
 
 ### **Étape 1 : Clic icône Settings (roue dentée)**
+
 ```bash
 # Depuis ton dashboard projet :
 
@@ -145,6 +153,7 @@ Interface Sentry Dashboard :
 ```
 
 ### **Étape 2 : General Settings**
+
 ```bash
 # Page qui s'ouvre automatiquement :
 
@@ -169,6 +178,7 @@ Interface Sentry Dashboard :
 ## 📝 **UTILISER LE DSN DANS SUPERNOVAFIT**
 
 ### **Étape 1 : Ouvrir .env.local**
+
 ```bash
 # Dans ton projet SuperNovaFit :
 # Fichier : .env.local (racine du projet)
@@ -178,6 +188,7 @@ cp .env.local.example .env.local
 ```
 
 ### **Étape 2 : Ajouter la ligne DSN**
+
 ```bash
 # Contenu .env.local :
 
@@ -196,6 +207,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://TON-DSN-COMPLET-ICI
 ```
 
 ### **Étape 3 : Redémarrer le serveur**
+
 ```bash
 # Terminal dans SuperNovaFit :
 # Arrêter avec Ctrl+C puis :
@@ -207,6 +219,7 @@ npm run dev
 ## ✅ **VÉRIFIER QUE ÇA MARCHE**
 
 ### **Test 1 : Console navigateur**
+
 ```bash
 # 1. Ouvrir SuperNovaFit : http://localhost:3000
 # 2. F12 → Console
@@ -220,6 +233,7 @@ console.log(process.env.NEXT_PUBLIC_SENTRY_DSN)
 ```
 
 ### **Test 2 : Provoquer erreur**
+
 ```bash
 # Dans la console navigateur (F12) :
 
@@ -231,6 +245,7 @@ throw new Error("Test Sentry - ça marche!")
 ```
 
 ### **Test 3 : Check Sentry Dashboard**
+
 ```bash
 # 1. Retourner sur https://sentry.io
 # 2. Sélectionner projet "SuperNovaFit"
@@ -254,6 +269,7 @@ Interface attendue :
 ## 🚨 **ERREURS COURANTES DSN**
 
 ### **❌ Erreur 1 : DSN incomplet**
+
 ```bash
 # MAUVAIS :
 NEXT_PUBLIC_SENTRY_DSN=abc123def456
@@ -263,6 +279,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://abc123def456@o789.ingest.sentry.io/123
 ```
 
 ### **❌ Erreur 2 : Guillemets manquants**
+
 ```bash
 # MAUVAIS :
 NEXT_PUBLIC_SENTRY_DSN="https://..."
@@ -272,6 +289,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://...
 ```
 
 ### **❌ Erreur 3 : Variable mal nommée**
+
 ```bash
 # MAUVAIS :
 SENTRY_DSN=https://...
@@ -282,6 +300,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://...
 ```
 
 ### **❌ Erreur 4 : Serveur pas redémarré**
+
 ```bash
 # Après modification .env.local :
 # OBLIGATOIRE de redémarrer :
@@ -293,6 +312,7 @@ NEXT_PUBLIC_SENTRY_DSN=https://...
 ## 📞 **SI ÇA MARCHE TOUJOURS PAS**
 
 ### **🔍 Debug étape par étape**
+
 ```bash
 # 1. Vérifier DSN dans Sentry
 # → Copier-coller depuis interface Sentry
@@ -314,6 +334,7 @@ npm run dev
 ```
 
 ### **📧 Support si bloqué**
+
 ```bash
 # Si rien ne marche après ces étapes :
 
@@ -329,11 +350,13 @@ npm run dev
 ## 🎉 **DSN CONFIGURÉ AVEC SUCCÈS !**
 
 **✅ Tu as maintenant :**
+
 - DSN Sentry récupéré correctement
 - Variable environment configurée
 - Monitoring erreurs actif
 - Tests validation réussis
 
 **🚀 Prochaines étapes :**
+
 - [Retour au Guide Setup Sentry →](./1-SETUP_SENTRY.md#étape-4-tester-sentry)
 - [Configuration Firebase Analytics →](./2-FIREBASE_ANALYTICS.md)

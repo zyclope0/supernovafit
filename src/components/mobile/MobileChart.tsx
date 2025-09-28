@@ -1,26 +1,26 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { 
-  ZoomIn, 
-  ZoomOut, 
-  RotateCcw, 
+import { useState, useRef, useEffect } from 'react';
+import {
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
   Maximize2,
   Eye,
   EyeOff,
-  X
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
+  X,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MobileChartProps {
-  children: React.ReactNode
-  title: string
-  subtitle?: string
-  allowZoom?: boolean
-  allowFullscreen?: boolean
-  showLegendToggle?: boolean
-  className?: string
-  height?: number
+  children: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  allowZoom?: boolean;
+  allowFullscreen?: boolean;
+  showLegendToggle?: boolean;
+  className?: string;
+  height?: number;
 }
 
 export default function MobileChart({
@@ -31,30 +31,30 @@ export default function MobileChart({
   allowFullscreen = true,
   showLegendToggle = false,
   className,
-  height = 300
+  height = 300,
 }: MobileChartProps) {
-  const [isZoomed, setIsZoomed] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [showLegend, setShowLegend] = useState(true)
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showLegend, setShowLegend] = useState(true);
   // const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null) // TODO: Implémenter gestures
-  const chartRef = useRef<HTMLDivElement>(null)
+  const chartRef = useRef<HTMLDivElement>(null);
 
   // Gestion du zoom par pinch (mobile)
   useEffect(() => {
-    const element = chartRef.current
-    if (!element || !allowZoom) return
+    const element = chartRef.current;
+    if (!element || !allowZoom) return;
 
-    let initialDistance = 0
-    let currentScale = 1
+    let initialDistance = 0;
+    let currentScale = 1;
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
-        const touch1 = e.touches[0]
-        const touch2 = e.touches[1]
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
         initialDistance = Math.hypot(
           touch1.clientX - touch2.clientX,
-          touch1.clientY - touch2.clientY
-        )
+          touch1.clientY - touch2.clientY,
+        );
       } else if (e.touches.length === 1) {
         // TODO: Implémenter gesture single touch
         // setTouchStart({
@@ -62,70 +62,72 @@ export default function MobileChart({
         //   y: e.touches[0].clientY
         // })
       }
-    }
+    };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 2 && initialDistance > 0) {
-        e.preventDefault()
-        const touch1 = e.touches[0]
-        const touch2 = e.touches[1]
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
         const currentDistance = Math.hypot(
           touch1.clientX - touch2.clientX,
-          touch1.clientY - touch2.clientY
-        )
-        
-        const scale = currentDistance / initialDistance
-        currentScale = Math.min(Math.max(scale, 0.5), 3)
-        
+          touch1.clientY - touch2.clientY,
+        );
+
+        const scale = currentDistance / initialDistance;
+        currentScale = Math.min(Math.max(scale, 0.5), 3);
+
         if (currentScale > 1.2) {
-          setIsZoomed(true)
+          setIsZoomed(true);
         } else if (currentScale < 0.8) {
-          setIsZoomed(false)
+          setIsZoomed(false);
         }
       }
-    }
+    };
 
     const handleTouchEnd = () => {
-      initialDistance = 0
+      initialDistance = 0;
       // setTouchStart(null) // TODO: Implémenter gesture tracking
-    }
+    };
 
-    element.addEventListener('touchstart', handleTouchStart, { passive: false })
-    element.addEventListener('touchmove', handleTouchMove, { passive: false })
-    element.addEventListener('touchend', handleTouchEnd)
+    element.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
+    element.addEventListener('touchmove', handleTouchMove, { passive: false });
+    element.addEventListener('touchend', handleTouchEnd);
 
     return () => {
-      element.removeEventListener('touchstart', handleTouchStart)
-      element.removeEventListener('touchmove', handleTouchMove)
-      element.removeEventListener('touchend', handleTouchEnd)
-    }
-  }, [allowZoom])
+      element.removeEventListener('touchstart', handleTouchStart);
+      element.removeEventListener('touchmove', handleTouchMove);
+      element.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [allowZoom]);
 
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen)
+    setIsFullscreen(!isFullscreen);
     if (!isFullscreen) {
       // Entrer en mode plein écran
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden';
     } else {
       // Sortir du mode plein écran
-      document.body.style.overflow = 'auto'
+      document.body.style.overflow = 'auto';
     }
-  }
+  };
 
   const resetZoom = () => {
-    setIsZoomed(false)
-  }
+    setIsZoomed(false);
+  };
 
   return (
     <>
       {/* Chart Container */}
-      <div 
+      <div
         ref={chartRef}
         className={cn(
           'glass-effect rounded-xl border border-white/10 overflow-hidden',
           'transition-all duration-300 ease-in-out',
           isZoomed && 'scale-110 z-10 relative',
-          className
+          className,
         )}
         style={{ height: isFullscreen ? '100vh' : height }}
       >
@@ -137,7 +139,7 @@ export default function MobileChart({
               <p className="text-xs text-white/60 truncate">{subtitle}</p>
             )}
           </div>
-          
+
           {/* Mobile Controls */}
           <div className="flex items-center gap-1 md:hidden">
             {showLegendToggle && (
@@ -153,20 +155,20 @@ export default function MobileChart({
                 )}
               </button>
             )}
-            
+
             {allowZoom && (
               <button
                 onClick={resetZoom}
                 className={cn(
                   'p-2 hover:bg-white/10 rounded-lg transition-colors',
-                  isZoomed ? 'text-blue-400' : 'text-white/60'
+                  isZoomed ? 'text-blue-400' : 'text-white/60',
                 )}
                 title="Reset zoom"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
             )}
-            
+
             {allowFullscreen && (
               <button
                 onClick={toggleFullscreen}
@@ -180,22 +182,24 @@ export default function MobileChart({
         </div>
 
         {/* Chart Content */}
-        <div 
+        <div
           className={cn(
             'p-3 transition-all duration-300',
             isZoomed && 'scale-110',
-            isFullscreen && 'h-full flex items-center justify-center'
+            isFullscreen && 'h-full flex items-center justify-center',
           )}
-          style={{ 
+          style={{
             height: isFullscreen ? 'calc(100vh - 60px)' : height - 60,
-            transform: isZoomed ? 'scale(1.2)' : 'scale(1)'
+            transform: isZoomed ? 'scale(1.2)' : 'scale(1)',
           }}
         >
           {/* Wrapper pour masquer/afficher la légende */}
-          <div className={cn(
-            'h-full w-full',
-            !showLegend && '[&_.recharts-legend]:hidden'
-          )}>
+          <div
+            className={cn(
+              'h-full w-full',
+              !showLegend && '[&_.recharts-legend]:hidden',
+            )}
+          >
             {children}
           </div>
         </div>
@@ -218,9 +222,7 @@ export default function MobileChart({
           <div className="flex items-center justify-between p-4 border-b border-white/10">
             <div>
               <h2 className="text-xl font-bold text-white">{title}</h2>
-              {subtitle && (
-                <p className="text-sm text-white/60">{subtitle}</p>
-              )}
+              {subtitle && <p className="text-sm text-white/60">{subtitle}</p>}
             </div>
             <button
               onClick={toggleFullscreen}
@@ -232,9 +234,7 @@ export default function MobileChart({
 
           {/* Fullscreen Chart */}
           <div className="flex-1 p-4">
-            <div className="h-full w-full">
-              {children}
-            </div>
+            <div className="h-full w-full">{children}</div>
           </div>
 
           {/* Fullscreen Controls */}
@@ -245,12 +245,16 @@ export default function MobileChart({
                   onClick={() => setIsZoomed(!isZoomed)}
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
-                    isZoomed 
-                      ? 'bg-blue-500/20 text-blue-400' 
-                      : 'bg-white/10 text-white/60 hover:bg-white/20'
+                    isZoomed
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : 'bg-white/10 text-white/60 hover:bg-white/20',
                   )}
                 >
-                  {isZoomed ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
+                  {isZoomed ? (
+                    <ZoomOut className="w-4 h-4" />
+                  ) : (
+                    <ZoomIn className="w-4 h-4" />
+                  )}
                   {isZoomed ? 'Zoom Out' : 'Zoom In'}
                 </button>
                 <button
@@ -262,18 +266,22 @@ export default function MobileChart({
                 </button>
               </>
             )}
-            
+
             {showLegendToggle && (
               <button
                 onClick={() => setShowLegend(!showLegend)}
                 className={cn(
                   'flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
-                  showLegend 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-white/10 text-white/60 hover:bg-white/20'
+                  showLegend
+                    ? 'bg-green-500/20 text-green-400'
+                    : 'bg-white/10 text-white/60 hover:bg-white/20',
                 )}
               >
-                {showLegend ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                {showLegend ? (
+                  <Eye className="w-4 h-4" />
+                ) : (
+                  <EyeOff className="w-4 h-4" />
+                )}
                 Légende
               </button>
             )}
@@ -281,5 +289,5 @@ export default function MobileChart({
         </div>
       )}
     </>
-  )
+  );
 }

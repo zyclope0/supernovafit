@@ -16,31 +16,31 @@ permissions:
 
 # Variables globales pour performance
 env:
-  NODE_VERSION: '20.x'
-  CACHE_VERSION: 'v1'
+  NODE_VERSION: "20.x"
+  CACHE_VERSION: "v1"
 
 jobs:
   quality:
     name: 🔍 Code Quality Excellence
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
-        node-version: ['20.x']
-    
+        node-version: ["20.x"]
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch full history for better caching
-      
+          fetch-depth: 0 # Fetch full history for better caching
+
       - name: 🚀 Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
-      
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+
       - name: 📦 Cache Next.js build
         uses: actions/cache@v4
         with:
@@ -52,30 +52,30 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nextjs-
-      
+
       - name: 🔧 Install dependencies
         run: npm ci --prefer-offline --no-audit
         env:
           NODE_ENV: development
-          
+
       - name: 🎯 TypeScript checking
         run: npm run typecheck
         env:
           NODE_ENV: development
-          
+
       - name: 🧹 ESLint + Prettier
         run: |
           npm run lint
           npx prettier --check "**/*.{ts,tsx,js,jsx,json,md}"
         env:
           NODE_ENV: development
-        
+
       - name: 🧪 Run tests with coverage
         run: npm run test:coverage
         env:
           NODE_ENV: test
           CI: true
-        
+
       - name: 📊 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -84,7 +84,7 @@ jobs:
           name: supernovafit-quality
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-        
+
       - name: 📈 Build Performance Check
         run: |
           echo "BUILD_START=$(date +%s)" >> $GITHUB_ENV
@@ -98,13 +98,13 @@ jobs:
         env:
           NODE_ENV: production
           NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
-        
+
       - name: 🔒 Security Audit
         run: |
           npm audit --audit-level=moderate --production
           echo "✅ Security audit completed"
         continue-on-error: true
-        
+
       - name: 🚀 Performance Metrics
         run: |
           echo "## 🏆 Quality Excellence Report" >> $GITHUB_STEP_SUMMARY
@@ -120,7 +120,7 @@ jobs:
           echo "- **Prettier**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
           echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
           echo "- **Security**: ✅ Audited" >> $GITHUB_STEP_SUMMARY
-        
+
       - name: 💬 Comment PR with Excellence Report
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -128,13 +128,13 @@ jobs:
           script: |
             const buildTime = process.env.BUILD_TIME || 'N/A';
             const bundleSize = process.env.BUNDLE_SIZE || 'N/A';
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `## 🏆 Quality Excellence Report - SuperNovaFit v2.0.0
-            
+
             ### ✅ All Quality Checks Passed
             - **TypeScript**: ✅ Type checking successful
             - **ESLint**: ✅ Code style validation passed  
@@ -142,16 +142,16 @@ jobs:
             - **Tests**: ✅ Test suite completed
             - **Security**: ✅ Security audit completed
             - **Build**: ✅ Production build successful
-            
+
             ### ⚡ Performance Metrics
             - **Build Time**: ${buildTime}
             - **Bundle Size**: ${bundleSize}
             - **Node.js**: 20.x (Latest LTS)
-            
+
             ### 📊 Coverage & Quality
             - **Test Coverage**: Available on Codecov
             - **Code Quality**: Excellent (0 ESLint errors)
             - **Type Safety**: 100% TypeScript coverage
-            
+
             🚀 **Ready for deployment!** This PR meets all quality standards.`
             })

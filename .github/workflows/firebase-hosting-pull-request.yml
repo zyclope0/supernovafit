@@ -17,11 +17,11 @@ jobs:
     # PR preview uniquement si qualité OK et si le repo source de la PR est le même (sécurité)
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.head_repository.full_name == github.repository }}
     runs-on: ubuntu-latest
-    
+
     # Variables d'environnement pour performance
     env:
-      NODE_VERSION: '20'
-      CACHE_VERSION: 'v1'
+      NODE_VERSION: "20"
+      CACHE_VERSION: "v1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,9 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'package-lock.json'
-      
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+
       # Cache optimisé pour performance maximale
       - name: 📦 Cache Next.js build (Optimized)
         uses: actions/cache@v4
@@ -46,12 +46,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nextjs-
-      
+
       - name: 🔧 Install dependencies (Optimized)
         run: npm ci --prefer-offline --no-audit
         env:
           NODE_ENV: production
-          
+
       - name: 📈 Build for Preview
         run: |
           echo "🔍 Building PR preview..." >> $GITHUB_STEP_SUMMARY

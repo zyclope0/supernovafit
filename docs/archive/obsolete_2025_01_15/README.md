@@ -9,6 +9,7 @@
 ## 📋 **FICHIERS ARCHIVÉS**
 
 ### **Documentation Obsolète**
+
 - **`STATUT_ACTUEL_2025.md`** → Remplacé par `AUDIT_NOW/OPTIMIZATIONS_15_01_2025.md`
 - **`AUDIT_STATUS.md`** → Remplacé par `AUDIT_NOW/issues.md` (mis à jour)
 - **`AUDIT_COMPLET_2025.md`** → Remplacé par `AUDIT_NOW/OPTIMIZATIONS_15_01_2025.md`
@@ -16,6 +17,7 @@
 - **`ACCESSIBILITY_IMPROVEMENTS.md`** → Remplacé par `AUDIT_NOW/ui_ux_a11y.md`
 
 ### **Dossiers Obsolètes**
+
 - **`fixes/`** → Corrections appliquées, documentation obsolète
   - `AUDIT_FIXES_2025_08_15.md`
   - `INVITATIONS_FIX_2025_08_15.md`
@@ -27,10 +29,12 @@
   - `PHASE_5_DOCUMENTATION_COMPLETE.md`
 
 ### **Guides Obsolètes**
+
 - **`LINTING_CLEANUP_PLAN.md`** → Plan exécuté, documentation obsolète
 - **`TDEE_HARMONIZATION.md`** → Harmonisation terminée, documentation obsolète
 
 ### **Documentation Technique Obsolète**
+
 - **`deployment-workflow-analysis.md`** → Workflows mis à jour, documentation obsolète
 - **`next-steps-analysis.md`** → Étapes terminées, documentation obsolète
 - **`bundle-optimization-implementation.md`** → Optimisations appliquées, documentation obsolète
@@ -41,6 +45,7 @@
 ## 🎯 **RAISON DE L'ARCHIVAGE**
 
 ### **Documentation Remplacée**
+
 Ces fichiers ont été remplacés par une documentation plus récente et plus complète dans le dossier `AUDIT_NOW/` :
 
 - **`AUDIT_NOW/OPTIMIZATIONS_15_01_2025.md`** : Documentation technique complète
@@ -49,6 +54,7 @@ Ces fichiers ont été remplacés par une documentation plus récente et plus co
 - **`AUDIT_NOW/DOCUMENTATION_SUMMARY.md`** : Guide de navigation
 
 ### **Fonctionnalités Intégrées**
+
 Les fonctionnalités décrites dans ces fichiers ont été intégrées dans l'application :
 
 - **Sidebar UX** : Améliorations intégrées
@@ -57,6 +63,7 @@ Les fonctionnalités décrites dans ces fichiers ont été intégrées dans l'ap
 - **Breadcrumbs** : Système implémenté
 
 ### **Plans Exécutés**
+
 Les plans et phases décrits ont été exécutés avec succès :
 
 - **Linting cleanup** : Nettoyage terminé
@@ -69,16 +76,19 @@ Les plans et phases décrits ont été exécutés avec succès :
 ## 📊 **IMPACT DE L'ARCHIVAGE**
 
 ### **Réduction de la Documentation**
+
 - **Fichiers archivés** : 15 fichiers
 - **Dossiers archivés** : 2 dossiers
 - **Réduction** : ~40% de la documentation obsolète
 
 ### **Amélioration de la Navigation**
+
 - **Documentation centralisée** : `AUDIT_NOW/` comme source unique
 - **Navigation simplifiée** : Moins de fichiers à parcourir
 - **Cohérence** : Documentation à jour et cohérente
 
 ### **Maintenance Simplifiée**
+
 - **Moins de fichiers à maintenir** : Documentation obsolète archivée
 - **Source unique de vérité** : `AUDIT_NOW/` pour l'état actuel
 - **Éviter la confusion** : Documentation obsolète séparée
@@ -105,6 +115,5 @@ Si un fichier archivé est nécessaire :
 
 ---
 
-*Archive créée le 15 Janvier 2025*  
-*Prochaine révision : Si nécessaire (J+30)*
-
+_Archive créée le 15 Janvier 2025_  
+_Prochaine révision : Si nécessaire (J+30)_

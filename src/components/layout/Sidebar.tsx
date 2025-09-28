@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useAuth } from '@/hooks/useAuth'
-import { APP_VERSION } from '@/lib/constants'
-import { 
-  Bars3Icon, 
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { APP_VERSION } from '@/lib/constants';
+import {
+  Bars3Icon,
   XMarkIcon,
   HomeIcon,
   ChartBarIcon,
@@ -24,8 +24,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   TrophyIcon,
-  QuestionMarkCircleIcon
-} from '@heroicons/react/24/outline'
+  QuestionMarkCircleIcon,
+} from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
@@ -36,96 +36,103 @@ const navigation = [
   { name: 'Challenges', href: '/challenges', icon: TrophyIcon },
   { name: 'Guide', href: '/guide', icon: QuestionMarkCircleIcon },
   { name: 'Export', href: '/export', icon: DocumentTextIcon },
-]
+];
 
 const publicNavigation = [
   { name: 'Accueil', href: '/', icon: HomeIcon },
   { name: 'Guide', href: '/guide', icon: BookOpenIcon },
   { name: 'Nouveautés', href: '/nouveautes', icon: SparklesIcon },
-]
+];
 
 const coachNavigation = [
   { name: 'Dashboard', href: '/coach', icon: HomeIcon },
   { name: 'Mes Athlètes', href: '/coach/mes-athletes', icon: UserGroupIcon },
   { name: 'Tous les Athlètes', href: '/coach/all-athletes', icon: UsersIcon },
-  { name: 'Programmes', href: '/coach/programmes', icon: ClipboardDocumentListIcon },
+  {
+    name: 'Programmes',
+    href: '/coach/programmes',
+    icon: ClipboardDocumentListIcon,
+  },
   { name: 'Rapports', href: '/coach/rapports', icon: ChartPieIcon },
-]
+];
 
 const authNavigation = [
   { name: 'Profil', href: '/profil', icon: CogIcon },
   { name: 'Nouveautés', href: '/nouveautes', icon: SparklesIcon },
-]
+];
 
 export default function Sidebar() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const pathname = usePathname()
-  const { user, userProfile, loading, signOut } = useAuth()
-  const isCoach = userProfile?.role === 'coach'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
+  const { user, userProfile, loading, signOut } = useAuth();
+  const isCoach = userProfile?.role === 'coach';
 
   // Détection du type d'appareil et gestion responsive
   useEffect(() => {
     const checkDevice = () => {
-      const mobile = window.innerWidth < 1024 // lg breakpoint
-      setIsMobile(mobile)
-      
+      const mobile = window.innerWidth < 1024; // lg breakpoint
+      setIsMobile(mobile);
+
       // Sur mobile : sidebar fermée par défaut
       // Sur desktop : sidebar ouverte par défaut
       if (mobile) {
-        setSidebarOpen(false)
-        setSidebarCollapsed(false)
+        setSidebarOpen(false);
+        setSidebarCollapsed(false);
       } else {
-        setSidebarOpen(true)
+        setSidebarOpen(true);
         // Récupérer l'état de la sidebar depuis localStorage
-        const savedState = localStorage.getItem('sidebarCollapsed')
+        const savedState = localStorage.getItem('sidebarCollapsed');
         if (savedState !== null) {
-          setSidebarCollapsed(JSON.parse(savedState))
+          setSidebarCollapsed(JSON.parse(savedState));
         }
       }
-    }
+    };
 
-    checkDevice()
-    window.addEventListener('resize', checkDevice)
-    return () => window.removeEventListener('resize', checkDevice)
-  }, [])
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
 
   // Sauvegarder l'état de la sidebar dans localStorage
   useEffect(() => {
     if (!isMobile) {
-      localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed))
+      localStorage.setItem(
+        'sidebarCollapsed',
+        JSON.stringify(sidebarCollapsed),
+      );
     }
-  }, [sidebarCollapsed, isMobile])
+  }, [sidebarCollapsed, isMobile]);
 
   // Navigation clavier pour la sidebar
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && sidebarOpen && isMobile) {
-        setSidebarOpen(false)
+        setSidebarOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [sidebarOpen, isMobile])
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen, isMobile]);
 
   const handleSignOut = async () => {
     try {
-      const result = await signOut()
+      const result = await signOut();
       if (result.success) {
         // Rediriger vers la page d'accueil après déconnexion
-        window.location.href = '/'
+        window.location.href = '/';
       } else {
-        console.error('Erreur lors de la déconnexion:', result.error)
+        console.error('Erreur lors de la déconnexion:', result.error);
       }
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error)
+      console.error('Erreur lors de la déconnexion:', error);
     }
-  }
+  };
 
-  const currentNavigation = isCoach ? coachNavigation : navigation
-  const displayNavigation = user ? currentNavigation : publicNavigation
+  const currentNavigation = isCoach ? coachNavigation : navigation;
+  const displayNavigation = user ? currentNavigation : publicNavigation;
 
   return (
     <>
@@ -144,7 +151,7 @@ export default function Sidebar() {
 
       {/* Overlay (mobile uniquement) */}
       {isMobile && sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
@@ -157,9 +164,10 @@ export default function Sidebar() {
         className={`
           fixed top-0 left-0 h-full bg-space-900/95 backdrop-blur-xl border-r border-white/10 z-50
           transition-all duration-300 ease-in-out
-          ${isMobile 
-            ? `w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
-            : `${sidebarCollapsed ? 'w-16' : 'w-64'}`
+          ${
+            isMobile
+              ? `w-64 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
+              : `${sidebarCollapsed ? 'w-16' : 'w-64'}`
           }
         `}
         role="navigation"
@@ -179,14 +187,18 @@ export default function Sidebar() {
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center space-x-2">
               {/* Bouton collapse/expand (desktop uniquement) */}
               {!isMobile && (
                 <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                   className="p-1 text-white/60 hover:text-white hover:bg-white/10 rounded transition-all duration-200 focus-accessible"
-                  aria-label={sidebarCollapsed ? "Développer la sidebar" : "Réduire la sidebar"}
+                  aria-label={
+                    sidebarCollapsed
+                      ? 'Développer la sidebar'
+                      : 'Réduire la sidebar'
+                  }
                 >
                   {sidebarCollapsed ? (
                     <ChevronRightIcon className="h-5 w-5" />
@@ -195,7 +207,7 @@ export default function Sidebar() {
                   )}
                 </button>
               )}
-              
+
               {/* Bouton fermer (mobile uniquement) */}
               {isMobile && (
                 <button
@@ -211,91 +223,104 @@ export default function Sidebar() {
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2" role="menubar">
-            {!loading && displayNavigation.map((item) => {
-            // Pour le mode coach, éviter la double surbrillance
-            const isActive = user && userProfile?.role === 'coach' 
-              ? pathname === item.href && !(item.name === 'Mes Athlètes' && pathname === '/coach')
-              : pathname === item.href
+            {!loading &&
+              displayNavigation.map((item) => {
+                // Pour le mode coach, éviter la double surbrillance
+                const isActive =
+                  user && userProfile?.role === 'coach'
+                    ? pathname === item.href &&
+                      !(item.name === 'Mes Athlètes' && pathname === '/coach')
+                    : pathname === item.href;
 
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`
-                  group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
-                  nav-accessible
-                  ${isActive 
-                    ? 'bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 glow-purple text-white' 
-                    : 'text-accessible hover:text-white hover:bg-white/5 hover:glow-cyan'
-                  }
-                `}
-                onClick={() => isMobile && setSidebarOpen(false)}
-                aria-current={isActive ? 'page' : undefined}
-                role="menuitem"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    if (isMobile) setSidebarOpen(false)
-                  }
-                }}
-                title={sidebarCollapsed ? item.name : undefined}
-              >
-                <item.icon className={`
-                  transition-colors duration-200
-                  ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
-                  ${isActive ? 'text-neon-purple' : 'text-accessible group-hover:text-neon-cyan'}
-                `} aria-hidden="true" />
-                {!sidebarCollapsed && (
-                  <span className="flex-1 flex items-center justify-between">
-                    <span>{item.name}</span>
-                  </span>
-                )}
-              </Link>
-            )
-          })}
-          </nav>
-
-          {/* Navigation d'authentification */}
-          <div className="px-4 py-4 border-t border-white/10">
-            <nav className="space-y-2" role="menubar">
-              {!loading && user && authNavigation.map((item) => {
-                const isActive = pathname === item.href
-                
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
                     className={`
-                      group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
-                      nav-accessible
-                      ${isActive 
-                        ? 'bg-gradient-to-r from-neon-green/20 to-neon-green/10 border border-neon-green/30 text-white' 
-                        : 'text-accessible hover:text-white hover:bg-white/5 hover:glow-green'
-                      }
-                    `}
+                  group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200
+                  nav-accessible
+                  ${
+                    isActive
+                      ? 'bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 border border-neon-purple/30 glow-purple text-white'
+                      : 'text-accessible hover:text-white hover:bg-white/5 hover:glow-cyan'
+                  }
+                `}
                     onClick={() => isMobile && setSidebarOpen(false)}
                     aria-current={isActive ? 'page' : undefined}
                     role="menuitem"
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        if (isMobile) setSidebarOpen(false)
+                        e.preventDefault();
+                        if (isMobile) setSidebarOpen(false);
                       }
                     }}
                     title={sidebarCollapsed ? item.name : undefined}
                   >
-                    <item.icon className={`
+                    <item.icon
+                      className={`
+                  transition-colors duration-200
+                  ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
+                  ${isActive ? 'text-neon-purple' : 'text-accessible group-hover:text-neon-cyan'}
+                `}
+                      aria-hidden="true"
+                    />
+                    {!sidebarCollapsed && (
+                      <span className="flex-1 flex items-center justify-between">
+                        <span>{item.name}</span>
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+          </nav>
+
+          {/* Navigation d'authentification */}
+          <div className="px-4 py-4 border-t border-white/10">
+            <nav className="space-y-2" role="menubar">
+              {!loading &&
+                user &&
+                authNavigation.map((item) => {
+                  const isActive = pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`
+                      group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200
+                      nav-accessible
+                      ${
+                        isActive
+                          ? 'bg-gradient-to-r from-neon-green/20 to-neon-green/10 border border-neon-green/30 text-white'
+                          : 'text-accessible hover:text-white hover:bg-white/5 hover:glow-green'
+                      }
+                    `}
+                      onClick={() => isMobile && setSidebarOpen(false)}
+                      aria-current={isActive ? 'page' : undefined}
+                      role="menuitem"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (isMobile) setSidebarOpen(false);
+                        }
+                      }}
+                      title={sidebarCollapsed ? item.name : undefined}
+                    >
+                      <item.icon
+                        className={`
                       transition-colors duration-200
                       ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
                       ${isActive ? 'text-neon-green' : 'text-accessible group-hover:text-neon-green'}
-                    `} aria-hidden="true" />
-                    {!sidebarCollapsed && <span>{item.name}</span>}
-                  </Link>
-                )
-              })}
-              
+                    `}
+                        aria-hidden="true"
+                      />
+                      {!sidebarCollapsed && <span>{item.name}</span>}
+                    </Link>
+                  );
+                })}
+
               {/* Bouton de connexion/déconnexion */}
               {!loading && user ? (
                 <button
@@ -306,16 +331,19 @@ export default function Sidebar() {
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      handleSignOut()
+                      e.preventDefault();
+                      handleSignOut();
                     }
                   }}
-                  title={sidebarCollapsed ? "Se déconnecter" : undefined}
+                  title={sidebarCollapsed ? 'Se déconnecter' : undefined}
                 >
-                  <ArrowRightOnRectangleIcon className={`
+                  <ArrowRightOnRectangleIcon
+                    className={`
                     transition-colors duration-200 text-accessible group-hover:text-red-400
                     ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
-                  `} aria-hidden="true" />
+                  `}
+                    aria-hidden="true"
+                  />
                   {!sidebarCollapsed && <span>Se déconnecter</span>}
                 </button>
               ) : !loading ? (
@@ -328,36 +356,48 @@ export default function Sidebar() {
                   onClick={() => isMobile && setSidebarOpen(false)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      if (isMobile) setSidebarOpen(false)
+                      e.preventDefault();
+                      if (isMobile) setSidebarOpen(false);
                     }
                   }}
-                  title={sidebarCollapsed ? "Se connecter" : undefined}
+                  title={sidebarCollapsed ? 'Se connecter' : undefined}
                 >
-                  <ArrowRightOnRectangleIcon className={`
+                  <ArrowRightOnRectangleIcon
+                    className={`
                     transition-colors duration-200 text-accessible group-hover:text-neon-green
                     ${sidebarCollapsed ? 'h-5 w-5' : 'mr-3 h-5 w-5'}
-                  `} aria-hidden="true" />
+                  `}
+                    aria-hidden="true"
+                  />
                   {!sidebarCollapsed && <span>Se connecter</span>}
                 </Link>
               ) : null}
             </nav>
-            
+
             {/* Informations de version et liens */}
             {!sidebarCollapsed && (
               <div className="mt-6 pt-4 border-t border-white/10">
                 <div className="text-xs text-accessible text-center space-y-2">
                   <div>Version {APP_VERSION}</div>
                   <div className="flex flex-wrap justify-center gap-2 text-xs">
-                    <Link href="/legal/privacy" className="text-accessible hover:text-neon-cyan transition-colors">
+                    <Link
+                      href="/legal/privacy"
+                      className="text-accessible hover:text-neon-cyan transition-colors"
+                    >
                       Confidentialité
                     </Link>
                     <span className="text-white/30">·</span>
-                    <Link href="/legal/cookies" className="text-accessible hover:text-neon-cyan transition-colors">
+                    <Link
+                      href="/legal/cookies"
+                      className="text-accessible hover:text-neon-cyan transition-colors"
+                    >
                       Cookies
                     </Link>
                     <span className="text-white/30">·</span>
-                    <Link href="/legal/terms" className="text-accessible hover:text-neon-cyan transition-colors">
+                    <Link
+                      href="/legal/terms"
+                      className="text-accessible hover:text-neon-cyan transition-colors"
+                    >
                       CGU
                     </Link>
                   </div>
@@ -369,5 +409,5 @@ export default function Sidebar() {
         </div>
       </div>
     </>
-  )
-} 
+  );
+}

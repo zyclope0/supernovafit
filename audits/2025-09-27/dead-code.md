@@ -1,4 +1,5 @@
 # Analyse du Code Mort - SuperNovaFit
+
 **Date**: 2025-09-27  
 **Version**: 2.0.0
 
@@ -11,6 +12,7 @@
 ## Exports Non Utilisés
 
 ### Composants UI (12)
+
 ```typescript
 // src/components/ui/
 1. Skeletons.tsx - CardSkeleton (export non utilisé)
@@ -28,6 +30,7 @@
 ```
 
 ### Hooks (8)
+
 ```typescript
 // src/hooks/
 1. useFirestore.ts - FirestoreOptions (interface non utilisée)
@@ -41,6 +44,7 @@
 ```
 
 ### Lib/Utils (15)
+
 ```typescript
 // src/lib/
 1. calculations.ts - calculateVO2Max() (non implémenté)
@@ -61,6 +65,7 @@
 ```
 
 ### Types (9)
+
 ```typescript
 // src/types/
 1. index.ts - LegacyUser (migration terminée)
@@ -77,6 +82,7 @@
 ## Fichiers Potentiellement Inutiles
 
 ### Tests Obsolètes
+
 ```
 src/__tests__/components/old/
 - OldDashboard.test.tsx (composant supprimé)
@@ -84,6 +90,7 @@ src/__tests__/components/old/
 ```
 
 ### Composants Dépréciés
+
 ```
 src/components/deprecated/
 - À vérifier si le dossier existe
@@ -92,6 +99,7 @@ src/components/deprecated/
 ## Impact sur le Bundle
 
 ### Analyse de Taille
+
 ```
 Exports non utilisés: ~45KB
 Dépendances inutiles: ~15MB (node_modules)
@@ -100,6 +108,7 @@ Total économisable: ~60KB bundle, 15MB node_modules
 ```
 
 ### Imports Circulaires Détectés
+
 ```
 ⚠️ src/hooks/useAuth.ts → src/lib/firebase.ts → src/hooks/useAuth.ts
 ⚠️ src/components/ui/index.ts → multiples composants → index.ts
@@ -108,6 +117,7 @@ Total économisable: ~60KB bundle, 15MB node_modules
 ## Plan de Nettoyage
 
 ### Phase 1 - Quick Wins (1 jour)
+
 ```bash
 # 1. Supprimer les exports non utilisés
 npm run lint -- --fix
@@ -122,6 +132,7 @@ npx organize-imports-cli src/**/*.{ts,tsx}
 ```
 
 ### Phase 2 - Refactoring (3 jours)
+
 1. **Consolider les types**
    - Fusionner types redondants
    - Créer types/common.ts
@@ -135,6 +146,7 @@ npx organize-imports-cli src/**/*.{ts,tsx}
    - Nettoyer commentaires
 
 ### Phase 3 - Prévention (Continu)
+
 ```json
 // package.json
 {
@@ -152,18 +164,24 @@ npx organize-imports-cli src/**/*.{ts,tsx}
 // .eslintrc.js - Ajouter
 module.exports = {
   rules: {
-    'no-unused-vars': 'error',
-    'no-unused-expressions': 'error',
-    '@typescript-eslint/no-unused-vars': ['error', {
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_'
-    }],
-    'import/no-duplicates': 'error',
-    'import/no-unused-modules': ['error', {
-      unusedExports: true
-    }]
-  }
-}
+    "no-unused-vars": "error",
+    "no-unused-expressions": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
+    "import/no-duplicates": "error",
+    "import/no-unused-modules": [
+      "error",
+      {
+        unusedExports: true,
+      },
+    ],
+  },
+};
 ```
 
 ## Outils de Détection
@@ -187,17 +205,18 @@ npm run analyze
 
 ## Métriques d'Amélioration
 
-| Métrique | Avant | Après | Gain |
-|----------|-------|-------|------|
-| Exports totaux | 487 | 443 | -9% |
-| Bundle size | 221KB | 198KB | -10% |
-| Build time | 17.9s | 16.5s | -8% |
-| Dépendances | 49 | 42 | -14% |
-| Lignes de code | 44,159 | 41,500 | -6% |
+| Métrique       | Avant  | Après  | Gain |
+| -------------- | ------ | ------ | ---- |
+| Exports totaux | 487    | 443    | -9%  |
+| Bundle size    | 221KB  | 198KB  | -10% |
+| Build time     | 17.9s  | 16.5s  | -8%  |
+| Dépendances    | 49     | 42     | -14% |
+| Lignes de code | 44,159 | 41,500 | -6%  |
 
 ## Conclusion
 
 Le nettoyage du code mort permettrait de:
+
 - **Réduire le bundle de 10%** (23KB)
 - **Accélérer le build de 8%** (1.4s)
 - **Simplifier la maintenance** (-2,659 lignes)

@@ -1,4 +1,5 @@
 # 📊 FIREBASE ANALYTICS - Guide Console
+
 ## Consulter métriques utilisateurs SuperNovaFit
 
 ---
@@ -6,6 +7,7 @@
 ## 🎯 **QUE VOIR DANS FIREBASE ANALYTICS**
 
 Firebase Analytics track automatiquement :
+
 - **Utilisateurs actifs** (quotidien/hebdomadaire/mensuel)
 - **Events custom SuperNovaFit** (meal_added, training_added, etc.)
 - **Pages populaires** (Dashboard, Diète, Entraînements)
@@ -17,6 +19,7 @@ Firebase Analytics track automatiquement :
 ## 🚀 **ACCÈS FIREBASE CONSOLE**
 
 ### **1. Connexion Console**
+
 ```bash
 # 1. Aller sur : https://console.firebase.google.com/
 # 2. Se connecter avec compte Google
@@ -24,6 +27,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **2. Navigation Analytics**
+
 ```bash
 # Menu gauche Firebase Console :
 # 📊 Analytics
@@ -42,13 +46,14 @@ Firebase Analytics track automatiquement :
 ## 📈 **DASHBOARD PRINCIPAL**
 
 ### **Métriques Clés**
+
 ```bash
 # 👥 Utilisateurs
 - Active users (1/7/28 jours)
 - New vs Returning users
 - User retention
 
-# 📱 Engagement  
+# 📱 Engagement
 - Average engagement time
 - Engaged sessions per user
 - Event count per user
@@ -65,6 +70,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **Graphiques Importants**
+
 ```bash
 # 📊 User activity (7 derniers jours)
 # → Pic d'activité à quelle heure ?
@@ -84,6 +90,7 @@ Firebase Analytics track automatiquement :
 ## 🎯 **EVENTS SUPERNOVAFIT CUSTOM**
 
 ### **Events Configurés Automatiquement**
+
 ```bash
 # Menu Analytics → Events → Table events
 
@@ -92,7 +99,7 @@ Firebase Analytics track automatiquement :
 - Usage : Combien repas ajoutés par jour
 - Insight : Quels types repas populaires
 
-# 🏋️ training_added  
+# 🏋️ training_added
 - Paramètres : training_type, duration, source
 - Usage : Fréquence entraînements
 - Insight : Manuel vs Import Garmin
@@ -114,6 +121,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **Analyser Events Custom**
+
 ```bash
 # 1. Analytics → Events → Sélectionner "meal_added"
 
@@ -137,12 +145,13 @@ Firebase Analytics track automatiquement :
 ## 📊 **RAPPORTS UTILES**
 
 ### **1. Engagement Report**
+
 ```bash
 # Analytics → Engagement → Pages and screens
 
 # 📄 Pages populaires :
 1. / (Dashboard)           - 45% traffic
-2. /diete                  - 30% traffic  
+2. /diete                  - 30% traffic
 3. /entrainements          - 15% traffic
 4. /journal                - 7% traffic
 5. /mesures                - 3% traffic
@@ -154,6 +163,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **2. User Journey Flow**
+
 ```bash
 # Analytics → Exploration → Path exploration
 
@@ -171,6 +181,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **3. Real-time Overview**
+
 ```bash
 # Analytics → Realtime → Overview
 
@@ -191,6 +202,7 @@ Firebase Analytics track automatiquement :
 ## 🔧 **CONFIGURATION AVANCÉE**
 
 ### **1. Custom Dimensions (Optionnel)**
+
 ```bash
 # Pour tracking plus précis :
 # Analytics → Configure → Custom definitions
@@ -203,6 +215,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **2. Audiences Segments**
+
 ```bash
 # Analytics → Audiences → Create Audience
 
@@ -221,6 +234,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **3. Conversions Goals**
+
 ```bash
 # Analytics → Conversions → Create conversion
 
@@ -243,6 +257,7 @@ Firebase Analytics track automatiquement :
 ## 📱 **MONITORING QUOTIDIEN**
 
 ### **Dashboard Daily Check (2 minutes)**
+
 ```bash
 # 1. Analytics → Dashboard → Filtrer "Last 24 hours"
 
@@ -259,6 +274,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **Weekly Analytics Review (15 minutes)**
+
 ```bash
 # 1. User Growth :
 #    - Nouveaux utilisateurs semaine
@@ -281,6 +297,7 @@ Firebase Analytics track automatiquement :
 ## 📊 **EXPORT & REPORTS**
 
 ### **Export Data**
+
 ```bash
 # Analytics → Configure → Data export
 
@@ -296,6 +313,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **Looker Studio Integration**
+
 ```bash
 # Pour dashboards custom :
 # 1. Analytics → Configure → Integrations
@@ -309,6 +327,7 @@ Firebase Analytics track automatiquement :
 ## 🎯 **INSIGHTS BUSINESS**
 
 ### **Questions à se poser**
+
 ```bash
 # 📈 Growth :
 # → Utilisateurs augmentent ?
@@ -327,6 +346,7 @@ Firebase Analytics track automatiquement :
 ```
 
 ### **Actions possibles**
+
 ```bash
 # Si meal_added populaire :
 # → Améliorer UX ajout repas
@@ -349,6 +369,7 @@ Firebase Analytics track automatiquement :
 ## ✅ **FIREBASE ANALYTICS MAÎTRISÉ**
 
 **Tu sais maintenant :**
+
 - ✅ Consulter dashboard Analytics
 - ✅ Analyser events custom SuperNovaFit
 - ✅ Comprendre user behavior

@@ -1,5 +1,5 @@
-import { renderHook, waitFor, act } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { renderHook, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock Firebase Auth avant import
 vi.mock('firebase/auth', () => ({
@@ -10,13 +10,15 @@ vi.mock('firebase/auth', () => ({
   sendSignInLinkToEmail: vi.fn(),
   isSignInWithEmailLink: vi.fn(),
   signInWithEmailLink: vi.fn(),
-}))
+}));
 
 // Mock Firestore pour éviter les logs de débogage
 vi.mock('firebase/firestore', () => ({
   getFirestore: vi.fn(),
   doc: vi.fn(),
-  getDoc: vi.fn(() => Promise.resolve({ exists: () => false, data: () => null })),
+  getDoc: vi.fn(() =>
+    Promise.resolve({ exists: () => false, data: () => null }),
+  ),
   collection: vi.fn(),
   query: vi.fn(),
   where: vi.fn(),
@@ -27,33 +29,37 @@ vi.mock('firebase/firestore', () => ({
   updateDoc: vi.fn(),
   deleteDoc: vi.fn(),
   serverTimestamp: vi.fn(),
-}))
+}));
 
-import { useAuth } from '../useAuth'
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { useAuth } from '../useAuth';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
 
 // Cast mocks
-const mockOnAuthStateChanged = vi.mocked(onAuthStateChanged)
-const mockSignInWithEmailAndPassword = vi.mocked(signInWithEmailAndPassword)
-const mockSignOut = vi.mocked(signOut)
+const mockOnAuthStateChanged = vi.mocked(onAuthStateChanged);
+const mockSignInWithEmailAndPassword = vi.mocked(signInWithEmailAndPassword);
+const mockSignOut = vi.mocked(signOut);
 
 describe('useAuth Hook', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should initialize with loading true and no user', () => {
     mockOnAuthStateChanged.mockImplementation(() => {
       // Simule état initial (loading)
-      return vi.fn()
-    })
+      return vi.fn();
+    });
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    expect(result.current.loading).toBe(true)
-    expect(result.current.user).toBe(null)
-    expect(result.current.userProfile).toBe(null)
-  })
+    expect(result.current.loading).toBe(true);
+    expect(result.current.user).toBe(null);
+    expect(result.current.userProfile).toBe(null);
+  });
 
   it('should set user when authenticated', async () => {
     const mockUser = {
@@ -71,25 +77,25 @@ describe('useAuth Hook', () => {
       getIdTokenResult: vi.fn(),
       reload: vi.fn(),
       toJSON: vi.fn(),
-    }
+    };
 
     mockOnAuthStateChanged.mockImplementation((auth, callback) => {
       // Appeler le callback de manière asynchrone pour éviter les warnings act()
       setTimeout(() => {
         if (typeof callback === 'function') {
-          (callback as (u: unknown) => void)(mockUser as unknown)
+          (callback as (u: unknown) => void)(mockUser as unknown);
         }
-      }, 0)
-      return vi.fn()
-    })
+      }, 0);
+      return vi.fn();
+    });
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
     await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-      expect(result.current.user).toEqual(mockUser)
-    })
-  })
+      expect(result.current.loading).toBe(false);
+      expect(result.current.user).toEqual(mockUser);
+    });
+  });
 
   it('should handle signIn success', async () => {
     const mockUserCredential = {
@@ -112,75 +118,81 @@ describe('useAuth Hook', () => {
         toJSON: vi.fn(),
       },
       providerId: 'password',
-      operationType: 'signIn' as const
-    }
+      operationType: 'signIn' as const,
+    };
 
-    mockSignInWithEmailAndPassword.mockResolvedValue(mockUserCredential as unknown as Awaited<ReturnType<typeof signInWithEmailAndPassword>>)
+    mockSignInWithEmailAndPassword.mockResolvedValue(
+      mockUserCredential as unknown as Awaited<
+        ReturnType<typeof signInWithEmailAndPassword>
+      >,
+    );
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    let response: { success: boolean; error?: string } | undefined
+    let response: { success: boolean; error?: string } | undefined;
     await act(async () => {
-      response = await result.current.signIn('test@test.com', 'password123')
-    })
+      response = await result.current.signIn('test@test.com', 'password123');
+    });
 
-    expect(response?.success).toBe(true)
+    expect(response?.success).toBe(true);
     expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
       undefined, // Auth object is mocked as undefined
       'test@test.com',
-      'password123'
-    )
-  })
+      'password123',
+    );
+  });
 
   it('should handle signIn error', async () => {
-    mockSignInWithEmailAndPassword.mockRejectedValue(new Error('Invalid credentials'))
+    mockSignInWithEmailAndPassword.mockRejectedValue(
+      new Error('Invalid credentials'),
+    );
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    let response: { success: boolean; error?: string } | undefined
+    let response: { success: boolean; error?: string } | undefined;
     await act(async () => {
-      response = await result.current.signIn('test@test.com', 'wrongpassword')
-    })
+      response = await result.current.signIn('test@test.com', 'wrongpassword');
+    });
 
-    expect(response?.success).toBe(false)
-    expect(response?.error).toBeDefined()
-  })
+    expect(response?.success).toBe(false);
+    expect(response?.error).toBeDefined();
+  });
 
   it('should handle signOut', async () => {
-    mockSignOut.mockResolvedValue(undefined)
+    mockSignOut.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
     await act(async () => {
-      await result.current.signOut()
-    })
+      await result.current.signOut();
+    });
 
-    expect(mockSignOut).toHaveBeenCalled()
-  })
+    expect(mockSignOut).toHaveBeenCalled();
+  });
 
   it('should handle magic link sending', async () => {
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    let response: { success: boolean } | undefined
+    let response: { success: boolean } | undefined;
     await act(async () => {
-      response = await result.current.sendMagicLink('test@test.com')
-    })
+      response = await result.current.sendMagicLink('test@test.com');
+    });
 
     // Le hook devrait retourner un objet avec success
-    expect(typeof response).toBe('object')
-    expect(response && 'success' in response).toBe(true)
-  })
+    expect(typeof response).toBe('object');
+    expect(response && 'success' in response).toBe(true);
+  });
 
   it('should verify magic link', async () => {
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth());
 
-    let response: { success: boolean } | undefined
+    let response: { success: boolean } | undefined;
     await act(async () => {
-      response = await result.current.verifyMagicLink()
-    })
+      response = await result.current.verifyMagicLink();
+    });
 
     // Le hook devrait retourner un objet avec success
-    expect(typeof response).toBe('object')
-    expect(response && 'success' in response).toBe(true)
-  })
-})
+    expect(typeof response).toBe('object');
+    expect(response && 'success' in response).toBe(true);
+  });
+});

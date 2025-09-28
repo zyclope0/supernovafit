@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import React from 'react'
-import ClickableCard from './ClickableCard'
+import React from 'react';
+import ClickableCard from './ClickableCard';
 
 interface ExportCardData {
-  icon: React.ReactNode
-  label: string
-  description: string
-  color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red'
-  bgColor?: string
-  borderColor?: string
-  iconColor?: string
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+  color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red';
+  bgColor?: string;
+  borderColor?: string;
+  iconColor?: string;
 }
 
 interface ExportCardClickableProps {
-  data: ExportCardData
-  onView: () => void
-  viewLabel?: string
-  className?: string
-  isSelected?: boolean
+  data: ExportCardData;
+  onView: () => void;
+  viewLabel?: string;
+  className?: string;
+  isSelected?: boolean;
 }
 
 export default function ExportCardClickable({
@@ -26,7 +26,7 @@ export default function ExportCardClickable({
   onView,
   viewLabel = 'Sélectionner',
   className = '',
-  isSelected = false
+  isSelected = false,
 }: ExportCardClickableProps) {
   return (
     <ClickableCard
@@ -38,7 +38,9 @@ export default function ExportCardClickable({
       showActions={false} // Hide edit/delete actions for export cards
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className={`${data.iconColor || `text-neon-${data.color}`} ${data.bgColor || `bg-neon-${data.color}/10`} p-2 rounded-lg`}>
+        <div
+          className={`${data.iconColor || `text-neon-${data.color}`} ${data.bgColor || `bg-neon-${data.color}/10`} p-2 rounded-lg`}
+        >
           {data.icon}
         </div>
         <div className="flex-1">
@@ -46,13 +48,17 @@ export default function ExportCardClickable({
           <p className="text-sm text-muted-foreground">{data.description}</p>
         </div>
       </div>
-      
+
       {isSelected && (
-        <div className={`flex items-center gap-2 text-xs ${data.iconColor || `text-neon-${data.color}`}`}>
-          <div className={`w-2 h-2 rounded-full ${data.bgColor || `bg-neon-${data.color}/20`}`}></div>
+        <div
+          className={`flex items-center gap-2 text-xs ${data.iconColor || `text-neon-${data.color}`}`}
+        >
+          <div
+            className={`w-2 h-2 rounded-full ${data.bgColor || `bg-neon-${data.color}/20`}`}
+          ></div>
           <span>Sélectionné</span>
         </div>
       )}
     </ClickableCard>
-  )
+  );
 }

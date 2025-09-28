@@ -1,80 +1,94 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
-import { useAuth } from '@/hooks/useAuth'
-import MainLayout from '@/components/layout/MainLayout'
-import { ArrowLeft, MessageCircle, Activity } from 'lucide-react'
-import Link from 'next/link'
-import toast from 'react-hot-toast'
-import { collection, query, where, orderBy, onSnapshot, doc, getDoc, addDoc, serverTimestamp, limit } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
-import { Entrainement } from '@/types'
-import CollapsibleCard from '@/components/ui/CollapsibleCard'
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import MainLayout from '@/components/layout/MainLayout';
+import { ArrowLeft, MessageCircle, Activity } from 'lucide-react';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  doc,
+  getDoc,
+  addDoc,
+  serverTimestamp,
+  limit,
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Entrainement } from '@/types';
+import CollapsibleCard from '@/components/ui/CollapsibleCard';
 
-type AthleteLite = { id: string; nom?: string; email?: string }
+type AthleteLite = { id: string; nom?: string; email?: string };
 
 export default function CoachAthleteTrainingsPage() {
-  const { user } = useAuth()
-  const params = useParams()
-  const athleteId = params.id as string
-  
-  const [athlete, setAthlete] = useState<AthleteLite | null>(null)
-  const [entrainements, setEntrainements] = useState<Entrainement[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showCommentModal, setShowCommentModal] = useState(false)
-  const [selectedTraining, setSelectedTraining] = useState<Entrainement | null>(null)
-  const [newComment, setNewComment] = useState('')
-  const [submittingComment, setSubmittingComment] = useState(false)
+  const { user } = useAuth();
+  const params = useParams();
+  const athleteId = params.id as string;
+
+  const [athlete, setAthlete] = useState<AthleteLite | null>(null);
+  const [entrainements, setEntrainements] = useState<Entrainement[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [selectedTraining, setSelectedTraining] = useState<Entrainement | null>(
+    null,
+  );
+  const [newComment, setNewComment] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
-    if (!athleteId || !user) return
+    if (!athleteId || !user) return;
 
     // Récupérer les infos de l'athlète
     const fetchAthlete = async () => {
       try {
-        const athleteDoc = await getDoc(doc(db, 'users', athleteId))
+        const athleteDoc = await getDoc(doc(db, 'users', athleteId));
         if (athleteDoc.exists()) {
-          setAthlete({ id: athleteDoc.id, ...athleteDoc.data() })
+          setAthlete({ id: athleteDoc.id, ...athleteDoc.data() });
         }
       } catch (error) {
-        console.error("Erreur récupération athlète:", error)
+        console.error('Erreur récupération athlète:', error);
       }
-    }
+    };
 
-    fetchAthlete()
+    fetchAthlete();
 
     // Écouter les 30 derniers entraînements
     const q = query(
       collection(db, 'entrainements'),
       where('user_id', '==', athleteId),
       orderBy('date', 'desc'),
-      limit(30)
-    )
+      limit(30),
+    );
 
-    const unsubscribe = onSnapshot(q, 
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
-        const data = snapshot.docs.map(doc => ({
+        const data = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
-        })) as Entrainement[]
-        setEntrainements(data)
-        setLoading(false)
+          ...doc.data(),
+        })) as Entrainement[];
+        setEntrainements(data);
+        setLoading(false);
       },
       (error) => {
-        console.error('Erreur récupération entrainements:', error)
-        setLoading(false)
-      }
-    )
+        console.error('Erreur récupération entrainements:', error);
+        setLoading(false);
+      },
+    );
 
-    return () => unsubscribe()
-  }, [athleteId, user])
+    return () => unsubscribe();
+  }, [athleteId, user]);
 
   // Ajouter un commentaire coach
   const handleAddComment = async () => {
-    if (!newComment.trim() || !selectedTraining) return
+    if (!newComment.trim() || !selectedTraining) return;
 
-    setSubmittingComment(true)
+    setSubmittingComment(true);
     try {
       await addDoc(collection(db, 'coach_comments'), {
         coach_id: user?.uid,
@@ -83,20 +97,20 @@ export default function CoachAthleteTrainingsPage() {
         training_id: selectedTraining.id,
         date: selectedTraining.date,
         comment: newComment,
-        created_at: serverTimestamp()
-      })
+        created_at: serverTimestamp(),
+      });
 
-      toast.success("Commentaire ajouté")
-      setNewComment('')
-      setShowCommentModal(false)
-      setSelectedTraining(null)
+      toast.success('Commentaire ajouté');
+      setNewComment('');
+      setShowCommentModal(false);
+      setSelectedTraining(null);
     } catch (error) {
-      console.error("Erreur ajout commentaire:", error)
-      toast.error("Erreur lors de l'ajout du commentaire")
+      console.error('Erreur ajout commentaire:', error);
+      toast.error("Erreur lors de l'ajout du commentaire");
     } finally {
-      setSubmittingComment(false)
+      setSubmittingComment(false);
     }
-  }
+  };
 
   if (loading || !athlete) {
     return (
@@ -105,7 +119,7 @@ export default function CoachAthleteTrainingsPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neon-purple"></div>
         </div>
       </MainLayout>
-    )
+    );
   }
 
   // Statistiques des entraînements
@@ -113,8 +127,8 @@ export default function CoachAthleteTrainingsPage() {
     total: entrainements.length,
     totalCalories: entrainements.reduce((sum, e) => sum + (e.calories || 0), 0),
     totalDuration: entrainements.reduce((sum, e) => sum + (e.duree || 0), 0),
-    avgPerWeek: Math.round(entrainements.length / 4.3) // Approximation sur 30 jours
-  }
+    avgPerWeek: Math.round(entrainements.length / 4.3), // Approximation sur 30 jours
+  };
 
   return (
     <MainLayout>
@@ -129,8 +143,12 @@ export default function CoachAthleteTrainingsPage() {
               <ArrowLeft className="w-5 h-5 text-white" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-white">Entraînements de {athlete.nom}</h1>
-              <p className="text-gray-400">Historique des 30 dernières séances</p>
+              <h1 className="text-3xl font-bold text-white">
+                Entraînements de {athlete.nom}
+              </h1>
+              <p className="text-gray-400">
+                Historique des 30 dernières séances
+              </p>
             </div>
           </div>
         </div>
@@ -144,12 +162,16 @@ export default function CoachAthleteTrainingsPage() {
           </div>
           <div className="glass-effect rounded-xl p-6 border border-white/10">
             <p className="text-sm text-gray-400">Calories totales</p>
-            <p className="text-3xl font-bold text-white">{stats.totalCalories}</p>
+            <p className="text-3xl font-bold text-white">
+              {stats.totalCalories}
+            </p>
             <p className="text-xs text-neon-green mt-1">kcal brûlées</p>
           </div>
           <div className="glass-effect rounded-xl p-6 border border-white/10">
             <p className="text-sm text-gray-400">Temps total</p>
-            <p className="text-3xl font-bold text-white">{Math.round(stats.totalDuration / 60)}</p>
+            <p className="text-3xl font-bold text-white">
+              {Math.round(stats.totalDuration / 60)}
+            </p>
             <p className="text-xs text-neon-cyan mt-1">heures</p>
           </div>
           <div className="glass-effect rounded-xl p-6 border border-white/10">
@@ -168,23 +190,25 @@ export default function CoachAthleteTrainingsPage() {
             </div>
           ) : (
             entrainements.map((training) => (
-              <div 
-                key={training.id} 
+              <div
+                key={training.id}
                 className="glass-effect rounded-xl p-6 border border-white/10"
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-2">
-                      <h3 className="text-lg font-semibold text-white">{training.type}</h3>
+                      <h3 className="text-lg font-semibold text-white">
+                        {training.type}
+                      </h3>
                       <span className="text-sm text-gray-400">
                         {new Date(training.date).toLocaleDateString('fr-FR', {
                           weekday: 'short',
                           day: 'numeric',
-                          month: 'short'
+                          month: 'short',
                         })}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                       <div>
                         <p className="text-xs text-gray-400">Durée</p>
@@ -192,18 +216,24 @@ export default function CoachAthleteTrainingsPage() {
                       </div>
                       <div>
                         <p className="text-xs text-gray-400">Calories</p>
-                        <p className="text-neon-green">{training.calories || 0} kcal</p>
+                        <p className="text-neon-green">
+                          {training.calories || 0} kcal
+                        </p>
                       </div>
                       {training.fc_moyenne && (
                         <div>
                           <p className="text-xs text-gray-400">FC moy</p>
-                          <p className="text-neon-pink">{training.fc_moyenne} bpm</p>
+                          <p className="text-neon-pink">
+                            {training.fc_moyenne} bpm
+                          </p>
                         </div>
                       )}
                       {training.vitesse_moy && (
                         <div>
                           <p className="text-xs text-gray-400">Vitesse</p>
-                          <p className="text-neon-cyan">{training.vitesse_moy.toFixed(1)} km/h</p>
+                          <p className="text-neon-cyan">
+                            {training.vitesse_moy.toFixed(1)} km/h
+                          </p>
                         </div>
                       )}
                     </div>
@@ -217,8 +247,8 @@ export default function CoachAthleteTrainingsPage() {
 
                   <button
                     onClick={() => {
-                      setSelectedTraining(training)
-                      setShowCommentModal(true)
+                      setSelectedTraining(training);
+                      setShowCommentModal(true);
                     }}
                     className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors ml-4"
                     title="Ajouter un commentaire"
@@ -239,7 +269,8 @@ export default function CoachAthleteTrainingsPage() {
                 Commenter l&apos;entraînement
               </h3>
               <p className="text-sm text-gray-400 mb-4">
-                {selectedTraining.type} du {new Date(selectedTraining.date).toLocaleDateString('fr-FR')}
+                {selectedTraining.type} du{' '}
+                {new Date(selectedTraining.date).toLocaleDateString('fr-FR')}
               </p>
               <textarea
                 value={newComment}
@@ -252,9 +283,9 @@ export default function CoachAthleteTrainingsPage() {
               <div className="flex gap-3 mt-4">
                 <button
                   onClick={() => {
-                    setShowCommentModal(false)
-                    setSelectedTraining(null)
-                    setNewComment('')
+                    setShowCommentModal(false);
+                    setSelectedTraining(null);
+                    setNewComment('');
                   }}
                   className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white transition-colors"
                 >
@@ -273,5 +304,5 @@ export default function CoachAthleteTrainingsPage() {
         )}
       </div>
     </MainLayout>
-  )
+  );
 }

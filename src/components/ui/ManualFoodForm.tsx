@@ -1,41 +1,44 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Aliment, Macros } from '@/types'
-import { generateId } from '@/lib/utils'
-import { X } from 'lucide-react'
+import { useState } from 'react';
+import { Aliment, Macros } from '@/types';
+import { generateId } from '@/lib/utils';
+import { X } from 'lucide-react';
 
 interface ManualFoodFormProps {
-  onSubmit: (aliment: Aliment) => void
-  onCancel: () => void
+  onSubmit: (aliment: Aliment) => void;
+  onCancel: () => void;
 }
 
-export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormProps) {
-  const [nom, setNom] = useState('')
-  const [quantite, setQuantite] = useState(100)
-  const [unite, setUnite] = useState('g')
+export default function ManualFoodForm({
+  onSubmit,
+  onCancel,
+}: ManualFoodFormProps) {
+  const [nom, setNom] = useState('');
+  const [quantite, setQuantite] = useState(100);
+  const [unite, setUnite] = useState('g');
   const [macros, setMacros] = useState<Macros>({
     kcal: 0,
     prot: 0,
     glucides: 0,
-    lipides: 0
-  })
+    lipides: 0,
+  });
 
   const handleAdd = () => {
     if (!nom.trim()) {
-      alert('Veuillez entrer un nom d\'aliment')
-      return
+      alert("Veuillez entrer un nom d'aliment");
+      return;
     }
 
     // Calculer les macros pour la quantité actuelle
-    const ratio = quantite / 100
+    const ratio = quantite / 100;
     const macrosCalcules = {
       kcal: macros.kcal * ratio,
       prot: macros.prot * ratio,
       glucides: macros.glucides * ratio,
       lipides: macros.lipides * ratio,
-    }
-    
+    };
+
     const aliment: Aliment = {
       id: generateId(),
       nom: nom.trim(),
@@ -43,16 +46,16 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
       unite,
       macros: macrosCalcules,
       // Stocker les valeurs de base pour 100g
-      macros_base: { ...macros }
-    }
+      macros_base: { ...macros },
+    };
 
-    onSubmit(aliment)
-    
+    onSubmit(aliment);
+
     // Réinitialiser le formulaire
-    setNom('')
-    setQuantite(100)
-    setMacros({ kcal: 0, prot: 0, glucides: 0, lipides: 0 })
-  }
+    setNom('');
+    setQuantite(100);
+    setMacros({ kcal: 0, prot: 0, glucides: 0, lipides: 0 });
+  };
 
   return (
     <div className="bg-white/5 rounded-lg p-4 border border-white/10">
@@ -96,12 +99,14 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-neon-cyan"
                 min="1"
               />
-              
+
               {/* Boutons portions rapides */}
               <div className="flex gap-1">
                 <button
                   type="button"
-                  onClick={() => setQuantite(Math.max(1, Math.round(quantite * 0.5)))}
+                  onClick={() =>
+                    setQuantite(Math.max(1, Math.round(quantite * 0.5)))
+                  }
                   className="px-2 py-1 bg-neon-purple/20 hover:bg-neon-purple/30 border border-neon-purple/30 rounded text-neon-purple text-xs font-medium transition-colors"
                   title="Diviser la portion par 2"
                 >
@@ -146,9 +151,10 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
         {/* Macros */}
         <div className="space-y-2">
           <label className="block text-xs text-muted-foreground mb-1">
-            Valeurs nutritionnelles (pour {quantite}{unite})
+            Valeurs nutritionnelles (pour {quantite}
+            {unite})
           </label>
-          
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-muted-foreground mb-1">
@@ -157,7 +163,9 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
               <input
                 type="number"
                 value={macros.kcal}
-                onChange={(e) => setMacros({ ...macros, kcal: Number(e.target.value) })}
+                onChange={(e) =>
+                  setMacros({ ...macros, kcal: Number(e.target.value) })
+                }
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-neon-green"
                 min="0"
               />
@@ -169,7 +177,9 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
               <input
                 type="number"
                 value={macros.prot}
-                onChange={(e) => setMacros({ ...macros, prot: Number(e.target.value) })}
+                onChange={(e) =>
+                  setMacros({ ...macros, prot: Number(e.target.value) })
+                }
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-neon-cyan"
                 min="0"
                 step="0.1"
@@ -182,7 +192,9 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
               <input
                 type="number"
                 value={macros.glucides}
-                onChange={(e) => setMacros({ ...macros, glucides: Number(e.target.value) })}
+                onChange={(e) =>
+                  setMacros({ ...macros, glucides: Number(e.target.value) })
+                }
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-neon-pink"
                 min="0"
                 step="0.1"
@@ -195,7 +207,9 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
               <input
                 type="number"
                 value={macros.lipides}
-                onChange={(e) => setMacros({ ...macros, lipides: Number(e.target.value) })}
+                onChange={(e) =>
+                  setMacros({ ...macros, lipides: Number(e.target.value) })
+                }
                 className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded text-white text-sm focus:outline-none focus:border-neon-purple"
                 min="0"
                 step="0.1"
@@ -223,5 +237,5 @@ export default function ManualFoodForm({ onSubmit, onCancel }: ManualFoodFormPro
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,5 @@
 # 🎓 GUIDE PRATIQUE - Testing & CI/CD pour SuperNovaFit
+
 ## Spécialement conçu pour informaticien débutant en Testing/CI-CD
 
 > **Pour** : Développeur avec bonnes bases informatiques, novice en tests automatisés et CI/CD  
@@ -9,10 +10,11 @@
 ## 🧠 **CONCEPTS TESTING - EXPLIQUÉS SIMPLEMENT**
 
 ### **Qu'est-ce qu'un Test Automatisé ?**
+
 ```bash
 # Au lieu de tester manuellement dans le navigateur :
 # 1. Ouvrir page diète
-# 2. Cliquer "Ajouter repas"  
+# 2. Cliquer "Ajouter repas"
 # 3. Saisir "Pomme, 150g"
 # 4. Vérifier calories affichées
 
@@ -26,45 +28,48 @@ test('should calculate apple calories correctly', () => {
 ### **Types de Tests dans SuperNovaFit**
 
 #### **1. Tests Unitaires (ce qu'on a ✅)**
+
 ```typescript
 // Teste UNE fonction isolée
 // Fichier : src/lib/__tests__/calculations.test.ts
 
-test('BMR calculation for men', () => {
-  const bmr = calculateBMR(80, 180, 30, 'homme')
-  expect(bmr).toBe(1847) // Formule Mifflin-St Jeor
-})
+test("BMR calculation for men", () => {
+  const bmr = calculateBMR(80, 180, 30, "homme");
+  expect(bmr).toBe(1847); // Formule Mifflin-St Jeor
+});
 
 // ✅ Avantages : Rapides, fiables, faciles à déboguer
 // ✅ Inconvénients : Ne testent pas l'interaction utilisateur
 ```
 
 #### **2. Tests d'Intégration (partiels ⚠️)**
+
 ```typescript
 // Teste plusieurs éléments ensemble
 // Fichier : src/hooks/__tests__/useAuth.test.ts
 
-test('useAuth hook with Firebase', () => {
-  const { result } = renderHook(() => useAuth())
-  expect(result.current.loading).toBe(true)
-})
+test("useAuth hook with Firebase", () => {
+  const { result } = renderHook(() => useAuth());
+  expect(result.current.loading).toBe(true);
+});
 
 // ⚠️ Statut : Échouent car mocks Firebase incomplets
 // ⚠️ Impact : Non critique, app fonctionne en production
 ```
 
 #### **3. Tests E2E (à faire plus tard)**
+
 ```typescript
 // Teste le parcours utilisateur complet
 // Exemple avec Playwright :
 
-test('complete meal entry flow', async ({ page }) => {
-  await page.goto('/diete')
-  await page.click('text=Ajouter repas')
-  await page.fill('[placeholder="Rechercher aliment"]', 'pomme')
-  await page.click('text=Pomme rouge')
+test("complete meal entry flow", async ({ page }) => {
+  await page.goto("/diete");
+  await page.click("text=Ajouter repas");
+  await page.fill('[placeholder="Rechercher aliment"]', "pomme");
+  await page.click("text=Pomme rouge");
   // ... vérifier calories affichées
-})
+});
 ```
 
 ---
@@ -72,10 +77,12 @@ test('complete meal entry flow', async ({ page }) => {
 ## 🚀 **CI/CD - EXPLIQUÉ SIMPLEMENT**
 
 ### **Qu'est-ce que CI/CD ?**
+
 **CI** = Continuous Integration = "Intégration Continue"  
 **CD** = Continuous Deployment = "Déploiement Continu"
 
 #### **Workflow SuperNovaFit Actuel**
+
 ```mermaid
 graph LR
     A[Tu push code] --> B[GitHub Actions]
@@ -86,34 +93,35 @@ graph LR
     D --> F
     E --> F
     F --> G[Site live mis à jour]
-    
+
     style A fill:#a855f7
     style F fill:#10b981
     style G fill:#10b981
 ```
 
 ### **Fichier Magique : `.github/workflows/quality.yml`**
+
 ```yaml
 # Ce fichier dit à GitHub : "À chaque push, fais ça :"
 
 name: Quality Checks
 on:
   push:
-    branches: [main]     # Quand tu push sur main
+    branches: [main] # Quand tu push sur main
   pull_request:
-    branches: [main]     # Quand tu fais une PR
+    branches: [main] # Quand tu fais une PR
 
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4           # Télécharge ton code
-      - name: Setup Node.js                 # Installe Node.js
-      - run: npm ci                         # Installe dépendances
-      - run: npm run typecheck              # Vérifie TypeScript
-      - run: npm run lint                   # Vérifie style code
-      - run: npm run test:coverage          # Lance tests + coverage
-      - run: npm run build                  # Test build production
+      - uses: actions/checkout@v4 # Télécharge ton code
+      - name: Setup Node.js # Installe Node.js
+      - run: npm ci # Installe dépendances
+      - run: npm run typecheck # Vérifie TypeScript
+      - run: npm run lint # Vérifie style code
+      - run: npm run test:coverage # Lance tests + coverage
+      - run: npm run build # Test build production
 ```
 
 ---
@@ -121,6 +129,7 @@ jobs:
 ## 📋 **GUIDE D'UTILISATION QUOTIDIEN**
 
 ### **Scenario 1 : Développement Normal**
+
 ```bash
 # Matin - Récupérer dernières modifs
 git pull origin main
@@ -144,6 +153,7 @@ git push origin main
 ```
 
 ### **Scenario 2 : GitHub Actions Échoue (🔴 Red)**
+
 ```bash
 # Tu reçois un email "Build failed" - Pas de panique !
 
@@ -165,6 +175,7 @@ npm run build                  # Reproduire erreur build
 ```
 
 ### **Scenario 3 : Monitoring Production**
+
 ```bash
 # Ton code est live, comment surveiller ?
 
@@ -186,17 +197,19 @@ npm run analyze:win            # Analyser taille JavaScript
 ## 🔧 **COMMANDES ESSENTIELLES À RETENIR**
 
 ### **Développement Quotidien**
+
 ```bash
 # Les 5 commandes que tu utiliseras 90% du temps :
 
 npm run dev                    # Développement local
-npm run typecheck             # Vérifier erreurs avant commit  
+npm run typecheck             # Vérifier erreurs avant commit
 npm run test:lib              # Tests rapides (30s)
 npm run build                 # Test build final
 git push origin main          # Deploy automatique
 ```
 
 ### **Debug & Maintenance**
+
 ```bash
 # Quand ça marche pas :
 
@@ -211,13 +224,14 @@ npm list typescript          # TypeScript version
 ```
 
 ### **Monitoring Avancé**
+
 ```bash
 # Surveillance production :
 
 # Bundle size
 npm run analyze:win           # Ouvre interface graphique
 
-# Coverage tests  
+# Coverage tests
 npm run test:coverage         # Rapport HTML généré
 
 # Types strict
@@ -232,6 +246,7 @@ npm run typecheck             # 0 erreur = ✅
 ## 📊 **COMPRENDRE LES MÉTRIQUES**
 
 ### **Tests Coverage**
+
 ```bash
 npm run test:coverage
 
@@ -247,6 +262,7 @@ src/hooks/useAuth.ts    | 60     | 40      | 70     | 65     | ⚠️
 ```
 
 ### **Bundle Analysis**
+
 ```bash
 npm run analyze:win
 
@@ -257,11 +273,12 @@ Route (app)                    Size     First Load JS
 └ ○ /entrainements            17.4 kB   299 kB      # Page training
 
 # ✅ <100kB = Excellent
-# ⚠️ 100-500kB = Acceptable  
+# ⚠️ 100-500kB = Acceptable
 # 🔴 >500kB = Trop lourd
 ```
 
 ### **GitHub Actions Status**
+
 ```bash
 # Dans GitHub → Actions tab :
 
@@ -275,6 +292,7 @@ Route (app)                    Size     First Load JS
 ## 🚨 **PROBLÈMES COURANTS & SOLUTIONS**
 
 ### **1. "Tests échouent après mes modifs"**
+
 ```bash
 # Symptôme : GitHub Actions rouge sur "Tests"
 # Solution :
@@ -289,6 +307,7 @@ npm run test:lib -- --reporter=verbose  # Détails erreur
 ```
 
 ### **2. "TypeScript errors après npm install"**
+
 ```bash
 # Symptôme : Cannot find module '@types/...'
 # Solution :
@@ -299,6 +318,7 @@ npm run typecheck                      # Re-tester
 ```
 
 ### **3. "Bundle trop volumineux"**
+
 ```bash
 # Symptôme : npm run analyze:win montre pages >500kB
 # Solution :
@@ -311,6 +331,7 @@ grep -r "ssr: false" src/             # Charts en lazy loading
 ```
 
 ### **4. "Site live ne se met pas à jour"**
+
 ```bash
 # Symptôme : Push git OK mais site inchangé
 # Solution :
@@ -318,7 +339,7 @@ grep -r "ssr: false" src/             # Charts en lazy loading
 # 1. Vérifier GitHub Actions
 # → GitHub.com → ton repo → Actions tab → Build vert ?
 
-# 2. Vérifier cache navigateur  
+# 2. Vérifier cache navigateur
 # → Ctrl+F5 ou navigation privée
 
 # 3. Vérifier Firebase Console
@@ -330,6 +351,7 @@ grep -r "ssr: false" src/             # Charts en lazy loading
 ## 🎯 **BONNES PRATIQUES RECOMMANDÉES**
 
 ### **Avant Chaque Push**
+
 ```bash
 # Checklist 30 secondes :
 npm run typecheck             # 0 erreur
@@ -340,10 +362,11 @@ npm run build                 # Compile OK
 ```
 
 ### **Workflow Git Propre**
+
 ```bash
 # Messages commits clairs :
 git commit -m "feat: ajout calcul IMC"        # ✅ Clair
-git commit -m "fix: correction bug calories"  # ✅ Clair  
+git commit -m "fix: correction bug calories"  # ✅ Clair
 git commit -m "wip"                          # ❌ Pas clair
 
 # Branches pour gros features :
@@ -354,6 +377,7 @@ git push origin feature/export-pdf
 ```
 
 ### **Monitoring Proactif**
+
 ```bash
 # Une fois par semaine :
 npm run analyze:win           # Bundle size stable ?
@@ -369,21 +393,25 @@ npm outdated                  # Dépendances obsolètes ?
 ## 🚀 **NEXT STEPS POUR TOI**
 
 ### **Semaine 1-2 : Prise en Main**
+
 1. **Familiarisation commands** : Utilise les 5 commandes essentielles
 2. **Observe GitHub Actions** : Regarde builds passer vert/rouge
 3. **Test local** : Lance `npm run test:lib` avant chaque push
 
 ### **Semaine 3-4 : Monitoring**
+
 1. **Bundle analysis** : `npm run analyze:win` hebdo
 2. **Sentry dashboard** : Configure alertes email
 3. **Coverage tracking** : Objectif maintenir >80% calculs
 
 ### **Mois 2-3 : Tests Avancés**
+
 1. **Corriger tests hooks** : Firebase mocks complets
 2. **Ajouter tests UI** : React Testing Library
 3. **Tests E2E** : Playwright pour parcours critiques
 
 ### **Long Terme : Expert**
+
 1. **Performance budgets** : CI/CD bloque si bundle >400kB
 2. **Visual regression** : Tests screenshots automatiques
 3. **Multi-environnements** : Staging + Production
@@ -393,15 +421,18 @@ npm outdated                  # Dépendances obsolètes ?
 ## 📚 **RESSOURCES APPRENTISSAGE**
 
 ### **Testing (recommandées)**
+
 - **Vitest Docs** : https://vitest.dev/guide/ (simple, moderne)
 - **Testing Library** : https://testing-library.com/ (philosophie)
 - **Kent C. Dodds** : Testing JavaScript course (excellent)
 
 ### **CI/CD (GitHub Actions)**
+
 - **GitHub Actions Docs** : https://docs.github.com/en/actions
 - **Fireship CI/CD** : https://youtu.be/R8_veQiYBjI (10min, clair)
 
 ### **Performance Web**
+
 - **Web.dev Metrics** : https://web.dev/vitals/
 - **Next.js Performance** : https://nextjs.org/docs/advanced-features/measuring-performance
 

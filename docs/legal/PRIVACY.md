@@ -7,5 +7,3 @@ This application stores user data (nutrition logs, trainings, measures, photos) 
 - No personal data is sold or shared with third parties.
 
 A full policy will be provided for production use.
-
-

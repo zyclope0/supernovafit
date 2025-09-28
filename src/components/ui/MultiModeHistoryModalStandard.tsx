@@ -1,26 +1,29 @@
-'use client'
+'use client';
 
-import React, { useState, useMemo, useCallback } from 'react'
-import { Calendar, BarChart3, Eye } from 'lucide-react'
-import StandardModal from './StandardModal'
+import React, { useState, useMemo, useCallback } from 'react';
+import { Calendar, BarChart3, Eye } from 'lucide-react';
+import StandardModal from './StandardModal';
 
 interface HistoryItem {
-  id: string
-  date: string
-  [key: string]: string | number | boolean | undefined
+  id: string;
+  date: string;
+  [key: string]: string | number | boolean | undefined;
 }
 
 interface MultiModeHistoryModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  items: HistoryItem[]
-  currentDate?: string
-  onDateChange?: (date: string) => void
-  onItemClick?: (item: HistoryItem) => void
-  renderItem: (item: HistoryItem, onClick: () => void) => React.ReactNode
-  getItemStats?: (date: string, items: HistoryItem[]) => Record<string, unknown>
-  renderStats?: (stats: Record<string, unknown>) => React.ReactNode
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  items: HistoryItem[];
+  currentDate?: string;
+  onDateChange?: (date: string) => void;
+  onItemClick?: (item: HistoryItem) => void;
+  renderItem: (item: HistoryItem, onClick: () => void) => React.ReactNode;
+  getItemStats?: (
+    date: string,
+    items: HistoryItem[],
+  ) => Record<string, unknown>;
+  renderStats?: (stats: Record<string, unknown>) => React.ReactNode;
 }
 
 export default function MultiModeHistoryModalStandard({
@@ -33,35 +36,45 @@ export default function MultiModeHistoryModalStandard({
   onItemClick,
   renderItem,
   getItemStats,
-  renderStats
+  renderStats,
 }: MultiModeHistoryModalProps) {
-  const [viewMode, setViewMode] = useState<'calendar' | 'stats' | 'list'>('calendar')
-  const [selectedDate, setSelectedDate] = useState(currentDate || new Date().toISOString().split('T')[0])
+  const [viewMode, setViewMode] = useState<'calendar' | 'stats' | 'list'>(
+    'calendar',
+  );
+  const [selectedDate, setSelectedDate] = useState(
+    currentDate || new Date().toISOString().split('T')[0],
+  );
 
   // Filtrer les items par date sélectionnée
   const filteredItems = useMemo(() => {
-    if (!selectedDate) return items
-    return items.filter(item => item.date === selectedDate)
-  }, [items, selectedDate])
+    if (!selectedDate) return items;
+    return items.filter((item) => item.date === selectedDate);
+  }, [items, selectedDate]);
 
   // Statistiques pour la date sélectionnée
   const stats = useMemo(() => {
-    if (!getItemStats) return null
-    return getItemStats(selectedDate, filteredItems)
-  }, [selectedDate, filteredItems, getItemStats])
+    if (!getItemStats) return null;
+    return getItemStats(selectedDate, filteredItems);
+  }, [selectedDate, filteredItems, getItemStats]);
 
   // Gérer le changement de date
-  const handleDateChange = useCallback((date: string) => {
-    setSelectedDate(date)
-    onDateChange?.(date)
-  }, [onDateChange])
+  const handleDateChange = useCallback(
+    (date: string) => {
+      setSelectedDate(date);
+      onDateChange?.(date);
+    },
+    [onDateChange],
+  );
 
   // Gérer le clic sur un item
-  const handleItemClick = useCallback((item: HistoryItem) => {
-    onItemClick?.(item)
-  }, [onItemClick])
+  const handleItemClick = useCallback(
+    (item: HistoryItem) => {
+      onItemClick?.(item);
+    },
+    [onItemClick],
+  );
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <StandardModal
@@ -76,31 +89,31 @@ export default function MultiModeHistoryModalStandard({
         {/* Navigation des modes */}
         <div className="flex items-center justify-between">
           <div className="flex bg-white/5 rounded-lg p-1">
-            <button 
-              onClick={() => setViewMode('calendar')} 
+            <button
+              onClick={() => setViewMode('calendar')}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                viewMode === 'calendar' 
-                  ? 'bg-neon-cyan/20 text-neon-cyan' 
+                viewMode === 'calendar'
+                  ? 'bg-neon-cyan/20 text-neon-cyan'
                   : 'text-muted-foreground hover:text-white'
               }`}
             >
               <Calendar className="h-4 w-4" />
             </button>
-            <button 
-              onClick={() => setViewMode('stats')} 
+            <button
+              onClick={() => setViewMode('stats')}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                viewMode === 'stats' 
-                  ? 'bg-neon-cyan/20 text-neon-cyan' 
+                viewMode === 'stats'
+                  ? 'bg-neon-cyan/20 text-neon-cyan'
                   : 'text-muted-foreground hover:text-white'
               }`}
             >
               <BarChart3 className="h-4 w-4" />
             </button>
-            <button 
-              onClick={() => setViewMode('list')} 
+            <button
+              onClick={() => setViewMode('list')}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                viewMode === 'list' 
-                  ? 'bg-neon-cyan/20 text-neon-cyan' 
+                viewMode === 'list'
+                  ? 'bg-neon-cyan/20 text-neon-cyan'
                   : 'text-muted-foreground hover:text-white'
               }`}
             >
@@ -166,5 +179,5 @@ export default function MultiModeHistoryModalStandard({
         )}
       </div>
     </StandardModal>
-  )
+  );
 }

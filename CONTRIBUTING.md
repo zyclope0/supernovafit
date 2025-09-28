@@ -106,20 +106,20 @@ interface ComponentProps {
 export function Component({ title, onAction }: ComponentProps) {
   // 4. Hooks
   const { user } = useAuth()
-  
+
   // 5. State
   const [state, setState] = useState(false)
-  
+
   // 6. Effects
   useEffect(() => {
     // Effect logic
   }, [])
-  
+
   // 7. Handlers
   const handleClick = () => {
     onAction?.()
   }
-  
+
   // 8. Render
   return (
     <div>
@@ -151,16 +151,21 @@ chore: update dependencies
 - Test both success and error cases
 
 ```typescript
-describe('calculateBMR', () => {
-  it('should calculate BMR correctly for male users', () => {
-    const result = calculateBMR({ weight: 70, height: 175, age: 30, gender: 'male' })
-    expect(result).toBe(1673)
-  })
-  
-  it('should throw error for invalid input', () => {
-    expect(() => calculateBMR({ weight: -10 })).toThrow()
-  })
-})
+describe("calculateBMR", () => {
+  it("should calculate BMR correctly for male users", () => {
+    const result = calculateBMR({
+      weight: 70,
+      height: 175,
+      age: 30,
+      gender: "male",
+    });
+    expect(result).toBe(1673);
+  });
+
+  it("should throw error for invalid input", () => {
+    expect(() => calculateBMR({ weight: -10 })).toThrow();
+  });
+});
 ```
 
 ## Project Structure

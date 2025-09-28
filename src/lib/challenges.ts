@@ -1,13 +1,17 @@
 // Système de Challenges & Gamification pour SuperNovaFit
-import type { Challenge, Achievement } from '@/types'
+import type { Challenge, Achievement } from '@/types';
 
 // Définitions des challenges prédéfinis (50 challenges variés)
-export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current' | 'status' | 'created_at' | 'completed_at'>[] = [
+export const CHALLENGE_DEFINITIONS: Omit<
+  Challenge,
+  'id' | 'user_id' | 'current' | 'status' | 'created_at' | 'completed_at'
+>[] = [
   // ===== NUTRITION CHALLENGES =====
   {
     type: 'nutrition',
     title: '7 Jours de Nutrition Parfaite',
-    description: 'Ajoutez au moins 3 repas par jour pendant 7 jours consécutifs.',
+    description:
+      'Ajoutez au moins 3 repas par jour pendant 7 jours consécutifs.',
     icon: '🥗',
     category: 'weekly',
     target: 7,
@@ -49,7 +53,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'nutrition',
     title: 'Hydratation Parfaite',
-    description: 'Buvez 2L d\'eau par jour pendant 5 jours.',
+    description: "Buvez 2L d'eau par jour pendant 5 jours.",
     icon: '💧',
     category: 'weekly',
     target: 5,
@@ -105,7 +109,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'nutrition',
     title: 'Petit-Déjeuner Royal',
-    description: 'Prenez un petit-déjeuner équilibré 7 jours d\'affilée.',
+    description: "Prenez un petit-déjeuner équilibré 7 jours d'affilée.",
     icon: '🍳',
     category: 'weekly',
     target: 7,
@@ -133,7 +137,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'nutrition',
     title: 'Repas Complet',
-    description: 'Prenez 3 repas équilibrés aujourd\'hui.',
+    description: "Prenez 3 repas équilibrés aujourd'hui.",
     icon: '🍽️',
     category: 'daily',
     target: 3,
@@ -147,7 +151,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'nutrition',
     title: 'Hydratation Express',
-    description: 'Buvez 2L d\'eau aujourd\'hui.',
+    description: "Buvez 2L d'eau aujourd'hui.",
     icon: '💧',
     category: 'daily',
     target: 2,
@@ -177,7 +181,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'training',
     title: 'Marathon du Temps',
-    description: 'Cumulez 5 heures d\'entraînement cette semaine.',
+    description: "Cumulez 5 heures d'entraînement cette semaine.",
     icon: '⏱️',
     category: 'weekly',
     target: 300,
@@ -289,7 +293,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'training',
     title: 'Séance Express',
-    description: 'Faites au moins 30 minutes d\'exercice aujourd\'hui.',
+    description: "Faites au moins 30 minutes d'exercice aujourd'hui.",
     icon: '⚡',
     category: 'daily',
     target: 30,
@@ -303,7 +307,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'training',
     title: 'Marche Active',
-    description: 'Faites 10 000 pas aujourd\'hui.',
+    description: "Faites 10 000 pas aujourd'hui.",
     icon: '🚶',
     category: 'daily',
     target: 10000,
@@ -333,7 +337,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'streak',
     title: 'Journalier Assidu',
-    description: 'Écrivez dans votre journal 7 jours d\'affilée.',
+    description: "Écrivez dans votre journal 7 jours d'affilée.",
     icon: '📝',
     category: 'weekly',
     target: 7,
@@ -361,7 +365,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'streak',
     title: 'Streak de 30 Jours',
-    description: 'Connectez-vous et utilisez l\'app 30 jours consécutifs.',
+    description: "Connectez-vous et utilisez l'app 30 jours consécutifs.",
     icon: '🔥',
     category: 'monthly',
     target: 30,
@@ -417,7 +421,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'streak',
     title: 'Consistance Parfaite',
-    description: 'Utilisez l\'app tous les jours pendant 2 semaines.',
+    description: "Utilisez l'app tous les jours pendant 2 semaines.",
     icon: '📅',
     category: 'monthly',
     target: 14,
@@ -445,7 +449,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'streak',
     title: 'Méditation',
-    description: 'Méditez 10 minutes aujourd\'hui.',
+    description: "Méditez 10 minutes aujourd'hui.",
     icon: '🧘‍♀️',
     category: 'daily',
     target: 10,
@@ -547,7 +551,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'special',
     title: 'Explorateur',
-    description: 'Testez toutes les fonctionnalités de l\'app.',
+    description: "Testez toutes les fonctionnalités de l'app.",
     icon: '🗺️',
     category: 'special',
     target: 1,
@@ -633,7 +637,7 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
   {
     type: 'training',
     title: 'Marathon Mensuel',
-    description: 'Cumulez 20 heures d\'entraînement ce mois.',
+    description: "Cumulez 20 heures d'entraînement ce mois.",
     icon: '🏃‍♀️',
     category: 'monthly',
     target: 1200,
@@ -644,10 +648,13 @@ export const CHALLENGE_DEFINITIONS: Omit<Challenge, 'id' | 'user_id' | 'current'
     isRepeatable: true,
     difficulty: 'legendary',
   },
-]
+];
 
 // Définitions des achievements
-export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlockedAt' | 'created_at'>[] = [
+export const ACHIEVEMENT_DEFINITIONS: Omit<
+  Achievement,
+  'id' | 'user_id' | 'unlockedAt' | 'created_at'
+>[] = [
   // Achievements Milestone
   {
     type: 'milestone',
@@ -656,7 +663,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '🚀',
     rarity: 'common',
     xpReward: 100,
-    condition: 'Niveau 5 atteint'
+    condition: 'Niveau 5 atteint',
   },
   {
     type: 'milestone',
@@ -665,7 +672,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '⭐',
     rarity: 'rare',
     xpReward: 250,
-    condition: 'Niveau 10 atteint'
+    condition: 'Niveau 10 atteint',
   },
   {
     type: 'milestone',
@@ -674,7 +681,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '👑',
     rarity: 'epic',
     xpReward: 500,
-    condition: 'Niveau 20 atteint'
+    condition: 'Niveau 20 atteint',
   },
   {
     type: 'milestone',
@@ -683,7 +690,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '🏆',
     rarity: 'legendary',
     xpReward: 1000,
-    condition: 'Niveau 50 atteint'
+    condition: 'Niveau 50 atteint',
   },
 
   // Achievements Streak
@@ -694,7 +701,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '🔥',
     rarity: 'epic',
     xpReward: 300,
-    condition: '30 jours d\'activité consécutifs'
+    condition: "30 jours d'activité consécutifs",
   },
   {
     type: 'streak',
@@ -703,7 +710,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '📝',
     rarity: 'rare',
     xpReward: 200,
-    condition: '100 entrées journal'
+    condition: '100 entrées journal',
   },
 
   // Achievements Performance
@@ -714,7 +721,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '💪',
     rarity: 'rare',
     xpReward: 200,
-    condition: '50 entraînements'
+    condition: '50 entraînements',
   },
   {
     type: 'performance',
@@ -723,7 +730,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '🥗',
     rarity: 'rare',
     xpReward: 200,
-    condition: '500 repas trackés'
+    condition: '500 repas trackés',
   },
 
   // Achievements Spéciaux
@@ -734,7 +741,7 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '🎯',
     rarity: 'epic',
     xpReward: 400,
-    condition: '10 challenges complétés'
+    condition: '10 challenges complétés',
   },
   {
     type: 'special',
@@ -743,9 +750,9 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'id' | 'user_id' | 'unlo
     icon: '🌟',
     rarity: 'legendary',
     xpReward: 500,
-    condition: '1000 XP en 7 jours'
-  }
-]
+    condition: '1000 XP en 7 jours',
+  },
+];
 
 // Configuration des niveaux XP
 export const XP_LEVELS = [
@@ -762,128 +769,159 @@ export const XP_LEVELS = [
   // Niveaux 11-20: +100 XP par niveau
   ...Array.from({ length: 10 }, (_, i) => ({
     level: 11 + i,
-    xpRequired: 5500 + (i * 1000),
-    xpToNext: 1000
+    xpRequired: 5500 + i * 1000,
+    xpToNext: 1000,
   })),
   // Niveaux 21-50: +200 XP par niveau
   ...Array.from({ length: 30 }, (_, i) => ({
     level: 21 + i,
-    xpRequired: 15500 + (i * 2000),
-    xpToNext: 2000
-  }))
-]
+    xpRequired: 15500 + i * 2000,
+    xpToNext: 2000,
+  })),
+];
 
 // Fonctions utilitaires
-export function calculateLevel(totalXP: number): { level: number; currentLevelXP: number; nextLevelXP: number } {
-  const levelConfig = XP_LEVELS.find(config => totalXP < config.xpRequired + config.xpToNext)
-  
+export function calculateLevel(totalXP: number): {
+  level: number;
+  currentLevelXP: number;
+  nextLevelXP: number;
+} {
+  const levelConfig = XP_LEVELS.find(
+    (config) => totalXP < config.xpRequired + config.xpToNext,
+  );
+
   if (!levelConfig) {
     // Niveau maximum
-    const maxLevel = XP_LEVELS[XP_LEVELS.length - 1]
+    const maxLevel = XP_LEVELS[XP_LEVELS.length - 1];
     return {
       level: maxLevel.level,
       currentLevelXP: totalXP - maxLevel.xpRequired,
-      nextLevelXP: 0
-    }
+      nextLevelXP: 0,
+    };
   }
 
   return {
     level: levelConfig.level,
     currentLevelXP: totalXP - levelConfig.xpRequired,
-    nextLevelXP: levelConfig.xpToNext
-  }
+    nextLevelXP: levelConfig.xpToNext,
+  };
 }
 
-export function getDifficultyColor(difficulty: Challenge['difficulty']): string {
+export function getDifficultyColor(
+  difficulty: Challenge['difficulty'],
+): string {
   switch (difficulty) {
-    case 'easy': return 'text-green-400'
-    case 'medium': return 'text-yellow-400'
-    case 'hard': return 'text-orange-400'
-    case 'legendary': return 'text-purple-400'
-    default: return 'text-gray-400'
+    case 'easy':
+      return 'text-green-400';
+    case 'medium':
+      return 'text-yellow-400';
+    case 'hard':
+      return 'text-orange-400';
+    case 'legendary':
+      return 'text-purple-400';
+    default:
+      return 'text-gray-400';
   }
 }
 
 export function getRarityColor(rarity: Achievement['rarity']): string {
   switch (rarity) {
-    case 'common': return 'text-gray-400'
-    case 'rare': return 'text-blue-400'
-    case 'epic': return 'text-purple-400'
-    case 'legendary': return 'text-yellow-400'
-    default: return 'text-gray-400'
+    case 'common':
+      return 'text-gray-400';
+    case 'rare':
+      return 'text-blue-400';
+    case 'epic':
+      return 'text-purple-400';
+    case 'legendary':
+      return 'text-yellow-400';
+    default:
+      return 'text-gray-400';
   }
 }
 
 export function getProgressPercentage(current: number, target: number): number {
-  return Math.min(Math.round((current / target) * 100), 100)
+  return Math.min(Math.round((current / target) * 100), 100);
 }
 
 // Fonction pour créer un challenge à partir d'une définition
 export function createChallengeFromDefinition(
-  definition: typeof CHALLENGE_DEFINITIONS[0],
-  userId: string
+  definition: (typeof CHALLENGE_DEFINITIONS)[0],
+  userId: string,
 ): Omit<Challenge, 'id' | 'created_at' | 'completed_at'> {
-  const now = new Date()
-  const endDate = new Date(now)
-  
+  const now = new Date();
+  const endDate = new Date(now);
+
   // Calculer la date de fin selon la catégorie
   switch (definition.category) {
     case 'daily':
-      endDate.setDate(now.getDate() + 1)
-      break
+      endDate.setDate(now.getDate() + 1);
+      break;
     case 'weekly':
-      endDate.setDate(now.getDate() + 7)
-      break
+      endDate.setDate(now.getDate() + 7);
+      break;
     case 'monthly':
-      endDate.setMonth(now.getMonth() + 1)
-      break
+      endDate.setMonth(now.getMonth() + 1);
+      break;
     case 'special':
-      endDate.setMonth(now.getMonth() + 3) // 3 mois pour les spéciaux
-      break
+      endDate.setMonth(now.getMonth() + 3); // 3 mois pour les spéciaux
+      break;
     default:
-      endDate.setDate(now.getDate() + 7)
+      endDate.setDate(now.getDate() + 7);
   }
-  
+
   return {
     ...definition,
     user_id: userId,
     current: 0,
     status: 'active',
     startDate: now.toISOString(),
-    endDate: endDate.toISOString()
-  }
+    endDate: endDate.toISOString(),
+  };
 }
 
 // Fonction pour créer un achievement à partir d'une définition
 export function createAchievementFromDefinition(
-  definition: typeof ACHIEVEMENT_DEFINITIONS[0],
-  userId: string
+  definition: (typeof ACHIEVEMENT_DEFINITIONS)[0],
+  userId: string,
 ): Omit<Achievement, 'id' | 'created_at'> {
   return {
     ...definition,
-    user_id: userId
-  }
+    user_id: userId,
+  };
 }
 
 // Fonctions de filtrage et recherche
-export function filterChallengesByCategory(challenges: typeof CHALLENGE_DEFINITIONS, category: string) {
-  return challenges.filter(challenge => challenge.category === category)
+export function filterChallengesByCategory(
+  challenges: typeof CHALLENGE_DEFINITIONS,
+  category: string,
+) {
+  return challenges.filter((challenge) => challenge.category === category);
 }
 
-export function filterChallengesByDifficulty(challenges: typeof CHALLENGE_DEFINITIONS, difficulty: string) {
-  return challenges.filter(challenge => challenge.difficulty === difficulty)
+export function filterChallengesByDifficulty(
+  challenges: typeof CHALLENGE_DEFINITIONS,
+  difficulty: string,
+) {
+  return challenges.filter((challenge) => challenge.difficulty === difficulty);
 }
 
-export function filterChallengesByType(challenges: typeof CHALLENGE_DEFINITIONS, type: string) {
-  return challenges.filter(challenge => challenge.type === type)
+export function filterChallengesByType(
+  challenges: typeof CHALLENGE_DEFINITIONS,
+  type: string,
+) {
+  return challenges.filter((challenge) => challenge.type === type);
 }
 
-export function searchChallenges(challenges: typeof CHALLENGE_DEFINITIONS, query: string) {
-  const lowercaseQuery = query.toLowerCase()
-  return challenges.filter(challenge => 
-    challenge.title.toLowerCase().includes(lowercaseQuery) ||
-    challenge.description.toLowerCase().includes(lowercaseQuery)
-  )
+export function searchChallenges(
+  challenges: typeof CHALLENGE_DEFINITIONS,
+  query: string,
+) {
+  const lowercaseQuery = query.toLowerCase();
+  return challenges.filter(
+    (challenge) =>
+      challenge.title.toLowerCase().includes(lowercaseQuery) ||
+      challenge.description.toLowerCase().includes(lowercaseQuery),
+  );
 }
 
 // Constantes pour les filtres
@@ -893,7 +931,7 @@ export const CHALLENGE_CATEGORIES = [
   { value: 'weekly', label: 'Hebdomadaire', icon: '📊' },
   { value: 'monthly', label: 'Mensuel', icon: '🗓️' },
   { value: 'special', label: 'Spécial', icon: '⭐' },
-]
+];
 
 export const CHALLENGE_DIFFICULTIES = [
   { value: 'all', label: 'Toutes', color: 'text-gray-400' },
@@ -901,7 +939,7 @@ export const CHALLENGE_DIFFICULTIES = [
   { value: 'medium', label: 'Moyen', color: 'text-yellow-400' },
   { value: 'hard', label: 'Difficile', color: 'text-orange-400' },
   { value: 'legendary', label: 'Légendaire', color: 'text-purple-400' },
-]
+];
 
 export const CHALLENGE_TYPES = [
   { value: 'all', label: 'Tous', icon: '🎯' },
@@ -910,4 +948,4 @@ export const CHALLENGE_TYPES = [
   { value: 'streak', label: 'Régularité', icon: '🔥' },
   { value: 'social', label: 'Social', icon: '👥' },
   { value: 'special', label: 'Spécial', icon: '⭐' },
-]
+];

@@ -1,46 +1,61 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Copy, RefreshCw, Users, Clock, CheckCircle, XCircle } from 'lucide-react'
-import { useCoachInvites } from '@/hooks/useInvites'
-import { getTimeUntilExpiration, formatExpirationDate } from '@/lib/inviteUtils'
-import StandardModal from './StandardModal'
+import { useState } from 'react';
+import {
+  Copy,
+  RefreshCw,
+  Users,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
+import { useCoachInvites } from '@/hooks/useInvites';
+import {
+  getTimeUntilExpiration,
+  formatExpirationDate,
+} from '@/lib/inviteUtils';
+import StandardModal from './StandardModal';
 // import type { Invite } from '@/types' - Type non utilisé dans ce fichier
 
 interface InviteModalProps {
-  isOpen: boolean
-  onClose: () => void
-  coachId: string
+  isOpen: boolean;
+  onClose: () => void;
+  coachId: string;
 }
 
-export default function InviteModal({ isOpen, onClose, coachId }: InviteModalProps) {
-  const { invites, loading, generating, generateInvite, revokeInvite } = useCoachInvites(coachId)
-  const [copiedCode, setCopiedCode] = useState<string | null>(null)
+export default function InviteModal({
+  isOpen,
+  onClose,
+  coachId,
+}: InviteModalProps) {
+  const { invites, loading, generating, generateInvite, revokeInvite } =
+    useCoachInvites(coachId);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const handleGenerateInvite = async () => {
-    const code = await generateInvite()
+    const code = await generateInvite();
     if (code) {
-      setCopiedCode(code)
+      setCopiedCode(code);
     }
-  }
+  };
 
   const handleCopyCode = async (code: string) => {
     try {
-      await navigator.clipboard.writeText(code)
-      setCopiedCode(code)
-      setTimeout(() => setCopiedCode(null), 2000)
+      await navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 2000);
     } catch (error) {
-      console.error('Erreur lors de la copie:', error)
+      console.error('Erreur lors de la copie:', error);
     }
-  }
+  };
 
   const handleRevokeInvite = async (code: string) => {
     if (confirm('Êtes-vous sûr de vouloir révoquer cette invitation ?')) {
-      await revokeInvite(code)
+      await revokeInvite(code);
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <StandardModal
@@ -52,7 +67,6 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
       maxWidth="2xl"
       height="auto"
     >
-
       <div className="p-6">
         {/* Génération de code */}
         <div className="mb-6">
@@ -79,7 +93,9 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
             <div className="glass-effect p-4 rounded-lg border border-neon-cyan/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Code généré :</p>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Code généré :
+                  </p>
                   <p className="text-2xl font-mono font-bold text-neon-cyan tracking-wider">
                     {copiedCode}
                   </p>
@@ -92,7 +108,8 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
                 </button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Ce code expire dans 72h et ne peut être utilisé qu&apos;une seule fois
+                Ce code expire dans 72h et ne peut être utilisé qu&apos;une
+                seule fois
               </p>
             </div>
           )}
@@ -100,8 +117,10 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
 
         {/* Liste des invitations */}
         <div>
-          <h3 className="text-lg font-medium text-white mb-4">Codes d&apos;invitation actifs</h3>
-          
+          <h3 className="text-lg font-medium text-white mb-4">
+            Codes d&apos;invitation actifs
+          </h3>
+
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-2 border-neon-cyan border-t-transparent"></div>
@@ -132,25 +151,31 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
                           ) : (
                             <XCircle className="h-4 w-4 text-red-400" />
                           )}
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            invite.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                            invite.status === 'used' ? 'bg-blue-500/20 text-blue-400' :
-                            'bg-red-500/20 text-red-400'
-                          }`}>
-                            {invite.status === 'active' ? 'Actif' :
-                             invite.status === 'used' ? 'Utilisé' : 'Révoqué'}
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              invite.status === 'active'
+                                ? 'bg-green-500/20 text-green-400'
+                                : invite.status === 'used'
+                                  ? 'bg-blue-500/20 text-blue-400'
+                                  : 'bg-red-500/20 text-red-400'
+                            }`}
+                          >
+                            {invite.status === 'active'
+                              ? 'Actif'
+                              : invite.status === 'used'
+                                ? 'Utilisé'
+                                : 'Révoqué'}
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           <span>
-                            {invite.status === 'active' 
+                            {invite.status === 'active'
                               ? getTimeUntilExpiration(invite)
-                              : formatExpirationDate(invite.expiresAt)
-                            }
+                              : formatExpirationDate(invite.expiresAt)}
                           </span>
                         </div>
                         {invite.usedByAthleteId && (
@@ -189,10 +214,11 @@ export default function InviteModal({ isOpen, onClose, coachId }: InviteModalPro
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-white/10">
           <p className="text-xs text-muted-foreground text-center">
-            Les codes expirent automatiquement après 72h. Vous pouvez les révoquer à tout moment.
+            Les codes expirent automatiquement après 72h. Vous pouvez les
+            révoquer à tout moment.
           </p>
         </div>
       </div>
     </StandardModal>
-  )
+  );
 }

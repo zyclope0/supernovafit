@@ -2,7 +2,7 @@
 
 **Date :** 15.01.2025  
 **Type :** Correction de sécurité  
-**Priorité :** Critique  
+**Priorité :** Critique
 
 ## 🚨 Problème identifié
 
@@ -27,49 +27,49 @@ Ajout des règles de sécurité pour les 3 nouvelles collections dans `config/fi
 ```javascript
 // Règles pour la collection 'challenges'
 match /challenges/{challengeId} {
-  allow read: if isAuthenticated() && 
-    (resource.data.user_id == request.auth.uid || 
+  allow read: if isAuthenticated() &&
+    (resource.data.user_id == request.auth.uid ||
      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
-  
-  allow create: if isAuthenticated() && 
+
+  allow create: if isAuthenticated() &&
     request.resource.data.user_id == request.auth.uid;
-  
-  allow update: if isAuthenticated() && 
+
+  allow update: if isAuthenticated() &&
     resource.data.user_id == request.auth.uid;
-  
-  allow delete: if isAuthenticated() && 
+
+  allow delete: if isAuthenticated() &&
     resource.data.user_id == request.auth.uid;
 }
 
 // Règles pour la collection 'achievements'
 match /achievements/{achievementId} {
-  allow read: if isAuthenticated() && 
-    (resource.data.user_id == request.auth.uid || 
+  allow read: if isAuthenticated() &&
+    (resource.data.user_id == request.auth.uid ||
      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
-  
-  allow create: if isAuthenticated() && 
+
+  allow create: if isAuthenticated() &&
     request.resource.data.user_id == request.auth.uid;
-  
-  allow update: if isAuthenticated() && 
+
+  allow update: if isAuthenticated() &&
     resource.data.user_id == request.auth.uid;
-  
-  allow delete: if isAuthenticated() && 
+
+  allow delete: if isAuthenticated() &&
     resource.data.user_id == request.auth.uid;
 }
 
 // Règles pour la collection 'user_progress'
 match /user_progress/{progressId} {
-  allow read: if isAuthenticated() && 
-    (resource.data.user_id == request.auth.uid || 
+  allow read: if isAuthenticated() &&
+    (resource.data.user_id == request.auth.uid ||
      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
-  
-  allow create: if isAuthenticated() && 
+
+  allow create: if isAuthenticated() &&
     request.resource.data.user_id == request.auth.uid;
-  
-  allow update: if isAuthenticated() && 
+
+  allow update: if isAuthenticated() &&
     resource.data.user_id == request.auth.uid;
-  
-  allow delete: if isAuthenticated() && 
+
+  allow delete: if isAuthenticated() &&
     resource.data.user_id == request.auth.uid;
 }
 ```

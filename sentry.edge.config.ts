@@ -2,7 +2,7 @@
 // The config you add here will be used whenever the edge runtime handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from '@sentry/nextjs';
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -21,29 +21,33 @@ Sentry.init({
   beforeSend(event, hint) {
     // Filtrer erreurs edge runtime spécifiques
     if (event.exception) {
-      const error = hint.originalException as Error
-      
+      const error = hint.originalException as Error;
+
       // Ignorer erreurs timeout edge
-      if (error?.message?.includes('timeout') ||
-          error?.message?.includes('deadline')) {
-        return null
+      if (
+        error?.message?.includes('timeout') ||
+        error?.message?.includes('deadline')
+      ) {
+        return null;
       }
-      
+
       // Ignorer erreurs limite mémoire edge
-      if (error?.message?.includes('memory') ||
-          error?.message?.includes('limit')) {
-        return null
+      if (
+        error?.message?.includes('memory') ||
+        error?.message?.includes('limit')
+      ) {
+        return null;
       }
     }
-    
-    return event
+
+    return event;
   },
 
   // Edge scope configuration
   initialScope: {
     tags: {
-      component: "supernovafit-edge",
-      runtime: "edge"
+      component: 'supernovafit-edge',
+      runtime: 'edge',
     },
   },
-})
+});

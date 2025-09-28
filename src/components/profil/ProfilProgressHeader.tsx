@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import React from 'react'
+import React from 'react';
 // Composant spécialisé pour le profil utilisant ProgressHeader universel
-import ProgressHeader from '@/components/ui/ProgressHeader'
+import ProgressHeader from '@/components/ui/ProgressHeader';
 
 interface ProfilData {
-  current: number
-  target: number
-  unit: string
+  current: number;
+  target: number;
+  unit: string;
 }
 
 interface ProfilProgressHeaderProps {
-  title: string
-  emoji: string
-  period: 'today' | 'week' | 'month'
-  onPeriodChange: (period: 'today' | 'week' | 'month') => void
+  title: string;
+  emoji: string;
+  period: 'today' | 'week' | 'month';
+  onPeriodChange: (period: 'today' | 'week' | 'month') => void;
   items: {
-    icon: React.ReactNode
-    label: string
-    data: ProfilData
-    color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red'
-  }[]
-  advice?: string
+    icon: React.ReactNode;
+    label: string;
+    data: ProfilData;
+    color: 'purple' | 'cyan' | 'green' | 'pink' | 'yellow' | 'orange' | 'red';
+  }[];
+  advice?: string;
 }
 
 export default function ProfilProgressHeader({
@@ -30,7 +30,7 @@ export default function ProfilProgressHeader({
   period,
   onPeriodChange,
   items,
-  advice
+  advice,
 }: ProfilProgressHeaderProps) {
   return (
     <ProgressHeader
@@ -42,10 +42,10 @@ export default function ProfilProgressHeader({
       advice={advice}
       showPeriodSelector={false} // Pas de sélecteur de période pour le profil
       periodLabels={{
-        today: 'Aujourd\'hui',
+        today: "Aujourd'hui",
         week: 'Semaine',
-        month: 'Mois'
+        month: 'Mois',
       }}
     />
-  )
+  );
 }

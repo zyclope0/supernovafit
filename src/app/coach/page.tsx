@@ -1,14 +1,22 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { useCoachAthletes } from '@/hooks/useFirestore'
-import { useRouter } from 'next/navigation'
-import MainLayout from '@/components/layout/MainLayout'
-import { Users, Plus, Search, Activity, BarChart3, BookOpen, Scale } from 'lucide-react'
-import Link from 'next/link'
-import toast from 'react-hot-toast'
-import InviteModal from '@/components/ui/InviteModal'
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useCoachAthletes } from '@/hooks/useFirestore';
+import { useRouter } from 'next/navigation';
+import MainLayout from '@/components/layout/MainLayout';
+import {
+  Users,
+  Plus,
+  Search,
+  Activity,
+  BarChart3,
+  BookOpen,
+  Scale,
+} from 'lucide-react';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
+import InviteModal from '@/components/ui/InviteModal';
 
 // interface AthleteWithStats {
 //   id: string
@@ -24,40 +32,39 @@ import InviteModal from '@/components/ui/InviteModal'
 // }
 
 export default function CoachDashboard() {
-  const { userProfile } = useAuth()
-  const router = useRouter()
-  const { athletes: coachAthletes } = useCoachAthletes()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [showInviteModal, setShowInviteModal] = useState(false)
+  const { userProfile } = useAuth();
+  const router = useRouter();
+  const { athletes: coachAthletes } = useCoachAthletes();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   useEffect(() => {
     // Vérifier que l'utilisateur est bien un coach
     if (userProfile && userProfile.role !== 'coach') {
-      toast.error("Accès réservé aux coachs")
-      router.push('/')
+      toast.error('Accès réservé aux coachs');
+      router.push('/');
     }
     if (userProfile) {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [userProfile, router])
-
-
+  }, [userProfile, router]);
 
   // Filtrer les athlètes
-  const filteredAthletes = coachAthletes.filter(athlete => {
-    const matchesSearch = athlete.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         athlete.email?.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesSearch
-  })
+  const filteredAthletes = coachAthletes.filter((athlete) => {
+    const matchesSearch =
+      athlete.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      athlete.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
 
   // Statistiques globales
   const stats = {
     totalAthletes: coachAthletes.length,
     athletesActifs: coachAthletes.length, // Tous actifs pour le moment
     progressionMoyenne: 0, // À calculer depuis les vraies données
-    tauxReussite: 0 // À calculer depuis les objectifs
-  }
+    tauxReussite: 0, // À calculer depuis les objectifs
+  };
 
   if (loading) {
     return (
@@ -66,7 +73,7 @@ export default function CoachDashboard() {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-neon-purple"></div>
         </div>
       </MainLayout>
-    )
+    );
   }
 
   return (
@@ -75,7 +82,9 @@ export default function CoachDashboard() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Mes Athlètes</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+              Mes Athlètes
+            </h1>
             <p className="text-muted-foreground text-sm sm:text-base">
               Gérez vos athlètes et suivez leurs progressions
             </p>
@@ -91,29 +100,37 @@ export default function CoachDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Mes Athlètes</p>
-                <p className="text-2xl font-bold text-white">{stats.totalAthletes}</p>
+                <p className="text-2xl font-bold text-white">
+                  {stats.totalAthletes}
+                </p>
               </div>
               <Users className="w-8 h-8 text-neon-purple" />
             </div>
           </div>
-          
+
           <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Actifs cette semaine</p>
+                <p className="text-sm text-muted-foreground">
+                  Actifs cette semaine
+                </p>
                 <p className="text-2xl font-bold text-neon-green">
-                  {filteredAthletes.filter(a => {
-                    if (!a.dernier_acces) return false
-                    const lastAccess = new Date(a.dernier_acces)
-                    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                    return lastAccess > weekAgo
-                  }).length}
+                  {
+                    filteredAthletes.filter((a) => {
+                      if (!a.dernier_acces) return false;
+                      const lastAccess = new Date(a.dernier_acces);
+                      const weekAgo = new Date(
+                        Date.now() - 7 * 24 * 60 * 60 * 1000,
+                      );
+                      return lastAccess > weekAgo;
+                    }).length
+                  }
                 </p>
               </div>
               <Activity className="w-8 h-8 text-neon-green" />
             </div>
           </div>
-          
+
           <div className="glass-effect p-4 rounded-lg border border-white/10">
             <div className="flex items-center justify-between">
               <div>
@@ -129,7 +146,10 @@ export default function CoachDashboard() {
         <div className="glass-effect rounded-xl p-4 border border-white/10">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                aria-hidden="true"
+              />
               <label htmlFor="athlete-search" className="sr-only">
                 Rechercher un athlète
               </label>
@@ -146,7 +166,9 @@ export default function CoachDashboard() {
               />
             </div>
             <div className="text-sm text-gray-400">
-              {filteredAthletes.length} athlète{filteredAthletes.length > 1 ? 's' : ''} trouvé{filteredAthletes.length > 1 ? 's' : ''}
+              {filteredAthletes.length} athlète
+              {filteredAthletes.length > 1 ? 's' : ''} trouvé
+              {filteredAthletes.length > 1 ? 's' : ''}
             </div>
           </div>
         </div>
@@ -161,7 +183,7 @@ export default function CoachDashboard() {
             <p className="text-gray-400 mb-6">
               Commencez par inviter des athlètes à rejoindre votre équipe
             </p>
-            <button 
+            <button
               onClick={() => setShowInviteModal(true)}
               className="btn-primary mx-auto"
             >
@@ -179,7 +201,9 @@ export default function CoachDashboard() {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">{athlete.nom || 'Utilisateur'}</h3>
+                    <h3 className="text-lg font-semibold text-white">
+                      {athlete.nom || 'Utilisateur'}
+                    </h3>
                     <p className="text-sm text-gray-400">{athlete.email}</p>
                   </div>
                   <span className="px-2 py-1 rounded-full text-xs bg-neon-green/20 text-neon-green">
@@ -191,21 +215,37 @@ export default function CoachDashboard() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-400">Objectif</span>
                     <span className="text-sm text-white">
-                      {athlete.objectif === 'prise_masse' ? 'Prise de masse' :
-                       athlete.objectif === 'seche' ? 'Sèche' :
-                       athlete.objectif === 'performance' ? 'Performance' :
-                       'Maintien'}
+                      {athlete.objectif === 'prise_masse'
+                        ? 'Prise de masse'
+                        : athlete.objectif === 'seche'
+                          ? 'Sèche'
+                          : athlete.objectif === 'performance'
+                            ? 'Performance'
+                            : 'Maintien'}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Dernière connexion</span>
+                    <span className="text-sm text-gray-400">
+                      Dernière connexion
+                    </span>
                     <span className="text-sm text-white">
-                      {athlete.dernier_acces ? 
-                        (typeof athlete.dernier_acces === 'object' && athlete.dernier_acces && 'seconds' in (athlete.dernier_acces as { seconds?: number })
-                          ? new Date((athlete.dernier_acces as { seconds?: number }).seconds! * 1000).toLocaleDateString('fr-FR')
-                          : new Date(athlete.dernier_acces as unknown as string | number | Date).toLocaleDateString('fr-FR')) :
-                        'Jamais'}
+                      {athlete.dernier_acces
+                        ? typeof athlete.dernier_acces === 'object' &&
+                          athlete.dernier_acces &&
+                          'seconds' in
+                            (athlete.dernier_acces as { seconds?: number })
+                          ? new Date(
+                              (athlete.dernier_acces as { seconds?: number })
+                                .seconds! * 1000,
+                            ).toLocaleDateString('fr-FR')
+                          : new Date(
+                              athlete.dernier_acces as unknown as
+                                | string
+                                | number
+                                | Date,
+                            ).toLocaleDateString('fr-FR')
+                        : 'Jamais'}
                     </span>
                   </div>
 
@@ -256,8 +296,12 @@ export default function CoachDashboard() {
             <div className="flex items-center gap-4">
               <Plus className="w-12 h-12 text-neon-purple group-hover:scale-110 transition-transform" />
               <div>
-                <h3 className="text-lg font-semibold text-white">Inviter un athlète</h3>
-                <p className="text-sm text-gray-400">Ajouter un nouvel athlète à votre équipe</p>
+                <h3 className="text-lg font-semibold text-white">
+                  Inviter un athlète
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Ajouter un nouvel athlète à votre équipe
+                </p>
               </div>
             </div>
           </button>
@@ -270,8 +314,12 @@ export default function CoachDashboard() {
             <div className="flex items-center gap-4">
               <Users className="w-12 h-12 text-neon-cyan group-hover:scale-110 transition-transform" />
               <div>
-                <h3 className="text-lg font-semibold text-white">Voir tous les athlètes</h3>
-                <p className="text-sm text-gray-400">Découvrir et inviter de nouveaux athlètes</p>
+                <h3 className="text-lg font-semibold text-white">
+                  Voir tous les athlètes
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Découvrir et inviter de nouveaux athlètes
+                </p>
               </div>
             </div>
           </Link>
@@ -287,5 +335,5 @@ export default function CoachDashboard() {
         )}
       </div>
     </MainLayout>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { Edit, Trash2, Copy, Play, Timer } from 'lucide-react'
-import SwipeableCard from './SwipeableCard'
-import { Entrainement } from '@/types'
+import { Edit, Trash2, Copy, Play, Timer } from 'lucide-react';
+import SwipeableCard from './SwipeableCard';
+import { Entrainement } from '@/types';
 // import { cn } from '@/lib/utils' // TODO: À utiliser si nécessaire
 
 interface SwipeableTrainingCardProps {
-  training: Entrainement
-  onEdit?: (trainingId: string) => void
-  onDelete?: (trainingId: string) => void
-  onDuplicate?: (trainingId: string) => void
-  onRestart?: (trainingId: string) => void
-  className?: string
+  training: Entrainement;
+  onEdit?: (trainingId: string) => void;
+  onDelete?: (trainingId: string) => void;
+  onDuplicate?: (trainingId: string) => void;
+  onRestart?: (trainingId: string) => void;
+  className?: string;
 }
 
 export default function SwipeableTrainingCard({
@@ -20,25 +20,24 @@ export default function SwipeableTrainingCard({
   onDelete,
   onDuplicate,
   onRestart,
-  className
+  className,
 }: SwipeableTrainingCardProps) {
-  
   const leftActions = [
     {
       id: 'duplicate',
       label: 'Dupliquer',
       icon: Copy,
       color: 'primary' as const,
-      action: () => onDuplicate?.(training.id)
+      action: () => onDuplicate?.(training.id),
     },
     {
       id: 'restart',
       label: 'Refaire',
       icon: Play,
       color: 'success' as const,
-      action: () => onRestart?.(training.id)
-    }
-  ]
+      action: () => onRestart?.(training.id),
+    },
+  ];
 
   const rightActions = [
     {
@@ -46,32 +45,32 @@ export default function SwipeableTrainingCard({
       label: 'Modifier',
       icon: Edit,
       color: 'secondary' as const,
-      action: () => onEdit?.(training.id)
+      action: () => onEdit?.(training.id),
     },
     {
       id: 'delete',
       label: 'Supprimer',
       icon: Trash2,
       color: 'danger' as const,
-      action: () => onDelete?.(training.id)
-    }
-  ]
+      action: () => onDelete?.(training.id),
+    },
+  ];
 
   const getTypeEmoji = (type: string) => {
     const typeMap: Record<string, string> = {
-      'course': '🏃',
-      'velo': '🚴',
-      'natation': '🏊',
-      'musculation': '💪',
-      'yoga': '🧘',
-      'hiit': '🔥',
-      'cardio': '❤️',
-      'stretching': '🤸',
-      'marche': '🚶',
-      'autre': '🏋️'
-    }
-    return typeMap[type.toLowerCase()] || '🏋️'
-  }
+      course: '🏃',
+      velo: '🚴',
+      natation: '🏊',
+      musculation: '💪',
+      yoga: '🧘',
+      hiit: '🔥',
+      cardio: '❤️',
+      stretching: '🤸',
+      marche: '🚶',
+      autre: '🏋️',
+    };
+    return typeMap[type.toLowerCase()] || '🏋️';
+  };
 
   // Fonction pour couleur intensité - TODO: À utiliser si nécessaire
   /*
@@ -86,11 +85,13 @@ export default function SwipeableTrainingCard({
   */
 
   const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes}min`
-    const hours = Math.floor(minutes / 60)
-    const remainingMinutes = minutes % 60
-    return remainingMinutes > 0 ? `${hours}h${remainingMinutes}min` : `${hours}h`
-  }
+    if (minutes < 60) return `${minutes}min`;
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes > 0
+      ? `${hours}h${remainingMinutes}min`
+      : `${hours}h`;
+  };
 
   return (
     <SwipeableCard
@@ -102,21 +103,19 @@ export default function SwipeableTrainingCard({
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="text-2xl">
-              {getTypeEmoji(training.type)}
-            </div>
+            <div className="text-2xl">{getTypeEmoji(training.type)}</div>
             <div>
               <h3 className="font-semibold text-white">{training.type}</h3>
               <p className="text-sm text-white/60">
                 {new Date(training.date).toLocaleDateString('fr-FR', {
                   weekday: 'short',
                   day: 'numeric',
-                  month: 'short'
+                  month: 'short',
                 })}
               </p>
             </div>
           </div>
-          
+
           {/* TODO: Ajouter intensite au type Entrainement
           {training.intensite && (
             <div className={cn(
@@ -199,5 +198,5 @@ export default function SwipeableTrainingCard({
         </div>
       </div>
     </SwipeableCard>
-  )
+  );
 }

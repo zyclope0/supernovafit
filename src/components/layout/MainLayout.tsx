@@ -1,90 +1,87 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 // import { usePathname } from 'next/navigation' // TODO: À utiliser si nécessaire
-import Sidebar from './Sidebar'
-import BottomNavigation from '../mobile/BottomNavigation'
-import QuickActionModal from '../mobile/QuickActionModal'
-import QuickMealModal from '../mobile/QuickMealModal'
-import QuickTrainingModal from '../mobile/QuickTrainingModal'
-import QuickWeightModal from '../mobile/QuickWeightModal'
-import QuickMoodModal from '../mobile/QuickMoodModal'
-import { useAuth } from '@/hooks/useAuth'
-import { useQuickActions } from '@/hooks/useQuickActions'
-import { Breadcrumbs } from '@/components/ui/Breadcrumbs'
-import SmartNotifications from '@/components/ui/SmartNotifications'
+import Sidebar from './Sidebar';
+import BottomNavigation from '../mobile/BottomNavigation';
+import QuickActionModal from '../mobile/QuickActionModal';
+import QuickMealModal from '../mobile/QuickMealModal';
+import QuickTrainingModal from '../mobile/QuickTrainingModal';
+import QuickWeightModal from '../mobile/QuickWeightModal';
+import QuickMoodModal from '../mobile/QuickMoodModal';
+import { useAuth } from '@/hooks/useAuth';
+import { useQuickActions } from '@/hooks/useQuickActions';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
+import SmartNotifications from '@/components/ui/SmartNotifications';
 
 interface MainLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const { user, userProfile, loading } = useAuth()
-  const { 
-    isModalOpen, 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const { user, userProfile, loading } = useAuth();
+  const {
+    isModalOpen,
     quickMealModalOpen,
     quickTrainingModalOpen,
     quickWeightModalOpen,
     quickMoodModalOpen,
-    openQuickActions, 
+    openQuickActions,
     closeQuickActions,
     setQuickMealModalOpen,
     setQuickTrainingModalOpen,
     setQuickWeightModalOpen,
-    setQuickMoodModalOpen
-  } = useQuickActions()
+    setQuickMoodModalOpen,
+  } = useQuickActions();
   // const pathname = usePathname() // TODO: À utiliser si nécessaire
-  const isCoach = userProfile?.role === 'coach'
+  const isCoach = userProfile?.role === 'coach';
 
   // Synchroniser avec l'état de la sidebar
   useEffect(() => {
     const checkDevice = () => {
-      const mobile = window.innerWidth < 1024
-      setIsMobile(mobile)
-      
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+
       if (!mobile) {
-        const savedState = localStorage.getItem('sidebarCollapsed')
+        const savedState = localStorage.getItem('sidebarCollapsed');
         if (savedState !== null) {
-          setSidebarCollapsed(JSON.parse(savedState))
+          setSidebarCollapsed(JSON.parse(savedState));
         }
       }
-    }
+    };
 
-    checkDevice()
-    window.addEventListener('resize', checkDevice)
-    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
     // Écouter les changements dans localStorage
     const handleStorageChange = () => {
-      const savedState = localStorage.getItem('sidebarCollapsed')
+      const savedState = localStorage.getItem('sidebarCollapsed');
       if (savedState !== null) {
-        setSidebarCollapsed(JSON.parse(savedState))
+        setSidebarCollapsed(JSON.parse(savedState));
       }
-    }
+    };
 
-    window.addEventListener('storage', handleStorageChange)
-    
+    window.addEventListener('storage', handleStorageChange);
+
     return () => {
-      window.removeEventListener('resize', checkDevice)
-      window.removeEventListener('storage', handleStorageChange)
-    }
-  }, [])
+      window.removeEventListener('resize', checkDevice);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <div className="flex h-screen bg-gradient-space">
       <Sidebar />
-      
+
       {/* Main content */}
-      <div className={`
+      <div
+        className={`
         flex-1 transition-all duration-300 ease-in-out
-        ${isMobile 
-          ? 'ml-0' 
-          : sidebarCollapsed 
-            ? 'lg:ml-16' 
-            : 'lg:ml-64'
-        }
-      `}>
+        ${isMobile ? 'ml-0' : sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}
+      `}
+      >
         {/* Header avec badge Coach/Athlète en haut à droite */}
         {!loading && user && (
           <div className="absolute top-4 right-4 z-40">
@@ -93,8 +90,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
             </div>
           </div>
         )}
-        
-        <main id="main-content" className="h-full overflow-y-auto pb-20 md:pb-0">
+
+        <main
+          id="main-content"
+          className="h-full overflow-y-auto pb-20 md:pb-0"
+        >
           <div className="container mx-auto px-4 py-8 lg:px-8">
             {/* Breadcrumbs Navigation */}
             <Breadcrumbs />
@@ -102,51 +102,44 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </div>
         </main>
       </div>
-      
+
       {/* Bottom Navigation Mobile */}
-      {user && (
-        <BottomNavigation 
-          onFabClick={openQuickActions}
-        />
-      )}
-      
+      {user && <BottomNavigation onFabClick={openQuickActions} />}
+
       {/* Quick Action Modal */}
-      <QuickActionModal 
-        isOpen={isModalOpen}
-        onClose={closeQuickActions}
-      />
-      
+      <QuickActionModal isOpen={isModalOpen} onClose={closeQuickActions} />
+
       {/* Quick Modals */}
-      <QuickMealModal 
+      <QuickMealModal
         isOpen={quickMealModalOpen}
         onClose={() => setQuickMealModalOpen(false)}
         onSelectTemplate={(template) => {
           // TODO: Intégrer avec le formulaire de repas
-          console.log('Template sélectionné:', template)
+          console.log('Template sélectionné:', template);
         }}
       />
-      
-      <QuickTrainingModal 
+
+      <QuickTrainingModal
         isOpen={quickTrainingModalOpen}
         onClose={() => setQuickTrainingModalOpen(false)}
         onSelectTemplate={(template) => {
           // TODO: Intégrer avec le formulaire d'entraînement
-          console.log('Template entraînement sélectionné:', template)
+          console.log('Template entraînement sélectionné:', template);
         }}
       />
-      
-      <QuickWeightModal 
+
+      <QuickWeightModal
         isOpen={quickWeightModalOpen}
         onClose={() => setQuickWeightModalOpen(false)}
       />
-      
-      <QuickMoodModal 
+
+      <QuickMoodModal
         isOpen={quickMoodModalOpen}
         onClose={() => setQuickMoodModalOpen(false)}
       />
-      
+
       {/* Smart Notifications */}
       <SmartNotifications />
     </div>
-  )
-} 
+  );
+}

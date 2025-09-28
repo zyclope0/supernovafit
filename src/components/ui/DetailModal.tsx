@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import React from 'react'
-import StandardModal from './StandardModal'
+import React from 'react';
+import StandardModal from './StandardModal';
 
 interface DetailModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  subtitle?: string
-  icon?: React.ReactNode
-  onEdit?: () => void
-  editLabel?: string
-  children: React.ReactNode
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+  onEdit?: () => void;
+  editLabel?: string;
+  children: React.ReactNode;
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl';
 }
 
 export default function DetailModal({
@@ -24,7 +24,7 @@ export default function DetailModal({
   onEdit,
   editLabel = 'Modifier',
   children,
-  maxWidth = '4xl'
+  maxWidth = '4xl',
 }: DetailModalProps) {
   return (
     <StandardModal
@@ -38,9 +38,7 @@ export default function DetailModal({
       maxWidth={maxWidth}
       height="90vh"
     >
-      <div className="p-6">
-        {children}
-      </div>
+      <div className="p-6">{children}</div>
     </StandardModal>
-  )
+  );
 }

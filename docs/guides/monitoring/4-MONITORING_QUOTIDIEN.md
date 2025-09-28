@@ -1,4 +1,5 @@
 # 📅 MONITORING QUOTIDIEN - Workflow SuperNovaFit
+
 ## Routine surveillance application production
 
 ---
@@ -6,6 +7,7 @@
 ## 🌅 **ROUTINE MATINALE (5 minutes)**
 
 ### **☕ Morning Check - Avant de coder**
+
 ```bash
 # 1. 📧 Check Emails (30 secondes)
 # → Alerts Sentry overnight ?
@@ -38,6 +40,7 @@
 ```
 
 ### **🚨 Red Flags Morning**
+
 ```bash
 # Si un de ces signaux → Investigation immédiate :
 
@@ -58,6 +61,7 @@
 ## 🎯 **CHECK MIDI (2 minutes)**
 
 ### **📊 Midday Performance Check**
+
 ```bash
 # Pendant pause déjeuner, quick check :
 
@@ -82,6 +86,7 @@
 ## 🌆 **ROUTINE SOIR (10 minutes)**
 
 ### **📈 End-of-day Review**
+
 ```bash
 # 1. 📊 Daily Analytics Summary (3 minutes)
 # Firebase Analytics → Last 24 hours
@@ -123,6 +128,7 @@ Daily Stats Check :
 ```
 
 ### **📝 Daily Log Template**
+
 ```bash
 # Exemple log quotidien :
 
@@ -133,7 +139,7 @@ Daily Stats Check :
 - Top Events : meal_added (34), page_view (87)
 - Popular Pages : Dashboard (45%), Diète (30%)
 
-## 🐛 Errors  
+## 🐛 Errors
 - New Issues : 0
 - Trending : None
 - Fixed Today : Login timeout issue
@@ -161,6 +167,7 @@ Daily Stats Check :
 ### **🗓️ Friday Afternoon - Weekly Review**
 
 #### **1. Performance Trends Analysis (10 minutes)**
+
 ```bash
 # Sentry → Performance → Last 7 days
 
@@ -183,6 +190,7 @@ Week Trend Analysis :
 ```
 
 #### **2. User Behavior Analysis (10 minutes)**
+
 ```bash
 # Firebase Analytics → Last 7 days
 
@@ -207,6 +215,7 @@ Top Events This Week :
 ```
 
 #### **3. Error & Stability Review (10 minutes)**
+
 ```bash
 # Sentry → Issues → Last 7 days
 
@@ -221,7 +230,7 @@ Users Affected : 8% (acceptable)
    → Status: Investigating
    → Impact: Medium (meal entry form)
 
-2. Network timeout Firebase - 3 events  
+2. Network timeout Firebase - 3 events
    → Status: Monitoring
    → Impact: Low (retry logic works)
 
@@ -242,6 +251,7 @@ Users Affected : 8% (acceptable)
 ### **📅 First Monday of Month - Monthly Deep Dive**
 
 #### **1. Growth & Retention Analysis (20 minutes)**
+
 ```bash
 # Firebase Analytics → Last 30 days → Retention
 
@@ -261,12 +271,13 @@ Users who signed up in January :
 
 # 💡 Retention Insights :
 # → Users who add >5 meals first week : 80% retention
-# → Users who complete profile : 70% retention  
+# → Users who complete profile : 70% retention
 # → Users only using dashboard : 25% retention
 # → Coach users : 95% retention (sticky!)
 ```
 
 #### **2. Performance Benchmarking (20 minutes)**
+
 ```bash
 # Sentry → Performance → Last 30 days
 
@@ -283,7 +294,7 @@ Current vs Goals :
 
 # 📊 Page Performance Ranking :
 1. Dashboard (/) : 1.2s LCP ✅
-2. Profile (/profil) : 1.4s LCP ✅  
+2. Profile (/profil) : 1.4s LCP ✅
 3. Training (/entrainements) : 1.9s LCP ⚠️
 4. Diet (/diete) : 2.8s LCP ❌ Priority fix
 5. Coach pages : 3.2s LCP ❌ Needs optimization
@@ -296,6 +307,7 @@ Current vs Goals :
 ```
 
 #### **3. Business Intelligence & Planning (20 minutes)**
+
 ```bash
 # Cross-platform Analysis
 
@@ -310,7 +322,7 @@ Feature Adoption (Monthly) :
 
 # 🎯 A/B Test Candidates :
 # → Journal entry simplification
-# → Measurements onboarding flow  
+# → Measurements onboarding flow
 # → Mobile navigation improvements
 # → Coach dashboard layout
 
@@ -336,6 +348,7 @@ Based on usage data :
 ## 🚨 **INCIDENT RESPONSE WORKFLOW**
 
 ### **🔴 Critical Issues (Immediate)**
+
 ```bash
 # Triggers :
 # → Site completely down
@@ -370,10 +383,11 @@ Based on usage data :
 ```
 
 ### **🟡 Performance Degradation (1-2 hours)**
+
 ```bash
 # Triggers :
 # → LCP > 4s sustained
-# → INP > 500ms sustained  
+# → INP > 500ms sustained
 # → Error rate 5-25%
 
 # Response Time : < 2 hours
@@ -397,6 +411,7 @@ Based on usage data :
 ```
 
 ### **🟢 Minor Issues (24-48 hours)**
+
 ```bash
 # Triggers :
 # → Error rate 1-5%
@@ -418,6 +433,7 @@ Based on usage data :
 ## 📊 **REPORTING & COMMUNICATION**
 
 ### **📧 Weekly Stakeholder Report**
+
 ```bash
 # Template email (Fridays) :
 
@@ -449,6 +465,7 @@ Best,
 ```
 
 ### **📋 Monthly Technical Report**
+
 ```bash
 # More detailed technical summary for team
 
@@ -467,6 +484,7 @@ Best,
 ## ✅ **MONITORING WORKFLOW MAÎTRISÉ**
 
 **Tu as maintenant :**
+
 - ✅ Routine matinale efficace (5 min)
 - ✅ Checks réguliers automatisés
 - ✅ Weekly & monthly deep dives

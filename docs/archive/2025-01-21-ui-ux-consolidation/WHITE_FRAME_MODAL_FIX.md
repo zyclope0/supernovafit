@@ -7,9 +7,11 @@
 ## 🚨 **PROBLÈME IDENTIFIÉ**
 
 ### **Symptôme :**
+
 Les modals des mesures n'avaient pas le beau cadre blanc qui démarque bien la modal du fond, contrairement aux modals de la page diète qui avaient un cadre blanc parfait.
 
 ### **Cause :**
+
 Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop subtil (`border-white/10`) comparé au composant `FormModal` (utilisé par la diète) qui avait un cadre bien visible (`border-white/30` + `ring-white/30`).
 
 ## 🔍 **ANALYSE COMPARATIVE**
@@ -17,29 +19,32 @@ Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop su
 ### **❌ Avant (Incohérent) :**
 
 #### **DetailModal (Mesures) :**
+
 ```css
 /* Cadre trop subtil */
 .glass-effect {
-  border: 1px solid rgba(255, 255, 255, 0.10); /* 10% opacity - trop subtil */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 10% opacity - trop subtil */
 }
 
 /* Pas d'effet de glow */
 ```
 
 #### **FormModal (Diète) :**
+
 ```css
 /* Cadre bien visible */
 .bg-space-900 {
-  border: 2px solid rgba(255, 255, 255, 0.30); /* 30% opacity - bien visible */
-  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.20);
-  ring: 1px solid rgba(255, 255, 255, 0.30);
+  border: 2px solid rgba(255, 255, 255, 0.3); /* 30% opacity - bien visible */
+  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.2);
+  ring: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Effet de glow subtil */
 .gradient-glow {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.05) 0%, 
-    transparent 50%, 
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 50%,
     rgba(255, 255, 255, 0.05) 100%
   );
 }
@@ -48,19 +53,21 @@ Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop su
 ### **✅ Après (Harmonisé) :**
 
 #### **DetailModal (Maintenant) :**
+
 ```css
 /* Cadre bien visible - identique à FormModal */
 .bg-space-900 {
-  border: 2px solid rgba(255, 255, 255, 0.30); /* 30% opacity - bien visible */
-  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.20);
-  ring: 1px solid rgba(255, 255, 255, 0.30);
+  border: 2px solid rgba(255, 255, 255, 0.3); /* 30% opacity - bien visible */
+  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.2);
+  ring: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Effet de glow subtil */
 .gradient-glow {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.05) 0%, 
-    transparent 50%, 
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 50%,
     rgba(255, 255, 255, 0.05) 100%
   );
 }
@@ -69,6 +76,7 @@ Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop su
 ## 🔧 **CORRECTIONS APPLIQUÉES**
 
 ### **1. Remplacement du cadre subtil par un cadre visible**
+
 ```typescript
 // ❌ Avant
 <div className={`glass-effect rounded-xl border border-white/10 w-full ${maxWidthClass} max-h-[90vh] overflow-hidden`}>
@@ -78,6 +86,7 @@ Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop su
 ```
 
 ### **2. Ajout de l'effet de glow subtil**
+
 ```typescript
 // ✅ Nouveau - Effet de glow identique à FormModal
 {/* Effet de glow subtil */}
@@ -85,6 +94,7 @@ Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop su
 ```
 
 ### **3. Ajustement des z-index pour la superposition**
+
 ```typescript
 // ✅ Header au bon niveau
 <div className="relative z-10 flex items-center justify-between p-6 border-b border-white/10">
@@ -96,16 +106,19 @@ Le composant `DetailModal` (utilisé par les mesures) utilisait un cadre trop su
 ## 📊 **RÉSULTATS**
 
 ### **✅ Cohérence visuelle parfaite :**
+
 - **Cadre blanc** : Bien visible sur toutes les modals
 - **Effet de glow** : Subtile et élégant
 - **Délimitation** : Parfaite séparation du fond
 
 ### **✅ Modals harmonisées :**
+
 - **Diète** : ✅ Cadre blanc parfait (référence)
 - **Journal** : ✅ Cadre blanc parfait
 - **Mesures** : ✅ Cadre blanc parfait (corrigé)
 
 ### **✅ Standards appliqués :**
+
 ```css
 /* Cadre principal */
 border-2 border-white/30        /* Bordure bien visible */
@@ -122,19 +135,21 @@ relative z-10                  /* Contenu au-dessus du glow */
 ## 🎨 **SYSTÈME DE CADRE UNIFIÉ**
 
 ### **Règles de cadre appliquées :**
+
 ```css
 /* Modal principale */
 .modal-container {
-  border: 2px solid rgba(255, 255, 255, 0.30);
-  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.20);
-  ring: 1px solid rgba(255, 255, 255, 0.30);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.2);
+  ring: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Effet de glow */
 .modal-glow {
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.05) 0%, 
-    transparent 50%, 
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 50%,
     rgba(255, 255, 255, 0.05) 100%
   );
 }
@@ -147,6 +162,7 @@ relative z-10                  /* Contenu au-dessus du glow */
 ```
 
 ### **Hiérarchie visuelle :**
+
 1. **Fond blur** : `bg-black/50 backdrop-blur-sm`
 2. **Cadre blanc** : `border-2 border-white/30`
 3. **Effet de glow** : `bg-gradient-to-br from-white/5 via-transparent to-white/5`
@@ -155,12 +171,14 @@ relative z-10                  /* Contenu au-dessus du glow */
 ## 🔍 **VÉRIFICATION**
 
 ### **Tests visuels :**
+
 - ✅ **Modal Diète** : Cadre blanc parfait (référence)
 - ✅ **Modal Journal** : Cadre blanc parfait
 - ✅ **Modal Mesures** : Cadre blanc parfait (corrigé)
 - ✅ **Séparation fond** : Parfaite délimitation
 
 ### **Tests techniques :**
+
 - ✅ **ESLint** : 0 erreur
 - ✅ **TypeScript** : 0 erreur
 - ✅ **Build** : Réussi
@@ -168,18 +186,21 @@ relative z-10                  /* Contenu au-dessus du glow */
 ## 🎯 **BÉNÉFICES**
 
 ### **✅ UX/UI :**
+
 - **Délimitation** parfaite des modals du fond
 - **Cohérence** visuelle sur toutes les pages
 - **Professionnalisme** renforcé
 - **Lisibilité** améliorée
 
 ### **✅ Développement :**
+
 - **Standards** unifiés entre DetailModal et FormModal
 - **Maintenabilité** simplifiée
 - **Évolutivité** assurée
 - **Réutilisabilité** maximale
 
 ### **✅ Accessibilité :**
+
 - **Contraste** optimisé avec le fond
 - **Séparation** claire du contenu
 - **Focus** amélioré

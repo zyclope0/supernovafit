@@ -1,22 +1,32 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { JournalEntry } from '@/types'
-import { X, Save, Sun, Cloud, CloudRain, Zap, Snowflake } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { JournalEntry } from '@/types';
+import { X, Save, Sun, Cloud, CloudRain, Zap, Snowflake } from 'lucide-react';
 // import toast from 'react-hot-toast' // Not used
 
 interface JournalFormProps {
-  onSubmit: (entryData: Omit<JournalEntry, 'id'>) => Promise<{ success: boolean; error?: string }>
-  onCancel: () => void
-  existingEntry?: JournalEntry | null
-  isSubmitting?: boolean
+  onSubmit: (
+    entryData: Omit<JournalEntry, 'id'>,
+  ) => Promise<{ success: boolean; error?: string }>;
+  onCancel: () => void;
+  existingEntry?: JournalEntry | null;
+  isSubmitting?: boolean;
 }
 
 // Émojis pour les niveaux 1-10
 const LEVEL_EMOJIS = {
-  1: '😞', 2: '😔', 3: '😐', 4: '🙂', 5: '😊',
-  6: '😄', 7: '😁', 8: '🤩', 9: '😍', 10: '🚀'
-}
+  1: '😞',
+  2: '😔',
+  3: '😐',
+  4: '🙂',
+  5: '😊',
+  6: '😄',
+  7: '😁',
+  8: '🤩',
+  9: '😍',
+  10: '🚀',
+};
 
 // Options météo
 const METEO_OPTIONS = [
@@ -24,34 +34,48 @@ const METEO_OPTIONS = [
   { value: 'nuage', label: 'Nuageux', icon: Cloud, emoji: '☁️' },
   { value: 'pluie', label: 'Pluie', icon: CloudRain, emoji: '🌧️' },
   { value: 'orage', label: 'Orage', icon: Zap, emoji: '⛈️' },
-  { value: 'neige', label: 'Neige', icon: Snowflake, emoji: '❄️' }
-] as const
+  { value: 'neige', label: 'Neige', icon: Snowflake, emoji: '❄️' },
+] as const;
 
 // Activités prédéfinies
 const ACTIVITES_SUGGESTIONS = [
-  'Marche', 'Jardinage', 'Ménage', 'Shopping', 'Lecture', 'Méditation', 
-  'Cuisine', 'Bricolage', 'Jeux vidéo', 'Film/Série', 'Socialisation', 'Travail'
-]
+  'Marche',
+  'Jardinage',
+  'Ménage',
+  'Shopping',
+  'Lecture',
+  'Méditation',
+  'Cuisine',
+  'Bricolage',
+  'Jeux vidéo',
+  'Film/Série',
+  'Socialisation',
+  'Travail',
+];
 
 // Composant Slider avec émojis
-function EmojiSlider({ 
-  label, 
-  value, 
-  onChange, 
-  color = 'neon-green' 
+function EmojiSlider({
+  label,
+  value,
+  onChange,
+  color = 'neon-green',
 }: {
-  label: string
-  value: number
-  onChange: (value: number) => void
-  color?: string
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  color?: string;
 }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium text-white">{label}</label>
         <div className="flex items-center gap-2">
-          <span className="text-lg">{LEVEL_EMOJIS[value as keyof typeof LEVEL_EMOJIS]}</span>
-          <span className={`text-sm font-semibold text-${color}`}>{value}/10</span>
+          <span className="text-lg">
+            {LEVEL_EMOJIS[value as keyof typeof LEVEL_EMOJIS]}
+          </span>
+          <span className={`text-sm font-semibold text-${color}`}>
+            {value}/10
+          </span>
         </div>
       </div>
       <div className="relative">
@@ -70,10 +94,15 @@ function EmojiSlider({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmitting = false }: JournalFormProps) {
+export default function JournalForm({
+  onSubmit,
+  onCancel,
+  existingEntry,
+  isSubmitting = false,
+}: JournalFormProps) {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     note: '',
@@ -84,10 +113,10 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
     sommeil_duree: 8,
     sommeil_qualite: 5 as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
     meteo: 'soleil' as 'soleil' | 'nuage' | 'pluie' | 'orage' | 'neige',
-    activites_annexes: [] as string[]
-  })
+    activites_annexes: [] as string[],
+  });
 
-  const [newActivite, setNewActivite] = useState('')
+  const [newActivite, setNewActivite] = useState('');
 
   // Charger les données existantes
   useEffect(() => {
@@ -102,59 +131,67 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
         sommeil_duree: existingEntry.sommeil_duree || 8,
         sommeil_qualite: existingEntry.sommeil_qualite || 5,
         meteo: existingEntry.meteo || 'soleil',
-        activites_annexes: existingEntry.activites_annexes || []
-      })
+        activites_annexes: existingEntry.activites_annexes || [],
+      });
     }
-  }, [existingEntry])
+  }, [existingEntry]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     // Préparer les données en filtrant les valeurs par défaut/vides
     const entryData: Omit<JournalEntry, 'id'> = {
       user_id: '', // Sera rempli par le hook
-      date: formData.date
-    }
+      date: formData.date,
+    };
 
     // Ajouter seulement les champs modifiés (sauf meteo que l'on persiste toujours)
-    if (formData.note.trim()) entryData.note = formData.note.trim()
-    if (formData.humeur !== 5) entryData.humeur = formData.humeur
-    if (formData.energie !== 5) entryData.energie = formData.energie
-    if (formData.stress !== 5) entryData.stress = formData.stress
-    if (formData.motivation !== 5) entryData.motivation = formData.motivation
-    if (formData.sommeil_duree !== 8) entryData.sommeil_duree = formData.sommeil_duree
-    if (formData.sommeil_qualite !== 5) entryData.sommeil_qualite = formData.sommeil_qualite
-    entryData.meteo = formData.meteo
-    if (formData.activites_annexes.length > 0) entryData.activites_annexes = formData.activites_annexes
+    if (formData.note.trim()) entryData.note = formData.note.trim();
+    if (formData.humeur !== 5) entryData.humeur = formData.humeur;
+    if (formData.energie !== 5) entryData.energie = formData.energie;
+    if (formData.stress !== 5) entryData.stress = formData.stress;
+    if (formData.motivation !== 5) entryData.motivation = formData.motivation;
+    if (formData.sommeil_duree !== 8)
+      entryData.sommeil_duree = formData.sommeil_duree;
+    if (formData.sommeil_qualite !== 5)
+      entryData.sommeil_qualite = formData.sommeil_qualite;
+    entryData.meteo = formData.meteo;
+    if (formData.activites_annexes.length > 0)
+      entryData.activites_annexes = formData.activites_annexes;
 
-    const result = await onSubmit(entryData)
+    const result = await onSubmit(entryData);
     if (result.success) {
-      onCancel() // Fermer le formulaire
+      onCancel(); // Fermer le formulaire
     }
-  }
+  };
 
   const addActivite = (activite: string) => {
-    if (activite.trim() && !formData.activites_annexes.includes(activite.trim())) {
+    if (
+      activite.trim() &&
+      !formData.activites_annexes.includes(activite.trim())
+    ) {
       setFormData({
         ...formData,
-        activites_annexes: [...formData.activites_annexes, activite.trim()]
-      })
-      setNewActivite('')
+        activites_annexes: [...formData.activites_annexes, activite.trim()],
+      });
+      setNewActivite('');
     }
-  }
+  };
 
   const removeActivite = (index: number) => {
     setFormData({
       ...formData,
-      activites_annexes: formData.activites_annexes.filter((_, i) => i !== index)
-    })
-  }
+      activites_annexes: formData.activites_annexes.filter(
+        (_, i) => i !== index,
+      ),
+    });
+  };
 
   return (
     <div className="glass-effect p-6 rounded-lg border border-white/10">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">
-          {existingEntry ? 'Modifier l\'entrée' : 'Nouvelle entrée journal'}
+          {existingEntry ? "Modifier l'entrée" : 'Nouvelle entrée journal'}
         </h3>
         <button
           onClick={onCancel}
@@ -167,7 +204,9 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Date */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Date</label>
+          <label className="block text-sm font-medium text-white mb-2">
+            Date
+          </label>
           <input
             type="date"
             value={formData.date}
@@ -182,25 +221,45 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
           <EmojiSlider
             label="😊 Humeur"
             value={formData.humeur}
-            onChange={(value) => setFormData({ ...formData, humeur: value as 1|2|3|4|5|6|7|8|9|10 })}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                humeur: value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
+              })
+            }
             color="neon-pink"
           />
           <EmojiSlider
             label="⚡ Énergie"
             value={formData.energie}
-            onChange={(value) => setFormData({ ...formData, energie: value as 1|2|3|4|5|6|7|8|9|10 })}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                energie: value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
+              })
+            }
             color="neon-green"
           />
           <EmojiSlider
             label="😰 Stress"
             value={formData.stress}
-            onChange={(value) => setFormData({ ...formData, stress: value as 1|2|3|4|5|6|7|8|9|10 })}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                stress: value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
+              })
+            }
             color="neon-purple"
           />
           <EmojiSlider
             label="🎯 Motivation"
             value={formData.motivation}
-            onChange={(value) => setFormData({ ...formData, motivation: value as 1|2|3|4|5|6|7|8|9|10 })}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                motivation: value as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
+              })
+            }
             color="neon-cyan"
           />
         </div>
@@ -208,34 +267,60 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
         {/* Sommeil */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">😴 Durée sommeil (heures)</label>
+            <label className="block text-sm font-medium text-white mb-2">
+              😴 Durée sommeil (heures)
+            </label>
             <input
               type="number"
               min="0"
               max="24"
               step="0.5"
               value={formData.sommeil_duree}
-              onChange={(e) => setFormData({ ...formData, sommeil_duree: parseFloat(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  sommeil_duree: parseFloat(e.target.value),
+                })
+              }
               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:border-neon-purple focus:outline-none"
             />
           </div>
           <EmojiSlider
             label="😴 Qualité sommeil"
             value={formData.sommeil_qualite}
-            onChange={(value) => setFormData({ ...formData, sommeil_qualite: value as 1|2|3|4|5|6|7|8|9|10 })}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                sommeil_qualite: value as
+                  | 1
+                  | 2
+                  | 3
+                  | 4
+                  | 5
+                  | 6
+                  | 7
+                  | 8
+                  | 9
+                  | 10,
+              })
+            }
             color="neon-cyan"
           />
         </div>
 
         {/* Météo */}
         <div>
-          <label className="block text-sm font-medium text-white mb-3">🌤️ Météo du jour</label>
+          <label className="block text-sm font-medium text-white mb-3">
+            🌤️ Météo du jour
+          </label>
           <div className="grid grid-cols-5 gap-2">
             {METEO_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => setFormData({ ...formData, meteo: option.value })}
+                onClick={() =>
+                  setFormData({ ...formData, meteo: option.value })
+                }
                 className={`p-3 rounded-lg border transition-colors ${
                   formData.meteo === option.value
                     ? 'border-neon-cyan bg-neon-cyan/20 text-neon-cyan'
@@ -251,7 +336,9 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">📝 Notes du jour</label>
+          <label className="block text-sm font-medium text-white mb-2">
+            📝 Notes du jour
+          </label>
           <textarea
             value={formData.note}
             onChange={(e) => setFormData({ ...formData, note: e.target.value })}
@@ -263,8 +350,10 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
 
         {/* Activités annexes */}
         <div>
-          <label className="block text-sm font-medium text-white mb-3">🏃 Activités de la journée</label>
-          
+          <label className="block text-sm font-medium text-white mb-3">
+            🏃 Activités de la journée
+          </label>
+
           {/* Suggestions rapides */}
           <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mb-3">
             {ACTIVITES_SUGGESTIONS.map((activite) => (
@@ -294,8 +383,8 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
               className="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
-                  e.preventDefault()
-                  addActivite(newActivite)
+                  e.preventDefault();
+                  addActivite(newActivite);
                 }
               }}
             />
@@ -349,7 +438,11 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
             ) : (
               <Save className="h-4 w-4" />
             )}
-            {isSubmitting ? 'Enregistrement...' : existingEntry ? 'Modifier' : 'Enregistrer'}
+            {isSubmitting
+              ? 'Enregistrement...'
+              : existingEntry
+                ? 'Modifier'
+                : 'Enregistrer'}
           </button>
         </div>
       </form>
@@ -398,5 +491,5 @@ export default function JournalForm({ onSubmit, onCancel, existingEntry, isSubmi
         }
       `}</style>
     </div>
-  )
+  );
 }

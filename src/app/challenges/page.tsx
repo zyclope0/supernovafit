@@ -1,19 +1,23 @@
-'use client'
+'use client';
 
-import React, { useState, useMemo } from 'react'
-import MainLayout from '@/components/layout/MainLayout'
-import { useAuth } from '@/hooks/useAuth'
-import { useChallenges, useAchievements, useUserProgress } from '@/hooks/useChallenges'
-import { useChallengeTracker } from '@/hooks/useChallengeTracker'
-import { 
-  isChallengeImplemented, 
-  isChallengeImplementable, 
+import React, { useState, useMemo } from 'react';
+import MainLayout from '@/components/layout/MainLayout';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  useChallenges,
+  useAchievements,
+  useUserProgress,
+} from '@/hooks/useChallenges';
+import { useChallengeTracker } from '@/hooks/useChallengeTracker';
+import {
+  isChallengeImplemented,
+  isChallengeImplementable,
   getUnimplementationReason,
-  getChallengeStats
+  getChallengeStats,
   // getTrackableChallengeDefinitions // Supprimé avec les outils de test
-} from '@/lib/challengeImplementation'
-import { 
-  CHALLENGE_DEFINITIONS, 
+} from '@/lib/challengeImplementation';
+import {
+  CHALLENGE_DEFINITIONS,
   createChallengeFromDefinition,
   filterChallengesByCategory,
   filterChallengesByDifficulty,
@@ -21,195 +25,218 @@ import {
   searchChallenges,
   CHALLENGE_CATEGORIES,
   CHALLENGE_DIFFICULTIES,
-  CHALLENGE_TYPES
-} from '@/lib/challenges'
-import AchievementCard from '@/components/ui/AchievementCard'
-import ProgressBar from '@/components/ui/ProgressBar'
-import { CardSkeleton } from '@/components/ui/Skeletons'
-import { Plus, Trophy, Target, Star, Search, Filter, X } from 'lucide-react'
-import toast from 'react-hot-toast'
-import ChallengesProgressHeader from '@/components/challenges/ChallengesProgressHeaderSimple'
-import ChallengeCardClickable from '@/components/ui/ChallengeCardClickable'
-import ChallengeDetailModal from '@/components/ui/ChallengeDetailModal'
+  CHALLENGE_TYPES,
+} from '@/lib/challenges';
+import AchievementCard from '@/components/ui/AchievementCard';
+import ProgressBar from '@/components/ui/ProgressBar';
+import { CardSkeleton } from '@/components/ui/Skeletons';
+import { Plus, Trophy, Target, Star, Search, Filter, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ChallengesProgressHeader from '@/components/challenges/ChallengesProgressHeaderSimple';
+import ChallengeCardClickable from '@/components/ui/ChallengeCardClickable';
+import ChallengeDetailModal from '@/components/ui/ChallengeDetailModal';
 
 export default function ChallengesPage() {
-  const { user } = useAuth()
-  const { challenges, loading: challengesLoading, addChallenge, updateChallenge, deleteChallenge } = useChallenges()
-  const { achievements, loading: achievementsLoading } = useAchievements()
-  const { progress, loading: progressLoading } = useUserProgress()
-  
+  const { user } = useAuth();
+  const {
+    challenges,
+    loading: challengesLoading,
+    addChallenge,
+    updateChallenge,
+    deleteChallenge,
+  } = useChallenges();
+  const { achievements, loading: achievementsLoading } = useAchievements();
+  const { progress, loading: progressLoading } = useUserProgress();
+
   // Activer le suivi automatique des challenges
-  useChallengeTracker()
-  
-  const [activeTab, setActiveTab] = useState<'challenges' | 'achievements' | 'progress'>('challenges')
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed' | 'expired'>('all')
-  const [showAddChallenge, setShowAddChallenge] = useState(false)
-  
+  useChallengeTracker();
+
+  const [activeTab, setActiveTab] = useState<
+    'challenges' | 'achievements' | 'progress'
+  >('challenges');
+  const [filter, setFilter] = useState<
+    'all' | 'active' | 'completed' | 'expired'
+  >('all');
+  const [showAddChallenge, setShowAddChallenge] = useState(false);
+
   // États pour les nouveaux composants industrialisés
-  const [selectedChallenge, setSelectedChallenge] = useState<typeof challenges[0] | null>(null)
-  const [showChallengeDetail, setShowChallengeDetail] = useState(false)
-  
+  const [selectedChallenge, setSelectedChallenge] = useState<
+    (typeof challenges)[0] | null
+  >(null);
+  const [showChallengeDetail, setShowChallengeDetail] = useState(false);
+
   // États pour les filtres et recherche
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all')
-  const [selectedType, setSelectedType] = useState('all')
-  const [showFilters, setShowFilters] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
+  const [selectedType, setSelectedType] = useState('all');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Filtrer les challenges disponibles (pour l'ajout)
   const availableChallenges = useMemo(() => {
-    let filtered = CHALLENGE_DEFINITIONS
+    let filtered = CHALLENGE_DEFINITIONS;
 
     // Recherche textuelle
     if (searchQuery) {
-      filtered = searchChallenges(filtered, searchQuery)
+      filtered = searchChallenges(filtered, searchQuery);
     }
 
     // Filtre par catégorie
     if (selectedCategory !== 'all') {
-      filtered = filterChallengesByCategory(filtered, selectedCategory)
+      filtered = filterChallengesByCategory(filtered, selectedCategory);
     }
 
     // Filtre par difficulté
     if (selectedDifficulty !== 'all') {
-      filtered = filterChallengesByDifficulty(filtered, selectedDifficulty)
+      filtered = filterChallengesByDifficulty(filtered, selectedDifficulty);
     }
 
     // Filtre par type
     if (selectedType !== 'all') {
-      filtered = filterChallengesByType(filtered, selectedType)
+      filtered = filterChallengesByType(filtered, selectedType);
     }
 
-    return filtered
-  }, [searchQuery, selectedCategory, selectedDifficulty, selectedType])
+    return filtered;
+  }, [searchQuery, selectedCategory, selectedDifficulty, selectedType]);
 
   // Filtrer les challenges actifs
-  const filteredChallenges = challenges.filter(challenge => {
-    if (filter === 'all') return true
-    return challenge.status === filter
-  })
+  const filteredChallenges = challenges.filter((challenge) => {
+    if (filter === 'all') return true;
+    return challenge.status === filter;
+  });
 
   // Grouper les challenges par catégorie
-  const challengesByCategory = filteredChallenges.reduce((acc, challenge) => {
-    if (!acc[challenge.category]) {
-      acc[challenge.category] = []
-    }
-    acc[challenge.category].push(challenge)
-    return acc
-  }, {} as Record<string, typeof challenges>)
+  const challengesByCategory = filteredChallenges.reduce(
+    (acc, challenge) => {
+      if (!acc[challenge.category]) {
+        acc[challenge.category] = [];
+      }
+      acc[challenge.category].push(challenge);
+      return acc;
+    },
+    {} as Record<string, typeof challenges>,
+  );
 
   // Grouper les achievements par rareté
-  const achievementsByRarity = achievements.reduce((acc, achievement) => {
-    if (!acc[achievement.rarity]) {
-      acc[achievement.rarity] = []
-    }
-    acc[achievement.rarity].push(achievement)
-    return acc
-  }, {} as Record<string, typeof achievements>)
+  const achievementsByRarity = achievements.reduce(
+    (acc, achievement) => {
+      if (!acc[achievement.rarity]) {
+        acc[achievement.rarity] = [];
+      }
+      acc[achievement.rarity].push(achievement);
+      return acc;
+    },
+    {} as Record<string, typeof achievements>,
+  );
 
-  const handleAddChallenge = async (definition: typeof CHALLENGE_DEFINITIONS[0]) => {
-    if (!user) return
+  const handleAddChallenge = async (
+    definition: (typeof CHALLENGE_DEFINITIONS)[0],
+  ) => {
+    if (!user) return;
 
-    const challengeData = createChallengeFromDefinition(definition, user.uid)
-    const result = await addChallenge(challengeData)
-    
+    const challengeData = createChallengeFromDefinition(definition, user.uid);
+    const result = await addChallenge(challengeData);
+
     if (result.success) {
-      toast.success(`Challenge "${definition.title}" ajouté !`)
-      setShowAddChallenge(false)
+      toast.success(`Challenge "${definition.title}" ajouté !`);
+      setShowAddChallenge(false);
     } else {
-      toast.error('Erreur lors de l\'ajout du challenge')
+      toast.error("Erreur lors de l'ajout du challenge");
     }
-  }
+  };
 
   const handleCompleteChallenge = async (challengeId: string) => {
     const result = await updateChallenge(challengeId, {
       status: 'completed',
-      completed_at: new Date().toISOString()
-    })
-    
+      completed_at: new Date().toISOString(),
+    });
+
     if (result.success) {
-      toast.success('Challenge terminé ! 🎉')
+      toast.success('Challenge terminé ! 🎉');
     } else {
-      toast.error('Erreur lors de la finalisation du challenge')
+      toast.error('Erreur lors de la finalisation du challenge');
     }
-  }
+  };
 
   const handlePauseChallenge = async (challengeId: string) => {
-    const challenge = challenges.find(c => c.id === challengeId)
-    if (!challenge) return
+    const challenge = challenges.find((c) => c.id === challengeId);
+    if (!challenge) return;
 
-    const newStatus = challenge.status === 'paused' ? 'active' : 'paused'
-    const result = await updateChallenge(challengeId, { status: newStatus })
-    
+    const newStatus = challenge.status === 'paused' ? 'active' : 'paused';
+    const result = await updateChallenge(challengeId, { status: newStatus });
+
     if (result.success) {
-      toast.success(newStatus === 'paused' ? 'Challenge mis en pause' : 'Challenge repris')
+      toast.success(
+        newStatus === 'paused' ? 'Challenge mis en pause' : 'Challenge repris',
+      );
     } else {
-      toast.error('Erreur lors de la mise à jour du challenge')
+      toast.error('Erreur lors de la mise à jour du challenge');
     }
-  }
+  };
 
   const handleDeleteChallenge = async (challengeId: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce challenge ?')) return
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce challenge ?')) return;
 
-    const result = await deleteChallenge(challengeId)
-    
+    const result = await deleteChallenge(challengeId);
+
     if (result.success) {
-      toast.success('Challenge supprimé')
-      setShowChallengeDetail(false)
-      setSelectedChallenge(null)
+      toast.success('Challenge supprimé');
+      setShowChallengeDetail(false);
+      setSelectedChallenge(null);
     } else {
-      toast.error('Erreur lors de la suppression du challenge')
+      toast.error('Erreur lors de la suppression du challenge');
     }
-  }
+  };
 
   // Handlers pour les nouveaux composants industrialisés
-  const handleChallengeView = (challenge: typeof challenges[0]) => {
-    setSelectedChallenge(challenge)
-    setShowChallengeDetail(true)
-  }
-
+  const handleChallengeView = (challenge: (typeof challenges)[0]) => {
+    setSelectedChallenge(challenge);
+    setShowChallengeDetail(true);
+  };
 
   const handleChallengeDelete = () => {
     if (selectedChallenge) {
-      handleDeleteChallenge(selectedChallenge.id)
+      handleDeleteChallenge(selectedChallenge.id);
     }
-  }
+  };
 
   const handleChallengeComplete = () => {
     if (selectedChallenge) {
-      handleCompleteChallenge(selectedChallenge.id)
-      setShowChallengeDetail(false)
-      setSelectedChallenge(null)
+      handleCompleteChallenge(selectedChallenge.id);
+      setShowChallengeDetail(false);
+      setSelectedChallenge(null);
     }
-  }
+  };
 
   const handleChallengePause = () => {
     if (selectedChallenge) {
-      handlePauseChallenge(selectedChallenge.id)
-      setShowChallengeDetail(false)
-      setSelectedChallenge(null)
+      handlePauseChallenge(selectedChallenge.id);
+      setShowChallengeDetail(false);
+      setSelectedChallenge(null);
     }
-  }
+  };
 
   const handleChallengeResume = () => {
     if (selectedChallenge) {
-      handlePauseChallenge(selectedChallenge.id) // Même fonction pour pause/resume
-      setShowChallengeDetail(false)
-      setSelectedChallenge(null)
+      handlePauseChallenge(selectedChallenge.id); // Même fonction pour pause/resume
+      setShowChallengeDetail(false);
+      setSelectedChallenge(null);
     }
-  }
-
-
+  };
 
   // Fonctions pour les filtres
   const resetFilters = () => {
-    setSearchQuery('')
-    setSelectedCategory('all')
-    setSelectedDifficulty('all')
-    setSelectedType('all')
-  }
+    setSearchQuery('');
+    setSelectedCategory('all');
+    setSelectedDifficulty('all');
+    setSelectedType('all');
+  };
 
-  const hasActiveFilters = searchQuery || selectedCategory !== 'all' || selectedDifficulty !== 'all' || selectedType !== 'all'
+  const hasActiveFilters =
+    searchQuery ||
+    selectedCategory !== 'all' ||
+    selectedDifficulty !== 'all' ||
+    selectedType !== 'all';
 
   if (challengesLoading || achievementsLoading || progressLoading) {
     return (
@@ -220,7 +247,7 @@ export default function ChallengesPage() {
           <CardSkeleton />
         </div>
       </MainLayout>
-    )
+    );
   }
 
   return (
@@ -231,12 +258,15 @@ export default function ChallengesPage() {
           title="CHALLENGES"
           emoji="🏆"
           stats={{
-            activeChallenges: challenges.filter(c => c.status === 'active').length,
-            completedChallenges: challenges.filter(c => c.status === 'completed').length,
+            activeChallenges: challenges.filter((c) => c.status === 'active')
+              .length,
+            completedChallenges: challenges.filter(
+              (c) => c.status === 'completed',
+            ).length,
             totalAchievements: achievements.length,
             userLevel: progress?.level,
             userXP: progress?.currentLevelXP,
-            nextLevelXP: progress?.nextLevelXP
+            nextLevelXP: progress?.nextLevelXP,
           }}
         />
 
@@ -251,47 +281,63 @@ export default function ChallengesPage() {
           </button>
         </div>
 
-            {/* Statistiques d'implémentation */}
-            <div className="glass-effect rounded-xl p-4 border border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-3">📊 État d&apos;implémentation</h3>
-              {(() => {
-                const stats = getChallengeStats()
-                return (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-neon-cyan">{stats.total}</div>
-                      <div className="text-white/60">Total</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-neon-green">{stats.implemented}</div>
-                      <div className="text-white/60">Fonctionnels</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-400">{stats.implementable - stats.implemented}</div>
-                      <div className="text-white/60">À développer</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-red-400">{stats.unimplementable}</div>
-                      <div className="text-white/60">Non faisables</div>
-                    </div>
+        {/* Statistiques d'implémentation */}
+        <div className="glass-effect rounded-xl p-4 border border-white/20">
+          <h3 className="text-lg font-semibold text-white mb-3">
+            📊 État d&apos;implémentation
+          </h3>
+          {(() => {
+            const stats = getChallengeStats();
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-neon-cyan">
+                    {stats.total}
                   </div>
-                )
-              })()}
-              <div className="mt-3 text-center text-white/70 text-sm">
-                <span className="text-neon-green font-semibold">{getChallengeStats().implementedPercentage}%</span> des challenges implémentables sont fonctionnels
+                  <div className="text-white/60">Total</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-neon-green">
+                    {stats.implemented}
+                  </div>
+                  <div className="text-white/60">Fonctionnels</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {stats.implementable - stats.implemented}
+                  </div>
+                  <div className="text-white/60">À développer</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400">
+                    {stats.unimplementable}
+                  </div>
+                  <div className="text-white/60">Non faisables</div>
+                </div>
               </div>
-            </div>
+            );
+          })()}
+          <div className="mt-3 text-center text-white/70 text-sm">
+            <span className="text-neon-green font-semibold">
+              {getChallengeStats().implementedPercentage}%
+            </span>{' '}
+            des challenges implémentables sont fonctionnels
+          </div>
+        </div>
 
         {/* Message si pas connecté */}
         {!user && (
           <div className="glass-effect p-6 lg:p-8 rounded-xl border border-white/20 text-center">
             <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">Challenges & Récompenses</h3>
+            <h3 className="text-xl font-bold text-white mb-2">
+              Challenges & Récompenses
+            </h3>
             <p className="text-white/70 mb-4">
-              Connectez-vous pour accéder aux challenges, débloquer des achievements et suivre votre progression !
+              Connectez-vous pour accéder aux challenges, débloquer des
+              achievements et suivre votre progression !
             </p>
             <button
-              onClick={() => window.location.href = '/auth'}
+              onClick={() => (window.location.href = '/auth')}
               className="px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-cyan text-white rounded-lg hover:from-neon-purple/80 hover:to-neon-cyan/80 transition-all duration-200 transform hover:scale-105"
             >
               Se connecter
@@ -341,29 +387,39 @@ export default function ChallengesPage() {
           <div className="space-y-6">
             {/* Filters */}
             <div className="flex gap-2 flex-wrap">
-              {(['all', 'active', 'completed', 'expired'] as const).map((filterType) => (
-                <button
-                  key={filterType}
-                  onClick={() => setFilter(filterType)}
-                  className={`px-3 py-1 rounded-lg text-sm transition-all ${
-                    filter === filterType
-                      ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20'
-                  }`}
-                >
-                  {filterType === 'all' ? 'Tous' : 
-                   filterType === 'active' ? 'Actifs' :
-                   filterType === 'completed' ? 'Terminés' : 'Expirés'}
-                </button>
-              ))}
+              {(['all', 'active', 'completed', 'expired'] as const).map(
+                (filterType) => (
+                  <button
+                    key={filterType}
+                    onClick={() => setFilter(filterType)}
+                    className={`px-3 py-1 rounded-lg text-sm transition-all ${
+                      filter === filterType
+                        ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    {filterType === 'all'
+                      ? 'Tous'
+                      : filterType === 'active'
+                        ? 'Actifs'
+                        : filterType === 'completed'
+                          ? 'Terminés'
+                          : 'Expirés'}
+                  </button>
+                ),
+              )}
             </div>
 
             {/* Challenges by Category */}
             {Object.keys(challengesByCategory).length === 0 ? (
               <div className="glass-effect rounded-xl p-4 sm:p-6 lg:p-8 border border-white/20 text-center">
                 <Target className="w-16 h-16 text-white/30 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Aucun challenge</h3>
-                <p className="text-white/70 mb-4">Commencez votre aventure en ajoutant votre premier challenge !</p>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  Aucun challenge
+                </h3>
+                <p className="text-white/70 mb-4">
+                  Commencez votre aventure en ajoutant votre premier challenge !
+                </p>
                 <button
                   onClick={() => setShowAddChallenge(true)}
                   className="px-4 py-2 bg-gradient-to-r from-neon-cyan to-neon-purple text-white rounded-lg hover:from-neon-cyan/80 hover:to-neon-purple/80 transition-all duration-200 transform hover:scale-105"
@@ -372,28 +428,36 @@ export default function ChallengesPage() {
                 </button>
               </div>
             ) : (
-              Object.entries(challengesByCategory).map(([category, categoryChallenges]) => (
-                <div key={category} className="space-y-4">
-                  <h2 className="text-xl font-bold text-white capitalize">
-                    {category === 'daily' ? '📅 Quotidien' :
-                     category === 'weekly' ? '📊 Hebdomadaire' :
-                     category === 'monthly' ? '🗓️ Mensuel' : '⭐ Spéciaux'}
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {categoryChallenges.map((challenge) => (
-                      <ChallengeCardClickable
-                        key={challenge.id}
-                        challenge={challenge}
-                        onView={() => handleChallengeView(challenge)}
-                        onDelete={() => handleChallengeView(challenge)} // Ouvre la modal pour confirmer
-                        onComplete={() => handleCompleteChallenge(challenge.id)}
-                        onPause={() => handlePauseChallenge(challenge.id)}
-                        onResume={() => handlePauseChallenge(challenge.id)}
-                      />
-                    ))}
+              Object.entries(challengesByCategory).map(
+                ([category, categoryChallenges]) => (
+                  <div key={category} className="space-y-4">
+                    <h2 className="text-xl font-bold text-white capitalize">
+                      {category === 'daily'
+                        ? '📅 Quotidien'
+                        : category === 'weekly'
+                          ? '📊 Hebdomadaire'
+                          : category === 'monthly'
+                            ? '🗓️ Mensuel'
+                            : '⭐ Spéciaux'}
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {categoryChallenges.map((challenge) => (
+                        <ChallengeCardClickable
+                          key={challenge.id}
+                          challenge={challenge}
+                          onView={() => handleChallengeView(challenge)}
+                          onDelete={() => handleChallengeView(challenge)} // Ouvre la modal pour confirmer
+                          onComplete={() =>
+                            handleCompleteChallenge(challenge.id)
+                          }
+                          onPause={() => handlePauseChallenge(challenge.id)}
+                          onResume={() => handlePauseChallenge(challenge.id)}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))
+                ),
+              )
             )}
           </div>
         )}
@@ -403,28 +467,38 @@ export default function ChallengesPage() {
             {Object.keys(achievementsByRarity).length === 0 ? (
               <div className="glass-effect rounded-xl p-4 sm:p-6 lg:p-8 border border-white/20 text-center">
                 <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Aucun achievement</h3>
-                <p className="text-white/70">Complétez des challenges pour débloquer des achievements !</p>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  Aucun achievement
+                </h3>
+                <p className="text-white/70">
+                  Complétez des challenges pour débloquer des achievements !
+                </p>
               </div>
             ) : (
-              Object.entries(achievementsByRarity).map(([rarity, rarityAchievements]) => (
-                <div key={rarity} className="space-y-4">
-                  <h2 className="text-xl font-bold text-white capitalize">
-                    {rarity === 'common' ? '⭐ Communs' :
-                     rarity === 'rare' ? '💎 Rares' :
-                     rarity === 'epic' ? '👑 Épiques' : '🌟 Légendaires'}
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {rarityAchievements.map((achievement) => (
-                      <AchievementCard
-                        key={achievement.id}
-                        achievement={achievement}
-                        isUnlocked={true}
-                      />
-                    ))}
+              Object.entries(achievementsByRarity).map(
+                ([rarity, rarityAchievements]) => (
+                  <div key={rarity} className="space-y-4">
+                    <h2 className="text-xl font-bold text-white capitalize">
+                      {rarity === 'common'
+                        ? '⭐ Communs'
+                        : rarity === 'rare'
+                          ? '💎 Rares'
+                          : rarity === 'epic'
+                            ? '👑 Épiques'
+                            : '🌟 Légendaires'}
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {rarityAchievements.map((achievement) => (
+                        <AchievementCard
+                          key={achievement.id}
+                          achievement={achievement}
+                          isUnlocked={true}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))
+                ),
+              )
             )}
           </div>
         )}
@@ -438,11 +512,13 @@ export default function ChallengesPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="glass-effect rounded-xl p-6 border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-white flex-1 min-w-0">Ajouter un challenge</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-white flex-1 min-w-0">
+                  Ajouter un challenge
+                </h2>
                 <button
                   onClick={() => {
-                    setShowAddChallenge(false)
-                    resetFilters()
+                    setShowAddChallenge(false);
+                    resetFilters();
                   }}
                   className="text-white/70 hover:text-white transition-colors flex-shrink-0"
                 >
@@ -469,8 +545,8 @@ export default function ChallengesPage() {
                   <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                      showFilters 
-                        ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30' 
+                      showFilters
+                        ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30'
                         : 'bg-white/10 text-white/70 border border-white/20 hover:bg-white/15'
                     }`}
                   >
@@ -497,14 +573,20 @@ export default function ChallengesPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/10">
                     {/* Filtre par catégorie */}
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-2">Catégorie</label>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Catégorie
+                      </label>
                       <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
                         className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
                       >
                         {CHALLENGE_CATEGORIES.map((category) => (
-                          <option key={category.value} value={category.value} className="bg-gray-800">
+                          <option
+                            key={category.value}
+                            value={category.value}
+                            className="bg-gray-800"
+                          >
                             {category.icon} {category.label}
                           </option>
                         ))}
@@ -513,14 +595,20 @@ export default function ChallengesPage() {
 
                     {/* Filtre par difficulté */}
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-2">Difficulté</label>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Difficulté
+                      </label>
                       <select
                         value={selectedDifficulty}
                         onChange={(e) => setSelectedDifficulty(e.target.value)}
                         className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
                       >
                         {CHALLENGE_DIFFICULTIES.map((difficulty) => (
-                          <option key={difficulty.value} value={difficulty.value} className="bg-gray-800">
+                          <option
+                            key={difficulty.value}
+                            value={difficulty.value}
+                            className="bg-gray-800"
+                          >
                             {difficulty.label}
                           </option>
                         ))}
@@ -529,14 +617,20 @@ export default function ChallengesPage() {
 
                     {/* Filtre par type */}
                     <div>
-                      <label className="block text-sm font-medium text-white/80 mb-2">Type</label>
+                      <label className="block text-sm font-medium text-white/80 mb-2">
+                        Type
+                      </label>
                       <select
                         value={selectedType}
                         onChange={(e) => setSelectedType(e.target.value)}
                         className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
                       >
                         {CHALLENGE_TYPES.map((type) => (
-                          <option key={type.value} value={type.value} className="bg-gray-800">
+                          <option
+                            key={type.value}
+                            value={type.value}
+                            className="bg-gray-800"
+                          >
                             {type.icon} {type.label}
                           </option>
                         ))}
@@ -549,7 +643,9 @@ export default function ChallengesPage() {
               {/* Résultats */}
               <div className="mb-4">
                 <p className="text-white/70">
-                  {availableChallenges.length} challenge{availableChallenges.length > 1 ? 's' : ''} trouvé{availableChallenges.length > 1 ? 's' : ''}
+                  {availableChallenges.length} challenge
+                  {availableChallenges.length > 1 ? 's' : ''} trouvé
+                  {availableChallenges.length > 1 ? 's' : ''}
                   {hasActiveFilters && ' avec les filtres appliqués'}
                 </p>
               </div>
@@ -560,29 +656,36 @@ export default function ChallengesPage() {
                   <div
                     key={index}
                     className={`p-4 border rounded-lg transition-all group ${
-                      isChallengeImplementable(definition.title) 
+                      isChallengeImplementable(definition.title)
                         ? 'border-white/20 hover:border-white/40 cursor-pointer hover:bg-white/5'
                         : 'border-red-400/30 bg-red-400/5 cursor-not-allowed opacity-60'
                     }`}
                     onClick={() => {
                       if (isChallengeImplementable(definition.title)) {
-                        handleAddChallenge(definition)
+                        handleAddChallenge(definition);
                       }
                     }}
                   >
                     <div className="flex items-start gap-3 mb-3">
-                      <div className="text-2xl group-hover:scale-110 transition-transform">{definition.icon}</div>
+                      <div className="text-2xl group-hover:scale-110 transition-transform">
+                        {definition.icon}
+                      </div>
                       <div className="flex-1">
                         <h3 className="font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">
                           {definition.title}
                         </h3>
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            definition.difficulty === 'easy' ? 'text-green-400 bg-green-400/20' :
-                            definition.difficulty === 'medium' ? 'text-yellow-400 bg-yellow-400/20' :
-                            definition.difficulty === 'hard' ? 'text-orange-400 bg-orange-400/20' :
-                            'text-purple-400 bg-purple-400/20'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              definition.difficulty === 'easy'
+                                ? 'text-green-400 bg-green-400/20'
+                                : definition.difficulty === 'medium'
+                                  ? 'text-yellow-400 bg-yellow-400/20'
+                                  : definition.difficulty === 'hard'
+                                    ? 'text-orange-400 bg-orange-400/20'
+                                    : 'text-purple-400 bg-purple-400/20'
+                            }`}
+                          >
                             {definition.difficulty}
                           </span>
                           {isChallengeImplemented(definition.title) ? (
@@ -598,16 +701,23 @@ export default function ChallengesPage() {
                               ❌ Non faisable
                             </span>
                           )}
-                          <span className="text-xs text-white/70">{definition.xpReward} XP</span>
+                          <span className="text-xs text-white/70">
+                            {definition.xpReward} XP
+                          </span>
                           <span className="text-xs text-white/50">•</span>
-                          <span className="text-xs text-white/50 capitalize">{definition.category}</span>
+                          <span className="text-xs text-white/50 capitalize">
+                            {definition.category}
+                          </span>
                         </div>
                       </div>
                     </div>
-                    <p className="text-sm text-white/70 leading-relaxed">{definition.description}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">
+                      {definition.description}
+                    </p>
                     {!isChallengeImplementable(definition.title) && (
                       <div className="mt-3 p-2 bg-red-400/10 border border-red-400/20 rounded text-xs text-red-300">
-                        <strong>Non implémentable :</strong> {getUnimplementationReason(definition.title)}
+                        <strong>Non implémentable :</strong>{' '}
+                        {getUnimplementationReason(definition.title)}
                       </div>
                     )}
                   </div>
@@ -617,8 +727,12 @@ export default function ChallengesPage() {
               {availableChallenges.length === 0 && (
                 <div className="text-center py-8">
                   <Search className="w-12 h-12 text-white/30 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">Aucun challenge trouvé</h3>
-                  <p className="text-white/70 mb-4">Essayez de modifier vos critères de recherche</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Aucun challenge trouvé
+                  </h3>
+                  <p className="text-white/70 mb-4">
+                    Essayez de modifier vos critères de recherche
+                  </p>
                   <button
                     onClick={resetFilters}
                     className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/15 transition-colors"
@@ -635,8 +749,8 @@ export default function ChallengesPage() {
         <ChallengeDetailModal
           isOpen={showChallengeDetail}
           onClose={() => {
-            setShowChallengeDetail(false)
-            setSelectedChallenge(null)
+            setShowChallengeDetail(false);
+            setSelectedChallenge(null);
           }}
           challenge={selectedChallenge}
           onDelete={handleChallengeDelete}
@@ -646,5 +760,5 @@ export default function ChallengesPage() {
         />
       </div>
     </MainLayout>
-  )
+  );
 }

@@ -1,101 +1,106 @@
-'use client'
+'use client';
 
-import React from 'react'
-import { Trophy, Target, Star, Award, TrendingUp } from 'lucide-react'
+import React from 'react';
+import { Trophy, Target, Star, Award, TrendingUp } from 'lucide-react';
 
 interface ChallengeStats {
-  activeChallenges: number
-  completedChallenges: number
-  totalAchievements: number
-  userLevel?: number
-  userXP?: number
-  nextLevelXP?: number
+  activeChallenges: number;
+  completedChallenges: number;
+  totalAchievements: number;
+  userLevel?: number;
+  userXP?: number;
+  nextLevelXP?: number;
 }
 
 interface ChallengesProgressHeaderProps {
-  title: string
-  emoji: string
-  stats?: ChallengeStats
+  title: string;
+  emoji: string;
+  stats?: ChallengeStats;
 }
 
 export default function ChallengesProgressHeader({
   title,
   emoji,
-  stats
+  stats,
 }: ChallengesProgressHeaderProps) {
   // Générer des conseils intelligents basés sur les stats
   const generateSmartAdvice = (): string => {
     if (!stats) {
-      return 'Commencez votre premier challenge pour débloquer votre potentiel !'
+      return 'Commencez votre premier challenge pour débloquer votre potentiel !';
     }
 
-    const { activeChallenges, completedChallenges, totalAchievements, userLevel } = stats
+    const {
+      activeChallenges,
+      completedChallenges,
+      totalAchievements,
+      userLevel,
+    } = stats;
 
     // Conseils basés sur les challenges actifs
     if (activeChallenges === 0) {
-      return '💡 Aucun challenge actif. Lancez-vous un défi pour progresser !'
+      return '💡 Aucun challenge actif. Lancez-vous un défi pour progresser !';
     }
 
     if (activeChallenges >= 5) {
-      return '🔥 Excellent ! Vous avez plusieurs challenges en cours. Gardez le rythme !'
+      return '🔥 Excellent ! Vous avez plusieurs challenges en cours. Gardez le rythme !';
     }
 
     if (activeChallenges >= 3) {
-      return '💪 Bien équilibré ! Vous avez un bon nombre de challenges actifs.'
+      return '💪 Bien équilibré ! Vous avez un bon nombre de challenges actifs.';
     }
 
     // Conseils basés sur les achievements
     if (totalAchievements === 0) {
-      return '🎯 Terminez vos premiers challenges pour débloquer des achievements !'
+      return '🎯 Terminez vos premiers challenges pour débloquer des achievements !';
     }
 
     if (totalAchievements >= 10) {
-      return '🏆 Impressionnant ! Vous collectionnez les achievements comme un pro !'
+      return '🏆 Impressionnant ! Vous collectionnez les achievements comme un pro !';
     }
 
     // Conseils basés sur le niveau
     if (userLevel && userLevel >= 10) {
-      return '⭐ Niveau élevé atteint ! Vous êtes un vrai champion des challenges !'
+      return '⭐ Niveau élevé atteint ! Vous êtes un vrai champion des challenges !';
     }
 
     if (userLevel && userLevel >= 5) {
-      return '📈 Niveau intermédiaire ! Continuez sur cette lancée !'
+      return '📈 Niveau intermédiaire ! Continuez sur cette lancée !';
     }
 
     // Conseils basés sur les challenges terminés
     if (completedChallenges >= 20) {
-      return '🎉 Expert des challenges ! Vous avez terminé plus de 20 défis !'
+      return '🎉 Expert des challenges ! Vous avez terminé plus de 20 défis !';
     }
 
     if (completedChallenges >= 10) {
-      return '👏 Très bien ! Vous avez terminé plus de 10 challenges !'
+      return '👏 Très bien ! Vous avez terminé plus de 10 challenges !';
     }
 
     if (completedChallenges >= 5) {
-      return '✨ Bon début ! Vous avez terminé plusieurs challenges !'
+      return '✨ Bon début ! Vous avez terminé plusieurs challenges !';
     }
 
-    return '🚀 Continuez vos challenges pour progresser et débloquer de nouveaux achievements !'
-  }
+    return '🚀 Continuez vos challenges pour progresser et débloquer de nouveaux achievements !';
+  };
 
   // Calculer des objectifs adaptatifs basés sur le niveau
   const getAdaptiveTargets = () => {
-    const level = stats?.userLevel || 1
+    const level = stats?.userLevel || 1;
     return {
       activeChallenges: Math.min(3 + Math.floor(level / 5), 10), // 3 au début, max 10
       completedChallenges: level * 5, // 5 par niveau
       achievements: level * 10, // 10 par niveau
-      nextLevel: level + 1 // Prochain niveau
-    }
-  }
+      nextLevel: level + 1, // Prochain niveau
+    };
+  };
 
-  const targets = getAdaptiveTargets()
+  const targets = getAdaptiveTargets();
 
   // Calculer les pourcentages
   const getPercentage = (current: number, target: number) => {
-    if (target === 0) return 0
-    return Math.min(Math.round((current / target) * 100), 100)
-  }
+    if (target === 0) return 0;
+    return Math.min(Math.round((current / target) * 100), 100);
+  };
 
   const metrics = [
     {
@@ -104,7 +109,10 @@ export default function ChallengesProgressHeader({
       current: stats?.activeChallenges || 0,
       target: targets.activeChallenges,
       color: 'green',
-      percentage: getPercentage(stats?.activeChallenges || 0, targets.activeChallenges)
+      percentage: getPercentage(
+        stats?.activeChallenges || 0,
+        targets.activeChallenges,
+      ),
     },
     {
       icon: <Trophy className="h-5 w-5" />,
@@ -112,7 +120,10 @@ export default function ChallengesProgressHeader({
       current: stats?.completedChallenges || 0,
       target: targets.completedChallenges,
       color: 'cyan',
-      percentage: getPercentage(stats?.completedChallenges || 0, targets.completedChallenges)
+      percentage: getPercentage(
+        stats?.completedChallenges || 0,
+        targets.completedChallenges,
+      ),
     },
     {
       icon: <Star className="h-5 w-5" />,
@@ -120,7 +131,10 @@ export default function ChallengesProgressHeader({
       current: stats?.totalAchievements || 0,
       target: targets.achievements,
       color: 'purple',
-      percentage: getPercentage(stats?.totalAchievements || 0, targets.achievements)
+      percentage: getPercentage(
+        stats?.totalAchievements || 0,
+        targets.achievements,
+      ),
     },
     {
       icon: <Award className="h-5 w-5" />,
@@ -128,9 +142,9 @@ export default function ChallengesProgressHeader({
       current: stats?.userLevel || 1,
       target: targets.nextLevel,
       color: 'pink',
-      percentage: stats?.userLevel ? ((stats.userLevel % 1) * 100) : 0 // Progression vers le prochain niveau
-    }
-  ]
+      percentage: stats?.userLevel ? (stats.userLevel % 1) * 100 : 0, // Progression vers le prochain niveau
+    },
+  ];
 
   return (
     <div className="glass-effect rounded-xl p-6 mb-6 border border-white/10">
@@ -150,21 +164,27 @@ export default function ChallengesProgressHeader({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {metrics.map((metric, index) => (
           <div key={index} className="space-y-2">
-            <div className={`flex items-center gap-2 text-neon-${metric.color}`}>
+            <div
+              className={`flex items-center gap-2 text-neon-${metric.color}`}
+            >
               {metric.icon}
-              <span className="text-sm font-medium text-white">{metric.label}</span>
+              <span className="text-sm font-medium text-white">
+                {metric.label}
+              </span>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-white">
                 {metric.current}
                 <span className="text-sm text-gray-400">/{metric.target}</span>
               </span>
-              <span className={`text-xs px-2 py-1 rounded-full bg-neon-${metric.color}/20 text-neon-${metric.color}`}>
+              <span
+                className={`text-xs px-2 py-1 rounded-full bg-neon-${metric.color}/20 text-neon-${metric.color}`}
+              >
                 {metric.percentage}%
               </span>
             </div>
-            
+
             <div className="w-full bg-gray-700 rounded-full h-2">
               <div
                 className={`h-2 rounded-full transition-all duration-500 bg-neon-${metric.color}`}
@@ -180,11 +200,13 @@ export default function ChallengesProgressHeader({
         <div className="flex items-start gap-3">
           <span className="text-2xl mt-1">💡</span>
           <div>
-            <p className="text-sm font-medium text-white mb-1">Conseil intelligent</p>
+            <p className="text-sm font-medium text-white mb-1">
+              Conseil intelligent
+            </p>
             <p className="text-sm text-gray-300">{generateSmartAdvice()}</p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

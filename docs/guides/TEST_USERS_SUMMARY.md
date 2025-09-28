@@ -11,6 +11,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 ## 👨‍💼 **COACHS** (3 utilisateurs)
 
 ### 1. Thomas Martin
+
 - **Email** : `coach.martin@supernovafit.com`
 - **Mot de passe** : `Coach123!`
 - **UID** : `hTcmfxj5hLSeGeuUfi0Des7W4WM2`
@@ -19,6 +20,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - **Athlètes** : Lucas Bernard, Julie Mercier
 
 ### 2. Sophie Dubois
+
 - **Email** : `coach.sophie@supernovafit.com`
 - **Mot de passe** : `Coach123!`
 - **UID** : `CSx3BAP5nWRapJMsl1OwcHUTwmo1`
@@ -27,6 +29,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - **Athlètes** : Emma Rousseau, Antoine Petit
 
 ### 3. Alexandre Moreau
+
 - **Email** : `coach.alex@supernovafit.com`
 - **Mot de passe** : `Coach123!`
 - **UID** : `ZiytJg8OdHTd2UBCJSbDfzQklGt1`
@@ -39,6 +42,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 ## 🏃 **ATHLÈTES** (5 utilisateurs)
 
 ### 1. Lucas Bernard
+
 - **Email** : `athlete.lucas@supernovafit.com`
 - **Mot de passe** : `Athlete123!`
 - **UID** : `tZp61RK0IgOYBfYNPF03LtCu9L52`
@@ -48,6 +52,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - **Coach** : Thomas Martin
 
 ### 2. Emma Rousseau
+
 - **Email** : `athlete.emma@supernovafit.com`
 - **Mot de passe** : `Athlete123!`
 - **UID** : `3SAGAqDW44PXZ1cD7hYx1QPaocH2`
@@ -57,6 +62,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - **Coach** : Sophie Dubois
 
 ### 3. Maxime Leroy
+
 - **Email** : `athlete.maxime@supernovafit.com`
 - **Mot de passe** : `Athlete123!`
 - **UID** : `tPQUhE7OhgS10FhPcmlj0girOxw2`
@@ -66,6 +72,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - **Coach** : Alexandre Moreau
 
 ### 4. Julie Mercier
+
 - **Email** : `athlete.julie@supernovafit.com`
 - **Mot de passe** : `Athlete123!`
 - **UID** : `5e8kVN3OrbPDA8hQIjJghWScwEe2`
@@ -75,6 +82,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - **Coach** : Thomas Martin
 
 ### 5. Antoine Petit
+
 - **Email** : `athlete.antoine@supernovafit.com`
 - **Mot de passe** : `Athlete123!`
 - **UID** : `FFrHQw0V85gsuchVQycjHimfK6T2`
@@ -88,9 +96,11 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 ## 🌐 **CONNEXION**
 
 ### URL de l'application
+
 **https://supernovafit-a6fe7.web.app**
 
 ### Instructions de connexion
+
 1. Aller sur l'URL ci-dessus
 2. Cliquer sur "Se connecter"
 3. Utiliser n'importe quel email/mot de passe de la liste ci-dessus
@@ -101,6 +111,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 ## 🎯 **CAS D'USAGE RECOMMANDÉS**
 
 ### **Pour tester les fonctionnalités Coach :**
+
 - **Connexion** : `coach.martin@supernovafit.com` / `Coach123!`
 - **Pages à tester** :
   - Dashboard coach avec métriques athlètes
@@ -109,6 +120,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
   - Pages athlètes individuelles (déjà liés)
 
 ### **Pour tester les fonctionnalités Athlète :**
+
 - **Connexion** : `athlete.lucas@supernovafit.com` / `Athlete123!`
 - **Pages à tester** :
   - Dashboard avec statistiques personnelles
@@ -119,6 +131,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
   - Export de données (CSV, JSON, Excel, PDF)
 
 ### **Fonctionnalités récentes à tester :**
+
 - ✅ **Export de données** : Page dédiée avec graphiques intégrés
 - ✅ **Interface moderne** : Glassmorphism et animations
 - ✅ **Pagination** : Chargement progressif sur toutes les listes
@@ -130,6 +143,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 ## 🔧 **FONCTIONNALITÉS DISPONIBLES**
 
 ### **Modules Coach :**
+
 - ✅ Dashboard avec métriques athlètes
 - ✅ Gestion des athlètes (liés et non liés)
 - ✅ Filtres avancés et recherche
@@ -137,6 +151,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - ✅ Navigation optimisée
 
 ### **Modules Athlète :**
+
 - ✅ Dashboard personnel avec statistiques
 - ✅ Suivi nutritionnel complet
 - ✅ Gestion des entraînements
@@ -146,6 +161,7 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 - ✅ Interface moderne et responsive
 
 ### **Fonctionnalités communes :**
+
 - ✅ Authentification Firebase
 - ✅ Profils utilisateur complets
 - ✅ Système d'invitations coach-athlète
@@ -157,8 +173,11 @@ Les utilisateurs suivants ont été créés dans Firebase Auth et Firestore. Ils
 ## 📊 **DONNÉES DE TEST**
 
 ### **Repas** : ~150 repas par athlète (30 jours)
+
 ### **Entraînements** : ~45 entraînements par athlète (30 jours)
+
 ### **Mesures** : ~15 mesures par athlète (évolution progressive)
+
 ### **Journal** : ~30 entrées par athlète (humeur, énergie, commentaires)
 
 ---

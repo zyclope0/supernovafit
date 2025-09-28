@@ -1,8 +1,8 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 // Formater une date au format français
@@ -11,7 +11,7 @@ export function formatDate(date: Date | string): string {
   return new Intl.DateTimeFormat('fr-FR', {
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric'
+    year: 'numeric',
   }).format(d);
 }
 
@@ -25,12 +25,12 @@ export function formatNumber(num: number): string {
 // Obtenir le nom du repas
 export function getMealName(mealType: string): string {
   const meals: Record<string, string> = {
-    'petit_dej': 'Petit-déjeuner',
-    'collation_matin': 'Collation matin',
-    'dejeuner': 'Déjeuner',
-    'collation_apres_midi': 'Collation après-midi',
-    'diner': 'Dîner',
-    'collation_soir': 'Collation soir'
+    petit_dej: 'Petit-déjeuner',
+    collation_matin: 'Collation matin',
+    dejeuner: 'Déjeuner',
+    collation_apres_midi: 'Collation après-midi',
+    diner: 'Dîner',
+    collation_soir: 'Collation soir',
   };
   return meals[mealType] || mealType;
 }
@@ -42,4 +42,4 @@ export function generateId(): string {
 
 // Fonction isValidEmail supprimée - non utilisée
 
-// Fonction getColorByValue supprimée - non utilisée 
+// Fonction getColorByValue supprimée - non utilisée

@@ -7,6 +7,7 @@ Le système d'invitations permet aux coachs de générer des codes d'invitation 
 ## 🎯 Fonctionnalités
 
 ### ✅ **Implémenté**
+
 - **Génération de codes** : 6 caractères A-Z/2-9 (sans O/0/I/1)
 - **TTL 72h** : Expiration automatique
 - **Usage unique** : Chaque code ne peut être utilisé qu'une fois
@@ -19,9 +20,10 @@ Le système d'invitations permet aux coachs de générer des codes d'invitation 
 ## 🏗️ Architecture
 
 ### Types TypeScript
+
 ```typescript
 // Types pour les invitations
-export type InviteStatus = 'active' | 'used' | 'revoked';
+export type InviteStatus = "active" | "used" | "revoked";
 
 export interface Invite {
   code: string; // Code à 6 caractères
@@ -42,6 +44,7 @@ export interface User {
 ```
 
 ### Structure Firestore
+
 ```
 invites/{code}
 ├── code: string (6 caractères)
@@ -57,53 +60,57 @@ invites/{code}
 ## 🔧 Implémentation
 
 ### 1. Utilitaires (`src/lib/inviteUtils.ts`)
+
 ```typescript
 // Génération de code
-export function generateInviteCode(): string
+export function generateInviteCode(): string;
 
 // Validation de format
-export function validateInviteCode(code: string): boolean
+export function validateInviteCode(code: string): boolean;
 
 // Calcul d'expiration
-export function calculateExpirationDate(): Date
+export function calculateExpirationDate(): Date;
 
 // Vérifications
-export function isInviteExpired(invite: Invite): boolean
-export function canUseInvite(invite: Invite): boolean
+export function isInviteExpired(invite: Invite): boolean;
+export function canUseInvite(invite: Invite): boolean;
 ```
 
 ### 2. Hooks Firestore (`src/hooks/useInvites.ts`)
+
 ```typescript
 // Hook coach
 export function useCoachInvites(coachId: string) {
-  const { invites, loading, generating, generateInvite, revokeInvite }
+  const { invites, loading, generating, generateInvite, revokeInvite };
 }
 
 // Hook athlète
 export function useInviteClaim() {
-  const { claiming, claimInvite }
+  const { claiming, claimInvite };
 }
 ```
 
 ### 3. Composants UI
+
 - **`InviteModal.tsx`** : Modal pour générer/gérer les invitations (côté coach)
 - **`InviteCodeInput.tsx`** : Composant de saisie de code (côté athlète)
 
 ## 🔐 Sécurité
 
 ### Règles Firestore
+
 ```javascript
 // Collection 'invites'
 match /invites/{inviteId} {
   // Création : coachs uniquement
-  allow create: if isAuthenticated() && 
+  allow create: if isAuthenticated() &&
     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
     request.resource.data.coachId == request.auth.uid;
-  
+
   // Lecture : invitations actives uniquement
-  allow read: if isAuthenticated() && 
+  allow read: if isAuthenticated() &&
     resource.data.status == 'active';
-  
+
   // Mise à jour :
   // - Coach : peut révoquer ses invitations
   // - Athlète : peut marquer comme utilisée
@@ -120,6 +127,7 @@ match /invites/{inviteId} {
 ```
 
 ### Validations
+
 - **Format** : 6 caractères A-Z/2-9 (sans O/0/I/1)
 - **Rate limiting** : 5 générations / 10 min / coach
 - **Expiration** : Vérification TTL 72h
@@ -128,6 +136,7 @@ match /invites/{inviteId} {
 ## 🎨 Interface Utilisateur
 
 ### Côté Coach (`/coach`)
+
 - **Bouton "Inviter un athlète"** dans le header
 - **Modal complet** avec :
   - Génération de codes
@@ -138,6 +147,7 @@ match /invites/{inviteId} {
   - Temps restant avant expiration
 
 ### Côté Athlète (`/`)
+
 - **Composant automatique** si :
   - Utilisateur connecté
   - Rôle = 'sportif'
@@ -149,31 +159,34 @@ match /invites/{inviteId} {
 ## 📊 Analytics
 
 ### Événements Sentry
+
 ```typescript
 // Invitation générée
 Sentry.addBreadcrumb({
-  category: 'invite',
-  message: 'Invitation générée',
-  data: { coachId, code }
-})
+  category: "invite",
+  message: "Invitation générée",
+  data: { coachId, code },
+});
 
 // Invitation utilisée
 Sentry.addBreadcrumb({
-  category: 'invite',
-  message: 'Invitation utilisée',
-  data: { code, athleteId, coachId }
-})
+  category: "invite",
+  message: "Invitation utilisée",
+  data: { code, athleteId, coachId },
+});
 ```
 
 ## 🚀 Utilisation
 
 ### Pour un Coach
+
 1. Aller sur `/coach`
 2. Cliquer sur "Inviter un athlète"
 3. Générer un code
 4. Copier et partager le code avec l'athlète
 
 ### Pour un Athlète
+
 1. Aller sur `/` (dashboard)
 2. Saisir le code d'invitation
 3. Valider pour être lié au coach
@@ -202,6 +215,7 @@ sequenceDiagram
 ## 🛠️ Maintenance
 
 ### Indexes Firestore
+
 ```json
 {
   "collectionGroup": "invites",
@@ -214,6 +228,7 @@ sequenceDiagram
 ```
 
 ### Nettoyage Automatique
+
 - **Expiration** : Vérification côté client
 - **Statuts** : Gestion automatique (active → expired)
 - **Performance** : Index optimisé pour requêtes coach
@@ -221,11 +236,13 @@ sequenceDiagram
 ## 🎯 Évolutions Futures
 
 ### Version 2.0 (Multi-coach)
+
 - Support plusieurs coachs par athlète
 - Permissions granulaires par coach
 - Notifications de nouveaux coachs
 
 ### Version 3.0 (Invitations Avancées)
+
 - Invitations par email
 - Codes QR
 - Expiration personnalisable
@@ -234,11 +251,13 @@ sequenceDiagram
 ## 📝 Tests Manuels
 
 ### Happy Path
+
 1. Coach génère un code
 2. Athlète saisit le code
 3. Liaison créée avec succès
 
 ### Cas d'Erreur
+
 1. Code expiré
 2. Code déjà utilisé
 3. Code révoqué
@@ -246,6 +265,7 @@ sequenceDiagram
 5. Rate limit atteint
 
 ### Sécurité
+
 1. Tentative d'utilisation par un coach
 2. Tentative de génération par un athlète
 3. Tentative de révocation par un autre coach

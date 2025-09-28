@@ -6,22 +6,27 @@
 ## 📝 Problèmes Identifiés
 
 ### 1. Côté Coach
+
 - **Symptôme** : Le code d'invitation disparaissait après 3-4 secondes
 - **Cause** : Erreur de permissions lors de la lecture des invitations du coach
 
-### 2. Côté Athlète  
+### 2. Côté Athlète
+
 - **Symptôme** : "FirebaseError: Missing or insufficient permissions" lors de l'utilisation d'un code
 - **Cause** : Erreur de permissions lors de la lecture/mise à jour de l'invitation
 
 ## 🔍 Analyse Technique
 
 ### Problème Principal
+
 Le code utilisait `addDoc()` pour créer les invitations (génération d'ID automatique), mais tentait ensuite d'accéder aux documents avec le code comme ID :
-- Ligne 80 : `await addDoc(collection(db, 'invites'), inviteData)` 
+
+- Ligne 80 : `await addDoc(collection(db, 'invites'), inviteData)`
 - Ligne 104 : `const inviteRef = doc(db, 'invites', code)` ❌
 - Ligne 143 : `const inviteRef = doc(db, 'invites', code)` ❌
 
 ### Problèmes Secondaires
+
 1. Les règles Firestore étaient trop restrictives pour la lecture
 2. La règle `list` avait une syntaxe incorrecte
 3. La mise à jour du profil utilisateur n'était pas autorisée pour lier le coach
@@ -29,19 +34,22 @@ Le code utilisait `addDoc()` pour créer les invitations (génération d'ID auto
 ## ✅ Solutions Appliquées
 
 ### 1. Correction du Hook `useInvites.ts`
+
 ```typescript
 // Avant
-await addDoc(collection(db, 'invites'), inviteData)
+await addDoc(collection(db, "invites"), inviteData);
 
-// Après  
-await setDoc(doc(db, 'invites', code), inviteData)
+// Après
+await setDoc(doc(db, "invites", code), inviteData);
 ```
+
 - Utilisation du code comme ID du document pour cohérence
 - Ajout du code dans les données retournées par `onSnapshot`
 
 ### 2. Correction des Règles Firestore
 
 #### Collection `invites`
+
 ```javascript
 // Lecture améliorée
 allow read: if isAuthenticated() && (
@@ -49,16 +57,17 @@ allow read: if isAuthenticated() && (
   resource.data.status == 'active'              // Athlète peut lire les actives
 );
 
-// Liste simplifiée  
+// Liste simplifiée
 allow list: if isAuthenticated();
 ```
 
 #### Collection `users`
+
 ```javascript
 // Mise à jour pour permettre la liaison coach-athlète
-allow update: if isOwner(userId) || 
+allow update: if isOwner(userId) ||
   (
-    isAuthenticated() && 
+    isAuthenticated() &&
     request.auth.uid == userId &&
     request.resource.data.diff(resource.data).changedKeys().hasOnly(['ownerCoachId', 'updated_at']) &&
     request.resource.data.ownerCoachId != null
