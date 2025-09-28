@@ -15,7 +15,6 @@ import dynamic from 'next/dynamic'
 import MesuresCardClickable from '@/components/ui/MesuresCardClickable'
 import MesuresDetailModal from '@/components/ui/MesuresDetailModal'
 import MesuresFormModal from '@/components/ui/MesuresFormModal'
-import HealthIndicator from '@/components/ui/HealthIndicator'
 import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer'
 const MesuresCharts = dynamic(() => import('@/components/charts/MesuresCharts'), { ssr: false })
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), { ssr: false })
@@ -47,17 +46,6 @@ export default function MesuresPage() {
                                       m.tour_cou || m.tour_poitrine || m.commentaire) || mesures[0]
   const stats = lastMesure ? getStats(lastMesure) : null
 
-  // Données historiques pour les SparklineCharts (dernières 7 mesures)
-  const recentMesures = mesures.slice(0, 7).reverse() // Plus récentes en premier
-  const weightHistory = recentMesures.map(m => m.poids || 0).filter(w => w > 0)
-  const imcHistory = recentMesures.map(m => {
-    if (m.poids && m.taille) {
-      const tailleEnM = m.taille / 100
-      return m.poids / (tailleEnM * tailleEnM)
-    }
-    return 0
-  }).filter(imc => imc > 0)
-  const bodyFatHistory = recentMesures.map(m => m.masse_grasse || 0).filter(bf => bf > 0)
 
   const handleSubmit = async (formData: {
     date: string
@@ -233,14 +221,84 @@ export default function MesuresPage() {
         {/* Header industrialisé avec métriques */}
         {user && (
           <>
-            {/* Header simplifié - seulement le titre et le conseil */}
+            {/* Header avec métriques importantes et tendances */}
             <div className="glass-effect rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">📏</span>
                 <h2 className="text-lg font-semibold text-white">MESURES</h2>
               </div>
               
-              {/* Conseil intelligent seulement */}
+              {/* Métriques principales avec tendances */}
+              {stats && mesures.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  {/* Poids avec tendance */}
+                  <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-300">Poids actuel</span>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        stats.evolution_poids > 0 ? 'bg-red-500/20 text-red-400' :
+                        stats.evolution_poids < 0 ? 'bg-green-500/20 text-green-400' :
+                        'bg-gray-500/20 text-gray-400'
+                      }`}>
+                        {stats.evolution_poids > 0 ? '↗️' : stats.evolution_poids < 0 ? '↘️' : '→'}
+                        {stats.evolution_poids !== 0 ? Math.abs(stats.evolution_poids).toFixed(1) + 'kg' : 'Stable'}
+                      </span>
+                    </div>
+                    <div className="text-xl font-bold text-white">
+                      {mesures[0].poids || 0}kg
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Fourchette: {stats.poids_ideal_min}-{stats.poids_ideal_max}kg
+                    </div>
+                  </div>
+
+                  {/* IMC avec tendance */}
+                  <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-300">IMC</span>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        stats.imc < 18.5 ? 'bg-blue-500/20 text-blue-400' :
+                        stats.imc < 25 ? 'bg-green-500/20 text-green-400' :
+                        stats.imc < 30 ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-red-500/20 text-red-400'
+                      }`}>
+                        {stats.imc < 18.5 ? 'Sous-poids' :
+                         stats.imc < 25 ? 'Normal' :
+                         stats.imc < 30 ? 'Surpoids' : 'Obésité'}
+                      </span>
+                    </div>
+                    <div className="text-xl font-bold text-white">
+                      {stats.imc.toFixed(1)}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Dernière mesure: {formatDate(mesures[0].date)}
+                    </div>
+                  </div>
+
+                  {/* Masse grasse avec tendance */}
+                  <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-300">Masse grasse</span>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        stats.evolution_masse_grasse > 0 ? 'bg-red-500/20 text-red-400' :
+                        stats.evolution_masse_grasse < 0 ? 'bg-green-500/20 text-green-400' :
+                        'bg-gray-500/20 text-gray-400'
+                      }`}>
+                        {stats.evolution_masse_grasse > 0 ? '↗️' : stats.evolution_masse_grasse < 0 ? '↘️' : '→'}
+                        {stats.evolution_masse_grasse !== 0 ? Math.abs(stats.evolution_masse_grasse).toFixed(1) + '%' : 'Stable'}
+                      </span>
+                    </div>
+                    <div className="text-xl font-bold text-white">
+                      {mesures[0].masse_grasse || 0}%
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      {mesures.length} mesure{mesures.length > 1 ? 's' : ''} enregistrée{mesures.length > 1 ? 's' : ''}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Conseil intelligent */}
               {stats && (
                 <div className="p-3 bg-white/5 rounded-lg border border-white/10">
                   <div className="flex items-center gap-3 text-sm text-gray-300">
@@ -271,42 +329,6 @@ export default function MesuresPage() {
                 </div>
               )}
             </div>
-            
-            {/* Indicateurs de santé améliorés - Version complète */}
-            {stats && mesures.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <HealthIndicator
-                  value={mesures[0].poids || 0}
-                  unit="kg"
-                  label="Poids"
-                  type="weight"
-                  target={stats ? { min: stats.poids_ideal_min, max: stats.poids_ideal_max } : undefined}
-                  trend={stats.evolution_poids > 0 ? 'up' : stats.evolution_poids < 0 ? 'down' : 'stable'}
-                  history={weightHistory.length > 1 ? weightHistory : undefined}
-                />
-                <HealthIndicator
-                  value={stats.imc}
-                  unit=""
-                  label="IMC"
-                  type="imc"
-                  history={imcHistory.length > 1 ? imcHistory : undefined}
-                />
-                <HealthIndicator
-                  value={mesures[0].masse_grasse || 0}
-                  unit="%"
-                  label="Masse grasse"
-                  type="bodyfat"
-                  history={bodyFatHistory.length > 1 ? bodyFatHistory : undefined}
-                  trend={stats.evolution_masse_grasse > 0 ? 'up' : stats.evolution_masse_grasse < 0 ? 'down' : 'stable'}
-                />
-                <HealthIndicator
-                  value={mesures.length}
-                  unit=""
-                  label="Mesures"
-                  type="muscle"
-                />
-              </div>
-            )}
 
             {/* Hint compact */}
             <div className="glass-effect p-3 rounded-lg border border-white/10 mb-6">
