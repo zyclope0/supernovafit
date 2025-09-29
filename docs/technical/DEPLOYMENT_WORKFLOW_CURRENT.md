@@ -300,14 +300,51 @@ firebase hosting:channel:list
 ```json
 {
   "scripts": {
-    "prepare": "is-ci || husky"
+    "postinstall": "husky || true",
+    "husky-install": "husky"
   }
 }
 ```
 
-- `is-ci` détecte automatiquement l'environnement CI/CD
-- **Local** : Husky s'exécute (hooks pre-commit actifs)
-- **CI/CD** : Husky ignoré (pas de commits Git nécessaires)
+- `postinstall` : Husky s'exécute après installation, échec silencieux avec `|| true`
+- **Local** : `npm install` → Husky installé → Hooks pre-commit actifs
+- **CI/CD** : `npm ci` → Husky échoue silencieusement → Workflow continue
+- **Solution universelle** : Compatible toutes plateformes, sans dépendance externe
+
+**Date de résolution :** 29.09.2025
+
+### **Problème 8 : Dépendances build CSS manquantes en CI/CD**
+
+**Symptôme :** `Cannot find module 'autoprefixer'` lors du build Next.js en CI/CD
+
+**Cause critique :**
+
+- `autoprefixer`, `postcss`, `tailwindcss` placés dans `devDependencies`
+- CI/CD : `npm ci --no-audit` n'installe pas les `devDependencies` en production
+- Next.js/Tailwind CSS : Ces modules **requis** pour le build de production
+- Erreur bloque complètement le workflow
+
+**Solution définitive :** ✅ Corrigé
+
+```json
+{
+  "dependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0"
+  }
+}
+```
+
+- **Modules CSS déplacés** vers `dependencies` (production)
+- **Disponibilité garantie** en CI/CD et développement local
+- **Build Next.js** : Toujours fonctionnel avec preprocesseurs CSS
+
+**Modules concernés :**
+
+- `autoprefixer` : Preprocesseur CSS pour Next.js (compatibilité navigateurs)
+- `postcss` : Processeur CSS core (transformation/optimisation)
+- `tailwindcss` : Framework CSS principal (génération classes utilitaires)
 
 **Date de résolution :** 29.09.2025
 
