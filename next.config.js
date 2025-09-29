@@ -2,9 +2,10 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const { withSentryConfig } = require('@sentry/nextjs');
 // Require conditionnel pour éviter les erreurs en CI/CD
-const withBundleAnalyzer = process.env.ANALYZE === 'true' 
-  ? require('@next/bundle-analyzer')({ enabled: true })
-  : (config) => config; // Fonction identité si désactivé
+const withBundleAnalyzer =
+  process.env.ANALYZE === 'true'
+    ? require('@next/bundle-analyzer')({ enabled: true })
+    : (config) => config; // Fonction identité si désactivé
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,

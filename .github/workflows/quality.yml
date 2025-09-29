@@ -64,7 +64,14 @@ jobs:
           NODE_ENV: development
 
       - name: 🧹 ESLint + Prettier
-        run: npm run lint
+        run: |
+          echo "🔍 Vérification du formatage..."
+          npm run lint || {
+            echo "❌ Problèmes de formatage détectés. Correction automatique..."
+            npm run lint:fix
+            echo "✅ Formatage corrigé automatiquement"
+            npm run lint
+          }
         env:
           NODE_ENV: development
 

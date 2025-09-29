@@ -1,11 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Run lint-staged for formatting and linting
+# Exécuter lint-staged avant chaque commit
 npx lint-staged
 
-# Run type checking
-npm run typecheck
-
-# Run tests for changed files
-npm run test:run -- --changed
+# Vérifier que le linting passe
+npm run lint

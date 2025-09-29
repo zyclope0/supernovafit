@@ -199,13 +199,15 @@ firebase hosting:channel:list
 
 **Symptôme :** `Code style issues found in 3 files. Run Prettier with --write to fix.` sur `public/sw.js`, `public/workbox-*.js`, `public/fallback-*.js`
 
-**Cause racine :** 
+**Cause racine :**
+
 - Script `lint` exécutait `eslint .` qui incluait la vérification Prettier sur tous les fichiers
 - Fichiers PWA générés automatiquement par `next-pwa` avec hash différent à chaque build
 - `.eslintignore` ignorait ESLint mais pas la vérification Prettier intégrée
 - Absence de `.prettierignore` = Prettier vérifiait les fichiers générés
 
 **Solution définitive :** ✅ Corrigé
+
 - Créé `.prettierignore` avec exclusions complètes (PWA, build, node_modules, lockfiles)
 - Séparé ESLint et Prettier dans `package.json`: `eslint . && prettier --check .`
 - Ajouté script `lint:fix`: `eslint . --fix && prettier --write .`
@@ -217,18 +219,21 @@ firebase hosting:channel:list
 
 **Symptôme :** `Error: Cannot find module '@next/bundle-analyzer'` lors du build CI/CD
 
-**Cause racine :** 
+**Cause racine :**
+
 - `next.config.js` ligne 4 : `require('@next/bundle-analyzer')` exécuté **toujours**
 - CI/CD : `npm ci` avec `NODE_ENV=production` n'installe pas les `devDependencies`
 - Module requis même quand `enabled: false`
 
 **Solution définitive :** ✅ Corrigé
+
 - Require conditionnel : `process.env.ANALYZE === 'true' ? require('@next/bundle-analyzer') : (config) => config`
 - Bundle analyzer chargé seulement si variable `ANALYZE=true` définie
 - Fonction identité `(config) => config` si désactivé
 - Compatible CI/CD production sans `devDependencies`
 
 **Tests validés :**
+
 - Build normal : ✅ 59s, 221KB bundle
 - Build avec `ANALYZE=true` : ✅ 22s + rapports HTML générés
 - CI/CD : ✅ Plus d'erreur "Cannot find module"
