@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Exécuter lint-staged avant chaque commit
 npx lint-staged
 

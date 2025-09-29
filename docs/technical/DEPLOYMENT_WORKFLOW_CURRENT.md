@@ -240,6 +240,51 @@ firebase hosting:channel:list
 
 **Date de résolution :** 29.09.2025
 
+### **🔄 SOLUTION ANTI-CYCLE VICIEUX**
+
+**Problème :** "Serpent qui se mord la queue" - Correction deploy → erreur quality → correction quality → erreur deploy
+
+**Solution complète :**
+
+#### **1. Husky + lint-staged (Pre-commit hooks)**
+
+```json
+{
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yml,yaml}": ["prettier --write"]
+  }
+}
+```
+
+- **Formatage automatique** avant chaque commit
+- **Plus jamais de problèmes** de formatage dans les commits
+
+#### **2. Workflow CI intelligent (Auto-correction)**
+
+```yaml
+- name: 🧹 ESLint + Prettier
+  run: |
+    npm run lint || {
+      echo "❌ Problèmes détectés. Correction automatique..."
+      npm run lint:fix
+      npm run lint
+    }
+```
+
+- **Tentative normale** puis **auto-correction** si échec
+- **Workflow robuste** qui ne bloque plus sur le formatage
+
+#### **3. Scripts optimisés**
+
+- `npm run lint:fix` : Correction automatique locale
+- `npm run lint` : Vérification stricte
+- Configuration `.prettierignore` complète
+
+**Résultat :** ✅ **Fin du cycle vicieux** - Workflow auto-correcteur et robuste
+
+**Date d'implémentation :** 29.09.2025
+
 ---
 
 ## 🔐 **SÉCURITÉ**
