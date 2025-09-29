@@ -285,6 +285,32 @@ firebase hosting:channel:list
 
 **Date d'implémentation :** 29.09.2025
 
+### **Problème 7 : Script prepare Husky bloque CI/CD**
+
+**Symptôme :** `sh: 1: husky: not found` lors de `npm ci` en CI/CD
+
+**Cause :**
+
+- Script `prepare` exécuté automatiquement après `npm ci`
+- Husky non nécessaire en environnement CI (pas de commits Git)
+- Erreur `exit code 127` bloque le workflow
+
+**Solution définitive :** ✅ Corrigé
+
+```json
+{
+  "scripts": {
+    "prepare": "is-ci || husky"
+  }
+}
+```
+
+- `is-ci` détecte automatiquement l'environnement CI/CD
+- **Local** : Husky s'exécute (hooks pre-commit actifs)
+- **CI/CD** : Husky ignoré (pas de commits Git nécessaires)
+
+**Date de résolution :** 29.09.2025
+
 ---
 
 ## 🔐 **SÉCURITÉ**
