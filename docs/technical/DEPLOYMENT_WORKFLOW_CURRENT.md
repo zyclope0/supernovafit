@@ -1,9 +1,9 @@
 # 🚀 WORKFLOW DE DÉPLOIEMENT ACTUEL - SUPERNOVAFIT v2.0.0
 
-**Date :** 28.09.2025  
+**Date :** 29.09.2025  
 **Version :** 2.0.0  
-**Statut :** ✅ **OPÉRATIONNEL**  
-**Dernière mise à jour :** 28.09.2025
+**Statut :** ✅ **OPÉRATIONNEL** - Déploiement automatique fonctionnel  
+**Dernière mise à jour :** 29.09.2025
 
 ---
 
@@ -184,6 +184,16 @@ firebase hosting:channel:list
 **Cause :** Fichiers `public/*.js` générés par le build
 
 **Solution :** ✅ Corrigé - Formatage automatique des fichiers générés
+
+### **Problème 4 : Module @next/bundle-analyzer non trouvé**
+
+**Symptôme :** `Error: Cannot find module '@next/bundle-analyzer'` lors du build CI/CD
+
+**Cause :** `package-lock.json` non synchronisé avec les nouvelles devDependencies
+
+**Solution :** ✅ Corrigé - `npm install` local + commit `package-lock.json` mis à jour
+
+**Date de résolution :** 29.09.2025
 
 ---
 
