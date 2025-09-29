@@ -105,6 +105,9 @@ const nextConfig = {
   // eslint: {
   //   ignoreDuringBuilds: true,
   // },
+
+  // Exclure les fichiers de test du build de production
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   images: {
     // ✅ Issue #12 - Formats modernes pour réduire la taille (AVIF → WebP → fallback)
     formats: ['image/avif', 'image/webp'],
@@ -127,6 +130,19 @@ const nextConfig = {
     unoptimized: false,
   },
   webpack: (config, { isServer }) => {
+    // Exclure les fichiers de test du build de production
+    config.module.rules.push({
+      test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
+      exclude: /node_modules/,
+      use: 'ignore-loader',
+    });
+
+    // Exclure le dossier test du build
+    config.module.rules.push({
+      test: /src\/test\//,
+      use: 'ignore-loader',
+    });
+
     // Nettoyage: limiter les fallbacks au strict nécessaire
     config.resolve.fallback = {
       ...config.resolve.fallback,
