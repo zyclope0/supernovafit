@@ -1,0 +1,58 @@
+# Build outputs
+.next/
+dist/
+out/
+build/
+
+# Dependencies
+node_modules/
+
+# Generated PWA files (auto-generated, cannot be formatted)
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/fallback-*.js
+*.map
+
+# TypeScript generated (Next.js system file)
+next-env.d.ts
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Stories
+**/*.stories.ts
+**/*.stories.tsx
+
+# Coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env*
+!.env.example
+
+# Lockfiles (auto-generated)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Sentry files
+.sentryclirc
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Audit files
+audits/
+AUDIT.md
