@@ -1,6 +1,45 @@
 import { z } from 'zod';
 
-// Schémas de base (macrosSchema et alimentSchema supprimés - non utilisés)
+// Schémas de base
+export const macrosSchema = z.object({
+  kcal: z
+    .number()
+    .min(0, 'Les calories ne peuvent pas être négatives')
+    .max(10000, 'Les calories semblent trop élevées'),
+  prot: z
+    .number()
+    .min(0, 'Les protéines ne peuvent pas être négatives')
+    .max(1000, 'Les protéines semblent trop élevées'),
+  glucides: z
+    .number()
+    .min(0, 'Les glucides ne peuvent pas être négatives')
+    .max(2000, 'Les glucides semblent trop élevées'),
+  lipides: z
+    .number()
+    .min(0, 'Les lipides ne peuvent pas être négatives')
+    .max(500, 'Les lipides semblent trop élevées'),
+});
+
+export const alimentSchema = z.object({
+  id: z.string().min(1, "L'ID est requis"),
+  nom: z
+    .string()
+    .min(1, "Le nom de l'aliment est requis")
+    .max(100, 'Le nom est trop long'),
+  quantite: z
+    .number()
+    .min(0.1, "La quantité doit être d'au moins 0.1")
+    .max(10000, 'La quantité semble trop élevée'),
+  unite: z.string().min(1, "L'unité est requise"),
+  macros_base: z
+    .object({
+      kcal: z.number().min(0),
+      prot: z.number().min(0),
+      glucides: z.number().min(0),
+      lipides: z.number().min(0),
+    })
+    .optional(),
+});
 
 // Validation repas
 export const repasSchema = z.object({
@@ -188,7 +227,54 @@ export const entrainementSchema = z
     },
   );
 
-// mesureSchema et formatZodError supprimés - non utilisés
+// Validation mesures
+export const mesureSchema = z.object({
+  user_id: z.string().min(1, "L'utilisateur est requis"),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format de date invalide (YYYY-MM-DD)')
+    .refine((date) => {
+      const parsed = new Date(date);
+      const today = new Date();
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + 1); // Autorise jusqu'à demain
+      const minDate = new Date('2020-01-01'); // Pas avant 2020
+      return parsed >= minDate && parsed <= maxDate;
+    }, 'La date doit être entre 2020 et demain'),
+  poids: z
+    .number()
+    .min(20, "Le poids doit être d'au moins 20 kg")
+    .max(300, 'Le poids semble trop élevé (max 300 kg)')
+    .optional(),
+  tour_taille: z
+    .number()
+    .min(50, "Le tour de taille doit être d'au moins 50 cm")
+    .max(200, 'Le tour de taille semble trop élevé (max 200 cm)')
+    .optional(),
+  tour_hanches: z
+    .number()
+    .min(60, "Le tour de hanches doit être d'au moins 60 cm")
+    .max(200, 'Le tour de hanches semble trop élevé (max 200 cm)')
+    .optional(),
+  masse_grasse: z
+    .number()
+    .min(3, "La masse grasse doit être d'au moins 3%")
+    .max(50, 'La masse grasse semble trop élevée (max 50%)')
+    .optional(),
+  masse_musculaire: z
+    .number()
+    .min(20, "La masse musculaire doit être d'au moins 20 kg")
+    .max(100, 'La masse musculaire semble trop élevée (max 100 kg)')
+    .optional(),
+});
+
+// Fonction helper pour formater les erreurs Zod
+export function formatZodError(error: z.ZodError): string[] {
+  return error.errors.map((err) => {
+    const path = err.path.length > 0 ? `${err.path.join('.')} : ` : '';
+    return `${path}${err.message}`;
+  });
+}
 
 // Fonction helper pour valider et retourner erreurs formatées
 export function validateData<T>(
