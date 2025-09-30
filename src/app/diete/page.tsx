@@ -22,9 +22,24 @@ import { IconButton } from '@/components/ui/IconButton';
 import dynamic from 'next/dynamic';
 // MacrosChart supprimé - remplacé par NutritionAnalytics evidence-based
 // import SwipeableMealCard from '@/components/mobile/SwipeableMealCard' // TODO: À intégrer
-const MenuTypesModal = dynamic(() => import('@/components/ui/MenuTypesModal'), {
-  ssr: false,
-});
+const MenuTypesModal = dynamic(
+  () =>
+    import('@/components/ui/modals-bundle').then((mod) => ({
+      default: mod.MenuTypesModal,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-6 animate-pulse">
+          <div className="h-6 bg-gray-300 rounded mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    ),
+  },
+);
 const HistoriqueModal = dynamic(
   () => import('@/components/ui/HistoriqueModal'),
   { ssr: false },
