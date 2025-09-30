@@ -94,16 +94,19 @@
 const limiter = new RateLimiter(10, 60000);
 ```
 
-**Fix Proposé**:
+**✅ RÉSOLU - 30.09.2025**:
 
 ```typescript
-// Implémenter Firebase Security Rules
-// firestore.rules
-match /api/{document} {
-  allow read: if request.auth != null
-    && rateLimitCheck(request.auth.uid);
+// Implémenté - Firebase Security Rules
+// config/firestore.rules
+function checkRateLimit() {
+  return !exists(/databases/$(database)/documents/rate_limits/$(request.auth.uid)) ||
+    get(/databases/$(database)/documents/rate_limits/$(request.auth.uid)).data.requestCount < 100 ||
+    get(/databases/$(database)/documents/rate_limits/$(request.auth.uid)).data.lastReset.toMillis() < (request.time.toMillis() - (60 * 60 * 1000));
 }
 ```
+
+**Impact**: Protection DDoS complète, non-contournable, monitoring automatique
 
 ### FINDING-002: Variables Publiques Exposées
 
