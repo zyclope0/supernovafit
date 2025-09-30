@@ -1,0 +1,484 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ====================================
+    // HELPER FUNCTIONS
+    // ====================================
+    
+    // Fonction helper pour vérifier si l'utilisateur est connecté
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Fonction helper pour vérifier si l'utilisateur est propriétaire
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // ====================================
+    // 🔒 RATE LIMITING - Audit 30.09.2025
+    // ====================================
+    
+    // Fonction de rate limiting basée sur le temps
+    // Limite: 100 opérations par heure par utilisateur
+    function checkRateLimit() {
+      // Récupérer le document de rate limiting de l'utilisateur
+      let rateLimitDoc = get(/databases/$(database)/documents/rate_limits/$(request.auth.uid));
+      
+      // Si le document n'existe pas, autoriser (première requête)
+      if (!rateLimitDoc.exists()) {
+        return true;
+      }
+      
+      let data = rateLimitDoc.data;
+      let now = request.time;
+      let oneHourAgo = request.time.toMillis() - (60 * 60 * 1000);
+      
+      // Si le dernier reset est plus vieux qu'une heure, autoriser
+      if (data.lastReset.toMillis() < oneHourAgo) {
+        return true;
+      }
+      
+      // Vérifier si l'utilisateur n'a pas dépassé la limite
+      return data.requestCount < 100;
+    }
+    
+    // Fonction de rate limiting pour les opérations critiques
+    // Limite: 20 créations par heure
+    function checkCreateRateLimit() {
+      let rateLimitDoc = get(/databases/$(database)/documents/rate_limits/$(request.auth.uid));
+      
+      if (!rateLimitDoc.exists()) {
+        return true;
+      }
+      
+      let data = rateLimitDoc.data;
+      let now = request.time;
+      let oneHourAgo = request.time.toMillis() - (60 * 60 * 1000);
+      
+      if (data.lastReset.toMillis() < oneHourAgo) {
+        return true;
+      }
+      
+      return data.createCount < 20;
+    }
+    
+    // ====================================
+    // RATE LIMITS COLLECTION (Internal)
+    // ====================================
+    
+    match /rate_limits/{userId} {
+      // Auto-créé par les règles, lecture/écriture par l'utilisateur lui-même
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ====================================
+    // USERS COLLECTION
+    // ====================================
+    
+    match /users/{userId} {
+      // Lecture: propriétaire OU coach
+      allow read: if isOwner(userId) || 
+        (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
+      
+      // Création: propriétaire uniquement + rate limit
+      allow create: if isOwner(userId) && checkCreateRateLimit();
+      
+      // Mise à jour: propriétaire OU lien coach-athlète + rate limit
+      allow update: if (isOwner(userId) || 
+        (
+          isAuthenticated() && 
+          request.auth.uid == userId &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['ownerCoachId', 'updated_at']) &&
+          request.resource.data.ownerCoachId != null
+        )) && checkRateLimit();
+      
+      // Pas de suppression
+      allow delete: if false;
+    }
+    
+    // ====================================
+    // REPAS COLLECTION
+    // ====================================
+    
+    match /repas/{repasId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // ENTRAINEMENTS COLLECTION
+    // ====================================
+    
+    match /entrainements/{entrainementId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // MESURES COLLECTION
+    // ====================================
+    
+    match /mesures/{mesureId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // JOURNAL COLLECTION
+    // ====================================
+    
+    match /journal/{entryId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // FAVORIS ALIMENTS COLLECTION
+    // ====================================
+    
+    match /favoris_aliments/{favoriId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // PHOTOS PROGRESSION COLLECTION
+    // ====================================
+    
+    match /photos_progression/{photoId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // MENUS TYPE COLLECTION
+    // ====================================
+    
+    match /menus_type/{menuId} {
+      // Lecture autorisée (templates publics) + rate limit
+      allow read: if isAuthenticated() && checkRateLimit();
+      
+      // Écriture limitée au coach propriétaire
+      allow create: if isAuthenticated() && 
+        request.resource.data.coach_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.coach_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.coach_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // PHOTOS LIBRES COLLECTION
+    // ====================================
+    
+    match /photos_libres/{photoId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+    
+    // ====================================
+    // BADGES COLLECTION
+    // ====================================
+    
+    match /badges/{badgeId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+
+    // ====================================
+    // OBJECTIFS COLLECTION
+    // ====================================
+    
+    match /objectifs/{objectifId} {
+      allow read: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+
+    // ====================================
+    // COACH COMMENTS COLLECTION
+    // ====================================
+    
+    match /coach_comments/{commentId} {
+      // Coachs peuvent créer des commentaires + rate limit
+      allow create: if isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach'
+        && checkCreateRateLimit();
+      
+      // Lecture: coach ou athlète destinataire
+      allow read: if isAuthenticated() && 
+        (resource.data.coach_id == request.auth.uid || 
+         resource.data.athlete_id == request.auth.uid)
+        && checkRateLimit();
+      
+      // Mise à jour: coach complet, athlète lecture seule
+      allow update: if isAuthenticated() && (
+        resource.data.coach_id == request.auth.uid ||
+        (
+          resource.data.athlete_id == request.auth.uid &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['read_by_athlete']) &&
+          request.resource.data.read_by_athlete == true
+        )
+      ) && checkRateLimit();
+      
+      allow delete: if false;
+    }
+
+    // ====================================
+    // COACH DIET PLANS COLLECTION
+    // ====================================
+    
+    match /coach_diet_plans/{planId} {
+      // Coachs peuvent créer des plans
+      allow create: if isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
+        request.resource.data.coach_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      // Lecture: coach ou athlète destinataire
+      allow read: if isAuthenticated() && 
+        (resource.data.coach_id == request.auth.uid || 
+         resource.data.athlete_id == request.auth.uid)
+        && checkRateLimit();
+      
+      // Liste (avec rate limit)
+      allow list: if isAuthenticated() && checkRateLimit();
+      
+      // Modification: coach uniquement
+      allow update: if isAuthenticated() && 
+        resource.data.coach_id == request.auth.uid
+        && checkRateLimit();
+      
+      // Suppression: coach uniquement
+      allow delete: if isAuthenticated() && 
+        resource.data.coach_id == request.auth.uid
+        && checkRateLimit();
+    }
+
+    // ====================================
+    // INVITES COLLECTION
+    // ====================================
+    
+    match /invites/{inviteId} {
+      // Coachs peuvent créer des invitations
+      allow create: if isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
+        request.resource.data.coachId == request.auth.uid
+        && checkCreateRateLimit();
+      
+      // Lecture: coach propriétaire ou invitations actives
+      allow read: if isAuthenticated() && (
+        resource.data.coachId == request.auth.uid ||
+        resource.data.status == 'active'
+      ) && checkRateLimit();
+      
+      // Liste (avec rate limit)
+      allow list: if isAuthenticated() && checkRateLimit();
+      
+      // Mise à jour: coach révoque ou athlète utilise
+      allow update: if isAuthenticated() && (
+        resource.data.coachId == request.auth.uid ||
+        (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'sportif' &&
+          resource.data.status == 'active' &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly(['status', 'usedByAthleteId', 'usedAt']) &&
+          request.resource.data.status == 'used'
+        )
+      ) && checkRateLimit();
+      
+      allow delete: if false;
+    }
+
+    // ====================================
+    // CHALLENGES COLLECTION
+    // ====================================
+    
+    match /challenges/{challengeId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+
+    // ====================================
+    // ACHIEVEMENTS COLLECTION
+    // ====================================
+    
+    match /achievements/{achievementId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+
+    // ====================================
+    // USER PROGRESS COLLECTION
+    // ====================================
+    
+    match /user_progress/{progressId} {
+      allow read: if isAuthenticated() && 
+        (resource.data.user_id == request.auth.uid || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach')
+        && checkRateLimit();
+      
+      allow create: if isAuthenticated() && 
+        request.resource.data.user_id == request.auth.uid
+        && checkCreateRateLimit();
+      
+      allow update: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+      
+      allow delete: if isAuthenticated() && 
+        resource.data.user_id == request.auth.uid
+        && checkRateLimit();
+    }
+  }
+}
