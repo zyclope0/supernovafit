@@ -3,7 +3,7 @@
 **Version**: 2.0.0  
 **Score Global**: 8.9/10 🏆  
 **Date**: 30.09.2025  
-**Statut**: ✅ PHASE 1 + PHASE 2.1 TERMINÉES
+**Statut**: ✅ PHASE 1 + PHASE 2.1 + PHASE 2.2 TERMINÉES
 
 ---
 
@@ -589,8 +589,8 @@ npm run test src/__tests__/hooks/useFocusTrap.test.ts
 ### 🔐 PHASE 2: SÉCURITÉ CRITIQUE (1-2 jours)
 
 **Ordre d'exécution**:
-1. **Rate Limiting Firebase** (1j) → App Check + Firestore Rules
-2. **Setup Husky** (2h) → `setup-husky.sh`
+1. **Rate Limiting Firebase** (1j) → App Check + Firestore Rules ✅ **TERMINÉ**
+2. **Setup Husky** (2h) → `setup-husky.sh` ✅ **TERMINÉ**
 3. **Logging Sécurité** (4h) → Intégration Sentry
 
 **ROI**:
