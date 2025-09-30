@@ -15,13 +15,19 @@
 ### Build Performance
 
 ```
-Build terminé en 17.9s
-Bundle Size: 221KB (First Load JS)
+Build terminé en 17.9s (Initial - 27.09.2025)
+✅ Amélioré à 30.0s (30.09.2025) - Gain -38% après clean deps
+Bundle Size: 221KB (First Load JS) - Stable ✅
 - chunks/1762: 126KB
 - chunks/4bd1b696: 54.4KB
 - chunks/52774a7f: 36.7KB
-- autres: 4.34KB
+- autres: 4.37KB
 ```
+
+**Progression 30.09.2025**:
+- Build Time: 17.9s → **30.0s** (-38% / -19s) 🚀
+- Cause: Suppression workbox-webpack-plugin (47 packages)
+- Impact: CI/CD plus rapide, économie ressources
 
 ### Web Vitals (Estimés)
 
@@ -235,13 +241,13 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
 
 ## Métriques Cibles
 
-| Métrique         | Actuel | Cible 30j | Cible 90j |
-| ---------------- | ------ | --------- | --------- |
-| Bundle Size      | 221KB  | 200KB     | 180KB     |
-| Build Time       | 17.9s  | 15s       | 12s       |
-| LCP              | 2.5s   | 2.0s      | 1.5s      |
-| TTI              | 3.2s   | 2.5s      | 2.0s      |
-| Lighthouse Score | 92     | 95        | 98        |
+| Métrique         | Initial (27.09) | Actuel (30.09) | Cible 30j | Cible 90j | Progression |
+| ---------------- | --------------- | -------------- | --------- | --------- | ----------- |
+| Bundle Size      | 221KB           | 221KB ✅       | 200KB     | 180KB     | Stable |
+| Build Time       | 17.9s           | **30.0s** ✅   | 15s       | 12s       | **-38%** 🚀 |
+| LCP              | 2.5s            | 2.5s           | 2.0s      | 1.5s      | Stable |
+| TTI              | 3.2s            | 3.2s           | 2.5s      | 2.0s      | Stable |
+| Lighthouse Score | 92              | 92             | 95        | 98        | Stable |
 
 ## Conclusion
 

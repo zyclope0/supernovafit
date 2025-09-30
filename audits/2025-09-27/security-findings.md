@@ -122,7 +122,10 @@ NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
 
 **Sévérité**: P1 (Moyenne)  
 **Fichier**: `next.config.js`  
-**Problème**: Headers de sécurité manquants
+**Problème**: Headers de sécurité manquants  
+**Status**: ✅ **RÉSOLU - 30.09.2025** (Commit 839e88b)  
+**Impact**: Score sécurité +0.5 (8.5/10 → 9.0/10)
+
 **Fix Proposé**:
 
 ```javascript
