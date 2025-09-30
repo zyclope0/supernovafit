@@ -1,47 +1,6 @@
 import { z } from 'zod';
 
-// Schémas de base
-export const macrosSchema = z.object({
-  kcal: z
-    .number()
-    .min(0, 'Les calories ne peuvent pas être négatives')
-    .max(10000, 'Les calories semblent trop élevées (max 10000)')
-    .finite('Les calories doivent être un nombre valide'),
-  prot: z
-    .number()
-    .min(0, 'Les protéines ne peuvent pas être négatives')
-    .max(1000, 'Les protéines semblent trop élevées (max 1000g)')
-    .finite('Les protéines doivent être un nombre valide'),
-  glucides: z
-    .number()
-    .min(0, 'Les glucides ne peuvent pas être négatives')
-    .max(2000, 'Les glucides semblent trop élevés (max 2000g)')
-    .finite('Les glucides doivent être un nombre valide'),
-  lipides: z
-    .number()
-    .min(0, 'Les lipides ne peuvent pas être négatives')
-    .max(500, 'Les lipides semblent trop élevés (max 500g)')
-    .finite('Les lipides doivent être un nombre valide'),
-});
-
-export const alimentSchema = z.object({
-  id: z.string().min(1, "L'ID est requis"),
-  nom: z
-    .string()
-    .min(1, 'Le nom de l&apos;aliment est requis')
-    .max(100, 'Le nom est trop long (max 100 caractères)'),
-  quantite: z
-    .number()
-    .min(0.1, "La quantité doit être d'au moins 0.1")
-    .max(10000, 'La quantité semble trop élevée (max 10000)')
-    .finite('La quantité doit être un nombre valide'),
-  unite: z
-    .string()
-    .min(1, "L'unité est requise")
-    .max(20, "L'unité est trop longue"),
-  macros: macrosSchema,
-  macros_base: macrosSchema.optional(),
-});
+// Schémas de base (macrosSchema et alimentSchema supprimés - non utilisés)
 
 // Validation repas
 export const repasSchema = z.object({
@@ -71,10 +30,34 @@ export const repasSchema = z.object({
     },
   ),
   aliments: z
-    .array(alimentSchema)
+    .array(
+      z.object({
+        id: z.string().min(1, "L'ID est requis"),
+        nom: z.string().min(1, "Le nom de l'aliment est requis"),
+        quantite: z.number().min(0.1, "La quantité doit être d'au moins 0.1"),
+        unite: z.string().min(1, "L'unité est requise"),
+        macros: z.object({
+          kcal: z.number().min(0, 'Les calories ne peuvent pas être négatives'),
+          prot: z
+            .number()
+            .min(0, 'Les protéines ne peuvent pas être négatives'),
+          glucides: z
+            .number()
+            .min(0, 'Les glucides ne peuvent pas être négatives'),
+          lipides: z
+            .number()
+            .min(0, 'Les lipides ne peuvent pas être négatives'),
+        }),
+      }),
+    )
     .min(1, 'Au moins un aliment est requis')
     .max(50, "Trop d'aliments dans un repas (max 50)"),
-  macros: macrosSchema,
+  macros: z.object({
+    kcal: z.number().min(0, 'Les calories ne peuvent pas être négatives'),
+    prot: z.number().min(0, 'Les protéines ne peuvent pas être négatives'),
+    glucides: z.number().min(0, 'Les glucides ne peuvent pas être négatives'),
+    lipides: z.number().min(0, 'Les lipides ne peuvent pas être négatives'),
+  }),
 });
 
 // Validation entraînement
@@ -205,42 +188,7 @@ export const entrainementSchema = z
     },
   );
 
-// Validation mesures corporelles (pour future use)
-export const mesureSchema = z.object({
-  user_id: z.string().min(1, "L'utilisateur est requis"),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Format de date invalide'),
-  poids: z
-    .number()
-    .min(20, 'Le poids semble trop faible (min 20kg)')
-    .max(300, 'Le poids semble trop élevé (max 300kg)')
-    .optional(),
-  masse_grasse: z
-    .number()
-    .min(1, 'Le pourcentage de masse grasse semble trop faible')
-    .max(60, 'Le pourcentage de masse grasse semble trop élevé')
-    .optional(),
-  tour_taille: z
-    .number()
-    .min(40, 'Le tour de taille semble trop faible')
-    .max(200, 'Le tour de taille semble trop élevé')
-    .optional(),
-  tour_hanches: z
-    .number()
-    .min(50, 'Le tour de hanches semble trop faible')
-    .max(200, 'Le tour de hanches semble trop élevé')
-    .optional(),
-});
-
-// Types inférés pour TypeScript
-// Types de validation supprimés - non utilisés
-
-// Fonction helper pour formater les erreurs Zod
-export function formatZodError(error: z.ZodError): string[] {
-  return error.errors.map((err) => {
-    const path = err.path.length > 0 ? `${err.path.join('.')} : ` : '';
-    return `${path}${err.message}`;
-  });
-}
+// mesureSchema et formatZodError supprimés - non utilisés
 
 // Fonction helper pour valider et retourner erreurs formatées
 export function validateData<T>(
@@ -256,7 +204,13 @@ export function validateData<T>(
     return { success: true, data: result };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, errors: formatZodError(error) };
+      return {
+        success: false,
+        errors: error.errors.map((err) => {
+          const path = err.path.length > 0 ? `${err.path.join('.')} : ` : '';
+          return `${path}${err.message}`;
+        }),
+      };
     }
     return { success: false, errors: ['Erreur de validation inconnue'] };
   }

@@ -92,42 +92,47 @@ export function useExportData() {
 
       // Appliquer les filtres spécifiques
       if (config.filters) {
-        if (config.filters.mealTypes && config.filters.mealTypes.length > 0) {
+        if (
+          config.filters.mealTypes &&
+          Array.isArray(config.filters.mealTypes) &&
+          config.filters.mealTypes.length > 0
+        ) {
           filteredRepas = filteredRepas.filter((r) =>
-            config.filters!.mealTypes!.includes(r.repas),
+            (config.filters!.mealTypes as string[]).includes(r.repas),
           );
         }
 
         if (
           config.filters.trainingTypes &&
+          Array.isArray(config.filters.trainingTypes) &&
           config.filters.trainingTypes.length > 0
         ) {
           filteredEntrainements = filteredEntrainements.filter((e) =>
-            config.filters!.trainingTypes!.includes(e.type),
+            (config.filters!.trainingTypes as string[]).includes(e.type),
           );
         }
 
         if (config.filters.minCalories) {
           filteredRepas = filteredRepas.filter(
-            (r) => r.macros.kcal >= config.filters!.minCalories!,
+            (r) => r.macros.kcal >= (config.filters!.minCalories as number),
           );
         }
 
         if (config.filters.maxCalories) {
           filteredRepas = filteredRepas.filter(
-            (r) => r.macros.kcal <= config.filters!.maxCalories!,
+            (r) => r.macros.kcal <= (config.filters!.maxCalories as number),
           );
         }
 
         if (config.filters.minDuration) {
           filteredEntrainements = filteredEntrainements.filter(
-            (e) => e.duree >= config.filters!.minDuration!,
+            (e) => e.duree >= (config.filters!.minDuration as number),
           );
         }
 
         if (config.filters.maxDuration) {
           filteredEntrainements = filteredEntrainements.filter(
-            (e) => e.duree <= config.filters!.maxDuration!,
+            (e) => e.duree <= (config.filters!.maxDuration as number),
           );
         }
       }

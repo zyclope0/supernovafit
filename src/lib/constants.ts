@@ -4,15 +4,4 @@
 // ['Repas', 'Sport', 'Nature', 'Famille', 'Amis', 'Voyage', 'Détente', 'Travail', 'Loisir', 'Motivation', 'Achievement', 'Mood']
 
 // Application metadata
-export const APP_NAME = 'SuperNovaFit';
 export const APP_VERSION = '2.0.0';
-export const APP_RELEASE_DATE = '2025-01-15';
-
-// Activity levels pour les tests
-export const ACTIVITY_LEVELS = {
-  sedentaire: 1.2,
-  leger: 1.375,
-  modere: 1.55,
-  intense: 1.725,
-  tres_intense: 1.9,
-};
