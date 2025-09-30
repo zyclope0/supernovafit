@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import SparklineChart from './SparklineChart';
+import dynamic from 'next/dynamic';
+
+const SparklineChart = dynamic(() => import('./SparklineChart'), {
+  ssr: false,
+  loading: () => <div className="h-8 w-16 bg-gray-200 animate-pulse rounded" />,
+});
 
 interface HealthIndicatorProps {
   value: number;

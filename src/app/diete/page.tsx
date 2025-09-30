@@ -30,7 +30,18 @@ const HistoriqueModal = dynamic(
   { ssr: false },
 );
 // CoachRecommendations et ModuleComments remplacés par CoachDietSection optimisé
-import CollapsibleCard from '@/components/ui/CollapsibleCard';
+const CollapsibleCard = dynamic(
+  () => import('@/components/ui/CollapsibleCard'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-white/10 rounded-lg p-4 animate-pulse">
+        <div className="h-6 bg-gray-300 rounded mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </div>
+    ),
+  },
+);
 // Skeletons supprimés - plus utilisés dans la nouvelle structure
 import SmartSuggestions from '@/components/diete/SmartSuggestions';
 import type { SmartSuggestion } from '@/lib/nutritional-database';

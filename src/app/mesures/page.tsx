@@ -11,7 +11,18 @@ import {
 } from '@/hooks/useFirestore';
 import { Mesure } from '@/types';
 import ModuleComments from '@/components/ui/ModuleComments';
-import CollapsibleCard from '@/components/ui/CollapsibleCard';
+const CollapsibleCard = dynamic(
+  () => import('@/components/ui/CollapsibleCard'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-white/10 rounded-lg p-4 animate-pulse">
+        <div className="h-6 bg-gray-300 rounded mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </div>
+    ),
+  },
+);
 import {
   CardSkeleton,
   ChartSkeleton,
@@ -22,10 +33,49 @@ import { formatDate } from '@/lib/utils';
 import { Plus, BarChart3, Camera } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import MesuresCardClickable from '@/components/ui/MesuresCardClickable';
-import MesuresDetailModal from '@/components/ui/MesuresDetailModal';
-import MesuresFormModal from '@/components/ui/MesuresFormModal';
+const MesuresDetailModal = dynamic(
+  () => import('@/components/ui/MesuresDetailModal'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-6 animate-pulse">
+          <div className="h-6 bg-gray-300 rounded mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    ),
+  },
+);
+const MesuresFormModal = dynamic(
+  () => import('@/components/ui/MesuresFormModal'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-6 animate-pulse">
+          <div className="h-6 bg-gray-300 rounded mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    ),
+  },
+);
 import { useAriaAnnouncer } from '@/hooks/useAriaAnnouncer';
-import HealthIndicator from '@/components/ui/HealthIndicator';
+const HealthIndicator = dynamic(
+  () => import('@/components/ui/HealthIndicator'),
+  {
+    ssr: true, // Garder SSR pour SEO et affichage immédiat
+    loading: () => (
+      <div className="bg-white/10 rounded-lg p-4 animate-pulse">
+        <div className="h-8 bg-gray-300 rounded mb-2"></div>
+        <div className="h-6 bg-gray-200 rounded"></div>
+      </div>
+    ),
+  },
+);
 import MesuresProgressHeader from '@/components/mesures/MesuresProgressHeader';
 const MesuresCharts = dynamic(
   () => import('@/components/charts/MesuresCharts'),

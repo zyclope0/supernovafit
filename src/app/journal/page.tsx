@@ -23,7 +23,18 @@ import toast from 'react-hot-toast';
 import JournalForm from '@/components/journal/JournalForm';
 import dynamic from 'next/dynamic';
 import ModuleComments from '@/components/ui/ModuleComments';
-import CollapsibleCard from '@/components/ui/CollapsibleCard';
+const CollapsibleCard = dynamic(
+  () => import('@/components/ui/CollapsibleCard'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-white/10 rounded-lg p-4 animate-pulse">
+        <div className="h-6 bg-gray-300 rounded mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </div>
+    ),
+  },
+);
 import { CardSkeleton } from '@/components/ui/Skeletons';
 const HistoriqueJournalModal = dynamic(
   () => import('@/components/ui/HistoriqueJournalModal'),
