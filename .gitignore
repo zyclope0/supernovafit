@@ -43,7 +43,25 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts 
+next-env.d.ts
 
 # local sample import files (Garmin test data)
 ImportGramin/
+
+# test artifacts
+*.log
+*.tsbuildinfo
+/coverage
+.coverage/
+
+# temporary files
+*.tmp
+*.temp
+.DS_Store
+
+# editor directories
+.vscode/
+.idea/
+
+# archived obsolete documentation (kept locally only)
+/docs/archive/OBSOLETE_PRE_2025_10/
