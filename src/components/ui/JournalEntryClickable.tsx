@@ -91,6 +91,16 @@ export default function JournalEntryClickable({
             )}
           </div>
 
+          {/* Indicateur photo si présent */}
+          {entry.photos_libres && entry.photos_libres.length > 0 && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-neon-pink/10 rounded-lg border border-neon-pink/20">
+              <span className="text-neon-pink">📷</span>
+              <span className="text-xs text-neon-pink font-medium">
+                {entry.photos_libres.length}
+              </span>
+            </div>
+          )}
+
           {/* Indicateur de vue détaillée */}
           <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="text-neon-cyan text-lg">👁️</span>

@@ -1,0 +1,36 @@
+# 🔧 SENTRY PROJECT CONFIGURATION - SUPERNOVAFIT
+# Configuration du projet Sentry pour alertes et monitoring
+
+# Project identification
+defaults.project=supernovafit-a6fe7
+defaults.org=supernovafit-team
+
+# Alert configuration
+alerts.file=.sentry/alerts.yml
+
+# Performance monitoring
+performance.enabled=true
+performance.sample_rate=0.1
+
+# Error tracking
+errors.enabled=true
+errors.sample_rate=1.0
+
+# Session replay
+replay.enabled=true
+replay.sample_rate=0.1
+replay.error_sample_rate=1.0
+
+# Release tracking
+releases.enabled=true
+releases.auto_deploy=true
+
+# Source maps
+sourcemaps.enabled=true
+sourcemaps.upload=true
+sourcemaps.hide=true
+
+# Environment configuration
+environments.production=true
+environments.staging=true
+environments.development=false

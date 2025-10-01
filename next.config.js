@@ -24,27 +24,33 @@ const withPWA = require('next-pwa')({
     document: '/offline.html',
   },
   runtimeCaching: [
-    // Cache pour les images Firebase Storage
+    // Cache pour les images Firebase Storage - Phase 5.2 Optimisé
     {
       urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
       handler: 'CacheFirst',
       options: {
         cacheName: 'firebase-storage',
         expiration: {
-          maxEntries: 100,
-          maxAgeSeconds: 60 * 60 * 24 * 7, // 7 jours
+          maxEntries: 200, // 100 → 200 (plus de photos)
+          maxAgeSeconds: 60 * 60 * 24 * 30, // 7j → 30j (cache plus long)
+        },
+        cacheableResponse: {
+          statuses: [0, 200], // Cache successful responses
         },
       },
     },
-    // Cache pour les images OpenFoodFacts
+    // Cache pour les images OpenFoodFacts - Phase 5.2 Optimisé
     {
       urlPattern: /^https:\/\/images\.openfoodfacts\.org\/.*/i,
       handler: 'CacheFirst',
       options: {
         cacheName: 'openfoodfacts-images',
         expiration: {
-          maxEntries: 200,
-          maxAgeSeconds: 60 * 60 * 24 * 30, // 30 jours
+          maxEntries: 300, // 200 → 300 (plus d'aliments)
+          maxAgeSeconds: 60 * 60 * 24 * 60, // 30j → 60j (cache très long)
+        },
+        cacheableResponse: {
+          statuses: [0, 200], // Cache successful responses
         },
       },
     },
@@ -145,24 +151,29 @@ const nextConfig = {
       },
     ];
   },
+  // 🖼️ Image Optimization - Phase 5.2 (01.10.2025)
+  // Configuration optimale pour performance
   images: {
-    // ✅ Issue #12 - Formats modernes pour réduire la taille (AVIF → WebP → fallback)
+    // Formats modernes avec fallback automatique
     formats: ['image/avif', 'image/webp'],
-    // Tailles optimisées pour différents devices (mobile-first)
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512],
-    // Cache des images optimisé (7 jours)
-    minimumCacheTTL: 604800,
+    // Tailles optimisées mobile-first
+    deviceSizes: [640, 768, 1024, 1280, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128],
+    // Cache longue durée (30 jours)
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     // Domaines autorisés pour les images externes
     remotePatterns: [
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
       { protocol: 'https', hostname: 'images.openfoodfacts.org' },
       { protocol: 'https', hostname: 'static.openfoodfacts.org' },
       { protocol: 'https', hostname: 'world.openfoodfacts.org' },
-      // Ajout d'autres CDN populaires pour flexibilité future
+      // CDN populaires pour flexibilité future
       { protocol: 'https', hostname: 'cdn.jsdelivr.net' },
       { protocol: 'https', hostname: 'unpkg.com' },
     ],
+    // Autoriser SVG externes avec CSP
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     // Désactiver les images non optimisées en production
     unoptimized: false,
   },
@@ -236,6 +247,29 @@ const nextConfig = {
   // Next.js 15: Optimisations build time ciblées
   bundlePagesRouterDependencies: true,
   transpilePackages: ['recharts', 'date-fns'],
+
+  // 🎯 Performance Budget - Phase 6.3 (01.10.2025)
+  // Seuils de performance pour monitoring automatique
+  performance: {
+    // Bundle size budget (en bytes)
+    bundleSize: {
+      maxSize: 200 * 1024, // 200KB max
+      warningSize: 180 * 1024, // 180KB warning
+    },
+    // Web Vitals budget
+    webVitals: {
+      LCP: { max: 2500, warning: 2000 }, // 2.5s max, 2s warning
+      INP: { max: 200, warning: 150 }, // 200ms max, 150ms warning
+      CLS: { max: 0.1, warning: 0.08 }, // 0.1 max, 0.08 warning
+      FCP: { max: 1800, warning: 1500 }, // 1.8s max, 1.5s warning
+      TTFB: { max: 800, warning: 600 }, // 800ms max, 600ms warning
+    },
+    // Memory budget
+    memory: {
+      maxHeapSize: 512 * 1024 * 1024, // 512MB max
+      warningHeapSize: 400 * 1024 * 1024, // 400MB warning
+    },
+  },
 
   // Tree shaking optimisé - packages les plus utilisés seulement
   experimental: {

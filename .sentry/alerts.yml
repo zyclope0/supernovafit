@@ -1,0 +1,95 @@
+# 🚨 SENTRY ALERTS CONFIGURATION - SUPERNOVAFIT
+# Configuration des alertes automatiques pour monitoring production
+
+alerts:
+  # 🔴 High Error Rate - Critique
+  - name: "High Error Rate - SuperNovaFit"
+    conditions:
+      - id: "error_rate"
+        value: 10 # Plus de 10 erreurs en 5 minutes
+        interval: "5m"
+    actions:
+      - id: "email"
+        targetType: "team"
+        target: "supernovafit-alerts@example.com"
+      - id: "slack"
+        channel: "#alerts"
+        webhook: "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+
+  # ⚡ Performance Degradation - Important
+  - name: "Performance Degradation - LCP"
+    conditions:
+      - id: "p95_transaction_duration"
+        value: 3000 # LCP > 3 secondes
+        interval: "10m"
+    actions:
+      - id: "email"
+        targetType: "team"
+        target: "supernovafit-performance@example.com"
+
+  # 🧠 Memory Leak Detection - Préventif
+  - name: "Memory Leak Detection"
+    conditions:
+      - id: "memory_usage"
+        value: 512 # > 512MB
+        interval: "30m"
+    actions:
+      - id: "email"
+        targetType: "team"
+        target: "supernovafit-dev@example.com"
+
+  # 📊 Web Vitals Poor - UX Critique
+  - name: "Web Vitals Poor - CLS"
+    conditions:
+      - id: "cls_score"
+        value: 0.25 # CLS > 0.25 (Poor)
+        interval: "15m"
+    actions:
+      - id: "email"
+        targetType: "team"
+        target: "supernovafit-ux@example.com"
+
+  # 🔥 Critical Errors - Bloquant
+  - name: "Critical Errors - Auth/Firebase"
+    conditions:
+      - id: "error_type"
+        value: ["auth_error", "firebase_error", "payment_error"]
+        interval: "2m"
+    actions:
+      - id: "email"
+        targetType: "team"
+        target: "supernovafit-critical@example.com"
+      - id: "slack"
+        channel: "#critical-alerts"
+        webhook: "https://hooks.slack.com/services/YOUR/CRITICAL/WEBHOOK"
+
+# 📧 Configuration Email
+email:
+  from: "alerts@supernovafit.com"
+  replyTo: "dev-team@supernovafit.com"
+  subject: "[SuperNovaFit Alert] {alert_name} - {environment}"
+
+# 🔔 Configuration Notifications
+notifications:
+  # Fréquence maximale pour éviter spam
+  rateLimit: "1h" # Max 1 alerte par heure par type
+
+  # Escalation automatique
+  escalation:
+    - delay: "15m"
+      action: "email"
+      target: "supernovafit-manager@example.com"
+    - delay: "1h"
+      action: "slack"
+      channel: "#management-alerts"
+
+# 🎯 Filtres par environnement
+environments:
+  production:
+    enabled: true
+    severity: ["critical", "high", "medium"]
+  staging:
+    enabled: true
+    severity: ["critical", "high"]
+  development:
+    enabled: false

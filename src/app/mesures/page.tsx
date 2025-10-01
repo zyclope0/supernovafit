@@ -78,8 +78,19 @@ const HealthIndicator = dynamic(
 );
 import MesuresProgressHeader from '@/components/mesures/MesuresProgressHeader';
 const MesuresCharts = dynamic(
-  () => import('@/components/charts/MesuresCharts'),
-  { ssr: false },
+  () =>
+    import('@/components/charts/MesuresCharts').then((mod) => ({
+      default: mod.default,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-white/10 rounded-lg p-4 animate-pulse">
+        <div className="h-6 bg-gray-300 rounded mb-4"></div>
+        <div className="h-64 bg-gray-200 rounded"></div>
+      </div>
+    ),
+  },
 );
 const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), {
   ssr: false,

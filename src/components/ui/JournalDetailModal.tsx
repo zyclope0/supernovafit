@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { JournalEntry } from '@/types';
-import { Heart, Battery, Zap, CloudRain } from 'lucide-react';
+import { Heart, Battery, Zap, CloudRain, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import Image from 'next/image';
@@ -42,6 +42,8 @@ export default function JournalDetailModal({
   entry,
   onEdit,
 }: JournalDetailModalProps) {
+  const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
+
   if (!entry) return null;
 
   const formatDate = (dateStr: string) => {
@@ -294,25 +296,58 @@ export default function JournalDetailModal({
             {entry.photos_libres && entry.photos_libres.length > 0 && (
               <div className="glass-effect p-4 rounded-xl border border-white/10">
                 <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  📷 Photos
+                  📷 Photos ({entry.photos_libres.length})
                 </h2>
                 <div className="grid grid-cols-2 gap-2">
-                  {entry.photos_libres.slice(0, 4).map((url, index) => (
-                    <Image
+                  {entry.photos_libres.map((url, index) => (
+                    <button
                       key={index}
-                      src={url}
-                      alt={`Photo ${index + 1}`}
-                      width={100}
-                      height={80}
-                      className="w-full h-20 object-cover rounded-lg"
-                    />
+                      onClick={() => setEnlargedPhoto(url)}
+                      className="relative w-full h-24 rounded-lg overflow-hidden hover:ring-2 hover:ring-neon-pink transition-all cursor-zoom-in group"
+                    >
+                      <Image
+                        src={url}
+                        alt={`Photo ${index + 1}`}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        quality={85}
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-2xl">
+                          🔍
+                        </span>
+                      </div>
+                    </button>
                   ))}
                 </div>
-                {entry.photos_libres.length > 4 && (
-                  <p className="text-xs text-muted-foreground mt-2 text-center">
-                    +{entry.photos_libres.length - 4} autres photos
-                  </p>
-                )}
+              </div>
+            )}
+
+            {/* Modal d'agrandissement photo */}
+            {enlargedPhoto && (
+              <div
+                className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+                onClick={() => setEnlargedPhoto(null)}
+              >
+                <button
+                  onClick={() => setEnlargedPhoto(null)}
+                  className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
+                  aria-label="Fermer l'agrandissement"
+                >
+                  <X className="h-6 w-6 text-white" />
+                </button>
+                <div className="relative max-w-4xl max-h-[90vh] w-full h-full">
+                  <Image
+                    src={enlargedPhoto}
+                    alt="Photo agrandie"
+                    fill
+                    sizes="100vw"
+                    quality={95}
+                    className="object-contain"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
               </div>
             )}
           </div>

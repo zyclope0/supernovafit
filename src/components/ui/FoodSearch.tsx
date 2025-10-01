@@ -313,8 +313,8 @@ export default function FoodSearch({
                         alt={product.product_name}
                         fill
                         sizes="48px"
+                        quality={75}
                         className="object-cover"
-                        unoptimized
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           // Masquer le conteneur si l'image échoue

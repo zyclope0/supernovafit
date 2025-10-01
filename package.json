@@ -21,7 +21,9 @@
     "test:watch": "vitest --watch",
     "test:hooks": "vitest run src/hooks",
     "test:components": "vitest run src/components",
-    "test:lib": "vitest run src/lib"
+    "test:lib": "vitest run src/lib",
+    "performance:budget": "node scripts/performance-budget.js",
+    "performance:check": "npm run build && npm run performance:budget"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",

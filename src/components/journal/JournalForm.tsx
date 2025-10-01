@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { JournalEntry } from '@/types';
 import {
   Heart,
@@ -14,9 +14,15 @@ import {
   Cloud,
   CloudRain,
   Snowflake,
+  Camera,
+  X,
+  Upload,
 } from 'lucide-react';
 import FormModal from '@/components/ui/FormModal';
 import CompactSlider from '@/components/ui/CompactSlider';
+import { usePhotosLibres } from '@/hooks/useFirestore';
+import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 interface JournalFormProps {
   onSubmit: (
@@ -57,6 +63,7 @@ const TABS = [
   { id: 'wellness', label: 'Bien-être', icon: Heart },
   { id: 'sleep', label: 'Sommeil', icon: Moon },
   { id: 'activities', label: 'Activités', icon: Activity },
+  { id: 'photos', label: 'Photos', icon: Camera },
   { id: 'notes', label: 'Notes', icon: Save },
 ];
 
@@ -67,8 +74,12 @@ export default function JournalForm({
   isSubmitting,
 }: JournalFormProps) {
   const [activeTab, setActiveTab] = useState<
-    'wellness' | 'sleep' | 'activities' | 'notes'
+    'wellness' | 'sleep' | 'activities' | 'photos' | 'notes'
   >('wellness');
+
+  // Hook pour les photos
+  const { uploadPhoto, uploading } = usePhotosLibres();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // État du formulaire
   const [formData, setFormData] = useState({
@@ -82,18 +93,62 @@ export default function JournalForm({
     meteo: existingEntry?.meteo || 'soleil',
     activites: existingEntry?.activites_annexes || [],
     note: existingEntry?.note || '',
+    photos_libres: existingEntry?.photos_libres || [],
   });
 
   const [newActivity, setNewActivity] = useState('');
+  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>(
+    existingEntry?.photos_libres || [],
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Convertir activites vers activites_annexes pour la soumission
+    // Convertir activites vers activites_annexes et ajouter photos_libres pour la soumission
     const { activites, ...restData } = formData;
     await onSubmit({
       ...restData,
       activites_annexes: activites,
+      photos_libres: uploadedPhotos,
     } as Omit<JournalEntry, 'id' | 'user_id'>);
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Vérifier la taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('La photo ne doit pas dépasser 5MB');
+      return;
+    }
+
+    // Vérifier le type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Veuillez sélectionner une image');
+      return;
+    }
+
+    const result = await uploadPhoto(file, {
+      date: formData.date,
+      titre: `Journal ${formData.date}`,
+      description: 'Photo ajoutée depuis le journal',
+      tags: ['journal'],
+    });
+
+    if (result.success && result.url) {
+      toast.success('Photo ajoutée !');
+      setUploadedPhotos((prev) => [...prev, result.url]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } else {
+      toast.error(`Erreur: ${result.error}`);
+    }
+  };
+
+  const removePhoto = (photoUrl: string) => {
+    setUploadedPhotos((prev) => prev.filter((url) => url !== photoUrl));
+    toast.success('Photo retirée');
   };
 
   const addActivity = () => {
@@ -356,6 +411,87 @@ export default function JournalForm({
                 </button>
               </div>
             </div>
+          </div>
+        );
+
+      case 'photos':
+        return (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <Camera className="h-5 w-5 text-neon-pink" />
+              Photos du jour
+            </h3>
+
+            {/* Bouton Upload */}
+            <div className="space-y-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-neon-pink/20 text-neon-pink rounded-lg hover:bg-neon-pink/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {uploading ? (
+                  <>
+                    <div className="animate-spin h-5 w-5 border-2 border-neon-pink border-t-transparent rounded-full"></div>
+                    Upload en cours...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-5 w-5" />
+                    Ajouter une photo
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Galerie de photos */}
+            {uploadedPhotos.length > 0 ? (
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-white">
+                  Photos ajoutées ({uploadedPhotos.length})
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {uploadedPhotos.map((photoUrl, index) => (
+                    <div
+                      key={index}
+                      className="relative aspect-square rounded-lg overflow-hidden group"
+                    >
+                      <Image
+                        src={photoUrl}
+                        alt={`Photo ${index + 1}`}
+                        fill
+                        sizes="(max-width: 768px) 33vw, 20vw"
+                        quality={85}
+                        className="object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(photoUrl)}
+                        className="absolute top-1 right-1 p-1.5 bg-red-500/80 hover:bg-red-500 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                        aria-label="Retirer la photo"
+                      >
+                        <X className="h-4 w-4 text-white" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <Camera className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p className="text-sm">Aucune photo ajoutée</p>
+                <p className="text-xs mt-1">
+                  Cliquez sur &quot;Ajouter une photo&quot; pour commencer
+                </p>
+              </div>
+            )}
           </div>
         );
 
