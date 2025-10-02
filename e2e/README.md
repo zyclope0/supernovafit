@@ -1,268 +1,160 @@
-# 🎭 Tests E2E avec Playwright - SuperNovaFit
+# 🎭 Tests E2E SuperNovaFit - Guide Complet
 
-## 📋 Vue d'ensemble
-
-Tests end-to-end pour valider les parcours critiques de l'application en conditions réelles.
-
-### Objectifs
-
-- **Coverage 3.93% → 15%** (premier pallier)
-- Parcours critiques 100% testés
-- Régressions détectées automatiquement
-- CI/CD integration complète
+**Version :** 1.0.0  
+**Date :** 02.10.2025  
+**Statut :** ✅ Phase 1 Implémentée (10 tests auth)
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (3 minutes)
 
-### Installation
+### 1. Configurer les Credentials (1 min)
 
-```bash
-# Déjà fait dans le projet
-npm install -D @playwright/test
-
-# Installer les navigateurs
-npx playwright install
-```
-
-### Lancer les tests
-
-```bash
-# Tous les tests
-npm run test:e2e
-
-# Interface interactive
-npm run test:e2e:ui
-
-# Mode debug
-npm run test:e2e:debug
-
-# Voir le rapport
-npm run test:e2e:report
-```
-
----
-
-## 📁 Structure
-
-```
-e2e/
-├── README.md                    # Ce fichier
-├── auth.spec.ts                 # ✅ Tests authentification
-├── meal-tracking.spec.ts        # 🔄 Tests suivi repas
-├── training.spec.ts             # 🔄 Tests entraînements
-├── coach-athlete.spec.ts        # 🔄 Tests mode coach
-├── fixtures/                    # Données de test
-│   ├── users.ts                 # Utilisateurs de test
-│   └── meals.ts                 # Repas de test
-└── helpers/                     # Utilitaires
-    ├── auth-helper.ts           # Helper authentification
-    └── data-helper.ts           # Helper données
-
-```
-
----
-
-## 🎯 Parcours Critiques
-
-### 1. Authentication (✅ Implémenté)
-
-```typescript
-// e2e/auth.spec.ts
-- ✅ Redirection si non auth
-- ✅ Login invalide (erreur)
-- ✅ Login valide (succès)
-- ✅ Session persistante
-- ✅ Logout
-- ✅ Protection routes
-```
-
-### 2. Meal Tracking (🔄 À faire)
-
-```typescript
-// e2e/meal-tracking.spec.ts
-- [ ] Recherche aliment OpenFoodFacts
-- [ ] Ajout aliment à un repas
-- [ ] Édition repas existant
-- [ ] Suppression repas
-- [ ] Vérification macros totales
-- [ ] Ajout aux favoris
-```
-
-### 3. Training (🔄 À faire)
-
-```typescript
-// e2e/training.spec.ts
-- [ ] Recording manuel séance
-- [ ] Validation données (durée, calories)
-- [ ] Édition séance
-- [ ] Suppression séance
-- [ ] Import Garmin (si applicable)
-```
-
-### 4. Coach-Athlete (🔄 À faire)
-
-```typescript
-// e2e/coach-athlete.spec.ts
-- [ ] Création invitation
-- [ ] Acceptation invitation
-- [ ] Visualisation données athlete
-- [ ] Ajout commentaire coach
-- [ ] Création plan diététique
-```
-
----
-
-## 🔧 Configuration
-
-### Environnement de Test
+Éditer **`.env.test`** à la racine du projet :
 
 ```bash
 # .env.test
 PLAYWRIGHT_TEST_BASE_URL=http://localhost:3000
 TEST_USER_EMAIL=test@supernovafit.com
-TEST_USER_PASSWORD=Test123!SuperNova
+TEST_USER_PASSWORD=TonMotDePasse     # ⚠️ CHANGER
 TEST_COACH_EMAIL=coach@supernovafit.com
-TEST_COACH_PASSWORD=Coach123!SuperNova
+TEST_COACH_PASSWORD=TonMotDePasseCoach  # ⚠️ CHANGER
 ```
 
-**⚠️ IMPORTANT :**
-
-- Créer des utilisateurs Firebase dédiés aux tests
-- **NE JAMAIS** utiliser de vrais utilisateurs
-- **NE JAMAIS** committer `.env.test` avec vraies credentials
-
-### Navigateurs Testés
-
-- ✅ Chrome Mobile (Pixel 5) - **Priorité 1**
-- ✅ Chrome Desktop
-- ✅ Safari Mobile (iPhone 12)
-- ✅ Safari Desktop
-- ✅ Firefox Desktop
-
----
-
-## 📝 Conventions de Code
-
-### Nommage des Tests
-
-```typescript
-test("should [action] when [condition]", async ({ page }) => {
-  // Arrange
-  await page.goto("/route");
-
-  // Act
-  await page.click("button");
-
-  // Assert
-  await expect(page).toHaveURL("/expected");
-});
-```
-
-### Sélecteurs Recommandés
-
-```typescript
-// ✅ PRÉFÉRER : Sélecteurs sémantiques
-page.locator('role=button[name="Submit"]');
-page.locator('text="Ajouter un repas"');
-page.locator('button[aria-label="Fermer"]');
-
-// ⚠️ ÉVITER : Sélecteurs CSS fragiles
-page.locator(".btn-primary");
-page.locator("#submit-btn");
-```
-
-### Attentes
-
-```typescript
-// Toujours spécifier timeout pour actions async
-await expect(page).toHaveURL("/dashboard", { timeout: 10000 });
-await expect(element).toBeVisible({ timeout: 5000 });
-```
-
----
-
-## 🎯 Métriques Cibles
-
-| Phase       | Objectif         | Tests E2E    | Coverage |
-| ----------- | ---------------- | ------------ | -------- |
-| **Phase 1** | Authentication   | 10 tests     | 5%       |
-| **Phase 2** | Meal Tracking    | 15 tests     | 8%       |
-| **Phase 3** | Training         | 10 tests     | 11%      |
-| **Phase 4** | Coach            | 10 tests     | 15%      |
-| **Total**   | **15% Coverage** | **45 tests** | **15%**  |
-
----
-
-## 🐛 Debugging
-
-### Mode Interactif
+### 2. Lancer les Tests (2 min)
 
 ```bash
-# UI mode (recommandé)
+# Terminal 1 : Serveur dev
+npm run dev
+
+# Terminal 2 : Tests E2E (mode UI recommandé)
 npm run test:e2e:ui
-
-# Debug mode (breakpoints)
-npm run test:e2e:debug
-
-# Headed mode (voir navigateur)
-npm run test:e2e:headed
 ```
 
-### Traces
+Dans l'interface Playwright :
 
-Les traces sont automatiquement générées en cas d'échec :
+- Cliquer sur **"Run all"**
+- ✅ Les 10 tests devraient passer
+
+---
+
+## 📊 État Actuel
+
+| Phase               | Tests | Status        | Coverage |
+| ------------------- | ----- | ------------- | -------- |
+| **Phase 1 : Auth**  | 10    | ✅ Implémenté | ~5%      |
+| **Phase 2 : Meals** | 15    | 🔄 À faire    | +3%      |
+| **Phase 3 : Train** | 10    | 🔄 À faire    | +2%      |
+| **Phase 4 : Coach** | 10    | 🔄 À faire    | +5%      |
+| **TOTAL**           | 45    | **22% fait**  | **15%**  |
+
+---
+
+## 📝 Scripts Disponibles
 
 ```bash
-# Voir rapport
-npm run test:e2e:report
-```
+# Tests E2E
+npm run test:e2e           # Mode headless (CI)
+npm run test:e2e:ui        # Mode UI interactif (recommandé)
+npm run test:e2e:headed    # Voir le navigateur
+npm run test:e2e:debug     # Mode debug (breakpoints)
+npm run test:e2e:report    # Voir rapport HTML
 
-### Screenshots & Videos
-
-- **Screenshots** : Automatiques en cas d'échec
-- **Videos** : Conservées uniquement en cas d'échec
-- **Localisation** : `test-results/`
-
----
-
-## 🚀 CI/CD Integration
-
-### GitHub Actions
-
-```yaml
-# .github/workflows/playwright.yml
-name: Playwright Tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
+# Tests Unitaires (Vitest)
+npm run test               # Mode watch
+npm run test:coverage      # Avec coverage
 ```
 
 ---
 
-## 📚 Ressources
+## 🎯 Tests Implémentés
 
-- [Playwright Documentation](https://playwright.dev)
-- [Best Practices](https://playwright.dev/docs/best-practices)
-- [Debugging Guide](https://playwright.dev/docs/debug)
-- [Selectors Guide](https://playwright.dev/docs/selectors)
+### Phase 1 : Authentication (10 tests) ✅
+
+**Fichier :** `e2e/auth.spec.ts`
+
+| Test                             | Ligne   |
+| -------------------------------- | ------- |
+| Redirection si non authentifié   | 18-26   |
+| Erreur sur credentials invalides | 28-40   |
+| Login valide avec redirect       | 42-56   |
+| Session persistante après reload | 58-76   |
+| Logout fonctionnel               | 78-103  |
+| Protection route /diete          | 105-110 |
+| Protection route /entrainements  | 112-117 |
+| Protection route /mesures        | 119-124 |
+| Protection route /journal        | 126-131 |
+
+---
+
+## 🔧 Configuration
+
+### Environnement
+
+- **Navigateurs :** Chrome Mobile (priorité), Desktop Chrome, Safari Mobile/Desktop, Firefox
+- **Timeouts :** 30s par test, 10s actions, 15s navigation
+- **Retry :** 2 fois en CI, 0 en local
+- **Traces :** Générées en cas d'échec uniquement
+
+### Firebase
+
+Les utilisateurs doivent **exister dans Firebase Auth** :
+
+- `test@supernovafit.com` (role: sportif)
+- `coach@supernovafit.com` (role: coach)
+
+**Documents Firestore requis :**
+
+- `users/[UID]` avec champs `email`, `role`, `displayName`
+
+---
+
+## 🐛 Dépannage
+
+### "Invalid email or password"
+
+✅ Vérifier credentials dans `.env.test`  
+✅ Tester login manuel sur `http://localhost:3000`
+
+### "Timeout waiting for..."
+
+✅ Vérifier serveur dev tourne (`npm run dev`)  
+✅ Vérifier `http://localhost:3000` accessible
+
+### Tests qui échouent aléatoirement (flaky)
+
+✅ Augmenter timeouts dans `playwright.config.ts`  
+✅ Utiliser `waitForSelector` au lieu de `click` direct
+
+---
+
+## 📚 Documentation Détaillée
+
+- **[TESTS_PROGRESSION.md](../audit-2025-10/TESTS_PROGRESSION.md)** - Suivi complet 4 phases
+- **[playwright.config.ts](../playwright.config.ts)** - Configuration technique
+
+---
+
+## 🎯 Prochaines Étapes
+
+### Phase 2 : Meal Tracking (15 tests) - À venir
+
+- Recherche aliments OpenFoodFacts
+- Ajout/édition/suppression repas
+- Calcul macros
+- Gestion favoris
+
+### Phase 3 : Training (10 tests) - À venir
+
+- Recording manuel séances
+- Validation données (durée, calories)
+- Édition/suppression
+
+### Phase 4 : Coach-Athlete (10 tests) - À venir
+
+- Création/acceptation invitations
+- Visualisation données athlete
+- Commentaires et plans diététiques
 
 ---
 
@@ -270,11 +162,10 @@ jobs:
 
 - [ ] Tous les tests passent localement
 - [ ] Tests ajoutés pour nouvelle fonctionnalité
-- [ ] Sélecteurs sémantiques utilisés
-- [ ] Timeouts appropriés
+- [ ] Sélecteurs sémantiques utilisés (aria-label, role)
+- [ ] Timeouts appropriés spécifiés
 - [ ] Cleanup dans `beforeEach`/`afterEach`
-- [ ] Variables d'environnement documentées
-- [ ] Tests exécutés sur mobile et desktop
+- [ ] Tests exécutés sur mobile ET desktop
 
 ---
 

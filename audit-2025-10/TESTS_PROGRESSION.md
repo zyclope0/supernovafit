@@ -43,20 +43,18 @@
 
 ### Infrastructure Créée
 
-- ✅ `playwright.config.ts` - Configuration multi-devices
+- ✅ `playwright.config.ts` - Configuration 5 navigateurs
 - ✅ `e2e/auth.spec.ts` - 10 tests auth
-- ✅ `e2e/README.md` - Documentation complète
-- ✅ `e2e/SETUP_GUIDE.md` - Guide setup utilisateurs Firebase
-- ✅ `e2e/.env.test.example` - Template credentials
+- ✅ `e2e/README.md` - Documentation consolidée
+- ✅ `TESTS_E2E_GUIDE.md` - **Guide step-by-step 3 min**
 - ✅ Scripts npm : `test:e2e`, `test:e2e:ui`, `test:e2e:debug`, `test:e2e:report`
 
-### Validation
+### Validation (En Cours)
 
-- [ ] Utilisateurs Firebase créés (test, coach, athlete)
-- [ ] Documents Firestore créés
-- [ ] `.env.test` configuré localement
-- [ ] 10 tests passent en mode UI
-- [ ] Login manuel validé
+- [x] Utilisateurs Firebase existent (test, coach)
+- [ ] `.env.test` configuré avec vrais mots de passe
+- [ ] Serveur dev démarré (`npm run dev`)
+- [ ] 10 tests passent en mode UI (`npm run test:e2e:ui`)
 
 ---
 
