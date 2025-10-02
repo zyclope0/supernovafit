@@ -31,8 +31,11 @@ export function useAuth() {
       setUser(user);
       setLoading(false);
 
-      // Charger le profil utilisateur si connecté
+      // Gérer le cookie d'authentification pour le middleware
       if (user) {
+        // Définir un cookie pour indiquer que l'utilisateur est authentifié
+        document.cookie = `auth_token=true; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+
         setProfileLoading(true);
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
@@ -49,6 +52,8 @@ export function useAuth() {
           setProfileLoading(false);
         }
       } else {
+        // Supprimer le cookie à la déconnexion
+        document.cookie = 'auth_token=; path=/; max-age=0';
         setUserProfile(null);
       }
     });

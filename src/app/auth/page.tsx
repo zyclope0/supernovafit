@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useRouter, useSearchParams } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
 import { LogIn, Mail, KeyRound, Info } from 'lucide-react';
 import Link from 'next/link';
@@ -12,6 +13,19 @@ export default function AuthPage() {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, sendMagicLink, user, signOut } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get('returnUrl') || '/';
+
+  // Redirection automatique après login si returnUrl présent
+  useEffect(() => {
+    if (user && returnUrl !== '/auth') {
+      // Attendre un court délai pour que le cookie soit bien défini
+      setTimeout(() => {
+        router.push(returnUrl);
+      }, 500);
+    }
+  }, [user, returnUrl, router]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

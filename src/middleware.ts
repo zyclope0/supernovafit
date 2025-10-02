@@ -18,7 +18,36 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   try {
-    // Rate limiting différencié par type de route API
+    // === PROTECTION DES PAGES AUTHENTIFIÉES ===
+    const protectedRoutes = [
+      '/diete',
+      '/entrainements',
+      '/mesures',
+      '/journal',
+      '/challenges',
+      '/profil',
+      '/export',
+      '/coach',
+    ];
+
+    const isProtectedRoute = protectedRoutes.some((route) =>
+      pathname.startsWith(route),
+    );
+
+    if (isProtectedRoute) {
+      // Vérifier si l'utilisateur a un token d'authentification
+      const hasAuthToken = request.cookies.has('auth_token');
+
+      if (!hasAuthToken) {
+        // Rediriger vers /auth avec returnUrl
+        const url = request.nextUrl.clone();
+        url.pathname = '/auth';
+        url.searchParams.set('returnUrl', pathname);
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // === RATE LIMITING API ===
     if (pathname.startsWith('/api/auth/')) {
       // Protection stricte pour l'authentification
       const result = await authLimiter.isAllowed(request);
@@ -43,10 +72,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Pour toutes les autres routes API, on laisse passer
+    // Pour toutes les autres routes, on laisse passer
     return NextResponse.next();
   } catch (error) {
-    console.error('[MIDDLEWARE] Error in rate limiting:', error);
+    console.error('[MIDDLEWARE] Error in middleware:', error);
 
     // En cas d'erreur, on laisse passer (fail-open)
     return NextResponse.next();
@@ -76,10 +105,18 @@ function createRateLimitResponse(
 export const config = {
   matcher: [
     /*
-     * Match seulement les routes API pour le rate limiting
-     * Évite d'intercepter les pages normales
+     * Match routes API pour le rate limiting
+     * + routes protégées pour l'authentification
      */
     '/api/:path*',
+    '/diete/:path*',
+    '/entrainements/:path*',
+    '/mesures/:path*',
+    '/journal/:path*',
+    '/challenges/:path*',
+    '/profil/:path*',
+    '/export/:path*',
+    '/coach/:path*',
   ],
 };
 
