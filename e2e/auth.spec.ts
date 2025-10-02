@@ -20,17 +20,17 @@ test.describe('Authentication Flow', () => {
     await page.goto('/');
   });
 
-  test('should access protected pages when not authenticated', async ({ page }) => {
-    // Les pages comme /diete sont accessibles sans auth (pas de redirection)
-    // Mais les fonctionnalités ne marchent pas sans user connecté
+  test('should redirect to /auth when accessing protected pages without auth', async ({ page }) => {
+    // Maintenant les pages protégées redirigent vers /auth (middleware)
     await page.goto('/diete');
     
-    // La page se charge normalement (pas de redirection)
+    // Doit rediriger vers /auth avec returnUrl
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/diete');
+    expect(page.url()).toContain('/auth');
+    expect(page.url()).toContain('returnUrl=%2Fdiete');
     
-    // Le contenu de base est visible
-    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 5000 });
+    // Le formulaire de login doit être visible
+    await expect(page.locator('input[type="email"]')).toBeVisible();
   });
 
   test('should show error on invalid credentials', async ({ page }) => {
@@ -138,30 +138,29 @@ test.describe('Authentication Flow', () => {
     await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
 
-  test('should allow access to /diete without auth', async ({ page }) => {
-    // Note: Les pages ne sont PAS protégées par redirection
-    // Elles sont accessibles mais les fonctionnalités nécessitent un user
+  test('should protect /diete route', async ({ page }) => {
     await page.goto('/diete');
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/diete');
+    // Doit rediriger vers /auth
+    expect(page.url()).toContain('/auth');
   });
 
-  test('should allow access to /entrainements without auth', async ({ page }) => {
+  test('should protect /entrainements route', async ({ page }) => {
     await page.goto('/entrainements');
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/entrainements');
+    expect(page.url()).toContain('/auth');
   });
 
-  test('should allow access to /mesures without auth', async ({ page }) => {
+  test('should protect /mesures route', async ({ page }) => {
     await page.goto('/mesures');
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/mesures');
+    expect(page.url()).toContain('/auth');
   });
 
-  test('should allow access to /journal without auth', async ({ page }) => {
+  test('should protect /journal route', async ({ page }) => {
     await page.goto('/journal');
     await page.waitForLoadState('networkidle');
-    expect(page.url()).toContain('/journal');
+    expect(page.url()).toContain('/auth');
   });
 });
 
