@@ -69,7 +69,15 @@ test.describe('Authentication Flow', () => {
     
     // Vérifier qu'on peut naviguer vers une page protégée
     await page.goto('/diete');
-    await expect(page).toHaveURL(/\/diete/, { timeout: 5000 });
+    
+    // Attendre que la page soit complètement chargée
+    await page.waitForLoadState('networkidle');
+    
+    // Vérifier qu'on est bien sur la page diete (avec ou sans query params)
+    expect(page.url()).toContain('/diete');
+    
+    // Vérifier que le contenu de la page diete est visible
+    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 5000 });
   });
 
   test('should stay authenticated after page reload', async ({ page, context }) => {
@@ -88,14 +96,19 @@ test.describe('Authentication Flow', () => {
     
     // Naviguer vers une page protégée
     await page.goto('/diete');
-    await expect(page).toHaveURL(/\/diete/);
+    await page.waitForLoadState('networkidle');
+    expect(page.url()).toContain('/diete');
     
     // Reload la page
     await page.reload();
+    await page.waitForLoadState('networkidle');
     
     // Doit rester sur /diete (pas de redirection vers /auth)
-    await expect(page).toHaveURL(/\/diete/);
-    await expect(page.locator('text=/Diète|Nutrition|Repas/i')).toBeVisible({ timeout: 5000 });
+    expect(page.url()).toContain('/diete');
+    expect(page.url()).not.toContain('/auth');
+    
+    // Vérifier que le contenu est toujours visible
+    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 5000 });
   });
 
   test('should logout successfully', async ({ page }) => {
