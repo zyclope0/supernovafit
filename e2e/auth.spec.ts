@@ -21,11 +21,11 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should redirect to /auth when not authenticated', async ({ page }) => {
-    // Tentative d'accès à une page protégée
-    await page.goto('/dashboard');
+    // Tentative d'accès à une page protégée (diete nécessite auth)
+    await page.goto('/diete');
     
     // Doit rediriger vers /auth
-    await expect(page).toHaveURL(/\/auth/);
+    await expect(page).toHaveURL(/\/auth/, { timeout: 10000 });
     
     // Le formulaire de login doit être visible
     await expect(page.locator('form')).toBeVisible();
@@ -54,7 +54,7 @@ test.describe('Authentication Flow', () => {
   test('should login successfully with valid credentials', async ({ page }) => {
     await page.goto('/auth');
     
-    // Remplir avec credentials valides (à adapter selon environnement de test)
+    // Remplir avec credentials valides
     const testEmail = process.env.TEST_USER_EMAIL || 'test@supernovafit.com';
     const testPassword = process.env.TEST_USER_PASSWORD || 'Test123!';
     
@@ -64,11 +64,12 @@ test.describe('Authentication Flow', () => {
     // Soumettre le formulaire
     await page.click('button[type="submit"]');
     
-    // Attendre la redirection vers dashboard
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    // Attendre que l'auth réussisse - reste sur /auth mais affiche "Connecté"
+    await expect(page.locator('text=/Connecté|Bienvenue/i')).toBeVisible({ timeout: 10000 });
     
-    // Vérifier que l'interface dashboard est chargée
-    await expect(page.locator('text=/dashboard|accueil|bienvenue/i')).toBeVisible();
+    // Vérifier qu'on peut naviguer vers une page protégée
+    await page.goto('/diete');
+    await expect(page).toHaveURL(/\/diete/, { timeout: 5000 });
   });
 
   test('should stay authenticated after page reload', async ({ page, context }) => {
@@ -82,14 +83,19 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[type="password"]', testPassword);
     await page.click('button[type="submit"]');
     
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    // Attendre confirmation login
+    await expect(page.locator('text=/Connecté|Bienvenue/i')).toBeVisible({ timeout: 10000 });
+    
+    // Naviguer vers une page protégée
+    await page.goto('/diete');
+    await expect(page).toHaveURL(/\/diete/);
     
     // Reload la page
     await page.reload();
     
-    // Doit rester sur dashboard (pas de redirection vers /auth)
-    await expect(page).toHaveURL(/\/dashboard/);
-    await expect(page.locator('text=/dashboard|accueil/i')).toBeVisible();
+    // Doit rester sur /diete (pas de redirection vers /auth)
+    await expect(page).toHaveURL(/\/diete/);
+    await expect(page.locator('text=/Diète|Nutrition|Repas/i')).toBeVisible({ timeout: 5000 });
   });
 
   test('should logout successfully', async ({ page }) => {
@@ -103,26 +109,20 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[type="password"]', testPassword);
     await page.click('button[type="submit"]');
     
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 });
+    // Attendre confirmation login
+    await expect(page.locator('text=/Connecté|Bienvenue/i')).toBeVisible({ timeout: 10000 });
     
-    // Trouver et cliquer sur le bouton de déconnexion
-    // (peut être dans un menu, sidebar, ou header)
-    const logoutButton = page.locator('button:has-text("Déconnexion"), button:has-text("Se déconnecter"), button[aria-label="Déconnexion"]');
-    
-    // Si le bouton est dans un menu, ouvrir le menu d'abord
-    const menuButton = page.locator('button[aria-label="Menu utilisateur"], button[aria-label="Profil"]');
-    if (await menuButton.isVisible()) {
-      await menuButton.click();
-    }
+    // Le bouton "Se déconnecter" est visible directement sur /auth après login
+    const logoutButton = page.locator('button:has-text("Se déconnecter")');
+    await expect(logoutButton).toBeVisible();
     
     // Cliquer sur déconnexion
     await logoutButton.click();
     
-    // Doit rediriger vers /auth
-    await expect(page).toHaveURL(/\/auth/, { timeout: 5000 });
-    
-    // Le formulaire de login doit être visible
-    await expect(page.locator('form')).toBeVisible();
+    // Doit afficher le formulaire de login à nouveau
+    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('input[type="password"]')).toBeVisible();
+    await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
 
   test('should protect /diete route when not authenticated', async ({ page }) => {

@@ -28,6 +28,10 @@ next-env.d.ts
 # Coverage
 coverage/
 
+# Playwright reports
+playwright-report/
+test-results/
+
 # Logs
 *.log
 npm-debug.log*
