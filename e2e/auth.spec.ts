@@ -64,22 +64,18 @@ test.describe('Authentication Flow', () => {
     // Soumettre le formulaire
     await page.click('button[type="submit"]');
     
-    // Attendre que Firebase authentifie (le message "Connecté" peut apparaître brièvement)
-    // Ou attendre directement que le user soit défini (vérifié par présence du bouton déconnexion)
-    await page.waitForTimeout(1000); // Attendre que Firebase Auth se propage
+    // Attendre que Firebase Auth se propage
+    await page.waitForTimeout(1500);
     
     // Vérifier qu'on peut naviguer vers une page protégée
-    await page.goto('/diete');
+    await page.goto('/diete', { waitUntil: 'domcontentloaded' }); // Plus rapide que networkidle
     
-    // Attendre que la page soit complètement chargée
-    await page.waitForLoadState('networkidle');
+    // Attendre un élément spécifique au lieu de networkidle (évite timeout PWA/Analytics)
+    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 10000 });
     
     // Vérifier qu'on est bien sur la page diete (pas redirigé vers /auth)
     expect(page.url()).toContain('/diete');
     expect(page.url()).not.toContain('/auth');
-    
-    // Vérifier que le contenu de la page diete est visible (preuve qu'on est authentifié)
-    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 5000 });
   });
 
   test('should stay authenticated after page reload', async ({ page, context }) => {
@@ -94,24 +90,25 @@ test.describe('Authentication Flow', () => {
     await page.click('button[type="submit"]');
     
     // Attendre que Firebase Auth se propage
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
     
     // Naviguer vers une page protégée
-    await page.goto('/diete');
-    await page.waitForLoadState('networkidle');
+    await page.goto('/diete', { waitUntil: 'domcontentloaded' });
+    
+    // Attendre que le contenu soit visible
+    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 10000 });
     expect(page.url()).toContain('/diete');
     
     // Reload la page
-    await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    
+    // Attendre que le contenu soit de nouveau visible après reload
+    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 10000 });
     
     // Doit rester sur /diete (pas de redirection vers /auth)
     // Preuve que le cookie auth_token persiste
     expect(page.url()).toContain('/diete');
     expect(page.url()).not.toContain('/auth');
-    
-    // Vérifier que le contenu est toujours visible
-    await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 5000 });
   });
 
   test('should logout successfully', async ({ page }) => {
