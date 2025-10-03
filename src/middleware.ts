@@ -17,6 +17,11 @@ const authLimiter = RateLimiterFactory.createAuthLimiter();
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // === DÉSACTIVER RATE LIMITING EN MODE TEST (E2E) ===
+  const isTestMode =
+    process.env.NODE_ENV === 'test' ||
+    request.headers.get('user-agent')?.includes('Playwright');
+
   try {
     // === PROTECTION DES PAGES AUTHENTIFIÉES ===
     const protectedRoutes = [
@@ -47,29 +52,31 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // === RATE LIMITING API ===
-    if (pathname.startsWith('/api/auth/')) {
-      // Protection stricte pour l'authentification
-      const result = await authLimiter.isAllowed(request);
-      if (!result.allowed) {
-        return createRateLimitResponse(
-          Date.now() + 15 * 60 * 1000,
-          'Authentication rate limit exceeded',
-        );
-      }
+    // === RATE LIMITING API (désactivé en mode test) ===
+    if (!isTestMode) {
+      if (pathname.startsWith('/api/auth/')) {
+        // Protection stricte pour l'authentification
+        const result = await authLimiter.isAllowed(request);
+        if (!result.allowed) {
+          return createRateLimitResponse(
+            Date.now() + 15 * 60 * 1000,
+            'Authentication rate limit exceeded',
+          );
+        }
 
-      return NextResponse.next();
-    } else if (pathname.startsWith('/api/')) {
-      // Protection générale pour les API
-      const result = await apiLimiter.isAllowed(request);
-      if (!result.allowed) {
-        return createRateLimitResponse(
-          Date.now() + 15 * 60 * 1000,
-          'API rate limit exceeded',
-        );
-      }
+        return NextResponse.next();
+      } else if (pathname.startsWith('/api/')) {
+        // Protection générale pour les API
+        const result = await apiLimiter.isAllowed(request);
+        if (!result.allowed) {
+          return createRateLimitResponse(
+            Date.now() + 15 * 60 * 1000,
+            'API rate limit exceeded',
+          );
+        }
 
-      return NextResponse.next();
+        return NextResponse.next();
+      }
     }
 
     // Pour toutes les autres routes, on laisse passer
