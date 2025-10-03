@@ -64,8 +64,9 @@ test.describe('Authentication Flow', () => {
     // Soumettre le formulaire
     await page.click('button[type="submit"]');
     
-    // Attendre que l'auth réussisse - reste sur /auth mais affiche "Connecté"
-    await expect(page.locator('text=/Connecté|Bienvenue/i')).toBeVisible({ timeout: 10000 });
+    // Attendre que Firebase authentifie (le message "Connecté" peut apparaître brièvement)
+    // Ou attendre directement que le user soit défini (vérifié par présence du bouton déconnexion)
+    await page.waitForTimeout(1000); // Attendre que Firebase Auth se propage
     
     // Vérifier qu'on peut naviguer vers une page protégée
     await page.goto('/diete');
@@ -73,10 +74,11 @@ test.describe('Authentication Flow', () => {
     // Attendre que la page soit complètement chargée
     await page.waitForLoadState('networkidle');
     
-    // Vérifier qu'on est bien sur la page diete (avec ou sans query params)
+    // Vérifier qu'on est bien sur la page diete (pas redirigé vers /auth)
     expect(page.url()).toContain('/diete');
+    expect(page.url()).not.toContain('/auth');
     
-    // Vérifier que le contenu de la page diete est visible
+    // Vérifier que le contenu de la page diete est visible (preuve qu'on est authentifié)
     await expect(page.locator('text=/Repas|Diète|Menu/i')).toBeVisible({ timeout: 5000 });
   });
 
@@ -91,8 +93,8 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[type="password"]', testPassword);
     await page.click('button[type="submit"]');
     
-    // Attendre confirmation login
-    await expect(page.locator('text=/Connecté|Bienvenue/i')).toBeVisible({ timeout: 10000 });
+    // Attendre que Firebase Auth se propage
+    await page.waitForTimeout(1000);
     
     // Naviguer vers une page protégée
     await page.goto('/diete');
@@ -104,6 +106,7 @@ test.describe('Authentication Flow', () => {
     await page.waitForLoadState('networkidle');
     
     // Doit rester sur /diete (pas de redirection vers /auth)
+    // Preuve que le cookie auth_token persiste
     expect(page.url()).toContain('/diete');
     expect(page.url()).not.toContain('/auth');
     
@@ -122,15 +125,21 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[type="password"]', testPassword);
     await page.click('button[type="submit"]');
     
-    // Attendre confirmation login
-    await expect(page.locator('text=/Connecté|Bienvenue/i')).toBeVisible({ timeout: 10000 });
+    // Attendre que Firebase Auth se propage
+    await page.waitForTimeout(1500);
     
-    // Le bouton "Se déconnecter" est visible directement sur /auth après login
+    // Soit on voit le message "Connecté", soit on cherche directement le bouton
+    // (peut varier selon la rapidité du login)
     const logoutButton = page.locator('button:has-text("Se déconnecter")');
-    await expect(logoutButton).toBeVisible();
+    
+    // Attendre que le bouton soit visible (preuve qu'on est connecté)
+    await expect(logoutButton).toBeVisible({ timeout: 5000 });
     
     // Cliquer sur déconnexion
     await logoutButton.click();
+    
+    // Attendre que la déconnexion se propage
+    await page.waitForTimeout(500);
     
     // Doit afficher le formulaire de login à nouveau
     await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 5000 });
