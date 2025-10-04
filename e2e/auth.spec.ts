@@ -111,7 +111,7 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should logout successfully', async ({ page }) => {
-    // Pre-requisite: user est loggé
+    // 1. Login depuis /auth
     await page.goto('/auth', { waitUntil: 'commit' });
     
     const testEmail = process.env.TEST_USER_EMAIL || 'test@supernovafit.com';
@@ -121,23 +121,28 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[type="password"]', testPassword);
     await page.click('button[type="submit"]');
     
-    // Attendre que Firebase Auth se propage
+    // 2. Attendre que Firebase Auth se propage
     await page.waitForTimeout(5000);
     
-    // Attendre que le bouton "Se déconnecter" soit visible
+    // 3. Naviguer vers /menu (où le bouton "Se déconnecter" est directement visible)
+    await page.goto('/menu', { waitUntil: 'domcontentloaded' });
+    
+    // 4. Le bouton "Se déconnecter" est visible directement sur la page /menu
     const logoutButton = page.locator('button:has-text("Se déconnecter")');
     await expect(logoutButton).toBeVisible({ timeout: 10000 });
     
-    // Cliquer sur déconnexion
+    // 5. Cliquer sur déconnexion
     await logoutButton.click();
     
-    // Attendre que la déconnexion se propage
+    // 6. Attendre la redirection vers / (accueil) ou /auth
     await page.waitForTimeout(2000);
     
-    // Doit afficher le formulaire de login à nouveau
-    await expect(page.locator('h1:has-text("Connexion")')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('input[type="email"]')).toBeVisible();
-    await expect(page.locator('input[type="password"]')).toBeVisible();
+    // 7. Vérifier qu'on est déconnecté (pas d'accès aux pages protégées)
+    await page.goto('/diete', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1000);
+    
+    // 8. Doit être redirigé vers /auth car non authentifié
+    expect(page.url()).toContain('/auth');
   });
 
   test('should protect /diete route', async ({ page }) => {
