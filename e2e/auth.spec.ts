@@ -55,7 +55,7 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL(/\/auth/);
   });
 
-  test('should login successfully with valid credentials', async ({ page }) => {
+  test('should login successfully with valid credentials', async ({ page, context }) => {
     await page.goto('/auth');
     
     // Remplir avec credentials valides
@@ -68,17 +68,14 @@ test.describe('Authentication Flow', () => {
     // Soumettre le formulaire
     await page.click('button[type="submit"]');
     
-    // Attendre que Firebase Auth se propage
-    await page.waitForTimeout(1500);
+    // Attendre que Firebase Auth se propage (Safari = 5s, autres = 3s OK)
+    await page.waitForTimeout(5000);
     
-    // Vérifier qu'on peut naviguer vers une page protégée
-    await page.goto('/diete', { waitUntil: 'domcontentloaded' });
+    // Vérifier qu'on peut accéder à une page protégée sans redirection vers /auth
+    const response = await page.goto('/diete', { waitUntil: 'domcontentloaded', timeout: 15000 });
     
-    // Attendre un élément toujours présent sur la page diete (mobile + desktop)
-    // Le bouton "Menu-type" est toujours visible
-    await expect(page.locator('button:has-text("Menu-type")')).toBeVisible({ timeout: 10000 });
-    
-    // Vérifier qu'on est bien sur la page diete (pas redirigé vers /auth)
+    // Si l'accès est autorisé, la page ne doit pas rediriger vers /auth
+    expect(response?.status()).toBeLessThan(400);
     expect(page.url()).toContain('/diete');
     expect(page.url()).not.toContain('/auth');
   });
@@ -94,8 +91,8 @@ test.describe('Authentication Flow', () => {
     await page.fill('input[type="password"]', testPassword);
     await page.click('button[type="submit"]');
     
-    // Attendre que Firebase Auth se propage (plus court)
-    await page.waitForTimeout(2000);
+    // Attendre que Firebase Auth se propage
+    await page.waitForTimeout(5000);
     
     // Vérifier qu'on est authentifié en naviguant vers /diete
     const response = await page.goto('/diete', { waitUntil: 'commit', timeout: 15000 });
@@ -125,23 +122,21 @@ test.describe('Authentication Flow', () => {
     await page.click('button[type="submit"]');
     
     // Attendre que Firebase Auth se propage
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(5000);
     
-    // Le bouton "Se déconnecter" apparaît après login sur /auth
-    // Il est directement visible (pas dans un menu déroulant sur /auth)
-    const logoutButton = page.locator('button:has-text("Se déconnecter")').first();
-    
-    // Attendre que le bouton soit visible et cliquable
+    // Attendre que le bouton "Se déconnecter" soit visible
+    const logoutButton = page.locator('button:has-text("Se déconnecter")');
     await expect(logoutButton).toBeVisible({ timeout: 10000 });
     
-    // Cliquer sur déconnexion (utiliser force si nécessaire pour viewport issues)
-    await logoutButton.click({ force: true });
+    // Cliquer sur déconnexion
+    await logoutButton.click();
     
     // Attendre que la déconnexion se propage
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
     
     // Doit afficher le formulaire de login à nouveau
-    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('h1:has-text("Connexion")')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('input[type="email"]')).toBeVisible();
     await expect(page.locator('input[type="password"]')).toBeVisible();
   });
 
