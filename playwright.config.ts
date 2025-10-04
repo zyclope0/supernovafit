@@ -45,8 +45,8 @@ export default defineConfig({
     // Video en cas d'échec
     video: 'retain-on-failure',
 
-    // Timeout des actions (10s)
-    actionTimeout: 10000,
+    // Timeout des actions (15s pour laisser Firebase Auth se propager)
+    actionTimeout: 15000,
 
     // Timeout de navigation (15s)
     navigationTimeout: 15000,
