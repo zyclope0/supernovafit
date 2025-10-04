@@ -70,9 +70,9 @@ test.describe('Authentication Flow', () => {
     // Vérifier qu'on peut naviguer vers une page protégée
     await page.goto('/diete', { waitUntil: 'domcontentloaded' });
     
-    // Attendre un élément spécifique de la page diete (évite ambiguïté avec <title>)
-    // Chercher "REPAS DU JOUR" qui est unique à la page diete
-    await expect(page.locator('text=/REPAS DU JOUR|Repas du jour/i').first()).toBeVisible({ timeout: 10000 });
+    // Attendre un élément toujours présent sur la page diete (mobile + desktop)
+    // Le bouton "Menu-type" est toujours visible
+    await expect(page.locator('button:has-text("Menu-type")')).toBeVisible({ timeout: 10000 });
     
     // Vérifier qu'on est bien sur la page diete (pas redirigé vers /auth)
     expect(page.url()).toContain('/diete');
@@ -96,15 +96,15 @@ test.describe('Authentication Flow', () => {
     // Naviguer vers une page protégée
     await page.goto('/diete', { waitUntil: 'domcontentloaded' });
     
-    // Attendre que le contenu soit visible (élément unique de la page diete)
-    await expect(page.locator('text=/REPAS DU JOUR|Repas du jour/i').first()).toBeVisible({ timeout: 10000 });
+    // Attendre que le contenu soit visible (bouton toujours présent)
+    await expect(page.locator('button:has-text("Menu-type")')).toBeVisible({ timeout: 10000 });
     expect(page.url()).toContain('/diete');
     
     // Reload la page
     await page.reload({ waitUntil: 'domcontentloaded' });
     
     // Attendre que le contenu soit de nouveau visible après reload
-    await expect(page.locator('text=/REPAS DU JOUR|Repas du jour/i').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('button:has-text("Menu-type")')).toBeVisible({ timeout: 10000 });
     
     // Doit rester sur /diete (pas de redirection vers /auth)
     // Preuve que le cookie auth_token persiste
