@@ -43,7 +43,10 @@ export async function middleware(request: NextRequest) {
       // Vérifier si l'utilisateur a un token d'authentification
       const hasAuthToken = request.cookies.has('auth_token');
 
-      if (!hasAuthToken) {
+      // DÉSACTIVÉ TEMPORAIREMENT - Cause boucle infinie en production
+      // Le cookie côté client n'est pas fiable en SSR
+      // TODO: Implémenter vérification Firebase Admin côté serveur
+      if (false && !hasAuthToken) {
         // Rediriger vers /auth avec returnUrl
         const url = request.nextUrl.clone();
         url.pathname = '/auth';
