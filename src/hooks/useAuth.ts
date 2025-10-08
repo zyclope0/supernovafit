@@ -34,7 +34,9 @@ export function useAuth() {
       // Gérer le cookie d'authentification pour le middleware
       if (user) {
         // Définir un cookie pour indiquer que l'utilisateur est authentifié
-        document.cookie = `auth_token=true; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        const isProduction = window.location.protocol === 'https:';
+        const secureCookie = isProduction ? '; Secure' : '';
+        document.cookie = `auth_token=true; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secureCookie}`;
 
         setProfileLoading(true);
         try {
