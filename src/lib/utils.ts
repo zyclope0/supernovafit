@@ -18,8 +18,10 @@ export function formatDate(date: Date | string): string {
 // Fonctions calculateMetabolicAge, formatDateShort, calculateBMI, getBMICategory supprimées - non utilisées
 
 // Formater un nombre avec des espaces pour les milliers
-export function formatNumber(num: number): string {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+export function formatNumber(num: number, decimals: number = 0): string {
+  const rounded =
+    decimals > 0 ? num.toFixed(decimals) : Math.round(num).toString();
+  return rounded.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
 // Obtenir le nom du repas

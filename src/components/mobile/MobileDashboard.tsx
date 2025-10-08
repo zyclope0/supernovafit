@@ -149,7 +149,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
     {
       id: 'weight-trend',
       title: 'Poids Actuel',
-      subtitle: latestWeight ? `${latestWeight.poids}kg` : 'Non renseigné',
+      subtitle: latestWeight
+        ? `${Math.round(latestWeight.poids * 10) / 10}kg`
+        : 'Non renseigné',
       icon: Scale,
       size: widgetSizes['weight-trend'],
       priority: 3,
@@ -227,7 +229,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <span className="text-xs text-white/60">Poids</span>
           </div>
           <div className="text-xl font-bold text-white mb-1">
-            {latestWeight ? `${latestWeight.poids}kg` : '-'}
+            {latestWeight
+              ? `${Math.round(latestWeight.poids * 10) / 10}kg`
+              : '-'}
           </div>
           {latestWeight && (
             <div className="text-xs text-white/60">
@@ -608,7 +612,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
                   <div className="p-4">
                     <div className="text-center mb-4">
                       <div className="text-3xl font-bold text-neon-purple mb-2">
-                        {latestWeight?.poids || '--'}
+                        {latestWeight?.poids
+                          ? Math.round(latestWeight.poids * 10) / 10
+                          : '--'}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         kg actuel

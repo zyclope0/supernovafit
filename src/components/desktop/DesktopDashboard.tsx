@@ -251,7 +251,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
     },
     {
       label: 'Poids actuel',
-      value: latestWeight?.poids || '--',
+      value: latestWeight?.poids
+        ? Math.round(latestWeight.poids * 10) / 10
+        : '--',
       unit: 'kg',
       trend: weightTrend,
       trendValue: previousWeight
