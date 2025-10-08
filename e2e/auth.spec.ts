@@ -60,7 +60,7 @@ test.describe('Authentication Flow', () => {
     await expect(page).toHaveURL(/\/auth/);
   });
 
-  test('should login successfully with valid credentials', async ({ page, context }) => {
+  test('should login successfully with valid credentials', async ({ page }) => {
     await page.goto('/auth');
     
     // Attendre que les éléments du formulaire soient chargés (CSR bailout)

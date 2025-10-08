@@ -3,7 +3,8 @@ import { RateLimiterFactory } from '@/lib/security/RateLimiter';
 
 // Mock the RateLimiter class
 vi.mock('@/lib/security/RateLimiter', () => {
-  const mockRateLimiter = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockRateLimiter = {
     isAllowed: vi.fn().mockResolvedValue({
       allowed: true,
       remaining: 95,
