@@ -23,6 +23,11 @@ test-results/
 !vitest.config.ts
 !playwright.config.ts
 
+# Generated files (PWA & Next.js)
+public/sw.js
+public/workbox-*.js
+next-env.d.ts
+
 # Other
 .env*
 *.log

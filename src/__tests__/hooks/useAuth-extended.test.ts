@@ -68,13 +68,16 @@ describe('useAuth - Tests étendus', () => {
       };
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback(mockUser as any);
         return vi.fn();
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       mockGetDoc.mockResolvedValue({
         exists: () => true,
         data: () => mockUserProfile,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { result } = renderHook(() => useAuth());
@@ -96,6 +99,7 @@ describe('useAuth - Tests étendus', () => {
       };
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback(mockUser as any);
         return vi.fn();
       });
@@ -127,6 +131,7 @@ describe('useAuth - Tests étendus', () => {
       };
 
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         callback(mockUser as any);
         return vi.fn();
       });
@@ -134,6 +139,7 @@ describe('useAuth - Tests étendus', () => {
       mockGetDoc.mockResolvedValue({
         exists: () => false,
         data: () => null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { result } = renderHook(() => useAuth());
@@ -155,6 +161,7 @@ describe('useAuth - Tests étendus', () => {
 
       mockSignInWithEmailAndPassword.mockResolvedValue({
         user: mockUser,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { result } = renderHook(() => useAuth());
@@ -267,7 +274,7 @@ describe('useAuth - Tests étendus', () => {
     it('devrait éviter les re-renders inutiles', () => {
       let renderCount = 0;
       
-      const { result } = renderHook(() => {
+      renderHook(() => {
         renderCount++;
         return useAuth();
       });

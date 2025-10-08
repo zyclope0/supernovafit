@@ -11,6 +11,7 @@ const createMockRequest = (ip: string = '127.0.0.1') => ({
       return null;
     }),
   },
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any);
 
 describe('RateLimiter', () => {

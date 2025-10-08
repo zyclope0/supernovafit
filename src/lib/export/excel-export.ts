@@ -360,8 +360,8 @@ function addChartsSheet(
 
     worksheet.getCell(`A${currentRow}`).value = 'Date';
     worksheet.getCell(`B${currentRow}`).value = 'Poids (kg)';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     worksheet.getRow(currentRow).eachCell((cell: any) => {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.subHeader;
     });
     currentRow++;
@@ -385,8 +385,8 @@ function addChartsSheet(
 
     worksheet.getCell(`A${currentRow}`).value = 'Date';
     worksheet.getCell(`B${currentRow}`).value = 'Calories (kcal)';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     worksheet.getRow(currentRow).eachCell((cell: any) => {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.subHeader;
     });
     currentRow++;
@@ -410,8 +410,8 @@ function addChartsSheet(
 
     worksheet.getCell(`A${currentRow}`).value = 'Type';
     worksheet.getCell(`B${currentRow}`).value = 'Valeur (g)';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     worksheet.getRow(currentRow).eachCell((cell: any) => {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.subHeader;
     });
     currentRow++;
@@ -487,16 +487,16 @@ function addStatisticsSheet(
 function applyStylesToWorksheet(worksheet: Worksheet, rows: number): void {
   // Style pour la ligne d'en-tête
   const headerRow = worksheet.getRow(1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   headerRow.eachCell((cell: any) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
     cell.style = EXCEL_STYLES.header;
   });
 
   // Styles pour les données
   for (let row = 2; row <= rows; row++) {
     const dataRow = worksheet.getRow(row);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dataRow.eachCell((cell: any) => {
-      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.data;
     });
   }

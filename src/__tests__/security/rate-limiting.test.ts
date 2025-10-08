@@ -65,6 +65,7 @@ const createMockRequest = (ip: string = '127.0.0.1') => ({
       return null;
     }),
   },
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any);
 
 describe('Rate Limiting Security', () => {
@@ -229,6 +230,7 @@ describe('Rate Limiting Security', () => {
             return null;
           }),
         },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
       const result = await limiter.isAllowed(request);
@@ -245,6 +247,7 @@ describe('Rate Limiting Security', () => {
             return null;
           }),
         },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
       const result = await limiter.isAllowed(request);

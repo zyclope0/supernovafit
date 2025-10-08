@@ -88,7 +88,7 @@ test.describe('Authentication Flow', () => {
     expect(page.url()).not.toContain('/auth');
   });
 
-  test('should stay authenticated after page reload', async ({ page, context }) => {
+  test('should stay authenticated after page reload', async ({ page }) => {
     // Pre-requisite: user est loggé
     await page.goto('/auth');
     
