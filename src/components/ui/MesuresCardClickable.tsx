@@ -4,6 +4,7 @@ import React from 'react';
 import { formatDate } from '@/lib/utils';
 import { Mesure } from '@/types';
 import ClickableCard from './ClickableCard';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface MesuresCardClickableProps {
   mesure: Mesure;
@@ -43,11 +44,16 @@ export default function MesuresCardClickable({
       {/* Header avec date et jour */}
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h3 className="font-medium text-white">{formatDate(mesure.date)}</h3>
+          <h3 className="font-medium text-white">
+            {formatDate(timestampToDateString(mesure.date))}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            {new Date(mesure.date).toLocaleDateString('fr-FR', {
-              weekday: 'long',
-            })}
+            {new Date(timestampToDateString(mesure.date)).toLocaleDateString(
+              'fr-FR',
+              {
+                weekday: 'long',
+              },
+            )}
           </p>
         </div>
       </div>

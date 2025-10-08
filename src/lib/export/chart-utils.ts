@@ -6,6 +6,7 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import type { Repas, Entrainement, Mesure } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 export interface ChartData {
   labels: string[];
@@ -43,11 +44,15 @@ export function generateWeightChartData(mesures: Mesure[]): ChartData {
 
   const sortedMesures = mesures
     .filter((m) => m.poids !== undefined)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort(
+      (a, b) =>
+        new Date(timestampToDateString(a.date)).getTime() -
+        new Date(timestampToDateString(b.date)).getTime(),
+    );
 
   return {
     labels: sortedMesures.map((m) =>
-      format(new Date(m.date), 'dd/MM', { locale: fr }),
+      format(new Date(timestampToDateString(m.date)), 'dd/MM', { locale: fr }),
     ),
     datasets: [
       {
@@ -85,7 +90,7 @@ export function generateCaloriesChartData(repas: Repas[]): ChartData {
   const caloriesByDay = new Map<string, number>();
 
   repas.forEach((r) => {
-    const day = format(new Date(r.date), 'yyyy-MM-dd');
+    const day = format(new Date(timestampToDateString(r.date)), 'yyyy-MM-dd');
     const current = caloriesByDay.get(day) || 0;
     caloriesByDay.set(day, current + r.macros.kcal);
   });
@@ -179,7 +184,7 @@ export function generateWorkoutFrequencyChartData(
   const workoutCount = new Array(7).fill(0);
 
   entrainements.forEach((e) => {
-    const dayOfWeek = new Date(e.date).getDay();
+    const dayOfWeek = new Date(timestampToDateString(e.date)).getDay();
     workoutCount[dayOfWeek]++;
   });
 
@@ -231,7 +236,9 @@ export function calculateChartStatistics(
 
   if (mesures.length >= 2) {
     const sortedMesures = mesures.sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      (a, b) =>
+        new Date(timestampToDateString(a.date)).getTime() -
+        new Date(timestampToDateString(b.date)).getTime(),
     );
     const first = sortedMesures[0];
     const last = sortedMesures[sortedMesures.length - 1];

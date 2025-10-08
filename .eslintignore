@@ -1,41 +1,28 @@
-# Build outputs
-.next/
-dist/
-out/
-
 # Dependencies
 node_modules/
 
-# Generated PWA files (cannot be modified)
-public/sw.js
-public/workbox-*.js
-public/fallback-*.js
-*.map
+# Build outputs
+.next/
+out/
+build/
+dist/
 
-# TypeScript generated (Next.js system file)
-next-env.d.ts
+# Archives (obsolete scripts)
+scripts/archive/
+config/archive/
+docs/archive/
 
-# Test files
-**/*.test.ts
-**/*.test.tsx
-**/*.spec.ts
-**/*.spec.tsx
-
-# Stories
-**/*.stories.ts
-**/*.stories.tsx
-
-# Coverage
+# Test outputs
 coverage/
-
-# Playwright reports
 playwright-report/
 test-results/
 
-# Logs
-*.log
-npm-debug.log*
+# Config files
+*.config.js
+*.config.ts
+!vitest.config.ts
+!playwright.config.ts
 
-# Environment
+# Other
 .env*
-!.env.example
+*.log

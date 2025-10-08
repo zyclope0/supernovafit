@@ -1,15 +1,21 @@
 /**
  * Utilitaires d'export PDF pour SuperNovaFit
- * Utilise jsPDF pour la génération de rapports PDF
+ * Utilise jsPDF pour la génération de rapports PDF avec lazy loading
  * Suit les patterns TypeScript stricts du projet
+ *
+ * OPTIMISATION: Les librairies lourdes (jsPDF, autoTable) sont chargées
+ * dynamiquement pour réduire le bundle initial de 1.5MB
  */
 
-import jsPDF from 'jspdf';
-import autoTableImport from 'jspdf-autotable';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import type { ExportConfig, ExportMetadata } from '@/types/export';
 import type { Repas, Entrainement, Mesure } from '@/types';
+
+// Déclaration globale pour autoTable (chargé dynamiquement)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let autoTable: any;
+import { timestampToDateString } from '@/lib/dateUtils';
 import {
   generateWeightChartData,
   generateCaloriesChartData,
@@ -19,9 +25,11 @@ import {
   type ChartData,
 } from './chart-utils';
 
-// Extensions pour jsPDF
-// Types pour jspdf-autotable 5.x
-interface AutoTableOptions {
+// Types pour les librairies chargées dynamiquement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type jsPDF = any; // Type sera résolu au runtime
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type AutoTableOptions = {
   startY?: number;
   head?: string[][];
   body?: (string | number)[][];
@@ -32,11 +40,7 @@ interface AutoTableOptions {
   margin?: { top?: number; right?: number; bottom?: number; left?: number };
   pageBreak?: 'auto' | 'avoid' | 'always';
   showHead?: 'everyPage' | 'firstPage' | 'never';
-}
-
-// Fonction autoTable pour jspdf-autotable 5.x
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-declare function autoTable(doc: jsPDF, options: AutoTableOptions): void;
+};
 
 /**
  * Configuration par défaut pour les PDF
@@ -72,11 +76,22 @@ export async function generateCompletePDF(
   metadata: ExportMetadata,
   fileName: string,
 ): Promise<void> {
+  // Chargement dynamique de jsPDF et jspdf-autotable (économise 1.5MB sur le bundle initial)
+  const [{ default: jsPDF }, autoTableModule] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable'),
+  ]);
+
+  // Attacher autoTable au prototype de jsPDF
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  autoTable = (autoTableModule as any).default;
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
-  });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }) as any;
 
   // Page de titre avec design professionnel
   addTitlePage(doc, config, metadata);
@@ -450,7 +465,9 @@ function addRepasSection(doc: jsPDF, repas: Repas[]): void {
 
   // Tableau des repas
   const tableData = repas.map((r) => [
-    format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+    format(new Date(timestampToDateString(r.date)), 'dd/MM/yyyy', {
+      locale: fr,
+    }),
     r.repas,
     r.aliments.map((a) => `${a.nom} (${a.quantite}${a.unite})`).join(', '),
     `${r.macros.kcal} kcal`,
@@ -459,7 +476,7 @@ function addRepasSection(doc: jsPDF, repas: Repas[]): void {
     `${r.macros.lipides}g`,
   ]);
 
-  autoTableImport(doc, {
+  autoTable(doc, {
     startY: 40,
     head: [
       [
@@ -503,7 +520,9 @@ function addEntrainementsSection(
 
   // Tableau des entraînements
   const tableData = entrainements.map((e) => [
-    format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+    format(new Date(timestampToDateString(e.date)), 'dd/MM/yyyy', {
+      locale: fr,
+    }),
     e.type,
     `${e.duree} min`,
     e.calories ? `${e.calories} kcal` : '-',
@@ -512,7 +531,7 @@ function addEntrainementsSection(
     e.commentaire || '-',
   ]);
 
-  autoTableImport(doc, {
+  autoTable(doc, {
     startY: 40,
     head: [
       [
@@ -549,7 +568,9 @@ function addMesuresSection(doc: jsPDF, mesures: Mesure[]): void {
 
   // Tableau des mesures
   const tableData = mesures.map((m) => [
-    format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
+    format(new Date(timestampToDateString(m.date)), 'dd/MM/yyyy', {
+      locale: fr,
+    }),
     m.poids ? `${m.poids} kg` : '-',
     m.imc ? `${m.imc.toFixed(1)}` : '-',
     m.masse_grasse ? `${m.masse_grasse}%` : '-',
@@ -558,7 +579,7 @@ function addMesuresSection(doc: jsPDF, mesures: Mesure[]): void {
     m.tour_bras ? `${m.tour_bras} cm` : '-',
   ]);
 
-  autoTableImport(doc, {
+  autoTable(doc, {
     startY: 40,
     head: [
       [

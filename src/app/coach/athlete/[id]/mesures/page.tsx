@@ -21,6 +21,7 @@ import { db } from '@/lib/firebase';
 import { ArrowLeft, Calendar, MessageCircle, Scale } from 'lucide-react';
 import type { Mesure } from '@/types';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 type AthleteLite = { id: string; nom?: string; email?: string };
 
@@ -69,7 +70,11 @@ export default function CoachAthleteMesuresPage() {
           ...d.data(),
         })) as Mesure[];
         // Tri client par date desc
-        data.sort((a, b) => (a.date < b.date ? 1 : -1));
+        data.sort((a, b) => {
+          const dateA = timestampToDateString(a.date);
+          const dateB = timestampToDateString(b.date);
+          return dateB.localeCompare(dateA);
+        });
         setMesures(data);
         setLoading(false);
       },
@@ -162,7 +167,9 @@ export default function CoachAthleteMesuresPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-white font-medium">
-                        {new Date(m.date).toLocaleDateString('fr-FR', {
+                        {new Date(
+                          timestampToDateString(m.date),
+                        ).toLocaleDateString('fr-FR', {
                           weekday: 'long',
                           day: 'numeric',
                           month: 'long',
@@ -287,7 +294,9 @@ export default function CoachAthleteMesuresPage() {
                 Commenter la mesure
               </h3>
               <p className="text-sm text-gray-400 mb-4">
-                {new Date(selectedMesure.date).toLocaleDateString('fr-FR', {
+                {new Date(
+                  timestampToDateString(selectedMesure.date),
+                ).toLocaleDateString('fr-FR', {
                   weekday: 'long',
                   day: 'numeric',
                   month: 'long',

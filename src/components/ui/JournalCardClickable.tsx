@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { JournalEntry } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { Calendar, Heart, Zap, Battery, CloudRain, Moon } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -79,7 +80,7 @@ export default function JournalCardClickable({
               </h3>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                {formatDate(entry.date)}
+                {formatDate(timestampToDateString(entry.date))}
               </div>
             </div>
           </div>

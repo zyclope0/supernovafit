@@ -5,6 +5,7 @@ import { Calendar, TrendingUp, BarChart3, Eye } from 'lucide-react';
 import { useCoachCommentsByModule, useRepas } from '@/hooks/useFirestore';
 import { Repas } from '@/types'; // Importer les types Repas et Macros
 import StandardModal from './StandardModal';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface HistoriqueModalProps {
   isOpen: boolean;
@@ -55,8 +56,9 @@ export default function HistoriqueModal({
       return days;
     } else if (allRepas.length > 0) {
       // Sinon, on prend toutes les dates uniques des repas chargés, triées
+      // Convertir les dates (qui peuvent être des Timestamps) en strings
       const uniqueDates = Array.from(
-        new Set(allRepas.map((r: Repas) => r.date)),
+        new Set(allRepas.map((r: Repas) => timestampToDateString(r.date))),
       );
       return uniqueDates.sort((a: string, b: string) => b.localeCompare(a));
     }
@@ -67,7 +69,9 @@ export default function HistoriqueModal({
 
   // Calculer les stats par jour
   const getStatsForDate = (date: string) => {
-    const dayMeals = allRepas.filter((r: Repas) => r.date === date);
+    const dayMeals = allRepas.filter(
+      (r: Repas) => timestampToDateString(r.date) === date,
+    );
     const totalCalories = dayMeals.reduce(
       (sum: number, meal: Repas) => sum + (meal.macros?.kcal || 0),
       0,

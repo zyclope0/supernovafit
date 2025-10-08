@@ -36,6 +36,7 @@ import {
   Timer,
   Users,
 } from 'lucide-react';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 // Lazy load des graphiques pour optimiser le bundle
 const CaloriesChart = dynamic(() => import('@/components/ui/CaloriesChart'), {
@@ -129,14 +130,16 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
   // Données selon la période sélectionnée
   const periodMeals =
     selectedPeriod === 'today'
-      ? repas.filter((r) => r.date === today)
-      : repas.filter((r) => r.date >= periodStart);
+      ? repas.filter((r) => timestampToDateString(r.date) === today)
+      : repas.filter((r) => timestampToDateString(r.date) >= periodStart);
 
   // Entraînements selon la période
   const periodTrainings =
     selectedPeriod === 'today'
-      ? entrainements.filter((e) => e.date === today)
-      : entrainements.filter((e) => e.date >= periodStart);
+      ? entrainements.filter((e) => timestampToDateString(e.date) === today)
+      : entrainements.filter(
+          (e) => timestampToDateString(e.date) >= periodStart,
+        );
 
   // Calculer les jours de la période
   const periodDays =
@@ -151,7 +154,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
   });
 
   // Garder aussi les données du jour pour certains calculs
-  const todayMeals = repas.filter((r) => r.date === today);
+  const todayMeals = repas.filter(
+    (r) => timestampToDateString(r.date) === today,
+  );
   const todayStats = todayMeals.reduce(
     (total, meal) => ({
       calories: total.calories + (meal.macros?.kcal || 0),
@@ -162,12 +167,18 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
     { calories: 0, proteins: 0, carbs: 0, fats: 0 },
   );
 
-  const thisWeekTrainings = entrainements.filter((e) => e.date >= weekStartStr);
+  const thisWeekTrainings = entrainements.filter(
+    (e) => timestampToDateString(e.date) >= weekStartStr,
+  );
 
   // Dernier poids et tendance
   const sortedMeasures = mesures
     .filter((m) => m.poids)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      const dateA = timestampToDateString(a.date);
+      const dateB = timestampToDateString(b.date);
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    });
 
   const latestWeight = sortedMeasures[0];
   const previousWeight = sortedMeasures[1];
@@ -181,7 +192,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
       : 'stable';
 
   // Humeur moyenne de la semaine
-  const thisWeekJournal = journalEntries.filter((e) => e.date >= weekStartStr);
+  const thisWeekJournal = journalEntries.filter(
+    (e) => timestampToDateString(e.date) >= weekStartStr,
+  );
   const avgMood =
     thisWeekJournal.length > 0
       ? thisWeekJournal.reduce((sum, e) => sum + (e.humeur || 3), 0) /
@@ -335,7 +348,11 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
 
     // Derniers repas
     const recentMeals = repas
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => {
+        const dateA = timestampToDateString(a.date);
+        const dateB = timestampToDateString(b.date);
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      })
       .slice(0, 2);
 
     recentMeals.forEach((meal) => {
@@ -344,7 +361,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
         type: 'meal',
         title: `Repas ${meal.repas}`,
         subtitle: `${meal.macros?.kcal || 0} kcal`,
-        time: new Date(meal.date).toLocaleDateString('fr-FR'),
+        time: new Date(timestampToDateString(meal.date)).toLocaleDateString(
+          'fr-FR',
+        ),
         icon: Utensils,
         color: 'text-orange-400',
       });
@@ -352,7 +371,11 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
 
     // Derniers entraînements
     const recentTrainings = entrainements
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => {
+        const dateA = timestampToDateString(a.date);
+        const dateB = timestampToDateString(b.date);
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      })
       .slice(0, 2);
 
     recentTrainings.forEach((training) => {
@@ -361,7 +384,9 @@ export default function DesktopDashboard({ className }: DesktopDashboardProps) {
         type: 'training',
         title: training.type || 'Entraînement',
         subtitle: `${training.duree || 0} min • ${training.calories || 0} kcal`,
-        time: new Date(training.date).toLocaleDateString('fr-FR'),
+        time: new Date(timestampToDateString(training.date)).toLocaleDateString(
+          'fr-FR',
+        ),
         icon: Dumbbell,
         color: 'text-blue-400',
       });

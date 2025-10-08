@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { timestampToDateString } from '@/lib/dateUtils';
 import MainLayout from '@/components/layout/MainLayout';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  useMesures,
-  useCoachCommentsByModule,
-  usePaginatedMesures,
-} from '@/hooks/useFirestore';
+import { useMesures, useCoachCommentsByModule } from '@/hooks/useFirestore';
 import { Mesure } from '@/types';
 import ModuleComments from '@/components/ui/ModuleComments';
 const CollapsibleCard = dynamic(
@@ -98,8 +95,8 @@ const PhotoUpload = dynamic(() => import('@/components/ui/PhotoUpload'), {
 
 export default function MesuresPage() {
   const { user } = useAuth();
-  const { addMesure, updateMesure, deleteMesure, getStats } = useMesures(); // Pour les opérations CRUD
-  const { data: mesures, loading, hasMore, loadMore } = usePaginatedMesures(30); // Charger 30 mesures par page
+  const { mesures, loading, addMesure, updateMesure, deleteMesure, getStats } =
+    useMesures(); // Utiliser le hook simple qui récupère TOUTES les mesures
   const { comments: mesureComments, loading: commentsLoading } =
     useCoachCommentsByModule('mesures');
   const { announceSuccess, announceValidationError, announceModalState } =
@@ -263,7 +260,10 @@ export default function MesuresPage() {
     toast(
       (t) => (
         <div className="flex flex-col gap-2">
-          <span>Supprimer la mesure du {formatDate(mesure.date)} ?</span>
+          <span>
+            Supprimer la mesure du{' '}
+            {formatDate(timestampToDateString(mesure.date))} ?
+          </span>
           <div className="flex gap-2">
             <button
               onClick={() => {
@@ -524,18 +524,7 @@ export default function MesuresPage() {
                   ))}
                 </div>
 
-                {/* Bouton "Charger plus" pour la pagination Firestore */}
-                {hasMore && loadMore && (
-                  <div className="flex justify-center pt-4">
-                    <button
-                      onClick={() => loadMore()}
-                      disabled={loading}
-                      className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors disabled:opacity-50"
-                    >
-                      {loading ? 'Chargement...' : 'Charger plus de mesures'}
-                    </button>
-                  </div>
-                )}
+                {/* Toutes les mesures sont chargées */}
               </div>
             )}
           </>

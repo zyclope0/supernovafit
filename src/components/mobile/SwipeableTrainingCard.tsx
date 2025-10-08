@@ -3,6 +3,7 @@
 import { Edit, Trash2, Copy, Play, Timer } from 'lucide-react';
 import SwipeableCard from './SwipeableCard';
 import { Entrainement } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 // import { cn } from '@/lib/utils' // TODO: À utiliser si nécessaire
 
 interface SwipeableTrainingCardProps {
@@ -107,7 +108,9 @@ export default function SwipeableTrainingCard({
             <div>
               <h3 className="font-semibold text-white">{training.type}</h3>
               <p className="text-sm text-white/60">
-                {new Date(training.date).toLocaleDateString('fr-FR', {
+                {new Date(
+                  timestampToDateString(training.date),
+                ).toLocaleDateString('fr-FR', {
                   weekday: 'short',
                   day: 'numeric',
                   month: 'short',

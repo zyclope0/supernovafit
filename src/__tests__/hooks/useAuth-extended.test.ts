@@ -233,7 +233,7 @@ describe('useAuth - Tests étendus', () => {
         email: 'test@example.com',
       };
 
-      let authCallback: (user: any) => void;
+      let authCallback: (user: unknown) => void;
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         authCallback = callback;
         return vi.fn();
@@ -280,7 +280,7 @@ describe('useAuth - Tests étendus', () => {
       const mockUser1 = { uid: 'user1', email: 'user1@example.com' };
       const mockUser2 = { uid: 'user2', email: 'user2@example.com' };
 
-      let authCallback: (user: any) => void;
+      let authCallback: (user: unknown) => void;
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         authCallback = callback;
         return vi.fn();

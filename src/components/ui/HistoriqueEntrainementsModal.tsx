@@ -10,6 +10,7 @@ import {
   Filter,
   Clock,
 } from 'lucide-react';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { useCoachCommentsByModule } from '@/hooks/useFirestore';
 import TrainingDetailModal from './TrainingDetailModal';
 import StandardModal from './StandardModal';
@@ -66,7 +67,9 @@ export default function HistoriqueEntrainementsModal({
   const last30Days = getLast30Days();
 
   const getStatsForDate = (date: string) => {
-    const dayTrainings = allTrainings.filter((t) => t.date === date);
+    const dayTrainings = allTrainings.filter(
+      (t) => timestampToDateString(t.date) === date,
+    );
     const totalMinutes = dayTrainings.reduce(
       (sum, t) => sum + (t.duree || 0),
       0,
@@ -218,7 +221,7 @@ export default function HistoriqueEntrainementsModal({
                 const stats = getStatsForDate(date);
                 const hasData = stats.count > 0;
                 const dayTrainings = allTrainings.filter(
-                  (t) => t.date === date,
+                  (t) => timestampToDateString(t.date) === date,
                 );
                 const hasCoachComments = dayTrainings.some((t) =>
                   commentedTrainingIds.has(t.id),
@@ -298,7 +301,7 @@ export default function HistoriqueEntrainementsModal({
             {dateFilter &&
               (() => {
                 const filteredTrainings = allTrainings.filter(
-                  (t) => t.date === dateFilter,
+                  (t) => timestampToDateString(t.date) === dateFilter,
                 );
                 return (
                   <div className="mt-6">
@@ -454,14 +457,13 @@ export default function HistoriqueEntrainementsModal({
                             {training.type}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {new Date(training.date).toLocaleDateString(
-                              'fr-FR',
-                              {
-                                weekday: 'short',
-                                day: 'numeric',
-                                month: 'short',
-                              },
-                            )}
+                            {new Date(
+                              timestampToDateString(training.date),
+                            ).toLocaleDateString('fr-FR', {
+                              weekday: 'short',
+                              day: 'numeric',
+                              month: 'short',
+                            })}
                           </div>
                         </div>
                         <div className="flex items-center gap-4 text-sm">

@@ -182,6 +182,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
 
 // Fonction pour calculer les données utilisateur nécessaires
 import type { JournalEntry, PhotoProgression } from '@/types';
+import { timestampToDateString, compareDates } from './dateUtils';
 // Interface pour les données calculées utilisateur
 export interface CalculatedUserData {
   streakJournal: number;
@@ -222,15 +223,14 @@ export function calculateUserData(
   objectifs: ObjectifData[] = [],
 ): CalculatedUserData {
   // Calcul streak journal (simple)
-  const sortedEntries = journalEntries.sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+  const sortedEntries = journalEntries.sort(compareDates('desc'));
 
   let streakJournal = 0;
   const currentDate = new Date();
 
   for (const entry of sortedEntries) {
-    const entryDate = new Date(entry.date + 'T00:00:00');
+    const dateStr = timestampToDateString(entry.date);
+    const entryDate = new Date(dateStr + 'T00:00:00');
     const daysDiff = Math.floor(
       (currentDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24),
     );
@@ -244,7 +244,8 @@ export function calculateUserData(
 
   // Humeurs récentes (8+)
   const recentMoodEntries = journalEntries.filter((entry) => {
-    const entryDate = new Date(entry.date);
+    const dateStr = timestampToDateString(entry.date);
+    const entryDate = new Date(dateStr);
     const threeDaysAgo = new Date();
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
     return entryDate >= threeDaysAgo && (entry.humeur ?? 0) >= 8;
@@ -252,7 +253,8 @@ export function calculateUserData(
 
   // Énergie récente (7+)
   const recentEnergyEntries = journalEntries.filter((entry) => {
-    const entryDate = new Date(entry.date);
+    const dateStr = timestampToDateString(entry.date);
+    const entryDate = new Date(dateStr);
     const fiveDaysAgo = new Date();
     fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
     return entryDate >= fiveDaysAgo && (entry.energie ?? 0) >= 7;
@@ -264,16 +266,21 @@ export function calculateUserData(
   const totalMesures = mesures.length;
 
   // Streak entraînement (similaire au journal)
-  const sortedTrainings = entrainements.sort((a, b) =>
-    (b.date || '').localeCompare(a.date || ''),
-  );
+  const sortedTrainings = entrainements
+    .filter((training) => training.date)
+    .sort((a, b) => {
+      const dateA = timestampToDateString(a.date!);
+      const dateB = timestampToDateString(b.date!);
+      return dateB.localeCompare(dateA);
+    });
 
   let streakEntrainement = 0;
   const trainingCurrentDate = new Date();
 
   for (const training of sortedTrainings) {
     if (!training.date) break;
-    const trainingDate = new Date(training.date + 'T00:00:00');
+    const dateStr = timestampToDateString(training.date);
+    const trainingDate = new Date(dateStr + 'T00:00:00');
     const daysDiff = Math.floor(
       (trainingCurrentDate.getTime() - trainingDate.getTime()) /
         (1000 * 60 * 60 * 24),
@@ -302,7 +309,8 @@ export function calculateUserData(
 
   // Sommeil moyen (basé sur les entrées journal récentes)
   const recentSleepEntries = journalEntries.filter((entry) => {
-    const entryDate = new Date(entry.date);
+    const dateStr = timestampToDateString(entry.date);
+    const entryDate = new Date(dateStr);
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     return entryDate >= sevenDaysAgo && entry.sommeil_duree;

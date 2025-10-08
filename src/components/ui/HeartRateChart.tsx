@@ -14,6 +14,7 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Entrainement } from '@/types';
 import type { TooltipProps } from 'recharts';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface HeartRateChartProps {
   entrainements: Entrainement[];
@@ -45,7 +46,11 @@ export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
   // Filtrer seulement les entraînements avec données FC
   const hrData = entrainements
     .filter((e) => e.fc_moyenne || e.fc_max || e.fc_min)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort(
+      (a, b) =>
+        new Date(timestampToDateString(a.date)).getTime() -
+        new Date(timestampToDateString(b.date)).getTime(),
+    )
     .map((e) => ({
       date: e.date,
       fc_moyenne: e.fc_moyenne || null,

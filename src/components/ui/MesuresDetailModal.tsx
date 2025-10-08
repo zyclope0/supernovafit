@@ -5,6 +5,7 @@ import { Trash2 } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Mesure } from '@/types';
 import StandardModal from './StandardModal';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface MesuresDetailModalProps {
   isOpen: boolean;
@@ -41,13 +42,16 @@ export default function MesuresDetailModal({
     <StandardModal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Mesures du ${formatDate(mesure.date)}`}
-      subtitle={new Date(mesure.date).toLocaleDateString('fr-FR', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })}
+      title={`Mesures du ${formatDate(timestampToDateString(mesure.date))}`}
+      subtitle={new Date(timestampToDateString(mesure.date)).toLocaleDateString(
+        'fr-FR',
+        {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        },
+      )}
       icon="📏"
       onEdit={onEdit}
       editLabel={editLabel}

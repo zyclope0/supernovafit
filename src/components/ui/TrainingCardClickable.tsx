@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { Entrainement } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
+import { Timestamp } from 'firebase/firestore';
 import {
   Timer,
   Target,
@@ -51,11 +53,12 @@ function TrainingCardClickableComponent({
   const { comments: trainingComments, loading: commentsLoading } =
     useCoachCommentsByModule('entrainements', undefined, training.id);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (date: string | Timestamp | undefined) => {
     try {
+      const dateStr = timestampToDateString(date);
       return format(new Date(dateStr), 'EEEE d MMMM', { locale: fr });
     } catch {
-      return dateStr;
+      return timestampToDateString(date);
     }
   };
 
@@ -79,7 +82,7 @@ function TrainingCardClickableComponent({
               </h3>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                {formatDate(training.date)}
+                {formatDate(timestampToDateString(training.date))}
               </div>
             </div>
           </div>

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
 import { LogIn, Mail, KeyRound, Info } from 'lucide-react';
 import Link from 'next/link';
 
-export default function AuthPage() {
+function AuthContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -255,5 +255,26 @@ export default function AuthPage() {
         </div>
       </div>
     </MainLayout>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <MainLayout>
+          <div className="max-w-md mx-auto">
+            <div className="glass-effect p-8 rounded-xl border border-white/10">
+              <div className="text-center">
+                <div className="animate-spin h-8 w-8 border-4 border-neon-purple border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Chargement...</p>
+              </div>
+            </div>
+          </div>
+        </MainLayout>
+      }
+    >
+      <AuthContent />
+    </Suspense>
   );
 }

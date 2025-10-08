@@ -61,7 +61,7 @@ CI/CD: GitHub Actions (quality + deploy)
 Hosting: Firebase Hosting (SSR Next.js)
 Tests: Vitest + React Testing Library
 Linting: ESLint + Prettier + Husky
-Coverage: 12.52% (objectif 25%)
+Coverage: 4.49% (objectif 25%)
 Build: 10.3s | Bundle: 110KB
 ```
 
@@ -298,26 +298,34 @@ Strict-Transport-Security: max-age=31536000
 ```yaml
 Framework: Vitest + jsdom
 Library: React Testing Library
-Coverage: 12.52% (objectif 25%)
+Coverage: 4.49% (objectif 25%)
 Mocks: Firebase, next/navigation, composants
 ```
 
 ### **Tests Actuels**
 
 ```
-✅ lib/calculations: BMR, TDEE, MET (76.35%)
-⚠️ hooks/: useAuth, useFirestore (partiels)
-⚠️ components/: Nouveaux composants
-❌ E2E: À implémenter
+✅ Tests Unitaires: 308/308 (100% passent)
+✅ Tests E2E: 215 disponibles (4 flux × 5 navigateurs)
+✅ Modules critiques: validation 92%, dateUtils 95%, utils 100%
+✅ Security: 58% coverage (RateLimiter, Firestore rules)
+⏸️ Badges: 13 tests skippés (fonctionnalité non implémentée)
 ```
 
 ### **Commandes**
 
 ```bash
-npm run test              # Tous tests
+# Tests Unitaires (Vitest)
+npm run test              # Mode watch
 npm run test:coverage     # Avec coverage
-npm run test:ui           # Interface graphique
-npm run test:lib          # Calculs métier uniquement
+npm run test:ui           # Interface Vitest
+npm test -- <pattern>     # Tests spécifiques
+
+# Tests E2E (Playwright)
+npm run test:e2e          # Headless (CI)
+npm run test:e2e:ui       # Interface Playwright
+npm run test:e2e:headed   # Voir navigateur
+npm run test:e2e:report   # Rapport HTML
 ```
 
 ---
@@ -360,7 +368,7 @@ npx ts-unused-exports     # Exports non utilisés
 
 ### **Limitations Connues**
 
-1. **Coverage 12.52%** : Objectif 25% avant release majeure
+1. **Coverage 4.49%** : Objectif 25% avant release majeure (15% pages E2E non comptées)
 2. **Bundle 110KB** : Objectif 100KB (dynamic imports aggressive)
 3. **Firestore Rules** : Rate limiting peut bloquer tests intensifs
 4. **Open Food Facts API** : Rate limit 100 req/min (géré côté client)
@@ -390,26 +398,29 @@ npx ts-unused-exports     # Exports non utilisés
 | **Score Global** | 9.5/10                    | 9.7/10       |
 | **Sécurité**     | ✅ 0 vuln                 | ✅ 0 vuln    |
 | **Performance**  | Build 10.3s, Bundle 110KB | 9s, 100KB    |
-| **Tests**        | 217 tests, 12.52%         | 25%          |
+| **Tests**        | 308 tests, 4.49%          | 25%          |
 | **Code Quality** | 0 ESLint errors           | 0 errors     |
 
 **Dernières actions :**
 
 - ✅ Audit technique complet (8/8 phases)
 - ✅ Monitoring production (Sentry + alertes)
-- ✅ Nettoyage projet (-10% fichiers)
+- ✅ Tests validés (308/308, 100% passent)
+- ✅ Documentation tests standardisée (13 → 7 fichiers)
 
 ---
 
 ## 📚 **DOCUMENTATION RÉFÉRENCE**
 
-| Document                                                                                | Usage                 |
-| --------------------------------------------------------------------------------------- | --------------------- |
-| [CONTEXTE_TECHNIQUE_COMPLET.md](../CONTEXTE_TECHNIQUE_COMPLET.md)                       | Détails approfondis   |
-| [UI_UX_INDUSTRIALIZATION_COMPLETE.md](../technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md) | Design System complet |
-| [DEPLOYMENT_WORKFLOW_CURRENT.md](../technical/DEPLOYMENT_WORKFLOW_CURRENT.md)           | CI/CD détaillé        |
-| [archive/2025-09-27/](../../archive/2025-09-27/)                                        | Audit technique       |
-| [NETTOYAGE_PROJET.md](../../NETTOYAGE_PROJET.md)                                        | Maintenance structure |
+| Document                                                                                | Usage                  |
+| --------------------------------------------------------------------------------------- | ---------------------- |
+| [CONTEXTE_TECHNIQUE_COMPLET.md](../CONTEXTE_TECHNIQUE_COMPLET.md)                       | Détails approfondis    |
+| [UI_UX_INDUSTRIALIZATION_COMPLETE.md](../technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md) | Design System complet  |
+| [DEPLOYMENT_WORKFLOW_CURRENT.md](../technical/DEPLOYMENT_WORKFLOW_CURRENT.md)           | CI/CD détaillé         |
+| [testing/README.md](../testing/README.md)                                               | Tests (Point d'entrée) |
+| [guides/GUIDE_PRATIQUE_TESTING_CICD.md](../guides/GUIDE_PRATIQUE_TESTING_CICD.md)       | Tests (Pédagogique)    |
+| [guides/TEST_USERS_SUMMARY.md](../guides/TEST_USERS_SUMMARY.md)                         | Credentials Firebase   |
+| [audit-2025-10/](../../audit-2025-10/)                                                  | Audit Octobre 2025     |
 
 ---
 

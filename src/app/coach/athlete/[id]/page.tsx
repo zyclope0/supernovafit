@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 // Dynamic imports pour réduire le bundle initial
 const DynamicLineChart = dynamic(
@@ -217,9 +218,9 @@ export default function AthleteDetailPage() {
                             {activite.type}
                           </p>
                           <p className="text-xs text-gray-400">
-                            {new Date(activite.date).toLocaleDateString(
-                              'fr-FR',
-                            )}
+                            {new Date(
+                              timestampToDateString(activite.date),
+                            ).toLocaleDateString('fr-FR')}
                           </p>
                         </div>
                         <div className="text-right">

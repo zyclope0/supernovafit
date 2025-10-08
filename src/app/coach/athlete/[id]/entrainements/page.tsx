@@ -22,6 +22,7 @@ import {
 import { db } from '@/lib/firebase';
 import { Entrainement } from '@/types';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 type AthleteLite = { id: string; nom?: string; email?: string };
 
@@ -201,7 +202,9 @@ export default function CoachAthleteTrainingsPage() {
                         {training.type}
                       </h3>
                       <span className="text-sm text-gray-400">
-                        {new Date(training.date).toLocaleDateString('fr-FR', {
+                        {new Date(
+                          timestampToDateString(training.date),
+                        ).toLocaleDateString('fr-FR', {
                           weekday: 'short',
                           day: 'numeric',
                           month: 'short',
@@ -270,7 +273,9 @@ export default function CoachAthleteTrainingsPage() {
               </h3>
               <p className="text-sm text-gray-400 mb-4">
                 {selectedTraining.type} du{' '}
-                {new Date(selectedTraining.date).toLocaleDateString('fr-FR')}
+                {new Date(
+                  timestampToDateString(selectedTraining.date),
+                ).toLocaleDateString('fr-FR')}
               </p>
               <textarea
                 value={newComment}

@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { Entrainement } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
+import { Timestamp } from 'firebase/firestore';
 import {
   Timer,
   Target,
@@ -54,11 +56,12 @@ export default function TrainingDetailModal({
   const trainingType =
     TRAINING_TYPES.find((t) => t.value === training.type) || TRAINING_TYPES[0];
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (date: string | Timestamp | undefined) => {
     try {
+      const dateStr = timestampToDateString(date);
       return format(new Date(dateStr), 'EEEE d MMMM yyyy', { locale: fr });
     } catch {
-      return dateStr;
+      return timestampToDateString(date);
     }
   };
 
@@ -83,7 +86,7 @@ export default function TrainingDetailModal({
       isOpen={isOpen}
       onClose={onClose}
       title={trainingType.label}
-      subtitle={formatDate(training.date)}
+      subtitle={formatDate(timestampToDateString(training.date))}
       icon={<span className="text-3xl">{trainingType.icon}</span>}
       onEdit={onEdit}
       editLabel="Modifier"

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
+import { timestampToDateString, compareDates } from '@/lib/dateUtils';
 import MainLayout from '@/components/layout/MainLayout';
 const TrainingFormModal = dynamic(
   () => import('@/components/ui/TrainingFormModal'),
@@ -63,10 +64,7 @@ const GarminImport = dynamic(() => import('@/components/ui/GarminImport'), {
   ),
 });
 import { useAuth } from '@/hooks/useAuth';
-import {
-  useEntrainements,
-  usePaginatedEntrainements,
-} from '@/hooks/useFirestore';
+import { useEntrainements } from '@/hooks/useFirestore';
 import { Entrainement } from '@/types';
 import { Plus, BarChart3 } from 'lucide-react';
 // PageHeader supprimé - remplacé par TrainingProgressHeader industrialisé
@@ -110,14 +108,14 @@ const HistoriqueEntrainementsModal = dynamic(
 
 export default function EntrainementsPage() {
   const { user } = useAuth();
-  const { addEntrainement, updateEntrainement, deleteEntrainement } =
-    useEntrainements(); // Pour les opérations CRUD
   const {
-    data: entrainements,
+    entrainements,
     loading,
-    hasMore,
-    loadMore,
-  } = usePaginatedEntrainements(30); // Charger 30 entraînements par page
+    addEntrainement,
+    updateEntrainement,
+    deleteEntrainement,
+  } = useEntrainements(); // Utiliser le hook simple qui récupère TOUS les entraînements
+
   const [showForm, setShowForm] = useState(false);
   const [editingTraining, setEditingTraining] = useState<Entrainement | null>(
     null,
@@ -142,7 +140,7 @@ export default function EntrainementsPage() {
   const thisWeekTrainings = useMemo(
     () =>
       entrainements.filter((e) => {
-        const trainingDate = new Date(e.date);
+        const trainingDate = new Date(timestampToDateString(e.date));
         const weekStart = new Date();
         const dayOfWeek = weekStart.getDay();
         const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Dimanche = 6 jours, autres = jour - 1
@@ -159,7 +157,9 @@ export default function EntrainementsPage() {
     const today = new Date().toISOString().split('T')[0];
 
     if (performancePeriod === 'today') {
-      periodTrainings = entrainements.filter((e) => e.date === today);
+      periodTrainings = entrainements.filter(
+        (e) => timestampToDateString(e.date) === today,
+      );
     } else if (performancePeriod === 'week') {
       periodTrainings = thisWeekTrainings;
     } else {
@@ -167,7 +167,9 @@ export default function EntrainementsPage() {
       const monthStart = new Date();
       monthStart.setDate(1);
       const monthStartStr = monthStart.toISOString().split('T')[0];
-      periodTrainings = entrainements.filter((e) => e.date >= monthStartStr);
+      periodTrainings = entrainements.filter(
+        (e) => timestampToDateString(e.date) >= monthStartStr,
+      );
     }
 
     const totalMinutes = periodTrainings.reduce((sum, e) => sum + e.duree, 0);
@@ -421,7 +423,7 @@ export default function EntrainementsPage() {
                 </h3>
                 {(() => {
                   const dayTrainings = entrainements.filter(
-                    (e) => e.date === selectedDate,
+                    (e) => timestampToDateString(e.date) === selectedDate,
                   );
                   if (dayTrainings.length === 0) {
                     return (
@@ -538,7 +540,7 @@ export default function EntrainementsPage() {
             ) : (
               (() => {
                 const trainingsForDate = entrainements.filter(
-                  (e) => e.date === selectedDate,
+                  (e) => timestampToDateString(e.date) === selectedDate,
                 );
                 if (dateFilterActive) {
                   return trainingsForDate.length > 0 ? (
@@ -591,7 +593,7 @@ export default function EntrainementsPage() {
                 }
                 // Pas de filtre actif: afficher les 3 dernières séances
                 const latest = [...entrainements]
-                  .sort((a, b) => b.date.localeCompare(a.date))
+                  .sort(compareDates('desc'))
                   .slice(0, 3);
                 return latest.length > 0 ? (
                   <div className="space-y-4">
@@ -633,8 +635,8 @@ export default function EntrainementsPage() {
             <SimpleAllTrainingsList
               trainings={entrainements}
               onShowDetail={handleTrainingView}
-              hasMore={hasMore}
-              loadMore={loadMore}
+              hasMore={false}
+              loadMore={undefined}
               loading={loading}
             />
           </CollapsibleCard>
@@ -676,7 +678,9 @@ function SimpleAllTrainingsList({
   loadMore?: () => Promise<void>;
   loading?: boolean;
 }) {
-  const sorted = [...trainings].sort((a, b) => b.date.localeCompare(a.date));
+  const sorted = [...trainings].sort((a, b) =>
+    timestampToDateString(b.date).localeCompare(timestampToDateString(a.date)),
+  );
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
@@ -723,7 +727,9 @@ function SimpleAllTrainingsList({
                 {t.type}
               </span>
               <span className="text-xs text-muted-foreground">
-                {new Date(t.date).toLocaleDateString('fr-FR')}
+                {new Date(timestampToDateString(t.date)).toLocaleDateString(
+                  'fr-FR',
+                )}
               </span>
             </div>
             <div className="text-sm text-neon-cyan">{t.duree} min</div>

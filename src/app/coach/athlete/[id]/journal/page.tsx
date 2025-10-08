@@ -29,6 +29,7 @@ import {
 import { db } from '@/lib/firebase';
 import { JournalEntry } from '@/types';
 import CollapsibleCard from '@/components/ui/CollapsibleCard';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 type AthleteLite = { id: string; nom?: string; email?: string };
 
@@ -226,7 +227,9 @@ export default function CoachAthleteJournalPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-4">
                       <h3 className="text-lg font-semibold text-white">
-                        {new Date(entry.date).toLocaleDateString('fr-FR', {
+                        {new Date(
+                          timestampToDateString(entry.date),
+                        ).toLocaleDateString('fr-FR', {
                           weekday: 'long',
                           day: 'numeric',
                           month: 'long',
@@ -302,7 +305,9 @@ export default function CoachAthleteJournalPage() {
                 Commenter l&apos;entrée du journal
               </h3>
               <p className="text-sm text-gray-400 mb-4">
-                {new Date(selectedEntry.date).toLocaleDateString('fr-FR', {
+                {new Date(
+                  timestampToDateString(selectedEntry.date),
+                ).toLocaleDateString('fr-FR', {
                   weekday: 'long',
                   day: 'numeric',
                   month: 'long',

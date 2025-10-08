@@ -15,6 +15,13 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     globals: true,
     css: true,
+    exclude: [
+      'node_modules/**',
+      'e2e/**', // Exclure les tests E2E Playwright
+      '**/*.e2e.ts',
+      '**/*.e2e.tsx',
+      '.firebase/**', // Exclure les tests Firebase
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],

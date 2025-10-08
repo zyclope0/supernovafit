@@ -69,3 +69,15 @@ ImportGramin/
 
 # archived obsolete documentation (kept locally only)
 /docs/archive/OBSOLETE_PRE_2025_10/
+/docs/archive/2025-10-nettoyage/
+/docs/archive/2025-10-tests/
+
+# archived scripts and configs (kept locally only)
+/scripts/archive/
+/config/archive/
+
+# temporary reports at root (kept locally only)
+/NETTOYAGE_*.md
+/DOCUMENTATION_*.md
+/STANDARDISATION_*.md
+/RAPPORT_*.md

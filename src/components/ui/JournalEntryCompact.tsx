@@ -1,6 +1,7 @@
 'use client';
 
 import { JournalEntry } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface JournalEntryCompactProps {
   entry: JournalEntry;
@@ -69,13 +70,13 @@ export default function JournalEntryCompact({
           onView();
         }
       }}
-      aria-label={`Voir les détails de l'entrée journal du ${formatDate(entry.date)}`}
+      aria-label={`Voir les détails de l'entrée journal du ${formatDate(timestampToDateString(entry.date))}`}
     >
       {/* Header compact */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-white text-sm group-hover:text-neon-cyan transition-colors">
-            {formatDate(entry.date)}
+            {formatDate(timestampToDateString(entry.date))}
           </span>
           {entry.meteo && (
             <span className="text-sm opacity-75">

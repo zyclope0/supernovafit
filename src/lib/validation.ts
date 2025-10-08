@@ -246,25 +246,170 @@ export const mesureSchema = z.object({
     .min(20, "Le poids doit être d'au moins 20 kg")
     .max(300, 'Le poids semble trop élevé (max 300 kg)')
     .optional(),
+  taille: z
+    .number()
+    .min(100, "La taille doit être d'au moins 100 cm")
+    .max(250, 'La taille semble trop élevée (max 250 cm)')
+    .optional(),
   tour_taille: z
     .number()
-    .min(50, "Le tour de taille doit être d'au moins 50 cm")
+    .min(30, "Le tour de taille doit être d'au moins 30 cm")
     .max(200, 'Le tour de taille semble trop élevé (max 200 cm)')
     .optional(),
   tour_hanches: z
     .number()
-    .min(60, "Le tour de hanches doit être d'au moins 60 cm")
+    .min(50, "Le tour de hanches doit être d'au moins 50 cm")
     .max(200, 'Le tour de hanches semble trop élevé (max 200 cm)')
+    .optional(),
+  tour_bras: z
+    .number()
+    .min(10, "Le tour de bras doit être d'au moins 10 cm")
+    .max(80, 'Le tour de bras semble trop élevé (max 80 cm)')
+    .optional(),
+  tour_cuisse: z
+    .number()
+    .min(20, "Le tour de cuisse doit être d'au moins 20 cm")
+    .max(100, 'Le tour de cuisse semble trop élevé (max 100 cm)')
+    .optional(),
+  tour_cou: z
+    .number()
+    .min(20, "Le tour de cou doit être d'au moins 20 cm")
+    .max(60, 'Le tour de cou semble trop élevé (max 60 cm)')
+    .optional(),
+  tour_poitrine: z
+    .number()
+    .min(50, "Le tour de poitrine doit être d'au moins 50 cm")
+    .max(200, 'Le tour de poitrine semble trop élevé (max 200 cm)')
     .optional(),
   masse_grasse: z
     .number()
-    .min(3, "La masse grasse doit être d'au moins 3%")
-    .max(50, 'La masse grasse semble trop élevée (max 50%)')
+    .min(0, 'La masse grasse ne peut pas être négative')
+    .max(100, 'La masse grasse ne peut pas dépasser 100%')
     .optional(),
   masse_musculaire: z
     .number()
-    .min(20, "La masse musculaire doit être d'au moins 20 kg")
-    .max(100, 'La masse musculaire semble trop élevée (max 100 kg)')
+    .min(0, 'La masse musculaire ne peut pas être négative')
+    .max(100, 'La masse musculaire ne peut pas dépasser 100%')
+    .optional(),
+  imc: z
+    .number()
+    .min(10, "L'IMC doit être d'au moins 10")
+    .max(60, "L'IMC semble trop élevé (max 60)")
+    .optional(),
+  commentaire: z
+    .string()
+    .max(500, 'Le commentaire est trop long (max 500 caractères)')
+    .optional(),
+  photos: z.array(z.string()).max(10, 'Trop de photos (max 10)').optional(),
+});
+
+// Validation utilisateur
+export const userSchema = z.object({
+  id: z.string().min(1, "L'ID utilisateur est requis"),
+  email: z.string().email('Format email invalide').min(1, "L'email est requis"),
+  role: z.enum(['sportif', 'coach'], {
+    errorMap: () => ({ message: 'Le rôle doit être "sportif" ou "coach"' }),
+  }),
+  nom: z
+    .string()
+    .max(100, 'Le nom est trop long (max 100 caractères)')
+    .optional(),
+  prenom: z
+    .string()
+    .max(100, 'Le prénom est trop long (max 100 caractères)')
+    .optional(),
+  displayName: z
+    .string()
+    .max(200, "Le nom d'affichage est trop long (max 200 caractères)")
+    .optional(),
+  ownerCoachId: z.string().optional(),
+  athletes: z
+    .array(z.string())
+    .max(100, "Trop d'athlètes (max 100)")
+    .optional(),
+  created_at: z.union([z.date(), z.string()]).optional(),
+  updated_at: z.union([z.date(), z.string()]).optional(),
+});
+
+// Validation journal
+export const journalSchema = z.object({
+  user_id: z.string().min(1, "L'utilisateur est requis"),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Format de date invalide (YYYY-MM-DD)')
+    .refine((date) => {
+      const parsed = new Date(date);
+      const today = new Date();
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + 1); // Autorise jusqu'à demain
+      const minDate = new Date('2020-01-01'); // Pas avant 2020
+      return parsed >= minDate && parsed <= maxDate;
+    }, 'La date doit être entre 2020 et demain'),
+  note: z
+    .string()
+    .max(1000, 'La note est trop longue (max 1000 caractères)')
+    .optional(),
+  humeur: z
+    .number()
+    .min(1, "L'humeur doit être entre 1 et 10")
+    .max(10, "L'humeur doit être entre 1 et 10")
+    .int("L'humeur doit être un nombre entier")
+    .optional(),
+  fatigue: z
+    .number()
+    .min(1, 'La fatigue doit être entre 1 et 10')
+    .max(10, 'La fatigue doit être entre 1 et 10')
+    .int('La fatigue doit être un nombre entier')
+    .optional(),
+  motivation: z
+    .number()
+    .min(1, 'La motivation doit être entre 1 et 10')
+    .max(10, 'La motivation doit être entre 1 et 10')
+    .int('La motivation doit être un nombre entier')
+    .optional(),
+  energie: z
+    .number()
+    .min(1, "L'énergie doit être entre 1 et 10")
+    .max(10, "L'énergie doit être entre 1 et 10")
+    .int("L'énergie doit être un nombre entier")
+    .optional(),
+  sommeil_duree: z
+    .number()
+    .min(0, 'La durée de sommeil ne peut pas être négative')
+    .max(24, 'La durée de sommeil ne peut pas dépasser 24h')
+    .optional(),
+  sommeil_qualite: z
+    .number()
+    .min(1, 'La qualité du sommeil doit être entre 1 et 10')
+    .max(10, 'La qualité du sommeil doit être entre 1 et 10')
+    .int('La qualité du sommeil doit être un nombre entier')
+    .optional(),
+  stress: z
+    .number()
+    .min(1, 'Le stress doit être entre 1 et 10')
+    .max(10, 'Le stress doit être entre 1 et 10')
+    .int('Le stress doit être un nombre entier')
+    .optional(),
+  meteo: z
+    .enum(['soleil', 'nuage', 'pluie', 'orage', 'neige'], {
+      errorMap: () => ({ message: 'Météo invalide' }),
+    })
+    .optional(),
+  photos_libres: z
+    .array(z.string())
+    .max(10, 'Trop de photos libres (max 10)')
+    .optional(),
+  objectifs_accomplis: z
+    .array(z.string())
+    .max(50, "Trop d'objectifs accomplis (max 50)")
+    .optional(),
+  badges_obtenus: z
+    .array(z.string())
+    .max(20, 'Trop de badges obtenus (max 20)')
+    .optional(),
+  activites_annexes: z
+    .array(z.string())
+    .max(20, "Trop d'activités annexes (max 20)")
     .optional(),
 });
 

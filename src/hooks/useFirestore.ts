@@ -29,6 +29,11 @@ import type { DocumentData } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase';
 import { useAuth } from './useAuth';
 import { useFirebaseError } from './useFirebaseError';
+import {
+  dateToTimestamp,
+  timestampToDateString,
+  compareDates,
+} from '@/lib/dateUtils';
 import { generateId } from '@/lib/utils';
 import { calculateLevel } from '@/lib/challenges';
 import {
@@ -68,11 +73,7 @@ export function useRepas() {
     }
 
     setLoading(true);
-    const q = query(
-      collection(db, 'repas'),
-      where('user_id', '==', user.uid),
-      orderBy('date', 'desc'),
-    );
+    const q = query(collection(db, 'repas'), where('user_id', '==', user.uid));
 
     const unsubscribe = onSnapshot(
       q,
@@ -83,7 +84,24 @@ export function useRepas() {
             ...doc.data(),
           }),
         ) as Repas[];
-        setRepas(repasData);
+
+        // Filtrer les repas avec des dates invalides
+        const validRepas = repasData.filter((repas) => {
+          try {
+            const dateStr = timestampToDateString(repas.date);
+            return (
+              dateStr !== 'Invalid Date' && !isNaN(new Date(dateStr).getTime())
+            );
+          } catch {
+            console.warn('Invalid repas detected:', repas);
+            return false;
+          }
+        });
+
+        // Tri côté client pour gérer les Timestamps et strings
+        const sortedRepas = validRepas.sort(compareDates('desc'));
+
+        setRepas(sortedRepas);
         setLoading(false);
       },
       (error) => {
@@ -99,8 +117,21 @@ export function useRepas() {
     if (!user) return { success: false, error: 'Non connecté' };
 
     try {
+      // Nettoyer les données et convertir la date en Timestamp
+      const cleanData = Object.fromEntries(
+        Object.entries(repasData)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convertir la date string en Timestamp Firestore
+            if (key === 'date' && typeof value === 'string') {
+              return [key, dateToTimestamp(value)];
+            }
+            return [key, value];
+          }),
+      );
+
       const docData = {
-        ...repasData,
+        ...cleanData,
         created_at: serverTimestamp(),
       };
 
@@ -123,8 +154,21 @@ export function useRepas() {
     if (!user) return { success: false, error: 'Non connecté' };
 
     try {
+      // Nettoyer les données et convertir la date en Timestamp
+      const cleanData = Object.fromEntries(
+        Object.entries(repasData)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convertir la date string en Timestamp Firestore
+            if (key === 'date' && typeof value === 'string') {
+              return [key, dateToTimestamp(value)];
+            }
+            return [key, value];
+          }),
+      );
+
       const updateData = {
-        ...repasData,
+        ...cleanData,
         updated_at: serverTimestamp(),
       };
 
@@ -177,7 +221,6 @@ export function useEntrainements() {
     const q = query(
       collection(db, 'entrainements'),
       where('user_id', '==', user.uid),
-      orderBy('date', 'desc'),
     );
 
     const unsubscribe = onSnapshot(
@@ -187,7 +230,26 @@ export function useEntrainements() {
           id: doc.id,
           ...doc.data(),
         })) as Entrainement[];
-        setEntrainements(entrainementsData);
+
+        // Filtrer les entraînements avec des dates invalides
+        const validEntrainements = entrainementsData.filter((entrainement) => {
+          try {
+            const dateStr = timestampToDateString(entrainement.date);
+            return (
+              dateStr !== 'Invalid Date' && !isNaN(new Date(dateStr).getTime())
+            );
+          } catch {
+            console.warn('Invalid entrainement detected:', entrainement);
+            return false;
+          }
+        });
+
+        // Tri côté client pour gérer les Timestamps et strings
+        const sortedEntrainements = validEntrainements.sort(
+          compareDates('desc'),
+        );
+
+        setEntrainements(sortedEntrainements);
         setLoading(false);
       },
       (error) => {
@@ -226,11 +288,17 @@ export function useEntrainements() {
         }
       }
 
-      // Nettoyer les données pour éviter les valeurs undefined
+      // Nettoyer les données et convertir la date en Timestamp
       const cleanData = Object.fromEntries(
-        Object.entries(entrainementData).filter(
-          ([, value]) => value !== undefined,
-        ),
+        Object.entries(entrainementData)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convertir la date string en Timestamp Firestore
+            if (key === 'date' && typeof value === 'string') {
+              return [key, dateToTimestamp(value)];
+            }
+            return [key, value];
+          }),
       );
 
       const docRef = await addDoc(collection(db, 'entrainements'), {
@@ -256,9 +324,22 @@ export function useEntrainements() {
     if (!user) return { success: false, error: 'Non connecté' };
 
     try {
+      // Nettoyer les données et convertir la date en Timestamp
+      const cleanData = Object.fromEntries(
+        Object.entries(entrainementData)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convertir la date string en Timestamp Firestore
+            if (key === 'date' && typeof value === 'string') {
+              return [key, dateToTimestamp(value)];
+            }
+            return [key, value];
+          }),
+      );
+
       const docRef = doc(db, 'entrainements', id);
       await updateDoc(docRef, {
-        ...entrainementData,
+        ...cleanData,
         updated_at: serverTimestamp(),
       });
       return { success: true };
@@ -421,7 +502,6 @@ export function useMesures() {
     const q = query(
       collection(db, 'mesures'),
       where('user_id', '==', user.uid),
-      orderBy('date', 'desc'),
     );
 
     const unsubscribe = onSnapshot(
@@ -431,7 +511,24 @@ export function useMesures() {
           id: doc.id,
           ...doc.data(),
         })) as Mesure[];
-        setMesures(mesuresData);
+
+        // Filtrer les mesures avec des dates invalides
+        const validMesures = mesuresData.filter((mesure) => {
+          try {
+            const dateStr = timestampToDateString(mesure.date);
+            return (
+              dateStr !== 'Invalid Date' && !isNaN(new Date(dateStr).getTime())
+            );
+          } catch {
+            console.warn('Invalid mesure detected:', mesure);
+            return false;
+          }
+        });
+
+        // Tri côté client pour gérer les Timestamps et strings
+        const sortedMesures = validMesures.sort(compareDates('desc'));
+
+        setMesures(sortedMesures);
         setLoading(false);
       },
       (error) => {
@@ -454,11 +551,11 @@ export function useMesures() {
         imc = mesureData.poids / Math.pow(mesureData.taille / 100, 2);
       }
 
-      // Utiliser la même approche que addRepas et addEntry - filtrer les undefined
+      // Utiliser la même approche que addRepas et addEntry - filtrer les undefined et convertir la date
       const filteredData = Object.fromEntries(
         Object.entries({
           user_id: user.uid,
-          date: mesureData.date,
+          date: dateToTimestamp(mesureData.date), // Convertir en Timestamp
           poids: mesureData.poids,
           taille: mesureData.taille,
           masse_grasse: mesureData.masse_grasse,
@@ -503,12 +600,17 @@ export function useMesures() {
         }
       }
 
-      // Filtrer les valeurs undefined pour Firestore
+      // Filtrer les valeurs undefined et convertir la date pour Firestore
       const dataToUpdate: Record<string, unknown> = {};
       Object.keys(mesureData).forEach((key) => {
         const value = mesureData[key as keyof Partial<Mesure>];
         if (value !== undefined) {
-          dataToUpdate[key] = value;
+          // Convertir la date string en Timestamp Firestore
+          if (key === 'date' && typeof value === 'string') {
+            dataToUpdate[key] = dateToTimestamp(value);
+          } else {
+            dataToUpdate[key] = value;
+          }
         }
       });
 
@@ -552,8 +654,12 @@ export function useMesures() {
 
     // Evolution depuis dernière mesure
     const mesuresAvecPoids = mesures
-      .filter((m) => m.poids && m.date < mesure.date)
-      .sort((a, b) => b.date.localeCompare(a.date));
+      .filter(
+        (m) =>
+          m.poids &&
+          timestampToDateString(m.date) < timestampToDateString(mesure.date),
+      )
+      .sort(compareDates('desc'));
     const derniereMesure = mesuresAvecPoids[0];
 
     let evolution_poids = 0;
@@ -745,7 +851,6 @@ export function useJournal() {
     const q = query(
       collection(db, 'journal'),
       where('user_id', '==', user.uid),
-      orderBy('date', 'desc'),
     );
 
     const unsubscribe = onSnapshot(
@@ -755,7 +860,24 @@ export function useJournal() {
           id: doc.id,
           ...doc.data(),
         })) as JournalEntry[];
-        setEntries(entriesData);
+
+        // Filtrer les entrées avec des dates invalides
+        const validEntries = entriesData.filter((entry) => {
+          try {
+            const dateStr = timestampToDateString(entry.date);
+            return (
+              dateStr !== 'Invalid Date' && !isNaN(new Date(dateStr).getTime())
+            );
+          } catch {
+            console.warn('Invalid journal entry detected:', entry);
+            return false;
+          }
+        });
+
+        // Tri côté client pour gérer les Timestamps et strings
+        const sortedEntries = validEntries.sort(compareDates('desc'));
+
+        setEntries(sortedEntries);
         setLoading(false);
       },
       (error) => {
@@ -773,11 +895,23 @@ export function useJournal() {
     if (!user.uid) return { success: false, error: 'UID utilisateur manquant' };
 
     try {
-      // Filtrer les valeurs undefined
+      // Filtrer les valeurs undefined et convertir la date
+      const cleanEntryData = Object.fromEntries(
+        Object.entries(entryData)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convertir la date string en Timestamp Firestore
+            if (key === 'date' && typeof value === 'string') {
+              return [key, dateToTimestamp(value)];
+            }
+            return [key, value];
+          }),
+      );
+
       const filteredData = Object.fromEntries(
         Object.entries({
           user_id: user.uid,
-          ...entryData,
+          ...cleanEntryData,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp(),
         }).filter(([, value]) => value !== undefined),
@@ -801,10 +935,23 @@ export function useJournal() {
     if (!user) return { success: false, error: 'Non connecté' };
 
     try {
+      // Nettoyer les données et convertir la date
+      const cleanEntryData = Object.fromEntries(
+        Object.entries(entryData)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => {
+            // Convertir la date string en Timestamp Firestore
+            if (key === 'date' && typeof value === 'string') {
+              return [key, dateToTimestamp(value)];
+            }
+            return [key, value];
+          }),
+      );
+
       // Filtrer les valeurs undefined ET les user_id vides
       const filteredData = Object.fromEntries(
         Object.entries({
-          ...entryData,
+          ...cleanEntryData,
           updated_at: serverTimestamp(),
         }).filter(([key, value]) => {
           // Ne pas inclure user_id s'il est vide ou undefined
@@ -877,9 +1024,7 @@ export function usePhotosLibres() {
         })) as PhotoLibre[];
 
         // Tri côté client en attendant l'index Firestore
-        const sortedPhotos = photosData.sort((a, b) =>
-          b.date.localeCompare(a.date),
-        );
+        const sortedPhotos = photosData.sort(compareDates('desc'));
         setPhotos(sortedPhotos);
         setLoading(false);
       },
@@ -1532,7 +1677,7 @@ export function useAthleteRealData(athleteId: string) {
 
         // Calories et protéines du jour
         const todayMeals = repas.filter(
-          (r: FirestoreRepas) => r.date === today,
+          (r: FirestoreRepas) => timestampToDateString(r.date) === today,
         );
         const calories_jour = todayMeals.reduce(
           (sum: number, meal: FirestoreRepas) => sum + (meal.macros?.kcal || 0),
@@ -1545,7 +1690,8 @@ export function useAthleteRealData(athleteId: string) {
 
         // Entraînements de la semaine
         const entrainements_semaine = entrainements.filter(
-          (e: FirestoreEntrainement) => e.date && e.date >= weekStart,
+          (e: FirestoreEntrainement) =>
+            e.date && timestampToDateString(e.date) >= weekStart,
         ).length;
 
         // Poids actuel et variation
@@ -1553,7 +1699,8 @@ export function useAthleteRealData(athleteId: string) {
           .filter((m: FirestoreMesure) => m.poids && m.date)
           .sort(
             (a: FirestoreMesure, b: FirestoreMesure) =>
-              new Date(b.date!).getTime() - new Date(a.date!).getTime(),
+              new Date(timestampToDateString(b.date!)).getTime() -
+              new Date(timestampToDateString(a.date!)).getTime(),
           ) as MesureAvecPoids[];
         const poids_actuel = mesuresAvecPoids[0]?.poids || 0;
 
@@ -1607,7 +1754,7 @@ export function useAthleteRealData(athleteId: string) {
             .toISOString()
             .split('T')[0];
           const repasDuJour = repas.filter(
-            (r: FirestoreRepas) => r.date === date,
+            (r: FirestoreRepas) => timestampToDateString(r.date) === date,
           );
           const calories = repasDuJour.reduce(
             (sum: number, meal: FirestoreRepas) =>

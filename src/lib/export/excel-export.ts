@@ -2,14 +2,20 @@
  * Utilitaires d'export Excel pour SuperNovaFit
  * Gère la génération et le téléchargement de fichiers Excel avec formatage professionnel
  * Migré de xlsx vers exceljs pour résoudre les vulnérabilités de sécurité
+ *
+ * OPTIMISATION: ExcelJS est chargé dynamiquement pour réduire le bundle initial
  */
 
-import { Workbook, Worksheet } from 'exceljs';
-import { saveAs } from 'file-saver';
+// Types pour les librairies chargées dynamiquement
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Workbook = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Worksheet = any;
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import type { ExportConfig, ExportMetadata } from '@/types/export';
 import type { Repas, Entrainement, Mesure } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 import {
   generateWeightChartData,
   generateCaloriesChartData,
@@ -71,6 +77,12 @@ export async function generateAndDownloadExcel(
   fileName: string,
 ): Promise<void> {
   try {
+    // Chargement dynamique d'ExcelJS et file-saver (économise ~800KB sur le bundle initial)
+    const [{ Workbook }, { saveAs }] = await Promise.all([
+      import('exceljs'),
+      import('file-saver'),
+    ]);
+
     const workbook = new Workbook();
 
     // Métadonnées du workbook
@@ -223,7 +235,9 @@ function addRepasSheet(workbook: Workbook, repas: Repas[]): void {
   // Ajout des données
   repas.forEach((r) => {
     worksheet.addRow({
-      date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+      date: format(new Date(timestampToDateString(r.date)), 'dd/MM/yyyy', {
+        locale: fr,
+      }),
       type: r.repas,
       aliments: r.aliments
         .map((a) => `${a.nom} (${a.quantite}${a.unite})`)
@@ -265,7 +279,9 @@ function addEntrainementsSheet(
   // Ajout des données
   entrainements.forEach((e) => {
     worksheet.addRow({
-      date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+      date: format(new Date(timestampToDateString(e.date)), 'dd/MM/yyyy', {
+        locale: fr,
+      }),
       type: e.type,
       duree: e.duree,
       calories: e.calories || 0,
@@ -302,7 +318,9 @@ function addMesuresSheet(workbook: Workbook, mesures: Mesure[]): void {
   // Ajout des données
   mesures.forEach((m) => {
     worksheet.addRow({
-      date: format(new Date(m.date), 'dd/MM/yyyy', { locale: fr }),
+      date: format(new Date(timestampToDateString(m.date)), 'dd/MM/yyyy', {
+        locale: fr,
+      }),
       poids: m.poids || 0,
       imc: m.imc || 0,
       masse_grasse: m.masse_grasse || 0,
@@ -342,7 +360,8 @@ function addChartsSheet(
 
     worksheet.getCell(`A${currentRow}`).value = 'Date';
     worksheet.getCell(`B${currentRow}`).value = 'Poids (kg)';
-    worksheet.getRow(currentRow).eachCell((cell) => {
+    worksheet.getRow(currentRow).eachCell((cell: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.subHeader;
     });
     currentRow++;
@@ -366,7 +385,8 @@ function addChartsSheet(
 
     worksheet.getCell(`A${currentRow}`).value = 'Date';
     worksheet.getCell(`B${currentRow}`).value = 'Calories (kcal)';
-    worksheet.getRow(currentRow).eachCell((cell) => {
+    worksheet.getRow(currentRow).eachCell((cell: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.subHeader;
     });
     currentRow++;
@@ -390,7 +410,8 @@ function addChartsSheet(
 
     worksheet.getCell(`A${currentRow}`).value = 'Type';
     worksheet.getCell(`B${currentRow}`).value = 'Valeur (g)';
-    worksheet.getRow(currentRow).eachCell((cell) => {
+    worksheet.getRow(currentRow).eachCell((cell: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.subHeader;
     });
     currentRow++;
@@ -466,14 +487,16 @@ function addStatisticsSheet(
 function applyStylesToWorksheet(worksheet: Worksheet, rows: number): void {
   // Style pour la ligne d'en-tête
   const headerRow = worksheet.getRow(1);
-  headerRow.eachCell((cell) => {
+  headerRow.eachCell((cell: any) => {
+    // eslint-disable-line @typescript-eslint/no-explicit-any
     cell.style = EXCEL_STYLES.header;
   });
 
   // Styles pour les données
   for (let row = 2; row <= rows; row++) {
     const dataRow = worksheet.getRow(row);
-    dataRow.eachCell((cell) => {
+    dataRow.eachCell((cell: any) => {
+      // eslint-disable-line @typescript-eslint/no-explicit-any
       cell.style = EXCEL_STYLES.data;
     });
   }

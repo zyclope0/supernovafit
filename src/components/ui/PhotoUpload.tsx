@@ -14,6 +14,7 @@ import { usePhotos } from '@/hooks/useFirestore';
 import { Mesure } from '@/types';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface PhotoUploadProps {
   mesures: Mesure[];
@@ -105,7 +106,9 @@ function PhotoCard({
               </span>
             </div>
             <span className="text-xs text-muted-foreground">
-              {new Date(photo.date).toLocaleDateString('fr-FR')}
+              {new Date(timestampToDateString(photo.date)).toLocaleDateString(
+                'fr-FR',
+              )}
             </span>
           </div>
 
@@ -254,7 +257,11 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
     // Trouver les photos du type sélectionné, triées par date
     const photosOfType = photos
       .filter((p) => p.type === comparisonData.selectedType)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort(
+        (a, b) =>
+          new Date(timestampToDateString(a.date)).getTime() -
+          new Date(timestampToDateString(b.date)).getTime(),
+      );
 
     if (photosOfType.length < 2) {
       toast.error(
@@ -406,8 +413,10 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                 <option value="">Aucune mesure</option>
                 {mesures.map((mesure) => (
                   <option key={mesure.id} value={mesure.id}>
-                    {new Date(mesure.date).toLocaleDateString('fr-FR')} -{' '}
-                    {mesure.poids}kg
+                    {new Date(
+                      timestampToDateString(mesure.date),
+                    ).toLocaleDateString('fr-FR')}{' '}
+                    - {mesure.poids}kg
                   </option>
                 ))}
               </select>
@@ -499,8 +508,10 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                   <option value="">Aucune mesure</option>
                   {mesures.map((mesure) => (
                     <option key={mesure.id} value={mesure.id}>
-                      {new Date(mesure.date).toLocaleDateString('fr-FR')} -{' '}
-                      {mesure.poids}kg
+                      {new Date(
+                        timestampToDateString(mesure.date),
+                      ).toLocaleDateString('fr-FR')}{' '}
+                      - {mesure.poids}kg
                     </option>
                   ))}
                 </select>
@@ -621,12 +632,14 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                       .filter((p) => p.type === comparisonData.selectedType)
                       .sort(
                         (a, b) =>
-                          new Date(a.date).getTime() -
-                          new Date(b.date).getTime(),
+                          new Date(timestampToDateString(a.date)).getTime() -
+                          new Date(timestampToDateString(b.date)).getTime(),
                       )
                       .map((photo) => (
                         <option key={photo.id} value={photo.id}>
-                          {new Date(photo.date).toLocaleDateString('fr-FR')}
+                          {new Date(
+                            timestampToDateString(photo.date),
+                          ).toLocaleDateString('fr-FR')}
                           {photo.commentaire &&
                             ` - ${photo.commentaire.substring(0, 30)}${photo.commentaire.length > 30 ? '...' : ''}`}
                         </option>
@@ -654,12 +667,14 @@ export default function PhotoUpload({ mesures }: PhotoUploadProps) {
                       .filter((p) => p.type === comparisonData.selectedType)
                       .sort(
                         (a, b) =>
-                          new Date(a.date).getTime() -
-                          new Date(b.date).getTime(),
+                          new Date(timestampToDateString(a.date)).getTime() -
+                          new Date(timestampToDateString(b.date)).getTime(),
                       )
                       .map((photo) => (
                         <option key={photo.id} value={photo.id}>
-                          {new Date(photo.date).toLocaleDateString('fr-FR')}
+                          {new Date(
+                            timestampToDateString(photo.date),
+                          ).toLocaleDateString('fr-FR')}
                           {photo.commentaire &&
                             ` - ${photo.commentaire.substring(0, 30)}${photo.commentaire.length > 30 ? '...' : ''}`}
                         </option>

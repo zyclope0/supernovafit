@@ -10,11 +10,11 @@
 
 | Phase               | Tests | Status           | Coverage | Temps Estimé | Temps Réel |
 | ------------------- | ----- | ---------------- | -------- | ------------ | ---------- |
-| **Phase 1 : Auth**  | 10    | ✅ **TERMINÉ**   | 5%       | 3h           | 3h30       |
-| **Phase 2 : Meals** | 15    | 🔄 En attente    | +3%      | 4h           | -          |
+| **Phase 1 : Auth**  | 10    | ✅ **TERMINÉ**   | 5%       | 3h           | 4h         |
+| **Phase 2 : Meals** | 15    | 🔄 En cours      | +3%      | 4h           | -          |
 | **Phase 3 : Train** | 10    | 🔄 En attente    | +2%      | 3h           | -          |
 | **Phase 4 : Coach** | 10    | 🔄 En attente    | +5%      | 4h           | -          |
-| **Total E2E**       | 45    | **22% complété** | 15%      | 14h          | 3h30       |
+| **Total E2E**       | 45    | **22% complété** | 15%      | 14h          | 4h         |
 | **Tests Unit UI**   | 20    | 🔄 En attente    | +10%     | 18h          | -          |
 | **TOTAL**           | 65    | **15% complété** | 25%      | 32h          | 3h30       |
 
@@ -49,21 +49,22 @@
 - ✅ `TESTS_E2E_GUIDE.md` - **Guide step-by-step 3 min**
 - ✅ Scripts npm : `test:e2e`, `test:e2e:ui`, `test:e2e:debug`, `test:e2e:report`
 
-### Validation (En Cours)
+### Validation ✅
 
-- [x] Utilisateurs Firebase existent (test, coach)
-- [ ] `.env.test` configuré avec vrais mots de passe
-- [ ] Serveur dev démarré (`npm run dev`)
-- [ ] 10 tests passent en mode UI (`npm run test:e2e:ui`)
+- [x] Utilisateurs Firebase existent (test, coach, athlete)
+- [x] `.env.test` configuré avec vrais mots de passe
+- [x] Serveur dev démarré (`npm run dev`)
+- [x] 10 tests passent (39/45 au total - 87%)
 
 ---
 
-## 🔄 Phase 2 : Meal Tracking (EN ATTENTE)
+## 🔄 Phase 2 : Meal Tracking (EN COURS)
 
 **Estimation :** 4h  
 **Coverage Estimé :** +3% (total 8%)
+**Fichier :** `e2e/meal-tracking.spec.ts` ✅ CRÉÉ
 
-### Tests À Implémenter (0/15)
+### Tests Implémentés (13/15)
 
 | Test                               | Status | Priority | Estimation |
 | ---------------------------------- | ------ | -------- | ---------- |
@@ -263,10 +264,9 @@
 
 ## 📚 Références
 
-- [Guide Setup](./SETUP_GUIDE.md)
-- [Documentation E2E](../e2e/README.md)
-- [Playwright Config](../playwright.config.ts)
-- [Audit Reconciliation](./AUDIT_RECONCILIATION.md)
+- **[Documentation E2E Complète](../e2e/README.md)** - Guide complet + Quick Start
+- **[Playwright Config](../playwright.config.ts)** - Configuration technique
+- **[Audit Reconciliation](./AUDIT_RECONCILIATION.md)** - Analyse des gaps
 
 ---
 

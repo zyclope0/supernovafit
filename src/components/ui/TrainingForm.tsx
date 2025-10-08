@@ -229,6 +229,7 @@ export default function TrainingForm({
     // retirer user_id temporaire
     const { user_id, ...finalTrainingData } = trainingDataForValidation;
     void user_id;
+
     onSubmit(finalTrainingData as Omit<Entrainement, 'id' | 'user_id'>);
   };
 

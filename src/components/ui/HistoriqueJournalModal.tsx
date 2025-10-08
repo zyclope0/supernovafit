@@ -1,6 +1,7 @@
 'use client';
 
 import { JournalEntry } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { useState, useMemo, useRef } from 'react';
 import { Calendar, BarChart3, Eye } from 'lucide-react';
 import { useCoachCommentsByModule } from '@/hooks/useFirestore';
@@ -48,7 +49,9 @@ export default function HistoriqueJournalModal({
   const last30Days = getLast30Days();
 
   const getStatsForDate = (date: string) => {
-    const dayEntries = allEntries.filter((e) => e.date === date);
+    const dayEntries = allEntries.filter(
+      (e) => timestampToDateString(e.date) === date,
+    );
     const count = dayEntries.length;
     const avgHumeur =
       count > 0

@@ -22,6 +22,7 @@ import {
 } from '@/hooks/useFirestore';
 import { calculateTDEE, calculateAdjustedTDEE } from '@/lib/userCalculations';
 import { cn } from '@/lib/utils';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface WidgetConfig {
   id: string;
@@ -57,7 +58,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
 
   // Données du jour
   const today = new Date().toISOString().split('T')[0];
-  const todayMeals = repas.filter((r) => r.date === today);
+  const todayMeals = repas.filter(
+    (r) => timestampToDateString(r.date) === today,
+  );
   const todayStats = todayMeals.reduce(
     (total, meal) => ({
       calories: total.calories + (meal.macros?.kcal || 0),
@@ -74,15 +77,23 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
   const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Dimanche = 6 jours, autres = jour - 1
   weekStart.setDate(weekStart.getDate() - daysToSubtract);
   const weekStartStr = weekStart.toISOString().split('T')[0];
-  const thisWeekTrainings = entrainements.filter((e) => e.date >= weekStartStr);
+  const thisWeekTrainings = entrainements.filter(
+    (e) => timestampToDateString(e.date) >= weekStartStr,
+  );
 
   // Dernier poids
   const latestWeight = mesures
     .filter((m) => m.poids)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    .sort((a, b) => {
+      const dateA = timestampToDateString(a.date);
+      const dateB = timestampToDateString(b.date);
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    })[0];
 
   // Humeur du jour
-  const todayMood = journalEntries.find((e) => e.date === today);
+  const todayMood = journalEntries.find(
+    (e) => timestampToDateString(e.date) === today,
+  );
 
   // Calculer calories d'entraînement de la semaine pour ajustement
   const weekCaloriesBurned = thisWeekTrainings.reduce(
@@ -220,7 +231,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
           </div>
           {latestWeight && (
             <div className="text-xs text-white/60">
-              {new Date(latestWeight.date).toLocaleDateString('fr-FR', {
+              {new Date(
+                timestampToDateString(latestWeight.date),
+              ).toLocaleDateString('fr-FR', {
                 day: 'numeric',
                 month: 'short',
               })}
@@ -359,7 +372,11 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
           {/* Today's Training */}
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-400 mb-1">
-              {entrainements.filter((e) => e.date === today).length}
+              {
+                entrainements.filter(
+                  (e) => timestampToDateString(e.date) === today,
+                ).length
+              }
             </div>
             <div className="text-sm text-white/60">Séance</div>
             <div className="text-xs text-white/40">aujourd&apos;hui</div>
@@ -402,11 +419,13 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
               <span className="text-lg font-bold text-orange-400">
                 {Math.round(
                   repas
-                    .filter(
-                      (r) =>
-                        new Date(r.date) >=
-                        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-                    )
+                    .filter((r) => {
+                      const dateStr = timestampToDateString(r.date);
+                      const sevenDaysAgo = new Date(
+                        Date.now() - 7 * 24 * 60 * 60 * 1000,
+                      );
+                      return new Date(dateStr) >= sevenDaysAgo;
+                    })
                     .reduce((sum, r) => sum + (r.macros?.kcal || 0), 0) / 7,
                 )}
               </span>
@@ -598,9 +617,9 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
                     {latestWeight && (
                       <div className="text-xs text-center text-white/60">
                         Dernière mesure :{' '}
-                        {new Date(latestWeight.date).toLocaleDateString(
-                          'fr-FR',
-                        )}
+                        {new Date(
+                          timestampToDateString(latestWeight.date),
+                        ).toLocaleDateString('fr-FR')}
                       </div>
                     )}
                   </div>

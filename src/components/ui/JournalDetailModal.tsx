@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { JournalEntry } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { Heart, Battery, Zap, CloudRain, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -75,7 +76,7 @@ export default function JournalDetailModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Entrée Journal"
-      subtitle={formatDate(entry.date)}
+      subtitle={formatDate(timestampToDateString(entry.date))}
       icon="📔"
       onEdit={onEdit}
       editLabel="Modifier"

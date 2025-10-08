@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, History } from 'lucide-react';
 import { Entrainement } from '@/types';
 import { cn } from '@/lib/utils';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface TrainingCalendarProps {
   selectedDate: string;
@@ -27,7 +28,7 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
   const trainingsMap = useMemo(() => {
     const map = new Map<string, Entrainement[]>();
     entrainements.forEach((training) => {
-      const dateKey = training.date;
+      const dateKey = timestampToDateString(training.date);
       if (!map.has(dateKey)) {
         map.set(dateKey, []);
       }

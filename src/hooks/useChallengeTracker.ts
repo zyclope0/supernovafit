@@ -8,6 +8,7 @@ import {
   useJournal,
   useMesures,
 } from './useFirestore';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { useChallenges } from './useChallenges';
 
 /**
@@ -58,7 +59,7 @@ export function useChallengeTracker() {
 
     // Filtrer les entraînements de cette semaine
     const thisWeekTrainings = entrainements.filter((training) => {
-      const trainingDate = new Date(training.date);
+      const trainingDate = new Date(timestampToDateString(training.date));
       return trainingDate >= startOfWeek && trainingDate <= endOfWeek;
     });
 
@@ -168,7 +169,7 @@ export function useChallengeTracker() {
 
     // Repas d'aujourd'hui
     const todayMeals = repas.filter((meal) => {
-      const mealDate = new Date(meal.date);
+      const mealDate = new Date(timestampToDateString(meal.date));
       return mealDate >= startOfDay && mealDate <= endOfDay;
     });
 
@@ -217,7 +218,9 @@ export function useChallengeTracker() {
     const latestWeight = mesures
       .filter((m) => m.poids)
       .sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        (a, b) =>
+          new Date(timestampToDateString(b.date)).getTime() -
+          new Date(timestampToDateString(a.date)).getTime(),
       )[0];
 
     const userWeight = latestWeight?.poids || 70; // Valeur par défaut si pas de poids
@@ -237,7 +240,7 @@ export function useChallengeTracker() {
       dayEnd.setHours(23, 59, 59, 999);
 
       const dayMeals = repas.filter((meal) => {
-        const mealDate = new Date(meal.date);
+        const mealDate = new Date(timestampToDateString(meal.date));
         return mealDate >= dayStart && mealDate <= dayEnd;
       });
 
@@ -297,12 +300,12 @@ export function useChallengeTracker() {
     const { startOfDay, endOfDay } = getTodayBounds();
 
     const thisWeekTrainings = entrainements.filter((training) => {
-      const trainingDate = new Date(training.date);
+      const trainingDate = new Date(timestampToDateString(training.date));
       return trainingDate >= startOfWeek && trainingDate <= endOfWeek;
     });
 
     const todayTrainings = entrainements.filter((training) => {
-      const trainingDate = new Date(training.date);
+      const trainingDate = new Date(timestampToDateString(training.date));
       return trainingDate >= startOfDay && trainingDate <= endOfDay;
     });
 
@@ -324,7 +327,7 @@ export function useChallengeTracker() {
         dayEnd.setHours(23, 59, 59, 999);
 
         const dayMeals = repas.filter((meal) => {
-          const mealDate = new Date(meal.date);
+          const mealDate = new Date(timestampToDateString(meal.date));
           return mealDate >= dayStart && mealDate <= dayEnd;
         });
 
@@ -426,7 +429,7 @@ export function useChallengeTracker() {
       startOfMonth.setHours(0, 0, 0, 0);
 
       const monthTrainings = entrainements.filter((training) => {
-        const trainingDate = new Date(training.date);
+        const trainingDate = new Date(timestampToDateString(training.date));
         return trainingDate >= startOfMonth;
       });
 
@@ -450,7 +453,7 @@ export function useChallengeTracker() {
 
     // Entrées de journal de cette semaine
     const thisWeekEntries = journalEntries.filter((entry) => {
-      const entryDate = new Date(entry.date);
+      const entryDate = new Date(timestampToDateString(entry.date));
       return entryDate >= startOfWeek && entryDate <= endOfWeek;
     });
 
@@ -495,7 +498,7 @@ export function useChallengeTracker() {
     );
     if (suiviParfaitChallenge && mesures) {
       const thisWeekMesures = mesures.filter((mesure) => {
-        const mesureDate = new Date(mesure.date);
+        const mesureDate = new Date(timestampToDateString(mesure.date));
         return mesureDate >= startOfWeek && mesureDate <= endOfWeek;
       });
 
@@ -523,7 +526,7 @@ export function useChallengeTracker() {
         dayEnd.setHours(23, 59, 59, 999);
 
         const dayEntries = journalEntries.filter((entry) => {
-          const entryDate = new Date(entry.date);
+          const entryDate = new Date(timestampToDateString(entry.date));
           return (
             entryDate >= dayStart &&
             entryDate <= dayEnd &&
@@ -558,7 +561,7 @@ export function useChallengeTracker() {
         dayEnd.setHours(23, 59, 59, 999);
 
         const dayEntries = journalEntries.filter((entry) => {
-          const entryDate = new Date(entry.date);
+          const entryDate = new Date(timestampToDateString(entry.date));
           return (
             entryDate >= dayStart &&
             entryDate <= dayEnd &&
@@ -593,7 +596,7 @@ export function useChallengeTracker() {
         dayEnd.setHours(23, 59, 59, 999);
 
         const dayEntries = journalEntries.filter((entry) => {
-          const entryDate = new Date(entry.date);
+          const entryDate = new Date(timestampToDateString(entry.date));
           return (
             entryDate >= dayStart &&
             entryDate <= dayEnd &&

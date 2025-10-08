@@ -12,8 +12,8 @@ export default defineConfig({
   // Timeout par test (30s max)
   timeout: 30000,
 
-  // Tests en parallèle
-  fullyParallel: true,
+  // Tests en série pour éviter les conflits sur la page /diete
+  fullyParallel: false,
 
   // Interdire .only() en CI
   forbidOnly: !!process.env.CI,

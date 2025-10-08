@@ -13,6 +13,7 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Entrainement } from '@/types';
 import type { TooltipProps } from 'recharts';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface PerformanceChartProps {
   entrainements: Entrainement[];
@@ -70,7 +71,11 @@ export default function PerformanceChart({
           return false;
       }
     })
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .sort(
+      (a, b) =>
+        new Date(timestampToDateString(a.date)).getTime() -
+        new Date(timestampToDateString(b.date)).getTime(),
+    )
     .map((e) => {
       const baseData = {
         date: e.date,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
+import { timestampToDateString } from '@/lib/dateUtils';
 import MainLayout from '@/components/layout/MainLayout';
 const DietForm = dynamic(() => import('@/components/diete/DietForm'), {
   ssr: false,
@@ -238,7 +239,7 @@ export default function DietePage() {
   const todayMeals = useMemo(() => {
     const migratedRepas = repas.map(migrateLegacyMeal);
     const filtered = migratedRepas.filter(
-      (r: Repas) => r.date === selectedDate,
+      (r: Repas) => timestampToDateString(r.date) === selectedDate,
     );
 
     return filtered;
@@ -254,9 +255,10 @@ export default function DietePage() {
     weekStart.setDate(weekStart.getDate() - daysToSubtract);
     const weekStartStr = weekStart.toISOString().split('T')[0];
 
-    return repas.filter(
-      (r: Repas) => r.date >= weekStartStr && r.date <= selectedDate,
-    );
+    return repas.filter((r: Repas) => {
+      const repasDateStr = timestampToDateString(r.date);
+      return repasDateStr >= weekStartStr && repasDateStr <= selectedDate;
+    });
   }, [repas, selectedDate, macrosPeriod]);
 
   // Calcul des repas du mois pour le mode mois
@@ -267,9 +269,10 @@ export default function DietePage() {
     monthStart.setDate(1); // Premier jour du mois
     const monthStartStr = monthStart.toISOString().split('T')[0];
 
-    const filtered = repas.filter(
-      (r: Repas) => r.date >= monthStartStr && r.date <= selectedDate,
-    );
+    const filtered = repas.filter((r: Repas) => {
+      const dateStr = timestampToDateString(r.date);
+      return dateStr >= monthStartStr && dateStr <= selectedDate;
+    });
 
     return filtered;
   }, [repas, selectedDate, macrosPeriod]);
@@ -295,15 +298,19 @@ export default function DietePage() {
     repas: periodMeals,
     entrainements:
       macrosPeriod === 'today'
-        ? entrainements.filter((e) => e.date === selectedDate)
+        ? entrainements.filter(
+            (e) => timestampToDateString(e.date) === selectedDate,
+          )
         : entrainements.filter((e) => {
             const weekStart = new Date(selectedDate);
             const dayOfWeek = weekStart.getDay();
             const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
             weekStart.setDate(weekStart.getDate() - daysToSubtract);
+            const entrainementDateStr = timestampToDateString(e.date);
+            const weekStartStr = weekStart.toISOString().split('T')[0];
             return (
-              e.date >= weekStart.toISOString().split('T')[0] &&
-              e.date <= selectedDate
+              entrainementDateStr >= weekStartStr &&
+              entrainementDateStr <= selectedDate
             );
           }),
     periodDays: macrosPeriod === 'today' ? 1 : 7,
@@ -463,7 +470,9 @@ export default function DietePage() {
     const estimatedWeight = userProfile?.poids_initial || 70;
 
     // Calculer calories d'entraînement du jour pour ajustement
-    const todayTrainings = entrainements.filter((e) => e.date === selectedDate);
+    const todayTrainings = entrainements.filter(
+      (e) => timestampToDateString(e.date) === selectedDate,
+    );
     const todayCaloriesBurned = todayTrainings.reduce(
       (total, training) => total + (training.calories || 0),
       0,

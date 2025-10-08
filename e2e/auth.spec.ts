@@ -29,7 +29,9 @@ test.describe('Authentication Flow', () => {
     await page.goto('/diete');
     
     // Doit rediriger vers /auth avec returnUrl
-    await page.waitForLoadState('networkidle');
+    // Attendre que les éléments critiques soient chargés
+
+    await page.waitForTimeout(2000);
     expect(page.url()).toContain('/auth');
     expect(page.url()).toContain('returnUrl=%2Fdiete');
     
@@ -39,6 +41,9 @@ test.describe('Authentication Flow', () => {
 
   test('should show error on invalid credentials', async ({ page }) => {
     await page.goto('/auth');
+    
+    // Attendre que les éléments du formulaire soient chargés
+    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
     
     // Remplir avec credentials invalides
     await page.fill('input[type="email"]', 'invalid@example.com');
@@ -57,6 +62,9 @@ test.describe('Authentication Flow', () => {
 
   test('should login successfully with valid credentials', async ({ page, context }) => {
     await page.goto('/auth');
+    
+    // Attendre que les éléments du formulaire soient chargés (CSR bailout)
+    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
     
     // Remplir avec credentials valides
     const testEmail = process.env.TEST_USER_EMAIL || 'test@supernovafit.com';
@@ -83,6 +91,9 @@ test.describe('Authentication Flow', () => {
   test('should stay authenticated after page reload', async ({ page, context }) => {
     // Pre-requisite: user est loggé
     await page.goto('/auth');
+    
+    // Attendre que les éléments du formulaire soient chargés
+    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
     
     const testEmail = process.env.TEST_USER_EMAIL || 'test@supernovafit.com';
     const testPassword = process.env.TEST_USER_PASSWORD || 'Test123!';
@@ -147,26 +158,34 @@ test.describe('Authentication Flow', () => {
 
   test('should protect /diete route', async ({ page }) => {
     await page.goto('/diete');
-    await page.waitForLoadState('networkidle');
+    // Attendre que les éléments critiques soient chargés
+
+    await page.waitForTimeout(2000);
     // Doit rediriger vers /auth
     expect(page.url()).toContain('/auth');
   });
 
   test('should protect /entrainements route', async ({ page }) => {
     await page.goto('/entrainements');
-    await page.waitForLoadState('networkidle');
+    // Attendre que les éléments critiques soient chargés
+
+    await page.waitForTimeout(2000);
     expect(page.url()).toContain('/auth');
   });
 
   test('should protect /mesures route', async ({ page }) => {
     await page.goto('/mesures');
-    await page.waitForLoadState('networkidle');
+    // Attendre que les éléments critiques soient chargés
+
+    await page.waitForTimeout(2000);
     expect(page.url()).toContain('/auth');
   });
 
   test('should protect /journal route', async ({ page }) => {
     await page.goto('/journal');
-    await page.waitForLoadState('networkidle');
+    // Attendre que les éléments critiques soient chargés
+
+    await page.waitForTimeout(2000);
     expect(page.url()).toContain('/auth');
   });
 });

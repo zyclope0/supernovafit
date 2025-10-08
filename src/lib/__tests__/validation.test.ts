@@ -317,7 +317,7 @@ describe('validation schemas', () => {
     });
 
     it('devrait rejeter un tour de taille trop faible', () => {
-      const invalidMesure = { ...validMesure, tour_taille: 30 };
+      const invalidMesure = { ...validMesure, tour_taille: 29 }; // 29 < 30 (min)
       const result = mesureSchema.safeParse(invalidMesure);
       expect(result.success).toBe(false);
     });

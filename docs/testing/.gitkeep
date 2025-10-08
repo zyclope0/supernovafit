@@ -1,0 +1,17 @@
+# 🧪 Documentation Tests SuperNovaFit
+
+Ce répertoire contient toute la documentation des tests.
+
+**Point d'entrée :** [README.md](README.md)
+
+---
+
+Structure :
+- README.md - Navigation principale
+- UNIT_TESTS.md - Tests unitaires
+- E2E_TESTS.md - Tests E2E
+- COVERAGE_REPORT.md - Coverage
+- STATUS.md - État gelé
+- MIGRATION.md - Guide migration
+- CHANGELOG.md - Historique
+

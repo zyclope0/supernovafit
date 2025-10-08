@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useMesures } from '@/hooks/useFirestore';
 import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface QuickWeightModalProps {
   isOpen: boolean;
@@ -36,7 +37,11 @@ export default function QuickWeightModal({
   // Récupérer le dernier poids pour comparaison
   const lastWeight = mesures
     .filter((m) => m.poids)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    .sort(
+      (a, b) =>
+        new Date(timestampToDateString(b.date)).getTime() -
+        new Date(timestampToDateString(a.date)).getTime(),
+    )[0];
 
   const handleSave = async () => {
     if (!user || !weight || isSubmitting) return;
@@ -157,7 +162,9 @@ export default function QuickWeightModal({
                     {lastWeight.poids}kg
                   </p>
                   <p className="text-xs text-white/50">
-                    {new Date(lastWeight.date).toLocaleDateString('fr-FR')}
+                    {new Date(
+                      timestampToDateString(lastWeight.date),
+                    ).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
                 <div className="text-3xl">⚖️</div>

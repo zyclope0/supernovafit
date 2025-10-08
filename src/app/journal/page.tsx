@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { useAuth } from '@/hooks/useAuth';
+import { timestampToDateString } from '@/lib/dateUtils';
 import {
   useJournal,
   useBadges,
@@ -71,7 +72,7 @@ export default function JournalPageOptimized() {
   const [showHistory, setShowHistory] = useState(false);
   const [wellnessPeriod, setWellnessPeriod] = useState<
     'today' | 'week' | 'month'
-  >('week');
+  >('today');
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [showEntryDetail, setShowEntryDetail] = useState(false);
   const { comments: journalComments, loading: journalCommentsLoading } =
@@ -112,7 +113,9 @@ export default function JournalPageOptimized() {
 
   // Date d'aujourd'hui
   const today = new Date().toISOString().split('T')[0];
-  const todayEntry = entries.find((e) => e.date === today);
+  const todayEntry = entries.find(
+    (e) => timestampToDateString(e.date) === today,
+  );
 
   // Calculer les données selon la période sélectionnée
   const getDateRange = () => {
@@ -149,8 +152,8 @@ export default function JournalPageOptimized() {
   // Données selon la période sélectionnée
   const periodEntries =
     wellnessPeriod === 'today'
-      ? entries.filter((e) => e.date === today)
-      : entries.filter((e) => e.date >= periodStart);
+      ? entries.filter((e) => timestampToDateString(e.date) === today)
+      : entries.filter((e) => timestampToDateString(e.date) >= periodStart);
 
   // Calculer les moyennes pour la période
   const avgHumeur =
@@ -479,7 +482,7 @@ export default function JournalPageOptimized() {
                   <div className="space-y-3">
                     {(() => {
                       const dayEntry = entries.find(
-                        (e) => e.date === selectedDate,
+                        (e) => timestampToDateString(e.date) === selectedDate,
                       );
 
                       // Si une entrée existe pour la date sélectionnée
@@ -503,7 +506,11 @@ export default function JournalPageOptimized() {
 
                             {/* Autres entrées compactes (sans l'entrée du jour) */}
                             {entries
-                              .filter((entry) => entry.date !== selectedDate)
+                              .filter(
+                                (entry) =>
+                                  timestampToDateString(entry.date) !==
+                                  selectedDate,
+                              )
                               .slice(0, 4)
                               .map((entry) => (
                                 <JournalEntryCompact

@@ -17,13 +17,149 @@ service cloud.firestore {
     }
     
     // ====================================
+    // 🔒 VALIDATION FUNCTIONS - CRITIQUE
+    // ====================================
+    
+    // Fonction de validation générique des champs
+    function validateFields(data, required, optional) {
+      return data.keys().hasAll(required) &&
+             data.keys().hasOnly(required.concat(optional));
+    }
+    
+    // Validation stricte pour les repas
+    function validateRepas(data) {
+      return validateFields(data,
+        ['user_id', 'date', 'repas', 'aliments'],
+        ['macros', 'calories', 'notes', 'created_at', 'updated_at']) &&
+        data.date is timestamp && // Timestamp uniquement (sécurité stricte)
+        data.repas in ['petit_dej', 'dejeuner', 'diner', 
+                      'collation_matin', 'collation_apres_midi', 'collation_soir'] &&
+        data.aliments is list &&
+        data.aliments.size() > 0 &&
+        data.aliments.size() <= 50 &&
+        data.user_id is string &&
+        data.user_id.size() > 0;
+    }
+    
+    // Validation pour les entraînements
+    function validateEntrainement(data) {
+      return validateFields(data,
+        ['user_id', 'date', 'type', 'duree', 'source'],
+        ['commentaire', 'calories', 'fc_moyenne', 'fc_max', 'fc_min', 'distance', 
+         'vitesse_moy', 'vitesse_max', 'elevation_gain', 'cadence_moy', 'puissance_moy',
+         'zone1_time', 'zone2_time', 'zone3_time', 'zone4_time', 'zone5_time',
+         'effort_percu', 'fatigue_avant', 'fatigue_apres', 'fichier_original', 'device', 'garmin_id',
+         'intensite', 'exercices', 'notes', 'created_at', 'updated_at']) &&
+        data.date is timestamp && // Timestamp uniquement (sécurité stricte)
+        data.user_id is string &&
+        data.type is string &&
+        data.duree is number &&
+        data.duree > 0 &&
+        data.duree <= 600 && // Max 10h
+        data.source is string &&
+        data.source in ['manuel', 'garmin', 'import'] &&
+        (!('intensite' in data) || data.intensite in ['faible', 'moderee', 'elevee', 'maximale']) &&
+        // Validation des champs numériques optionnels
+        (!('calories' in data) || (data.calories is number && data.calories >= 0 && data.calories <= 10000)) &&
+        (!('fc_moyenne' in data) || (data.fc_moyenne is number && data.fc_moyenne >= 30 && data.fc_moyenne <= 250)) &&
+        (!('fc_max' in data) || (data.fc_max is number && data.fc_max >= 30 && data.fc_max <= 250)) &&
+        (!('fc_min' in data) || (data.fc_min is number && data.fc_min >= 30 && data.fc_min <= 250)) &&
+        (!('distance' in data) || (data.distance is number && data.distance >= 0 && data.distance <= 1000)) &&
+        (!('vitesse_moy' in data) || (data.vitesse_moy is number && data.vitesse_moy >= 0 && data.vitesse_moy <= 100)) &&
+        (!('vitesse_max' in data) || (data.vitesse_max is number && data.vitesse_max >= 0 && data.vitesse_max <= 200)) &&
+        (!('elevation_gain' in data) || (data.elevation_gain is number && data.elevation_gain >= 0 && data.elevation_gain <= 10000)) &&
+        (!('cadence_moy' in data) || (data.cadence_moy is number && data.cadence_moy >= 0 && data.cadence_moy <= 300)) &&
+        (!('puissance_moy' in data) || (data.puissance_moy is number && data.puissance_moy >= 0 && data.puissance_moy <= 5000)) &&
+        // Validation des zones d'entraînement
+        (!('zone1_time' in data) || (data.zone1_time is number && data.zone1_time >= 0)) &&
+        (!('zone2_time' in data) || (data.zone2_time is number && data.zone2_time >= 0)) &&
+        (!('zone3_time' in data) || (data.zone3_time is number && data.zone3_time >= 0)) &&
+        (!('zone4_time' in data) || (data.zone4_time is number && data.zone4_time >= 0)) &&
+        (!('zone5_time' in data) || (data.zone5_time is number && data.zone5_time >= 0)) &&
+        // Validation des ressentis (1-10)
+        (!('effort_percu' in data) || (data.effort_percu is number && data.effort_percu >= 1 && data.effort_percu <= 10)) &&
+        (!('fatigue_avant' in data) || (data.fatigue_avant is number && data.fatigue_avant >= 1 && data.fatigue_avant <= 10)) &&
+        (!('fatigue_apres' in data) || (data.fatigue_apres is number && data.fatigue_apres >= 1 && data.fatigue_apres <= 10)) &&
+        // Validation des champs string optionnels
+        (!('commentaire' in data) || (data.commentaire is string && data.commentaire.size() <= 500)) &&
+        (!('fichier_original' in data) || (data.fichier_original is string && data.fichier_original.size() <= 100)) &&
+        (!('device' in data) || (data.device is string && data.device.size() <= 100)) &&
+        (!('garmin_id' in data) || (data.garmin_id is string && data.garmin_id.size() <= 50));
+    }
+    
+    // Validation pour les mesures
+    function validateMesure(data) {
+      return validateFields(data,
+        ['user_id', 'date'],
+        ['poids', 'taille', 'imc', 'masse_grasse', 'masse_musculaire', 'tour_taille', 
+         'tour_poitrine', 'tour_hanches', 'tour_bras', 'tour_cuisse', 'tour_cou',
+         'commentaire', 'photos', 'created_at', 'updated_at']) &&
+        data.date is timestamp && // Timestamp uniquement (sécurité stricte)
+        data.user_id is string &&
+        // Validation des champs numériques
+        (!('poids' in data) || (data.poids is number && data.poids > 20 && data.poids < 300)) &&
+        (!('taille' in data) || (data.taille is number && data.taille > 100 && data.taille < 250)) &&
+        (!('imc' in data) || (data.imc is number && data.imc > 10 && data.imc < 60)) &&
+        (!('masse_grasse' in data) || (data.masse_grasse is number && data.masse_grasse >= 0 && data.masse_grasse <= 100)) &&
+        (!('masse_musculaire' in data) || (data.masse_musculaire is number && data.masse_musculaire >= 0 && data.masse_musculaire <= 100)) &&
+        (!('tour_taille' in data) || (data.tour_taille is number && data.tour_taille > 30 && data.tour_taille < 200)) &&
+        (!('tour_poitrine' in data) || (data.tour_poitrine is number && data.tour_poitrine > 50 && data.tour_poitrine < 200)) &&
+        (!('tour_hanches' in data) || (data.tour_hanches is number && data.tour_hanches > 50 && data.tour_hanches < 200)) &&
+        (!('tour_bras' in data) || (data.tour_bras is number && data.tour_bras > 10 && data.tour_bras < 80)) &&
+        (!('tour_cuisse' in data) || (data.tour_cuisse is number && data.tour_cuisse > 20 && data.tour_cuisse < 100)) &&
+        (!('tour_cou' in data) || (data.tour_cou is number && data.tour_cou > 20 && data.tour_cou < 60)) &&
+        // Validation des champs string
+        (!('commentaire' in data) || (data.commentaire is string && data.commentaire.size() <= 500)) &&
+        // Validation des photos
+        (!('photos' in data) || (data.photos is list && data.photos.size() <= 10));
+    }
+    
+    // Validation pour le journal
+    function validateJournal(data) {
+      return validateFields(data,
+        ['user_id', 'date'],
+        ['note', 'humeur', 'fatigue', 'motivation', 'energie', 'sommeil_duree', 'sommeil_qualite', 'stress',
+         'photos_libres', 'objectifs_accomplis', 'badges_obtenus', 'meteo', 'activites_annexes', 
+         'created_at', 'updated_at']) &&
+        data.date is timestamp && // Timestamp uniquement (sécurité stricte)
+        data.user_id is string &&
+        // Validation des champs numériques (1-10)
+        (!('humeur' in data) || (data.humeur is number && data.humeur >= 1 && data.humeur <= 10)) &&
+        (!('fatigue' in data) || (data.fatigue is number && data.fatigue >= 1 && data.fatigue <= 10)) &&
+        (!('motivation' in data) || (data.motivation is number && data.motivation >= 1 && data.motivation <= 10)) &&
+        (!('energie' in data) || (data.energie is number && data.energie >= 1 && data.energie <= 10)) &&
+        (!('sommeil_qualite' in data) || (data.sommeil_qualite is number && data.sommeil_qualite >= 1 && data.sommeil_qualite <= 10)) &&
+        (!('stress' in data) || (data.stress is number && data.stress >= 1 && data.stress <= 10)) &&
+        // Validation sommeil durée (0-24h)
+        (!('sommeil_duree' in data) || (data.sommeil_duree is number && data.sommeil_duree >= 0 && data.sommeil_duree <= 24)) &&
+        // Validation météo
+        (!('meteo' in data) || data.meteo in ['soleil', 'nuage', 'pluie', 'orage', 'neige']) &&
+        // Validation des champs string
+        (!('note' in data) || (data.note is string && data.note.size() <= 1000)) &&
+        // Validation des listes
+        (!('photos_libres' in data) || (data.photos_libres is list && data.photos_libres.size() <= 10)) &&
+        (!('objectifs_accomplis' in data) || (data.objectifs_accomplis is list && data.objectifs_accomplis.size() <= 50)) &&
+        (!('badges_obtenus' in data) || (data.badges_obtenus is list && data.badges_obtenus.size() <= 20)) &&
+        (!('activites_annexes' in data) || (data.activites_annexes is list && data.activites_annexes.size() <= 20));
+    }
+    
+    // Validation pour les macros
+    function validateMacros(macros) {
+      return macros is map &&
+        macros.keys().hasOnly(['kcal', 'prot', 'glucides', 'lipides', 'fibres', 'sel']) &&
+        (!('kcal' in macros) || (macros.kcal is number && macros.kcal >= 0 && macros.kcal <= 10000)) &&
+        (!('prot' in macros) || (macros.prot is number && macros.prot >= 0 && macros.prot <= 500)) &&
+        (!('glucides' in macros) || (macros.glucides is number && macros.glucides >= 0 && macros.glucides <= 500)) &&
+        (!('lipides' in macros) || (macros.lipides is number && macros.lipides >= 0 && macros.lipides <= 500));
+    }
+    
+    // ====================================
     // 🔒 RATE LIMITING - Audit 30.09.2025
     // ====================================
     
     // Fonction de rate limiting basée sur le temps
     // Limite: 100 opérations par heure par utilisateur
     function checkRateLimit() {
-      // Récupérer le document de rate limiting de l'utilisateur
       return !exists(/databases/$(database)/documents/rate_limits/$(request.auth.uid)) ||
         get(/databases/$(database)/documents/rate_limits/$(request.auth.uid)).data.requestCount < 100 ||
         get(/databases/$(database)/documents/rate_limits/$(request.auth.uid)).data.lastReset.toMillis() < (request.time.toMillis() - (60 * 60 * 1000));
@@ -55,10 +191,15 @@ service cloud.firestore {
       allow read: if isOwner(userId) || 
         (isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach');
       
-      // Création: propriétaire uniquement + rate limit
-      allow create: if isOwner(userId) && checkCreateRateLimit();
+      // Création: propriétaire uniquement + validation + rate limit
+      allow create: if isOwner(userId) && 
+        validateFields(request.resource.data,
+          ['id', 'email', 'role'],
+          ['nom', 'prenom', 'displayName', 'ownerCoachId', 'athletes', 'created_at', 'updated_at']) &&
+        request.resource.data.role in ['sportif', 'coach'] &&
+        checkCreateRateLimit();
       
-      // Mise à jour: propriétaire OU lien coach-athlète + rate limit
+      // Mise à jour: propriétaire OU lien coach-athlète + validation + rate limit
       allow update: if (isOwner(userId) || 
         (
           isAuthenticated() && 
@@ -72,7 +213,7 @@ service cloud.firestore {
     }
     
     // ====================================
-    // REPAS COLLECTION
+    // REPAS COLLECTION - VALIDATION STRICTE
     // ====================================
     
     match /repas/{repasId} {
@@ -82,12 +223,17 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateRepas(request.resource.data) &&
+        (!('macros' in request.resource.data) || validateMacros(request.resource.data.macros)) &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        validateRepas(request.resource.data) &&
+        (!('macros' in request.resource.data) || validateMacros(request.resource.data.macros)) &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -95,7 +241,7 @@ service cloud.firestore {
     }
     
     // ====================================
-    // ENTRAINEMENTS COLLECTION
+    // ENTRAINEMENTS COLLECTION - VALIDATION STRICTE
     // ====================================
     
     match /entrainements/{entrainementId} {
@@ -105,12 +251,15 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateEntrainement(request.resource.data) &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        validateEntrainement(request.resource.data) &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -118,7 +267,7 @@ service cloud.firestore {
     }
     
     // ====================================
-    // MESURES COLLECTION
+    // MESURES COLLECTION - VALIDATION STRICTE
     // ====================================
     
     match /mesures/{mesureId} {
@@ -128,12 +277,15 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateMesure(request.resource.data) &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        validateMesure(request.resource.data) &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -141,7 +293,7 @@ service cloud.firestore {
     }
     
     // ====================================
-    // JOURNAL COLLECTION
+    // JOURNAL COLLECTION - VALIDATION STRICTE
     // ====================================
     
     match /journal/{entryId} {
@@ -151,12 +303,15 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateJournal(request.resource.data) &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        validateJournal(request.resource.data) &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -173,8 +328,12 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'aliment_data'],
+          ['ajouté_le', 'notes']) &&
+        request.resource.data.aliment_data is map &&
+        checkCreateRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -191,12 +350,20 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'date', 'url'],
+          ['type', 'mesure_id', 'commentaire', 'created_at']) &&
+        request.resource.data.date is timestamp &&
+        request.resource.data.url is string &&
+        request.resource.data.url.size() > 0 &&
+        request.resource.data.url.size() < 500 &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -211,14 +378,21 @@ service cloud.firestore {
       // Lecture autorisée (templates publics) + rate limit
       allow read: if isAuthenticated() && checkRateLimit();
       
-      // Écriture limitée au coach propriétaire
+      // Écriture limitée au coach propriétaire avec validation
       allow create: if isAuthenticated() && 
-        request.resource.data.coach_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.coach_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['coach_id', 'name', 'meals'],
+          ['description', 'totalCalories', 'createdAt']) &&
+        request.resource.data.meals is list &&
+        request.resource.data.meals.size() > 0 &&
+        request.resource.data.meals.size() <= 10 &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.coach_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.coach_id == request.auth.uid &&
+        request.resource.data.coach_id == request.auth.uid &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.coach_id == request.auth.uid
@@ -235,8 +409,13 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'url', 'date'],
+          ['title', 'description', 'tags', 'created_at']) &&
+        request.resource.data.date is timestamp &&
+        request.resource.data.url is string &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -257,8 +436,13 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'type', 'titre'],
+          ['description', 'icone', 'date_obtention', 'created_at']) &&
+        request.resource.data.type is string &&
+        request.resource.data.titre is string &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -279,12 +463,18 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'titre', 'type'],
+          ['description', 'cible', 'progres', 'statut', 'date_creation', 'date_fin']) &&
+        request.resource.data.type in ['poids', 'performance', 'nutrition', 'autre'] &&
+        (!('statut' in request.resource.data) || request.resource.data.statut in ['actif', 'complete', 'abandonne']) &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -296,10 +486,15 @@ service cloud.firestore {
     // ====================================
     
     match /coach_comments/{commentId} {
-      // Coachs peuvent créer des commentaires + rate limit
+      // Coachs peuvent créer des commentaires avec validation
       allow create: if isAuthenticated() && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach'
-        && checkCreateRateLimit();
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
+        validateFields(request.resource.data,
+          ['coach_id', 'athlete_id', 'module', 'comment'],
+          ['date', 'training_id', 'entry_id', 'mesure_id', 'read_by_athlete', 'created_at']) &&
+        request.resource.data.coach_id == request.auth.uid &&
+        request.resource.data.module in ['diete', 'entrainements', 'mesures', 'journal', 'general'] &&
+        checkCreateRateLimit();
       
       // Lecture: coach ou athlète destinataire
       allow read: if isAuthenticated() && 
@@ -325,11 +520,16 @@ service cloud.firestore {
     // ====================================
     
     match /coach_diet_plans/{planId} {
-      // Coachs peuvent créer des plans
+      // Coachs peuvent créer des plans avec validation
       allow create: if isAuthenticated() && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
-        request.resource.data.coach_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.coach_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['coach_id', 'athlete_id', 'date_creation'],
+          ['petit_dej', 'collation_matin', 'dejeuner', 'collation_apres_midi', 
+           'diner', 'collation_soir', 'notes_generales', 'objectifs']) &&
+        request.resource.data.date_creation is timestamp &&
+        checkCreateRateLimit();
       
       // Lecture: coach ou athlète destinataire
       allow read: if isAuthenticated() && 
@@ -340,10 +540,11 @@ service cloud.firestore {
       // Liste (avec rate limit)
       allow list: if isAuthenticated() && checkRateLimit();
       
-      // Modification: coach uniquement
+      // Modification: coach uniquement avec validation
       allow update: if isAuthenticated() && 
-        resource.data.coach_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.coach_id == request.auth.uid &&
+        request.resource.data.coach_id == request.auth.uid &&
+        checkRateLimit();
       
       // Suppression: coach uniquement
       allow delete: if isAuthenticated() && 
@@ -356,11 +557,18 @@ service cloud.firestore {
     // ====================================
     
     match /invites/{inviteId} {
-      // Coachs peuvent créer des invitations
+      // Coachs peuvent créer des invitations avec validation
       allow create: if isAuthenticated() && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'coach' &&
-        request.resource.data.coachId == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.coachId == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['coachId', 'code', 'status', 'createdAt'],
+          ['usedByAthleteId', 'usedAt', 'expiresAt']) &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.code is string &&
+        request.resource.data.code.size() >= 6 &&
+        request.resource.data.createdAt is timestamp &&
+        checkCreateRateLimit();
       
       // Lecture: coach propriétaire ou invitations actives
       allow read: if isAuthenticated() && (
@@ -396,12 +604,20 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'type', 'target'],
+          ['progress', 'status', 'created_at', 'completed_at', 'title', 'description']) &&
+        request.resource.data.type is string &&
+        request.resource.data.target is number &&
+        request.resource.data.target > 0 &&
+        (!('status' in request.resource.data) || request.resource.data.status in ['active', 'completed', 'abandoned']) &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -419,12 +635,20 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'type', 'level'],
+          ['title', 'description', 'icon', 'unlocked_at', 'progress']) &&
+        request.resource.data.type is string &&
+        request.resource.data.level is number &&
+        request.resource.data.level >= 1 &&
+        request.resource.data.level <= 100 &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid
@@ -442,12 +666,20 @@ service cloud.firestore {
         && checkRateLimit();
       
       allow create: if isAuthenticated() && 
-        request.resource.data.user_id == request.auth.uid
-        && checkCreateRateLimit();
+        request.resource.data.user_id == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['user_id', 'xp', 'level'],
+          ['badges', 'achievements', 'stats', 'updated_at']) &&
+        request.resource.data.xp is number &&
+        request.resource.data.xp >= 0 &&
+        request.resource.data.level is number &&
+        request.resource.data.level >= 1 &&
+        checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
-        resource.data.user_id == request.auth.uid
-        && checkRateLimit();
+        resource.data.user_id == request.auth.uid &&
+        request.resource.data.user_id == request.auth.uid &&
+        checkRateLimit();
       
       allow delete: if isAuthenticated() && 
         resource.data.user_id == request.auth.uid

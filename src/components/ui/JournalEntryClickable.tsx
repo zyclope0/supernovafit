@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { JournalEntry } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 // Date formatting fait en interne pour préserver l'esprit Journal
 
 interface JournalEntryClickableProps {
@@ -74,14 +75,14 @@ export default function JournalEntryClickable({
           onView();
         }
       }}
-      aria-label={`Voir les détails de l'entrée journal du ${formatDate(entry.date)}`}
+      aria-label={`Voir les détails de l'entrée journal du ${formatDate(timestampToDateString(entry.date))}`}
     >
       {/* Header avec date et météo (style Journal existant) */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="flex flex-col">
             <span className="font-semibold text-white text-base group-hover:text-neon-cyan transition-colors">
-              {formatDate(entry.date)}
+              {formatDate(timestampToDateString(entry.date))}
             </span>
             {entry.meteo && (
               <span className="text-sm text-muted-foreground flex items-center gap-1">
