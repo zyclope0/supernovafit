@@ -478,52 +478,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
         </div>
       </div>
 
-      {/* Quick Actions Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          onClick={() => (window.location.href = '/diete')}
-          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
-        >
-          <div className="text-center">
-            <Utensils className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-            <div className="font-medium text-white mb-1">Ajouter Repas</div>
-            <div className="text-xs text-white/60">Saisie rapide</div>
-          </div>
-        </button>
-
-        <button
-          onClick={() => (window.location.href = '/entrainements')}
-          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
-        >
-          <div className="text-center">
-            <Activity className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-            <div className="font-medium text-white mb-1">Entraînement</div>
-            <div className="text-xs text-white/60">Nouvelle séance</div>
-          </div>
-        </button>
-
-        <button
-          onClick={() => (window.location.href = '/mesures')}
-          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
-        >
-          <div className="text-center">
-            <Scale className="w-8 h-8 text-green-400 mx-auto mb-2" />
-            <div className="font-medium text-white mb-1">Peser</div>
-            <div className="text-xs text-white/60">Suivi poids</div>
-          </div>
-        </button>
-
-        <button
-          onClick={() => (window.location.href = '/journal')}
-          className="glass-effect rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all duration-200 hover:scale-105"
-        >
-          <div className="text-center">
-            <Heart className="w-8 h-8 text-pink-400 mx-auto mb-2" />
-            <div className="font-medium text-white mb-1">Humeur</div>
-            <div className="text-xs text-white/60">Journal rapide</div>
-          </div>
-        </button>
-      </div>
+      {/* Quick Actions supprimées - Duplication avec FAB éliminée */}
 
       {/* Widgets Configurables */}
       <div className="space-y-3">
