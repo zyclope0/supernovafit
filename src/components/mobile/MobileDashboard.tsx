@@ -638,7 +638,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
                         {todayMood?.humeur || '--'}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        /5 humeur
+                        /10 humeur
                       </div>
                     </div>
                     {todayMood && (
@@ -646,7 +646,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
                         <div
                           className="bg-neon-pink h-2 rounded-full transition-all duration-500"
                           style={{
-                            width: `${((todayMood.humeur || 0) / 5) * 100}%`,
+                            width: `${((todayMood.humeur || 0) / 10) * 100}%`,
                           }}
                         />
                       </div>
