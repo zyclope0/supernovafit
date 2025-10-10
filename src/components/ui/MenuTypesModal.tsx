@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Repas } from '@/types';
 import {
   Save,
@@ -240,6 +240,14 @@ export default function MenuTypesModal({
   const [viewingTemplate, setViewingTemplate] = useState<MenuTemplate | null>(
     null,
   );
+
+  // Réinitialiser l'état de visualisation quand la modal se ferme
+  useEffect(() => {
+    if (!isOpen) {
+      setViewingTemplate(null);
+      setEditingTemplate(null);
+    }
+  }, [isOpen]);
 
   const todayTotalCalories = todayMeals.reduce(
     (total, meal) => total + (meal.macros?.kcal || 0),
@@ -501,21 +509,30 @@ export default function MenuTypesModal({
                       </div>
                       <div className="flex gap-1">
                         <button
-                          onClick={() => handleViewTemplate(template)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewTemplate(template);
+                          }}
                           className="p-1 text-neon-cyan hover:text-cyan-300 transition-colors"
                           title="Voir détails"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleEditTemplate(template)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditTemplate(template);
+                          }}
                           className="p-1 text-neon-purple hover:text-purple-300 transition-colors"
                           title="Modifier"
                         >
                           <Edit3 className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteTemplate(template.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteTemplate(template.id);
+                          }}
                           className="p-1 text-red-400 hover:text-red-300 transition-colors"
                           title="Supprimer"
                         >
@@ -577,7 +594,7 @@ export default function MenuTypesModal({
           subtitle={viewingTemplate.description}
           icon={<Eye className="h-6 w-6 text-neon-cyan" />}
           maxWidth="2xl"
-          height="90vh"
+          height="calc(100vh - 120px)"
         >
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
             <div className="space-y-4">
