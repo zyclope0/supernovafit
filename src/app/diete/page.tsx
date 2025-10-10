@@ -909,7 +909,7 @@ export default function DietePage() {
       </div>
 
       {/* FAB (Floating Action Button) pour ajouter un repas */}
-      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50">
+      <div className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50">
         {/* Menu de sélection des types de repas */}
         {showMenuTypes && (
           <div className="absolute bottom-20 right-0 mb-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl p-2 min-w-[200px]">
