@@ -611,16 +611,18 @@ export default function DietePage() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showMealForm, showMenuTypes, todayMeals, meals]);
 
-  // Fermer le menu de sélection quand on clique ailleurs
+  // Fermer le menu de sélection quand on clique ailleurs (SAUF dans les modals)
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (showMenuTypes) {
         const target = e.target as Element;
-        // Ne pas fermer si on clique sur le FAB ou sur une card de repas
+        // Ne pas fermer si on clique sur le FAB, une card de repas, OU dans une modal
         if (
           !target.closest('.fixed.bottom-6.right-6') &&
           !target.closest('.fixed.bottom-8.right-8') &&
-          !target.closest('[data-meal-card]')
+          !target.closest('[data-meal-card]') &&
+          !target.closest('[role="dialog"]') && // ← AJOUTÉ : Ne pas fermer si dans une modal
+          !target.closest('.bg-space-900') // ← AJOUTÉ : Ne pas fermer si dans le contenu de modal
         ) {
           setShowMenuTypes(false);
         }
