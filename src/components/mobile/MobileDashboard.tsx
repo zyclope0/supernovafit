@@ -187,7 +187,7 @@ export default function MobileDashboard({ className }: MobileDashboardProps) {
             <span className="text-xs text-white/60">Poids</span>
           </div>
           <div className="text-xl font-bold text-white mb-1">
-            {latestWeight
+            {latestWeight && latestWeight.poids
               ? `${Math.round(latestWeight.poids * 10) / 10}kg`
               : '-'}
           </div>

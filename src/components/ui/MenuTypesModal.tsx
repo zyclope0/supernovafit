@@ -594,7 +594,7 @@ export default function MenuTypesModal({
           subtitle={viewingTemplate.description}
           icon={<Eye className="h-6 w-6 text-neon-cyan" />}
           maxWidth="2xl"
-          height="calc(100vh - 120px)"
+          height="85vh"
         >
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
             <div className="space-y-4">

@@ -58,7 +58,7 @@ export default function FormModal({
       onClose={onCancel}
       title={title}
       maxWidth="2xl"
-      height="calc(100vh - 120px)" // Réserve 120px pour navigation bottom + padding
+      height="85vh" // Hauteur fixe pour éviter erreur TypeScript
       showFooter={true}
       footerContent={footerContent}
     >
