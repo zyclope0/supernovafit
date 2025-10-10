@@ -240,12 +240,14 @@ export default function MenuTypesModal({
   const [viewingTemplate, setViewingTemplate] = useState<MenuTemplate | null>(
     null,
   );
+  const [currentView, setCurrentView] = useState<'list' | 'details'>('list');
 
   // Réinitialiser l'état de visualisation quand la modal se ferme
   useEffect(() => {
     if (!isOpen) {
       setViewingTemplate(null);
       setEditingTemplate(null);
+      setCurrentView('list');
     }
   }, [isOpen]);
 
@@ -403,6 +405,7 @@ export default function MenuTypesModal({
 
   const handleViewTemplate = (template: MenuTemplate) => {
     setViewingTemplate(template);
+    setCurrentView('details');
   };
 
   const getMealTypeName = (mealType: string) => {
@@ -422,225 +425,241 @@ export default function MenuTypesModal({
       <StandardModal
         isOpen={isOpen}
         onClose={onClose}
-        title="Menu-Types"
-        subtitle="Créez et gérez vos templates de repas. Sauvegardez votre journée actuelle ou appliquez un template existant."
-        icon={<ChefHat className="h-6 w-6 text-neon-purple" />}
+        title={
+          currentView === 'details' && viewingTemplate
+            ? viewingTemplate.name
+            : 'Menu-Types'
+        }
+        subtitle={
+          currentView === 'details' && viewingTemplate
+            ? viewingTemplate.description
+            : 'Créez et gérez vos templates de repas. Sauvegardez votre journée actuelle ou appliquez un template existant.'
+        }
+        icon={
+          currentView === 'details' ? (
+            <Eye className="h-6 w-6 text-neon-cyan" />
+          ) : (
+            <ChefHat className="h-6 w-6 text-neon-purple" />
+          )
+        }
         maxWidth="4xl"
         height="90vh"
+        onEdit={
+          currentView === 'details' ? () => setCurrentView('list') : undefined
+        }
+        editLabel="Retour à la liste"
       >
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
-          {/* Sauvegarder journée actuelle */}
-          <div className="glass-effect p-4 rounded-lg border border-neon-purple/20 mb-6">
-            <h2 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
-              <Save className="h-5 w-5 text-neon-purple" />
-              Sauvegarder la journée actuelle
-            </h2>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Nom du template
-                </label>
-                <input
-                  type="text"
-                  value={newTemplateName}
-                  onChange={(e) => setNewTemplateName(e.target.value)}
-                  placeholder="Ex: Ma journée parfaite"
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Description (optionnelle)
-                </label>
-                <input
-                  type="text"
-                  value={newTemplateDescription}
-                  onChange={(e) => setNewTemplateDescription(e.target.value)}
-                  placeholder="Ex: Menu équilibré pour les jours calmes"
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  {todayMeals.length} repas · {todayTotalCalories} kcal total
-                </div>
-                <button
-                  onClick={handleSaveCurrentDay}
-                  disabled={!newTemplateName.trim() || todayMeals.length === 0}
-                  className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Sauvegarder
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Liste des templates */}
-          <div>
-            <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-              <Star className="h-5 w-5 text-yellow-400" />
-              Templates disponibles
-            </h2>
-
-            {templates.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <ChefHat className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>Aucun template sauvegardé</p>
-                <p className="text-sm mt-1">
-                  Créez votre premier template en sauvegardant une journée
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {templates.map((template) => (
-                  <div
-                    key={template.id}
-                    className="glass-effect p-4 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-white">
-                          {template.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {template.description}
-                        </p>
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewTemplate(template);
-                          }}
-                          className="p-1 text-neon-cyan hover:text-cyan-300 transition-colors"
-                          title="Voir détails"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditTemplate(template);
-                          }}
-                          className="p-1 text-neon-purple hover:text-purple-300 transition-colors"
-                          title="Modifier"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteTemplate(template.id);
-                          }}
-                          className="p-1 text-red-400 hover:text-red-300 transition-colors"
-                          title="Supprimer"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+          {currentView === 'list' ? (
+            <>
+              {/* Sauvegarder journée actuelle */}
+              <div className="glass-effect p-4 rounded-lg border border-neon-purple/20 mb-6">
+                <h2 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
+                  <Save className="h-5 w-5 text-neon-purple" />
+                  Sauvegarder la journée actuelle
+                </h2>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Nom du template
+                    </label>
+                    <input
+                      type="text"
+                      value={newTemplateName}
+                      onChange={(e) => setNewTemplateName(e.target.value)}
+                      placeholder="Ex: Ma journée parfaite"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Description (optionnelle)
+                    </label>
+                    <input
+                      type="text"
+                      value={newTemplateDescription}
+                      onChange={(e) =>
+                        setNewTemplateDescription(e.target.value)
+                      }
+                      placeholder="Ex: Menu équilibré pour les jours calmes"
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      {todayMeals.length} repas · {todayTotalCalories} kcal
+                      total
                     </div>
-
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
-                      <span>{template.meals.length} repas</span>
-                      <span>{template.totalCalories} kcal</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {template.createdAt}
-                      </span>
-                    </div>
-                    {/* Aperçu macros rapide */}
-                    <div className="text-xs text-muted-foreground mb-3">
-                      {(() => {
-                        const totals = template.meals.reduce(
-                          (acc, m) => ({
-                            prot: acc.prot + (m.macros?.prot || 0),
-                            glucides: acc.glucides + (m.macros?.glucides || 0),
-                            lipides: acc.lipides + (m.macros?.lipides || 0),
-                          }),
-                          { prot: 0, glucides: 0, lipides: 0 },
-                        );
-                        return (
-                          <span>
-                            P {totals.prot.toFixed(0)}g • G{' '}
-                            {totals.glucides.toFixed(0)}g • L{' '}
-                            {totals.lipides.toFixed(0)}g
-                          </span>
-                        );
-                      })()}
-                    </div>
-
                     <button
-                      onClick={() => handleApplyTemplate(template)}
-                      className="w-full px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors flex items-center justify-center gap-2"
+                      onClick={handleSaveCurrentDay}
+                      disabled={
+                        !newTemplateName.trim() || todayMeals.length === 0
+                      }
+                      className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                      <Copy className="h-4 w-4" />
-                      Appliquer ce template
+                      <Save className="h-4 w-4" />
+                      Sauvegarder
                     </button>
                   </div>
-                ))}
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-      </StandardModal>
 
-      {/* Modal de visualisation */}
-      {viewingTemplate && (
-        <StandardModal
-          isOpen={!!viewingTemplate}
-          onClose={() => setViewingTemplate(null)}
-          title={viewingTemplate.name}
-          subtitle={viewingTemplate.description}
-          icon={<Eye className="h-6 w-6 text-neon-cyan" />}
-          maxWidth="2xl"
-          height="85vh"
-        >
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-            <div className="space-y-4">
-              {viewingTemplate.meals.map((meal, index) => (
-                <div
-                  key={index}
-                  className="glass-effect p-4 rounded-lg border border-white/10"
-                >
-                  <h4 className="font-medium text-white mb-2">
-                    {getMealTypeName(meal.repas)}
-                  </h4>
-                  <div className="space-y-2">
-                    {meal.aliments.map((aliment, i) => (
-                      <div key={i} className="flex justify-between text-sm">
-                        <span className="text-white">
-                          {aliment.nom} ({aliment.quantite}
-                          {aliment.unite})
-                        </span>
-                        <span className="text-muted-foreground">
-                          {aliment.macros?.kcal ?? 0} kcal
-                        </span>
+              {/* Liste des templates */}
+              <div>
+                <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+                  <Star className="h-5 w-5 text-yellow-400" />
+                  Templates disponibles
+                </h2>
+
+                {templates.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <ChefHat className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>Aucun template sauvegardé</p>
+                    <p className="text-sm mt-1">
+                      Créez votre premier template en sauvegardant une journée
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {templates.map((template) => (
+                      <div
+                        key={template.id}
+                        className="glass-effect p-4 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="font-medium text-white">
+                              {template.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {template.description}
+                            </p>
+                          </div>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewTemplate(template);
+                              }}
+                              className="p-1 text-neon-cyan hover:text-cyan-300 transition-colors"
+                              title="Voir détails"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditTemplate(template);
+                              }}
+                              className="p-1 text-neon-purple hover:text-purple-300 transition-colors"
+                              title="Modifier"
+                            >
+                              <Edit3 className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteTemplate(template.id);
+                              }}
+                              className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-1">
+                          <span>{template.meals.length} repas</span>
+                          <span>{template.totalCalories} kcal</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {template.createdAt}
+                          </span>
+                        </div>
+                        {/* Aperçu macros rapide */}
+                        <div className="text-xs text-muted-foreground mb-3">
+                          {(() => {
+                            const totals = template.meals.reduce(
+                              (acc, m) => ({
+                                prot: acc.prot + (m.macros?.prot || 0),
+                                glucides:
+                                  acc.glucides + (m.macros?.glucides || 0),
+                                lipides: acc.lipides + (m.macros?.lipides || 0),
+                              }),
+                              { prot: 0, glucides: 0, lipides: 0 },
+                            );
+                            return (
+                              <span>
+                                P {totals.prot.toFixed(0)}g • G{' '}
+                                {totals.glucides.toFixed(0)}g • L{' '}
+                                {totals.lipides.toFixed(0)}g
+                              </span>
+                            );
+                          })()}
+                        </div>
+
+                        <button
+                          onClick={() => handleApplyTemplate(template)}
+                          className="w-full px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg font-medium hover:bg-neon-cyan/30 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Copy className="h-4 w-4" />
+                          Appliquer ce template
+                        </button>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-3 pt-2 border-t border-white/10 text-sm">
-                    <div className="flex justify-between text-neon-green">
-                      <span>Total:</span>
-                      <span>
-                        {meal.macros.kcal} kcal • {meal.macros.prot}g prot
-                      </span>
+                )}
+              </div>
+            </>
+          ) : (
+            /* Vue détails */
+            viewingTemplate && (
+              <div className="space-y-4">
+                {viewingTemplate.meals.map((meal, index) => (
+                  <div
+                    key={index}
+                    className="glass-effect p-4 rounded-lg border border-white/10"
+                  >
+                    <h4 className="font-medium text-white mb-2">
+                      {getMealTypeName(meal.repas)}
+                    </h4>
+                    <div className="space-y-2">
+                      {meal.aliments.map((aliment, i) => (
+                        <div key={i} className="flex justify-between text-sm">
+                          <span className="text-white">
+                            {aliment.nom} ({aliment.quantite}
+                            {aliment.unite})
+                          </span>
+                          <span className="text-muted-foreground">
+                            {aliment.macros?.kcal ?? 0} kcal
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-white/10 text-sm">
+                      <div className="flex justify-between text-neon-green">
+                        <span>Total:</span>
+                        <span>
+                          {meal.macros.kcal} kcal • {meal.macros.prot}g prot
+                        </span>
+                      </div>
                     </div>
                   </div>
+                ))}
+                <div className="mt-6 pt-4 border-t border-white/10">
+                  <div className="flex justify-between text-lg font-medium">
+                    <span className="text-white">Total journée:</span>
+                    <span className="text-neon-green">
+                      {viewingTemplate.totalCalories} kcal
+                    </span>
+                  </div>
                 </div>
-              ))}
-            </div>
-            <div className="mt-6 pt-4 border-t border-white/10">
-              <div className="flex justify-between text-lg font-medium">
-                <span className="text-white">Total journée:</span>
-                <span className="text-neon-green">
-                  {viewingTemplate.totalCalories} kcal
-                </span>
               </div>
-            </div>
-          </div>
-        </StandardModal>
-      )}
+            )
+          )}
+        </div>
+      </StandardModal>
 
       {/* Modal d'édition */}
       {editingTemplate && (
