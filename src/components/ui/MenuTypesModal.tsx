@@ -467,6 +467,7 @@ export default function MenuTypesModal({
                       type="text"
                       value={newTemplateName}
                       onChange={(e) => setNewTemplateName(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
                       placeholder="Ex: Ma journée parfaite"
                       className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
                     />
@@ -481,6 +482,7 @@ export default function MenuTypesModal({
                       onChange={(e) =>
                         setNewTemplateDescription(e.target.value)
                       }
+                      onClick={(e) => e.stopPropagation()}
                       placeholder="Ex: Menu équilibré pour les jours calmes"
                       className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
                     />
@@ -663,116 +665,121 @@ export default function MenuTypesModal({
 
       {/* Modal d'édition */}
       {editingTemplate && (
-        <StandardModal
-          isOpen={!!editingTemplate}
-          onClose={() => setEditingTemplate(null)}
-          title="Modifier le template"
-          subtitle="Modifiez le nom, la description et les repas de votre template."
-          icon={<Edit3 className="h-6 w-6 text-neon-purple" />}
-          maxWidth="2xl"
-          height="90vh"
-        >
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Nom du template
-                </label>
-                <input
-                  type="text"
-                  value={editingTemplate.name}
-                  onChange={(e) =>
-                    setEditingTemplate({
-                      ...editingTemplate,
-                      name: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  value={editingTemplate.description}
-                  onChange={(e) =>
-                    setEditingTemplate({
-                      ...editingTemplate,
-                      description: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="font-medium text-white">Repas inclus</h4>
-              {editingTemplate.meals.map((meal, index) => (
-                <div
-                  key={index}
-                  className="glass-effect p-4 rounded-lg border border-white/10"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h5 className="font-medium text-white">
-                      {getMealTypeName(meal.repas)}
-                    </h5>
-                    <button
-                      onClick={() => {
-                        const updatedMeals = editingTemplate.meals.filter(
-                          (_, i) => i !== index,
-                        );
-                        setEditingTemplate({
-                          ...editingTemplate,
-                          meals: updatedMeals,
-                        });
-                      }}
-                      className="p-1 text-red-400 hover:text-red-300 transition-colors"
-                      title="Supprimer ce repas"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {meal.aliments.length} aliment(s) • {meal.macros.kcal} kcal
-                  </div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    {meal.aliments.map((a) => a.nom).join(', ')}
-                  </div>
+        <div style={{ zIndex: 60 }}>
+          <StandardModal
+            isOpen={!!editingTemplate}
+            onClose={() => setEditingTemplate(null)}
+            title="Modifier le template"
+            subtitle="Modifiez le nom, la description et les repas de votre template."
+            icon={<Edit3 className="h-6 w-6 text-neon-purple" />}
+            maxWidth="2xl"
+            height="90vh"
+          >
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Nom du template
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTemplate.name}
+                    onChange={(e) =>
+                      setEditingTemplate({
+                        ...editingTemplate,
+                        name: e.target.value,
+                      })
+                    }
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
+                <div>
+                  <label className="block text-sm font-medium text-white mb-1">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTemplate.description}
+                    onChange={(e) =>
+                      setEditingTemplate({
+                        ...editingTemplate,
+                        description: e.target.value,
+                      })
+                    }
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-muted-foreground focus:border-neon-purple focus:outline-none"
+                  />
+                </div>
+              </div>
 
-          {/* Footer */}
-          <div className="flex justify-between items-center p-6 border-t border-white/10">
-            <div className="text-sm text-muted-foreground">
-              {editingTemplate.meals.length} repas •{' '}
-              {editingTemplate.meals.reduce(
-                (sum, meal) => sum + meal.macros.kcal,
-                0,
-              )}{' '}
-              kcal total
+              <div className="space-y-4">
+                <h4 className="font-medium text-white">Repas inclus</h4>
+                {editingTemplate.meals.map((meal, index) => (
+                  <div
+                    key={index}
+                    className="glass-effect p-4 rounded-lg border border-white/10"
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <h5 className="font-medium text-white">
+                        {getMealTypeName(meal.repas)}
+                      </h5>
+                      <button
+                        onClick={() => {
+                          const updatedMeals = editingTemplate.meals.filter(
+                            (_, i) => i !== index,
+                          );
+                          setEditingTemplate({
+                            ...editingTemplate,
+                            meals: updatedMeals,
+                          });
+                        }}
+                        className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                        title="Supprimer ce repas"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {meal.aliments.length} aliment(s) • {meal.macros.kcal}{' '}
+                      kcal
+                    </div>
+                    <div className="mt-2 text-xs text-muted-foreground">
+                      {meal.aliments.map((a) => a.nom).join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setEditingTemplate(null)}
-                className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleSaveEditedTemplate}
-                className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors flex items-center gap-2"
-              >
-                <Save className="h-4 w-4" />
-                Sauvegarder
-              </button>
+
+            {/* Footer */}
+            <div className="flex justify-between items-center p-6 border-t border-white/10">
+              <div className="text-sm text-muted-foreground">
+                {editingTemplate.meals.length} repas •{' '}
+                {editingTemplate.meals.reduce(
+                  (sum, meal) => sum + meal.macros.kcal,
+                  0,
+                )}{' '}
+                kcal total
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setEditingTemplate(null)}
+                  className="px-4 py-2 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSaveEditedTemplate}
+                  className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  Sauvegarder
+                </button>
+              </div>
             </div>
-          </div>
-        </StandardModal>
+          </StandardModal>
+        </div>
       )}
     </>
   );
