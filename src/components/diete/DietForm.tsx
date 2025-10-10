@@ -242,6 +242,38 @@ export default function DietForm({
                       </div>
 
                       <div className="flex items-center gap-2">
+                        {/* Aides de quantité */}
+                        <div className="flex flex-col gap-1">
+                          <div className="flex gap-1">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  aliment.id,
+                                  Math.max(1, aliment.quantite * 2),
+                                )
+                              }
+                              className="px-2 py-1 bg-neon-green/20 text-neon-green text-xs rounded hover:bg-neon-green/30 transition-colors"
+                              title="Doubler la quantité"
+                            >
+                              ×2
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleUpdateQuantity(
+                                  aliment.id,
+                                  Math.max(1, aliment.quantite / 2),
+                                )
+                              }
+                              className="px-2 py-1 bg-neon-orange/20 text-neon-orange text-xs rounded hover:bg-neon-orange/30 transition-colors"
+                              title="Diviser par 2"
+                            >
+                              /2
+                            </button>
+                          </div>
+                        </div>
+
                         <input
                           type="number"
                           min="1"

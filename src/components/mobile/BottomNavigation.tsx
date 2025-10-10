@@ -183,7 +183,7 @@ export default function BottomNavigation({
         </div>
       </div>
 
-      {/* FAB (Floating Action Button) */}
+      {/* FAB (Floating Action Button) - Masqué sur pages avec FAB spécifique */}
       <button
         onClick={onFabClick}
         className={cn(
@@ -195,6 +195,11 @@ export default function BottomNavigation({
           'hover:scale-110 active:scale-95',
           'md:hidden', // Mobile only
           isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-90',
+          // Masquer sur pages avec FAB spécifique
+          (pathname.startsWith('/diete') ||
+            pathname.startsWith('/entrainements') ||
+            pathname.startsWith('/mesures')) &&
+            'hidden',
         )}
       >
         <Plus className="w-6 h-6" />
