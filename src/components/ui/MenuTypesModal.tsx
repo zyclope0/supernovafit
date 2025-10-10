@@ -404,8 +404,14 @@ export default function MenuTypesModal({
   };
 
   const handleViewTemplate = (template: MenuTemplate) => {
+    console.log('🔍 handleViewTemplate appelé avec:', template.name);
     setViewingTemplate(template);
     setCurrentView('details');
+    console.log(
+      '🔍 États mis à jour - viewingTemplate:',
+      template.name,
+      'currentView: details',
+    );
   };
 
   const getMealTypeName = (mealType: string) => {
@@ -450,7 +456,15 @@ export default function MenuTypesModal({
         editLabel="Retour à la liste"
       >
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
-          {currentView === 'list' ? (
+          {(() => {
+            console.log(
+              '🎨 Rendu - currentView:',
+              currentView,
+              'viewingTemplate:',
+              viewingTemplate?.name || 'null',
+            );
+            return currentView === 'list';
+          })() ? (
             <>
               {/* Sauvegarder journée actuelle */}
               <div className="glass-effect p-4 rounded-lg border border-neon-purple/20 mb-6">
@@ -540,6 +554,10 @@ export default function MenuTypesModal({
                           <div className="flex gap-1">
                             <button
                               onClick={(e) => {
+                                console.log(
+                                  '👁️ Bouton œil cliqué pour:',
+                                  template.name,
+                                );
                                 e.stopPropagation();
                                 handleViewTemplate(template);
                               }}
