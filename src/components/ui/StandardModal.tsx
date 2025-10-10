@@ -71,7 +71,15 @@ export default function StandardModal({
   const heightStyle = height === 'auto' ? {} : { height };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={(e) => {
+        // Fermer uniquement si on clique sur le backdrop (pas le contenu)
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div
         ref={containerRef}
         className={`bg-space-900 border-2 border-white/70 rounded-xl w-full ${maxWidthClass} overflow-hidden shadow-2xl shadow-white/40 ring-1 ring-white/70 relative flex flex-col ${className}`}
@@ -80,6 +88,7 @@ export default function StandardModal({
         aria-modal="true"
         aria-labelledby="standard-modal-title"
         aria-describedby={subtitle ? 'modal-subtitle' : undefined}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Effet de glow subtil - IDENTIQUE à FormModal */}
         <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 via-transparent to-white/5 pointer-events-none"></div>
