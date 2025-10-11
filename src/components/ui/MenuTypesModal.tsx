@@ -643,6 +643,10 @@ export default function MenuTypesModal({
                     'Meals:',
                     viewingTemplate.meals.length,
                   );
+                  console.log(
+                    '📋 CONTENU COMPLET du template:',
+                    JSON.stringify(viewingTemplate, null, 2),
+                  );
                   return null;
                 })()}
                 {/* Indicateur visuel de debug */}
@@ -650,37 +654,45 @@ export default function MenuTypesModal({
                   🔍 DEBUG: Vue détails active pour &quot;{viewingTemplate.name}
                   &quot; - {viewingTemplate.meals.length} repas
                 </div>
-                {viewingTemplate.meals.map((meal, index) => (
-                  <div
-                    key={index}
-                    className="glass-effect p-4 rounded-lg border border-white/10"
-                  >
-                    <h4 className="font-medium text-white mb-2">
-                      {getMealTypeName(meal.repas)}
-                    </h4>
-                    <div className="space-y-2">
-                      {meal.aliments.map((aliment, i) => (
-                        <div key={i} className="flex justify-between text-sm">
-                          <span className="text-white">
-                            {aliment.nom} ({aliment.quantite}
-                            {aliment.unite})
-                          </span>
-                          <span className="text-muted-foreground">
-                            {aliment.macros?.kcal ?? 0} kcal
+                {viewingTemplate.meals.map((meal, index) => {
+                  console.log(
+                    `🍽️ Rendu repas ${index + 1}:`,
+                    meal.repas,
+                    'Aliments:',
+                    meal.aliments.length,
+                  );
+                  return (
+                    <div
+                      key={index}
+                      className="glass-effect p-4 rounded-lg border border-white/10"
+                    >
+                      <h4 className="font-medium text-white mb-2">
+                        {getMealTypeName(meal.repas)}
+                      </h4>
+                      <div className="space-y-2">
+                        {meal.aliments.map((aliment, i) => (
+                          <div key={i} className="flex justify-between text-sm">
+                            <span className="text-white">
+                              {aliment.nom} ({aliment.quantite}
+                              {aliment.unite})
+                            </span>
+                            <span className="text-muted-foreground">
+                              {aliment.macros?.kcal ?? 0} kcal
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 pt-2 border-t border-white/10 text-sm">
+                        <div className="flex justify-between text-neon-green">
+                          <span>Total:</span>
+                          <span>
+                            {meal.macros.kcal} kcal • {meal.macros.prot}g prot
                           </span>
                         </div>
-                      ))}
-                    </div>
-                    <div className="mt-3 pt-2 border-t border-white/10 text-sm">
-                      <div className="flex justify-between text-neon-green">
-                        <span>Total:</span>
-                        <span>
-                          {meal.macros.kcal} kcal • {meal.macros.prot}g prot
-                        </span>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div className="mt-6 pt-4 border-t border-white/10">
                   <div className="flex justify-between text-lg font-medium">
                     <span className="text-white">Total journée:</span>
