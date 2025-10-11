@@ -69,24 +69,13 @@ export function useChallenges() {
       if (!user) return { success: false, error: 'Utilisateur non connecté' };
 
       try {
-        // Debug: Log les données avant envoi
-        console.log('🔍 ADDING CHALLENGE:', {
-          challengeData,
-          user_id: user.uid,
-          hasStartDate: !!challengeData.startDate,
-          hasEndDate: !!challengeData.endDate,
-          startDateType: typeof challengeData.startDate,
-          endDateType: typeof challengeData.endDate,
-        });
-
         const docRef = await addDoc(collection(db, 'challenges'), {
           ...challengeData,
           created_at: serverTimestamp(),
         });
         return { success: true, id: docRef.id };
       } catch (error) {
-        console.error('❌ Erreur ajout challenge:', error);
-        console.error('❌ Challenge data that failed:', challengeData);
+        console.error('Erreur ajout challenge:', error);
         return {
           success: false,
           error: challengesErrorHandler.handleError(error),

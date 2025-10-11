@@ -264,28 +264,12 @@ const DEFAULT_ERROR: FirebaseErrorInfo = {
  * Analyse une erreur Firebase et retourne des informations utilisateur appropriées
  */
 export function analyzeFirebaseError(error: unknown): FirebaseErrorInfo {
-  // Debug: Log l'erreur originale
-  console.log('🔍 ANALYZE FIREBASE ERROR:', {
-    error,
-    type: typeof error,
-    isObject: typeof error === 'object',
-    hasCode: error && typeof error === 'object' && 'code' in error,
-    hasMessage: error && typeof error === 'object' && 'message' in error,
-  });
-
   if (!error || typeof error !== 'object') {
-    console.log('❌ Error is not an object, returning DEFAULT_ERROR');
     return DEFAULT_ERROR;
   }
 
   const firebaseError = error as { code?: string; message?: string };
   const errorCode = firebaseError.code || 'unknown';
-
-  console.log('🔍 Firebase error details:', {
-    code: firebaseError.code,
-    message: firebaseError.message,
-    errorCode,
-  });
 
   // Chercher dans les mappings d'erreurs
   const authError = AUTH_ERRORS[errorCode];

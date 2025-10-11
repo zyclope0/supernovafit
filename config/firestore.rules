@@ -606,12 +606,15 @@ service cloud.firestore {
       allow create: if isAuthenticated() && 
         request.resource.data.user_id == request.auth.uid &&
         validateFields(request.resource.data,
-          ['user_id', 'type', 'target'],
-          ['progress', 'status', 'created_at', 'completed_at', 'title', 'description']) &&
+          ['user_id', 'type', 'title', 'description', 'category', 'status'],
+          ['target', 'current', 'startDate', 'endDate', 'icon', 'created_at', 'completed_at']) &&
         request.resource.data.type is string &&
-        request.resource.data.target is number &&
-        request.resource.data.target > 0 &&
-        (!('status' in request.resource.data) || request.resource.data.status in ['active', 'completed', 'abandoned']) &&
+        request.resource.data.title is string &&
+        request.resource.data.description is string &&
+        request.resource.data.category is string &&
+        request.resource.data.status in ['active', 'completed', 'abandoned'] &&
+        (!('target' in request.resource.data) || request.resource.data.target is number) &&
+        (!('current' in request.resource.data) || request.resource.data.current is number) &&
         checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
