@@ -111,8 +111,16 @@ export default function JournalPageOptimized() {
     [objectifs],
   );
 
-  // Date d'aujourd'hui
-  const today = new Date().toISOString().split('T')[0];
+  // Date d'aujourd'hui - Version manuelle pour éviter les problèmes de timezone
+  const today = (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  })();
+
+  console.log('📅 TODAY DEBUG:', { today, now: new Date() });
   const todayEntry = entries.find(
     (e) => timestampToDateString(e.date) === today,
   );
@@ -149,11 +157,33 @@ export default function JournalPageOptimized() {
 
   const { start: periodStart } = getDateRange();
 
+  // Debug: Logs pour identifier le problème
+  console.log('🔍 DEBUG JOURNAL:', {
+    totalEntries: entries.length,
+    wellnessPeriod,
+    today,
+    periodStart,
+    entriesSample: entries.slice(0, 3).map((e) => ({
+      id: e.id,
+      date: e.date,
+      dateString: timestampToDateString(e.date),
+    })),
+  });
+
   // Données selon la période sélectionnée
   const periodEntries =
     wellnessPeriod === 'today'
       ? entries.filter((e) => timestampToDateString(e.date) === today)
       : entries.filter((e) => timestampToDateString(e.date) >= periodStart);
+
+  console.log('📊 FILTERED ENTRIES:', {
+    periodEntriesCount: periodEntries.length,
+    filteredEntries: periodEntries.map((e) => ({
+      id: e.id,
+      date: e.date,
+      dateString: timestampToDateString(e.date),
+    })),
+  });
 
   // Calculer les moyennes pour la période
   const avgHumeur =
