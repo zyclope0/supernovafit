@@ -415,11 +415,14 @@ export default function EntrainementsPage() {
                   📊{' '}
                   {selectedDate === new Date().toISOString().split('T')[0]
                     ? "Aujourd'hui"
-                    : new Date(selectedDate).toLocaleDateString('fr-FR', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                      })}
+                    : new Date(selectedDate + 'T12:00:00').toLocaleDateString(
+                        'fr-FR',
+                        {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                        },
+                      )}
                 </h3>
                 {(() => {
                   const dayTrainings = entrainements.filter(
