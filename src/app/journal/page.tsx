@@ -119,9 +119,7 @@ export default function JournalPageOptimized() {
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   })();
-  const todayEntry = entries.find(
-    (e) => timestampToDateString(e.date) === today,
-  );
+  // todayEntry supprimé car non utilisé (le FAB remplace le bouton conditionnel)
 
   // Calculer les données selon la période sélectionnée
   const getDateRange = () => {
@@ -445,16 +443,7 @@ export default function JournalPageOptimized() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Bouton d'action pour nouvelle entrée */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleNewEntry}
-            className="flex items-center gap-2 px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg hover:bg-neon-purple/30 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            {todayEntry ? "Modifier aujourd'hui" : 'Nouvelle entrée'}
-          </button>
-        </div>
+        {/* Boutons d'action - Supprimé car redondant avec le FAB */}
 
         {/* Header Bien-être Révolutionnaire (préserve l'esprit Journal) */}
         {user && entries.length > 0 && (
