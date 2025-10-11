@@ -345,14 +345,22 @@ export default function MenuTypesModal({
         name: newTemplateName.trim(),
         description: newTemplateDescription.trim() || 'Template personnalisé',
         meals: todayMeals.map((meal) => ({
-          ...meal,
           id: `${meal.id}-template-${Date.now()}`, // ID unique
+          user_id: '', // Sera rempli lors de l'application
           date: '', // Sera rempli lors de l'application
-          created_at: undefined, // Sera généré lors de l'application
+          repas: meal.repas,
+          aliments: meal.aliments,
+          macros: meal.macros,
         })),
         totalCalories: todayTotalCalories,
         createdAt: new Date().toISOString().split('T')[0],
       };
+
+      // Debug: Vérifier les données avant sauvegarde
+      console.log(
+        'Données à sauvegarder:',
+        JSON.stringify(templateData, null, 2),
+      );
 
       // Sauvegarder en Firestore
       const docRef = await addDoc(collection(db, 'menus_type'), templateData);
