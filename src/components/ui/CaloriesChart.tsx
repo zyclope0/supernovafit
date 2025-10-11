@@ -13,6 +13,7 @@ import {
 import { Repas } from '@/types';
 import { format, subDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface CaloriesChartProps {
   repas: Repas[];
@@ -31,7 +32,9 @@ export default function CaloriesChart({ repas, days = 7 }: CaloriesChartProps) {
       const dayName = format(date, 'EEE', { locale: fr });
 
       // Calculer les calories du jour
-      const dayMeals = repas.filter((r) => r.date === dateStr);
+      const dayMeals = repas.filter(
+        (r) => timestampToDateString(r.date) === dateStr,
+      );
       const calories = dayMeals.reduce(
         (total, meal) => total + (meal.macros?.kcal || 0),
         0,

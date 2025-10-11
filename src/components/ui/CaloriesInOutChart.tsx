@@ -12,10 +12,12 @@ import {
   Legend,
 } from 'recharts';
 import type { TooltipProps } from 'recharts';
+import { timestampToDateString } from '@/lib/dateUtils';
+import { Timestamp } from 'firebase/firestore';
 
 interface CaloriesInOutChartProps {
-  repas: Array<{ date: string; macros?: { kcal?: number } }>;
-  entrainements: Array<{ date: string; calories?: number }>;
+  repas: Array<{ date: Timestamp; macros?: { kcal?: number } }>;
+  entrainements: Array<{ date: Timestamp; calories?: number }>;
   days?: number;
   tdee?: number; // Total Daily Energy Expenditure (maintenance)
   title?: string; // Titre personnalisé
@@ -42,11 +44,13 @@ export default function CaloriesInOutChart({
 
     repas.forEach((r) => {
       const kcal = r.macros?.kcal || 0;
-      inByDate.set(r.date, (inByDate.get(r.date) || 0) + kcal);
+      const dateStr = timestampToDateString(r.date);
+      inByDate.set(dateStr, (inByDate.get(dateStr) || 0) + kcal);
     });
     entrainements.forEach((e) => {
       const cals = e.calories || 0;
-      outByDate.set(e.date, (outByDate.get(e.date) || 0) + cals);
+      const dateStr = timestampToDateString(e.date);
+      outByDate.set(dateStr, (outByDate.get(dateStr) || 0) + cals);
     });
 
     return dates.map((d) => ({
