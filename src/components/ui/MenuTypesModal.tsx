@@ -636,6 +636,20 @@ export default function MenuTypesModal({
             /* Vue détails */
             viewingTemplate && (
               <div className="space-y-4">
+                {(() => {
+                  console.log(
+                    '📋 Rendu section détails pour:',
+                    viewingTemplate.name,
+                    'Meals:',
+                    viewingTemplate.meals.length,
+                  );
+                  return null;
+                })()}
+                {/* Indicateur visuel de debug */}
+                <div className="bg-red-500/20 border border-red-500 p-2 rounded text-red-300 text-sm mb-4">
+                  🔍 DEBUG: Vue détails active pour &quot;{viewingTemplate.name}
+                  &quot; - {viewingTemplate.meals.length} repas
+                </div>
                 {viewingTemplate.meals.map((meal, index) => (
                   <div
                     key={index}
