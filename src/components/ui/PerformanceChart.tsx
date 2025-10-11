@@ -31,7 +31,14 @@ const CustomTooltip = ({
     return (
       <div className="glass-effect p-3 rounded-lg border border-white/10 text-sm text-white">
         <p className="font-bold mb-1">
-          {format(parseISO(label), 'EEEE d MMMM', { locale: fr })}
+          {(() => {
+            try {
+              return format(parseISO(label), 'EEEE d MMMM', { locale: fr });
+            } catch {
+              console.warn('Invalid date in PerformanceChart tooltip:', label);
+              return String(label);
+            }
+          })()}
         </p>
         <p className="text-neon-cyan">{`${data.type} - ${data.duree}min`}</p>
         {data.vitesse && (
@@ -78,7 +85,7 @@ export default function PerformanceChart({
     )
     .map((e) => {
       const baseData = {
-        date: e.date,
+        date: timestampToDateString(e.date),
         type: e.type,
         duree: e.duree,
         fc_moyenne: e.fc_moyenne,
@@ -177,9 +184,14 @@ export default function PerformanceChart({
           <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
           <XAxis
             dataKey="date"
-            tickFormatter={(tick) =>
-              format(parseISO(tick), 'dd/MM', { locale: fr })
-            }
+            tickFormatter={(tick) => {
+              try {
+                return format(parseISO(tick), 'dd/MM', { locale: fr });
+              } catch {
+                console.warn('Invalid date in PerformanceChart tick:', tick);
+                return String(tick);
+              }
+            }}
             stroke="#ffffff80"
             tickLine={false}
             axisLine={false}
