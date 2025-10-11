@@ -56,10 +56,22 @@ const TrainingCalendar: React.FC<TrainingCalendarProps> = ({
 
     // Générer 42 jours (6 semaines)
     for (let i = 0; i < 42; i++) {
-      const dateStr = current.toISOString().split('T')[0];
+      const dateStr = (() => {
+        const year = current.getFullYear();
+        const month = String(current.getMonth() + 1).padStart(2, '0');
+        const day = String(current.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })();
       const trainingsForDay = trainingsMap.get(dateStr) || [];
       const isCurrentMonth = current.getMonth() === month;
-      const isToday = dateStr === new Date().toISOString().split('T')[0];
+      const todayStr = (() => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      })();
+      const isToday = dateStr === todayStr;
       const isSelected = dateStr === selectedDate;
 
       days.push({
