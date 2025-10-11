@@ -198,7 +198,8 @@ export default function BottomNavigation({
           // Masquer sur pages avec FAB spécifique
           (pathname.startsWith('/diete') ||
             pathname.startsWith('/entrainements') ||
-            pathname.startsWith('/mesures')) &&
+            pathname.startsWith('/mesures') ||
+            pathname.startsWith('/journal')) &&
             'hidden',
         )}
       >
