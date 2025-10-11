@@ -111,6 +111,11 @@ export default function MesuresPage() {
   const [selectedMesure, setSelectedMesure] = useState<Mesure | null>(null);
   const [showMesureDetail, setShowMesureDetail] = useState(false);
 
+  // État pour le filtrage des mesures
+  const [mesuresFilter, setMesuresFilter] = useState<
+    'recent' | 'week' | 'month' | 'all'
+  >('recent');
+
   // Mesure la plus récente avec des données valides pour les stats
   const lastMesure =
     mesures.find(
@@ -127,6 +132,33 @@ export default function MesuresPage() {
         m.commentaire,
     ) || mesures[0];
   const stats = lastMesure ? getStats(lastMesure) : null;
+
+  // Logique de filtrage des mesures
+  const getFilteredMesures = () => {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    switch (mesuresFilter) {
+      case 'recent':
+        return mesures.slice(0, 10); // 10 plus récentes
+      case 'week':
+        return mesures.filter((m) => {
+          const mesureDate = new Date(timestampToDateString(m.date));
+          return mesureDate >= oneWeekAgo;
+        });
+      case 'month':
+        return mesures.filter((m) => {
+          const mesureDate = new Date(timestampToDateString(m.date));
+          return mesureDate >= oneMonthAgo;
+        });
+      case 'all':
+      default:
+        return mesures;
+    }
+  };
+
+  const filteredMesures = getFilteredMesures();
 
   // Données historiques pour les SparklineCharts (dernières 7 mesures)
   const recentMesures = mesures.slice(0, 7).reverse(); // Plus récentes en premier
@@ -508,21 +540,72 @@ export default function MesuresPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-white">
-                  Historique des mesures
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {mesures.map((mesure) => (
-                    <MesuresCardClickable
-                      key={mesure.id}
-                      mesure={mesure}
-                      onView={() => handleMesureView(mesure)}
-                      onEdit={() => handleEdit(mesure)}
-                      onDelete={() => handleDelete(mesure.id)}
-                      getStats={getStats}
-                    />
-                  ))}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <h2 className="text-lg font-semibold text-white">
+                    Historique des mesures
+                  </h2>
+
+                  {/* Filtres de période */}
+                  <div className="flex gap-2 flex-wrap">
+                    {[
+                      { key: 'recent', label: 'Récentes', icon: '🕐' },
+                      { key: 'week', label: 'Semaine', icon: '📅' },
+                      { key: 'month', label: 'Mois', icon: '📆' },
+                      { key: 'all', label: 'Toutes', icon: '📊' },
+                    ].map((filter) => (
+                      <button
+                        key={filter.key}
+                        onClick={() =>
+                          setMesuresFilter(
+                            filter.key as 'recent' | 'week' | 'month' | 'all',
+                          )
+                        }
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          mesuresFilter === filter.key
+                            ? 'bg-neon-cyan text-white shadow-lg'
+                            : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                        }`}
+                      >
+                        <span className="mr-1">{filter.icon}</span>
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Compteur de résultats */}
+                <div className="text-sm text-white/60">
+                  {filteredMesures.length} mesure
+                  {filteredMesures.length > 1 ? 's' : ''}
+                  {mesuresFilter !== 'all' &&
+                    mesures.length > filteredMesures.length &&
+                    ` (${mesures.length - filteredMesures.length} autres masquées)`}
+                </div>
+
+                {filteredMesures.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredMesures.map((mesure) => (
+                      <MesuresCardClickable
+                        key={mesure.id}
+                        mesure={mesure}
+                        onView={() => handleMesureView(mesure)}
+                        onEdit={() => handleEdit(mesure)}
+                        onDelete={() => handleDelete(mesure.id)}
+                        getStats={getStats}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-4">📏</div>
+                    <p className="text-white/60 mb-2">
+                      Aucune mesure trouvée pour cette période
+                    </p>
+                    <p className="text-sm text-white/40">
+                      Essayez une autre période ou ajoutez une nouvelle mesure
+                    </p>
+                  </div>
+                )}
 
                 {/* Toutes les mesures sont chargées */}
               </div>
