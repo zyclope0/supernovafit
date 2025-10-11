@@ -244,9 +244,7 @@ export default function MenuTypesModal({
 
   // Réinitialiser l'état de visualisation quand la modal se ferme
   useEffect(() => {
-    console.log('🔄 useEffect isOpen changé:', isOpen);
     if (!isOpen) {
-      console.log('🚪 Modal fermée - réinitialisation des états');
       setViewingTemplate(null);
       setEditingTemplate(null);
       setCurrentView('list');
@@ -406,14 +404,8 @@ export default function MenuTypesModal({
   };
 
   const handleViewTemplate = (template: MenuTemplate) => {
-    console.log('🔍 handleViewTemplate appelé avec:', template.name);
     setViewingTemplate(template);
     setCurrentView('details');
-    console.log(
-      '🔍 États mis à jour - viewingTemplate:',
-      template.name,
-      'currentView: details',
-    );
   };
 
   const getMealTypeName = (mealType: string) => {
@@ -458,15 +450,7 @@ export default function MenuTypesModal({
         editLabel="Retour à la liste"
       >
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
-          {(() => {
-            console.log(
-              '🎨 Rendu - currentView:',
-              currentView,
-              'viewingTemplate:',
-              viewingTemplate?.name || 'null',
-            );
-            return currentView === 'list';
-          })() ? (
+          {currentView === 'list' ? (
             <>
               {/* Sauvegarder journée actuelle */}
               <div className="glass-effect p-4 rounded-lg border border-neon-purple/20 mb-6">
@@ -556,10 +540,6 @@ export default function MenuTypesModal({
                           <div className="flex gap-1">
                             <button
                               onClick={(e) => {
-                                console.log(
-                                  '👁️ Bouton œil cliqué pour:',
-                                  template.name,
-                                );
                                 e.stopPropagation();
                                 handleViewTemplate(template);
                               }}
@@ -637,70 +617,90 @@ export default function MenuTypesModal({
           ) : (
             /* Vue détails */
             viewingTemplate && (
-              <div className="space-y-4">
-                {(() => {
-                  console.log(
-                    '📋 Rendu section détails pour:',
-                    viewingTemplate.name,
-                    'Meals:',
-                    viewingTemplate.meals.length,
-                  );
-                  console.log(
-                    '📋 CONTENU COMPLET du template:',
-                    JSON.stringify(viewingTemplate, null, 2),
-                  );
-                  return null;
-                })()}
-                {/* Indicateur visuel de debug */}
-                <div className="bg-red-500/20 border border-red-500 p-2 rounded text-red-300 text-sm mb-4">
-                  🔍 DEBUG: Vue détails active pour &quot;{viewingTemplate.name}
-                  &quot; - {viewingTemplate.meals.length} repas
-                </div>
-                {viewingTemplate.meals.map((meal, index) => {
-                  console.log(
-                    `🍽️ Rendu repas ${index + 1}:`,
-                    meal.repas,
-                    'Aliments:',
-                    meal.aliments.length,
-                  );
-                  return (
-                    <div
-                      key={index}
-                      className="glass-effect p-4 rounded-lg border border-white/10"
-                    >
-                      <h4 className="font-medium text-white mb-2">
+              <div className="space-y-6">
+                {viewingTemplate.meals.map((meal, index) => (
+                  <div
+                    key={index}
+                    className="bg-gradient-to-br from-white/5 to-white/2 p-6 rounded-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                  >
+                    {/* Header du repas */}
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-xl font-semibold text-white flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-neon-cyan shadow-lg shadow-neon-cyan/50"></div>
                         {getMealTypeName(meal.repas)}
                       </h4>
-                      <div className="space-y-2">
-                        {meal.aliments.map((aliment, i) => (
-                          <div key={i} className="flex justify-between text-sm">
-                            <span className="text-white">
-                              {aliment.nom} ({aliment.quantite}
+                      <div className="bg-neon-green/20 px-3 py-1 rounded-full border border-neon-green/30">
+                        <span className="text-neon-green font-medium text-sm">
+                          {meal.macros.kcal} kcal
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Liste des aliments */}
+                    <div className="space-y-3 mb-4">
+                      {meal.aliments.map((aliment, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                          <div className="flex-1">
+                            <span className="text-white font-medium">
+                              {aliment.nom}
+                            </span>
+                            <span className="text-gray-400 text-sm ml-2">
+                              ({aliment.quantite}
                               {aliment.unite})
                             </span>
-                            <span className="text-muted-foreground">
-                              {aliment.macros?.kcal ?? 0} kcal
-                            </span>
                           </div>
-                        ))}
-                      </div>
-                      <div className="mt-3 pt-2 border-t border-white/10 text-sm">
-                        <div className="flex justify-between text-neon-green">
-                          <span>Total:</span>
-                          <span>
-                            {meal.macros.kcal} kcal • {meal.macros.prot}g prot
-                          </span>
+                          <div className="text-right">
+                            <div className="text-neon-cyan font-semibold">
+                              {aliment.macros?.kcal ?? 0} kcal
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {aliment.macros?.prot ?? 0}g prot
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Total du repas */}
+                    <div className="pt-4 border-t border-white/20">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-300 font-medium">
+                          Total du repas:
+                        </span>
+                        <div className="text-right">
+                          <div className="text-neon-green text-lg font-bold">
+                            {meal.macros.kcal} kcal
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {meal.macros.prot}g protéines •{' '}
+                            {meal.macros.glucides}g glucides •{' '}
+                            {meal.macros.lipides}g lipides
+                          </div>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-                <div className="mt-6 pt-4 border-t border-white/10">
-                  <div className="flex justify-between text-lg font-medium">
-                    <span className="text-white">Total journée:</span>
-                    <span className="text-neon-green">
-                      {viewingTemplate.totalCalories} kcal
-                    </span>
+                  </div>
+                ))}
+                {/* Total de la journée */}
+                <div className="mt-8 p-6 bg-gradient-to-r from-neon-purple/10 to-neon-cyan/10 rounded-xl border border-neon-purple/20 shadow-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-r from-neon-purple to-neon-cyan shadow-lg"></div>
+                      <span className="text-white text-xl font-semibold">
+                        Total de la journée
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-neon-green text-2xl font-bold">
+                        {viewingTemplate.totalCalories} kcal
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        Menu équilibré et complet
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

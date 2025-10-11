@@ -611,59 +611,10 @@ export default function DietePage() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [showMealForm, showMenuTypes, todayMeals, meals]);
 
-  // Fermer le menu de sélection quand on clique ailleurs (SAUF dans les modals)
-  // NOTE: Ce useEffect gère UNIQUEMENT le menu de sélection des types de repas (petit menu)
-  // Il NE DOIT PAS gérer la fermeture de la modal MenuTypesModal (grande modal)
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      // NOTE CRITIQUE : showMenuTypes contrôle 2 choses :
-      // 1. Le petit menu de sélection des types de repas (div avec "Choisir le type de repas")
-      // 2. La grande modal MenuTypesModal
-      // On doit UNIQUEMENT fermer le petit menu, PAS la grande modal
-      // La grande modal gère sa propre fermeture via son bouton X
-
-      // Pour l'instant, on DÉSACTIVE complètement ce handler car il interfère avec la modal
-      // TODO: Séparer showMenuTypes en 2 états : showMealTypeMenu et showMenuTypesModal
-      if (false && showMenuTypes) {
-        const target = e.target as Element;
-        console.log('🖱️ Click détecté, target:', target);
-        console.log(
-          '  - closest .fixed.bottom-6:',
-          !!target.closest('.fixed.bottom-6.right-6'),
-        );
-        console.log(
-          '  - closest .fixed.bottom-8:',
-          !!target.closest('.fixed.bottom-8.right-8'),
-        );
-        console.log(
-          '  - closest [role="dialog"]:',
-          !!target.closest('[role="dialog"]'),
-        );
-        console.log(
-          '  - closest .bg-space-900:',
-          !!target.closest('.bg-space-900'),
-        );
-
-        // Ne pas fermer si on clique sur le FAB, une card de repas, OU dans une modal
-        const isInModal =
-          target.closest('[role="dialog"]') || target.closest('.bg-space-900');
-        const isInFAB =
-          target.closest('.fixed.bottom-6.right-6') ||
-          target.closest('.fixed.bottom-8.right-8');
-        const isInMealCard = target.closest('[data-meal-card]');
-
-        if (!isInFAB && !isInMealCard && !isInModal) {
-          console.log('❌ Fermeture de showMenuTypes (click outside)');
-          setShowMenuTypes(false);
-        } else {
-          console.log('✅ Click dans une zone protégée, ne ferme pas');
-        }
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [showMenuTypes]);
+  // NOTE: handleClickOutside désactivé car il interfère avec la modal MenuTypesModal
+  // La modal gère sa propre fermeture via son bouton X
+  // TODO: Séparer showMenuTypes en 2 états : showMealTypeMenu et showMenuTypesModal
+  // useEffect pour handleClickOutside supprimé temporairement
 
   // Loading state pendant initialisation selectedDate
   if (!selectedDate) {
