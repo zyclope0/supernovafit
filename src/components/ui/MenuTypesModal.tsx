@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Repas } from '@/types';
+import { collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Save,
   Copy,
@@ -37,200 +40,263 @@ export default function MenuTypesModal({
   todayMeals,
   onApplyTemplate,
 }: MenuTypesModalProps) {
-  const [templates, setTemplates] = useState<MenuTemplate[]>([
-    // Templates par défaut avec repas réels
-    {
-      id: 'template-1',
-      name: 'Journée Équilibrée',
-      description: 'Menu équilibré pour une journée type',
-      meals: [
-        {
-          id: 'template-1-breakfast',
-          user_id: '',
-          date: '',
-          repas: 'petit_dej',
-          aliments: [
-            {
-              id: '1',
-              nom: "Flocons d'avoine",
-              quantite: 50,
-              unite: 'g',
-              macros: { kcal: 180, prot: 6, glucides: 32, lipides: 3 },
-            },
-            {
-              id: '2',
-              nom: 'Banane',
-              quantite: 100,
-              unite: 'g',
-              macros: { kcal: 89, prot: 1, glucides: 23, lipides: 0.3 },
-            },
-            {
-              id: '3',
-              nom: 'Lait demi-écrémé',
-              quantite: 200,
-              unite: 'ml',
-              macros: { kcal: 92, prot: 6.8, glucides: 9.6, lipides: 3.2 },
-            },
-          ],
-          macros: { kcal: 361, prot: 13.8, glucides: 64.6, lipides: 6.5 },
-        },
-        {
-          id: 'template-1-lunch',
-          user_id: '',
-          date: '',
-          repas: 'dejeuner',
-          aliments: [
-            {
-              id: '4',
-              nom: 'Riz complet cuit',
-              quantite: 100,
-              unite: 'g',
-              macros: { kcal: 112, prot: 2.6, glucides: 22, lipides: 0.9 },
-            },
-            {
-              id: '5',
-              nom: 'Blanc de poulet',
-              quantite: 120,
-              unite: 'g',
-              macros: { kcal: 172, prot: 32, glucides: 0, lipides: 3.6 },
-            },
-            {
-              id: '6',
-              nom: 'Brocolis',
-              quantite: 150,
-              unite: 'g',
-              macros: { kcal: 51, prot: 4.2, glucides: 10, lipides: 0.6 },
-            },
-          ],
-          macros: { kcal: 335, prot: 38.8, glucides: 32, lipides: 5.1 },
-        },
-        {
-          id: 'template-1-dinner',
-          user_id: '',
-          date: '',
-          repas: 'diner',
-          aliments: [
-            {
-              id: '7',
-              nom: 'Saumon',
-              quantite: 100,
-              unite: 'g',
-              macros: { kcal: 206, prot: 22, glucides: 0, lipides: 12 },
-            },
-            {
-              id: '8',
-              nom: 'Quinoa cuit',
-              quantite: 80,
-              unite: 'g',
-              macros: { kcal: 120, prot: 4.4, glucides: 22, lipides: 1.9 },
-            },
-            {
-              id: '9',
-              nom: 'Salade verte',
-              quantite: 100,
-              unite: 'g',
-              macros: { kcal: 15, prot: 1.4, glucides: 3, lipides: 0.2 },
-            },
-          ],
-          macros: { kcal: 341, prot: 27.8, glucides: 25, lipides: 14.1 },
-        },
-      ],
-      totalCalories: 1037,
-      createdAt: '2025-01-01',
-    },
-    {
-      id: 'template-2',
-      name: 'Journée Sport',
-      description: "Menu riche en protéines pour les jours d'entraînement",
-      meals: [
-        {
-          id: 'template-2-breakfast',
-          user_id: '',
-          date: '',
-          repas: 'petit_dej',
-          aliments: [
-            {
-              id: '10',
-              nom: 'Oeufs brouillés',
-              quantite: 120,
-              unite: 'g',
-              macros: { kcal: 188, prot: 15, glucides: 1, lipides: 13 },
-            },
-            {
-              id: '11',
-              nom: 'Pain complet',
-              quantite: 60,
-              unite: 'g',
-              macros: { kcal: 156, prot: 6, glucides: 28, lipides: 2.4 },
-            },
-            {
-              id: '12',
-              nom: 'Avocat',
-              quantite: 50,
-              unite: 'g',
-              macros: { kcal: 80, prot: 1, glucides: 4, lipides: 7.5 },
-            },
-          ],
-          macros: { kcal: 424, prot: 22, glucides: 33, lipides: 22.9 },
-        },
-        {
-          id: 'template-2-lunch',
-          user_id: '',
-          date: '',
-          repas: 'dejeuner',
-          aliments: [
-            {
-              id: '13',
-              nom: 'Pâtes complètes cuites',
-              quantite: 120,
-              unite: 'g',
-              macros: { kcal: 131, prot: 5, glucides: 25, lipides: 1.1 },
-            },
-            {
-              id: '14',
-              nom: 'Thon',
-              quantite: 100,
-              unite: 'g',
-              macros: { kcal: 144, prot: 30, glucides: 0, lipides: 1 },
-            },
-            {
-              id: '15',
-              nom: 'Tomates cerises',
-              quantite: 100,
-              unite: 'g',
-              macros: { kcal: 18, prot: 0.9, glucides: 3.9, lipides: 0.2 },
-            },
-          ],
-          macros: { kcal: 293, prot: 35.9, glucides: 28.9, lipides: 2.3 },
-        },
-        {
-          id: 'template-2-snack',
-          user_id: '',
-          date: '',
-          repas: 'collation_matin',
-          aliments: [
-            {
-              id: '16',
-              nom: 'Protéine whey',
-              quantite: 30,
-              unite: 'g',
-              macros: { kcal: 113, prot: 24, glucides: 2, lipides: 1 },
-            },
-            {
-              id: '17',
-              nom: 'Amandes',
-              quantite: 20,
-              unite: 'g',
-              macros: { kcal: 116, prot: 4.3, glucides: 3.7, lipides: 10 },
-            },
-          ],
-          macros: { kcal: 229, prot: 28.3, glucides: 5.7, lipides: 11 },
-        },
-      ],
-      totalCalories: 946,
-      createdAt: '2025-01-01',
-    },
-  ]);
+  const { user } = useAuth();
+  const [templates, setTemplates] = useState<MenuTemplate[]>([]);
+
+  // Charger les templates depuis Firestore
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = onSnapshot(
+      collection(db, 'menus_type'),
+      (snapshot) => {
+        const firestoreTemplates = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as MenuTemplate[];
+
+        // Combiner avec les templates par défaut
+        const defaultTemplates: MenuTemplate[] = [
+          {
+            id: 'template-1',
+            name: 'Journée Équilibrée',
+            description: 'Menu équilibré pour une journée type',
+            meals: [
+              {
+                id: 'template-1-breakfast',
+                user_id: '',
+                date: '',
+                repas: 'petit_dej',
+                aliments: [
+                  {
+                    id: '1',
+                    nom: "Flocons d'avoine",
+                    quantite: 50,
+                    unite: 'g',
+                    macros: { kcal: 180, prot: 6, glucides: 32, lipides: 3 },
+                  },
+                  {
+                    id: '2',
+                    nom: 'Banane',
+                    quantite: 100,
+                    unite: 'g',
+                    macros: { kcal: 89, prot: 1, glucides: 23, lipides: 0.3 },
+                  },
+                  {
+                    id: '3',
+                    nom: 'Lait demi-écrémé',
+                    quantite: 200,
+                    unite: 'ml',
+                    macros: {
+                      kcal: 92,
+                      prot: 6.8,
+                      glucides: 9.6,
+                      lipides: 3.2,
+                    },
+                  },
+                ],
+                macros: { kcal: 361, prot: 13.8, glucides: 64.6, lipides: 6.5 },
+              },
+              {
+                id: 'template-1-lunch',
+                user_id: '',
+                date: '',
+                repas: 'dejeuner',
+                aliments: [
+                  {
+                    id: '4',
+                    nom: 'Riz complet cuit',
+                    quantite: 100,
+                    unite: 'g',
+                    macros: {
+                      kcal: 112,
+                      prot: 2.6,
+                      glucides: 22,
+                      lipides: 0.9,
+                    },
+                  },
+                  {
+                    id: '5',
+                    nom: 'Blanc de poulet',
+                    quantite: 120,
+                    unite: 'g',
+                    macros: { kcal: 172, prot: 32, glucides: 0, lipides: 3.6 },
+                  },
+                  {
+                    id: '6',
+                    nom: 'Brocolis',
+                    quantite: 150,
+                    unite: 'g',
+                    macros: { kcal: 51, prot: 4.2, glucides: 10, lipides: 0.6 },
+                  },
+                ],
+                macros: { kcal: 335, prot: 38.8, glucides: 32, lipides: 5.1 },
+              },
+              {
+                id: 'template-1-dinner',
+                user_id: '',
+                date: '',
+                repas: 'diner',
+                aliments: [
+                  {
+                    id: '7',
+                    nom: 'Saumon',
+                    quantite: 100,
+                    unite: 'g',
+                    macros: { kcal: 206, prot: 22, glucides: 0, lipides: 12 },
+                  },
+                  {
+                    id: '8',
+                    nom: 'Quinoa cuit',
+                    quantite: 80,
+                    unite: 'g',
+                    macros: {
+                      kcal: 120,
+                      prot: 4.4,
+                      glucides: 22,
+                      lipides: 1.9,
+                    },
+                  },
+                  {
+                    id: '9',
+                    nom: 'Salade verte',
+                    quantite: 100,
+                    unite: 'g',
+                    macros: { kcal: 15, prot: 1.4, glucides: 3, lipides: 0.2 },
+                  },
+                ],
+                macros: { kcal: 341, prot: 27.8, glucides: 25, lipides: 14.1 },
+              },
+            ],
+            totalCalories: 1037,
+            createdAt: '2025-01-01',
+          },
+          {
+            id: 'template-2',
+            name: 'Journée Sport',
+            description:
+              "Menu riche en protéines pour les jours d'entraînement",
+            meals: [
+              {
+                id: 'template-2-breakfast',
+                user_id: '',
+                date: '',
+                repas: 'petit_dej',
+                aliments: [
+                  {
+                    id: '10',
+                    nom: 'Oeufs brouillés',
+                    quantite: 120,
+                    unite: 'g',
+                    macros: { kcal: 188, prot: 15, glucides: 1, lipides: 13 },
+                  },
+                  {
+                    id: '11',
+                    nom: 'Pain complet',
+                    quantite: 60,
+                    unite: 'g',
+                    macros: { kcal: 156, prot: 6, glucides: 28, lipides: 2.4 },
+                  },
+                  {
+                    id: '12',
+                    nom: 'Avocat',
+                    quantite: 50,
+                    unite: 'g',
+                    macros: { kcal: 80, prot: 1, glucides: 4, lipides: 7.5 },
+                  },
+                ],
+                macros: { kcal: 424, prot: 22, glucides: 33, lipides: 22.9 },
+              },
+              {
+                id: 'template-2-lunch',
+                user_id: '',
+                date: '',
+                repas: 'dejeuner',
+                aliments: [
+                  {
+                    id: '13',
+                    nom: 'Pâtes complètes cuites',
+                    quantite: 120,
+                    unite: 'g',
+                    macros: { kcal: 131, prot: 5, glucides: 25, lipides: 1.1 },
+                  },
+                  {
+                    id: '14',
+                    nom: 'Thon',
+                    quantite: 100,
+                    unite: 'g',
+                    macros: { kcal: 144, prot: 30, glucides: 0, lipides: 1 },
+                  },
+                  {
+                    id: '15',
+                    nom: 'Tomates cerises',
+                    quantite: 100,
+                    unite: 'g',
+                    macros: {
+                      kcal: 18,
+                      prot: 0.9,
+                      glucides: 3.9,
+                      lipides: 0.2,
+                    },
+                  },
+                ],
+                macros: { kcal: 293, prot: 35.9, glucides: 28.9, lipides: 2.3 },
+              },
+              {
+                id: 'template-2-snack',
+                user_id: '',
+                date: '',
+                repas: 'collation_matin',
+                aliments: [
+                  {
+                    id: '16',
+                    nom: 'Protéine whey',
+                    quantite: 30,
+                    unite: 'g',
+                    macros: { kcal: 113, prot: 24, glucides: 2, lipides: 1 },
+                  },
+                  {
+                    id: '17',
+                    nom: 'Amandes',
+                    quantite: 20,
+                    unite: 'g',
+                    macros: {
+                      kcal: 116,
+                      prot: 4.3,
+                      glucides: 3.7,
+                      lipides: 10,
+                    },
+                  },
+                ],
+                macros: { kcal: 229, prot: 28.3, glucides: 5.7, lipides: 11 },
+              },
+            ],
+            totalCalories: 946,
+            createdAt: '2025-01-01',
+          },
+        ];
+
+        // Combiner templates Firestore + templates par défaut
+        setTemplates([...firestoreTemplates, ...defaultTemplates]);
+      },
+      (error) => {
+        console.error('Erreur lors du chargement des templates:', error);
+        // En cas d'erreur, utiliser seulement les templates par défaut
+        setTemplates([
+          {
+            id: 'template-1',
+            name: 'Journée Équilibrée',
+            description: 'Menu équilibré pour une journée type',
+            meals: [],
+            totalCalories: 1037,
+            createdAt: '2025-01-01',
+          },
+        ]);
+      },
+    );
+
+    return () => unsubscribe();
+  }, [user]);
 
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplateDescription, setNewTemplateDescription] = useState('');
@@ -256,7 +322,7 @@ export default function MenuTypesModal({
     0,
   );
 
-  const handleSaveCurrentDay = () => {
+  const handleSaveCurrentDay = async () => {
     if (!newTemplateName.trim()) {
       toast.error('Veuillez entrer un nom pour le template');
       return;
@@ -267,24 +333,44 @@ export default function MenuTypesModal({
       return;
     }
 
-    const newTemplate: MenuTemplate = {
-      id: `template-${Date.now()}`,
-      name: newTemplateName.trim(),
-      description: newTemplateDescription.trim() || 'Template personnalisé',
-      meals: todayMeals.map((meal) => ({
-        ...meal,
-        id: `${meal.id}-template`, // Nouvel ID pour éviter les conflits
-        date: '', // Sera rempli lors de l'application
-        created_at: undefined, // Sera généré lors de l'application
-      })),
-      totalCalories: todayTotalCalories,
-      createdAt: new Date().toISOString().split('T')[0],
-    };
+    if (!user) {
+      toast.error('Vous devez être connecté pour sauvegarder un template');
+      return;
+    }
 
-    setTemplates([newTemplate, ...templates]);
-    setNewTemplateName('');
-    setNewTemplateDescription('');
-    toast.success(`Template "${newTemplate.name}" créé avec succès !`);
+    try {
+      // Préparer les données pour Firestore
+      const templateData = {
+        coach_id: user.uid, // Requis par les règles Firestore
+        name: newTemplateName.trim(),
+        description: newTemplateDescription.trim() || 'Template personnalisé',
+        meals: todayMeals.map((meal) => ({
+          ...meal,
+          id: `${meal.id}-template-${Date.now()}`, // ID unique
+          date: '', // Sera rempli lors de l'application
+          created_at: undefined, // Sera généré lors de l'application
+        })),
+        totalCalories: todayTotalCalories,
+        createdAt: new Date().toISOString().split('T')[0],
+      };
+
+      // Sauvegarder en Firestore
+      const docRef = await addDoc(collection(db, 'menus_type'), templateData);
+
+      // Mettre à jour l'état local avec l'ID Firestore
+      const newTemplate: MenuTemplate = {
+        id: docRef.id, // Utiliser l'ID Firestore
+        ...templateData,
+      };
+
+      setTemplates([newTemplate, ...templates]);
+      setNewTemplateName('');
+      setNewTemplateDescription('');
+      toast.success(`Template "${newTemplate.name}" créé avec succès !`);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du template:', error);
+      toast.error('Erreur lors de la sauvegarde du template');
+    }
   };
 
   const handleApplyTemplate = (template: MenuTemplate) => {
