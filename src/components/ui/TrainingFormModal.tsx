@@ -47,7 +47,7 @@ export default function TrainingFormModal({
       maxWidth={maxWidth}
       height="85vh"
     >
-      <div className="p-6">
+      <div className="p-6 overflow-y-auto flex-1">
         <TrainingForm
           onSubmit={handleSubmit}
           onCancel={handleCancel}

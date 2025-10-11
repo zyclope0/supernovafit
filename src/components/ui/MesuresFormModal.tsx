@@ -217,7 +217,7 @@ export default function MesuresFormModal({
       maxWidth="4xl"
       height="85vh"
     >
-      <div className="p-6 pb-4">
+      <div className="p-6 pb-4 overflow-y-auto flex-1">
         <form id="mesure-form" onSubmit={handleSubmit} className="space-y-6">
           {/* Date */}
           <div>
