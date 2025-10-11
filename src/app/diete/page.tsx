@@ -616,6 +616,24 @@ export default function DietePage() {
     const handleClickOutside = (e: MouseEvent) => {
       if (showMenuTypes) {
         const target = e.target as Element;
+        console.log('🖱️ Click détecté, target:', target);
+        console.log(
+          '  - closest .fixed.bottom-6:',
+          !!target.closest('.fixed.bottom-6.right-6'),
+        );
+        console.log(
+          '  - closest .fixed.bottom-8:',
+          !!target.closest('.fixed.bottom-8.right-8'),
+        );
+        console.log(
+          '  - closest [role="dialog"]:',
+          !!target.closest('[role="dialog"]'),
+        );
+        console.log(
+          '  - closest .bg-space-900:',
+          !!target.closest('.bg-space-900'),
+        );
+
         // Ne pas fermer si on clique sur le FAB, une card de repas, OU dans une modal
         if (
           !target.closest('.fixed.bottom-6.right-6') &&
@@ -624,7 +642,10 @@ export default function DietePage() {
           !target.closest('[role="dialog"]') && // ← AJOUTÉ : Ne pas fermer si dans une modal
           !target.closest('.bg-space-900') // ← AJOUTÉ : Ne pas fermer si dans le contenu de modal
         ) {
+          console.log('❌ Fermeture de showMenuTypes (click outside)');
           setShowMenuTypes(false);
+        } else {
+          console.log('✅ Click dans une zone protégée, ne ferme pas');
         }
       }
     };

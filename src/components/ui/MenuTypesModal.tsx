@@ -244,7 +244,9 @@ export default function MenuTypesModal({
 
   // Réinitialiser l'état de visualisation quand la modal se ferme
   useEffect(() => {
+    console.log('🔄 useEffect isOpen changé:', isOpen);
     if (!isOpen) {
+      console.log('🚪 Modal fermée - réinitialisation des états');
       setViewingTemplate(null);
       setEditingTemplate(null);
       setCurrentView('list');
