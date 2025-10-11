@@ -123,9 +123,13 @@ export default function EntrainementsPage() {
   const [showCharts, setShowCharts] = useState(false);
   const [showGarminImport, setShowGarminImport] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>(
-    new Date().toISOString().split('T')[0],
-  );
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [dateFilterActive, setDateFilterActive] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [performancePeriod, setPerformancePeriod] = useState<
@@ -387,9 +391,13 @@ export default function EntrainementsPage() {
                 </h3>
                 <div className="space-y-2">
                   <button
-                    onClick={() =>
-                      setSelectedDate(new Date().toISOString().split('T')[0])
-                    }
+                    onClick={() => {
+                      const now = new Date();
+                      const year = now.getFullYear();
+                      const month = String(now.getMonth() + 1).padStart(2, '0');
+                      const day = String(now.getDate()).padStart(2, '0');
+                      setSelectedDate(`${year}-${month}-${day}`);
+                    }}
                     className="w-full px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-all duration-200 transform hover:scale-105 font-medium"
                   >
                     📅 Aujourd&apos;hui
@@ -413,7 +421,14 @@ export default function EntrainementsPage() {
               <div className="glass-effect p-4 rounded-xl border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                   📊{' '}
-                  {selectedDate === new Date().toISOString().split('T')[0]
+                  {selectedDate ===
+                  (() => {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                  })()
                     ? "Aujourd'hui"
                     : new Date(selectedDate + 'T12:00:00').toLocaleDateString(
                         'fr-FR',
