@@ -119,8 +119,6 @@ export default function JournalPageOptimized() {
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   })();
-
-  console.log('📅 TODAY DEBUG:', { today, now: new Date() });
   const todayEntry = entries.find(
     (e) => timestampToDateString(e.date) === today,
   );
@@ -157,33 +155,11 @@ export default function JournalPageOptimized() {
 
   const { start: periodStart } = getDateRange();
 
-  // Debug: Logs pour identifier le problème
-  console.log('🔍 DEBUG JOURNAL:', {
-    totalEntries: entries.length,
-    wellnessPeriod,
-    today,
-    periodStart,
-    entriesSample: entries.slice(0, 3).map((e) => ({
-      id: e.id,
-      date: e.date,
-      dateString: timestampToDateString(e.date),
-    })),
-  });
-
   // Données selon la période sélectionnée
   const periodEntries =
     wellnessPeriod === 'today'
       ? entries.filter((e) => timestampToDateString(e.date) === today)
       : entries.filter((e) => timestampToDateString(e.date) >= periodStart);
-
-  console.log('📊 FILTERED ENTRIES:', {
-    periodEntriesCount: periodEntries.length,
-    filteredEntries: periodEntries.map((e) => ({
-      id: e.id,
-      date: e.date,
-      dateString: timestampToDateString(e.date),
-    })),
-  });
 
   // Calculer les moyennes pour la période
   const avgHumeur =
@@ -554,27 +530,43 @@ export default function JournalPageOptimized() {
                           </>
                         );
                       } else {
-                        // Aucune entrée pour la date sélectionnée
+                        // Aucune entrée pour la date sélectionnée, mais afficher les autres entrées
                         return (
-                          <div className="glass-effect p-6 rounded-xl border border-white/10 text-center">
-                            <div className="text-4xl mb-4">📝</div>
-                            <h3 className="text-lg font-semibold text-white mb-2">
-                              {selectedDate === today
-                                ? "Aucune entrée aujourd'hui"
-                                : 'Aucune entrée ce jour'}
-                            </h3>
-                            <p className="text-muted-foreground mb-4">
-                              {selectedDate === today
-                                ? 'Comment vous sentez-vous aujourd&apos;hui ?'
-                                : 'Sélectionnez une autre date ou créez une entrée'}
-                            </p>
-                            <button
-                              onClick={handleNewEntry}
-                              className="px-4 py-2 bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors"
-                            >
-                              ✨ Créer une entrée
-                            </button>
-                          </div>
+                          <>
+                            {/* Message pour la date sélectionnée */}
+                            <div className="glass-effect p-4 rounded-xl border border-white/10 text-center mb-4">
+                              <div className="text-2xl mb-2">📝</div>
+                              <p className="text-sm text-white/70 mb-2">
+                                {selectedDate === today
+                                  ? "Aucune entrée aujourd'hui"
+                                  : 'Aucune entrée ce jour'}
+                              </p>
+                              <button
+                                onClick={handleNewEntry}
+                                className="px-3 py-1.5 text-sm bg-neon-purple/20 text-neon-purple rounded-lg font-medium hover:bg-neon-purple/30 transition-colors"
+                              >
+                                ✨ Créer une entrée
+                              </button>
+                            </div>
+
+                            {/* Afficher toutes les autres entrées */}
+                            {entries.length > 0 && (
+                              <>
+                                <div className="text-sm text-white/50 mb-2">
+                                  Entrées récentes
+                                </div>
+                                {entries.slice(0, 5).map((entry) => (
+                                  <JournalEntryCompact
+                                    key={entry.id}
+                                    entry={entry}
+                                    onView={() => handleEntryView(entry)}
+                                    onEdit={() => handleEdit(entry)}
+                                    onDelete={() => handleDelete(entry)}
+                                  />
+                                ))}
+                              </>
+                            )}
+                          </>
                         );
                       }
                     })()}
