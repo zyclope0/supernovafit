@@ -16,8 +16,8 @@ import { timestampToDateString } from '@/lib/dateUtils';
 import { Timestamp } from 'firebase/firestore';
 
 interface CaloriesInOutChartProps {
-  repas: Array<{ date: Timestamp; macros?: { kcal?: number } }>;
-  entrainements: Array<{ date: Timestamp; calories?: number }>;
+  repas: Array<{ date: Timestamp | string; macros?: { kcal?: number } }>;
+  entrainements: Array<{ date: Timestamp | string; calories?: number }>;
   days?: number;
   tdee?: number; // Total Daily Energy Expenditure (maintenance)
   title?: string; // Titre personnalisé

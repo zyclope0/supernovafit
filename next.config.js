@@ -248,28 +248,8 @@ const nextConfig = {
   bundlePagesRouterDependencies: true,
   transpilePackages: ['recharts', 'date-fns'],
 
-  // 🎯 Performance Budget - Phase 6.3 (01.10.2025)
-  // Seuils de performance pour monitoring automatique
-  performance: {
-    // Bundle size budget (en bytes)
-    bundleSize: {
-      maxSize: 200 * 1024, // 200KB max
-      warningSize: 180 * 1024, // 180KB warning
-    },
-    // Web Vitals budget
-    webVitals: {
-      LCP: { max: 2500, warning: 2000 }, // 2.5s max, 2s warning
-      INP: { max: 200, warning: 150 }, // 200ms max, 150ms warning
-      CLS: { max: 0.1, warning: 0.08 }, // 0.1 max, 0.08 warning
-      FCP: { max: 1800, warning: 1500 }, // 1.8s max, 1.5s warning
-      TTFB: { max: 800, warning: 600 }, // 800ms max, 600ms warning
-    },
-    // Memory budget
-    memory: {
-      maxHeapSize: 512 * 1024 * 1024, // 512MB max
-      warningHeapSize: 400 * 1024 * 1024, // 400MB warning
-    },
-  },
+  // 🎯 Performance Budget - Supprimé car non supporté par Next.js 15
+  // Les budgets de performance sont gérés par Sentry et Firebase Analytics
 
   // Tree shaking optimisé - packages les plus utilisés seulement
   experimental: {
