@@ -20,6 +20,11 @@ export const IMPLEMENTED_CHALLENGES = [
   'Humeur Positive',
   'Énergie Maximale',
   'Sommeil de Qualité',
+  // Nouveaux challenges implémentés
+  'Défi Variété',
+  'Consistance',
+  'Récupération',
+  'Matin Productif',
 ];
 
 // Challenges nécessitant des fonctionnalités manquantes

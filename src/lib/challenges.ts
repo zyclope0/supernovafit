@@ -648,6 +648,74 @@ export const CHALLENGE_DEFINITIONS: Omit<
     isRepeatable: true,
     difficulty: 'legendary',
   },
+
+  // ===== NOUVEAUX CHALLENGES FACILEMENT IMPLÉMENTABLES =====
+
+  // 1. Défi Variété - 5 types d'entraînements différents
+  {
+    type: 'training',
+    title: 'Défi Variété',
+    description: "Effectuez 5 types d'entraînements différents en 1 mois.",
+    icon: '🎯',
+    category: 'monthly',
+    target: 5,
+    unit: 'types',
+    startDate: '',
+    endDate: '',
+    xpReward: 150,
+    isRepeatable: true,
+    difficulty: 'medium',
+  },
+
+  // 2. Consistance - Entraînements 3x/semaine pendant 4 semaines
+  {
+    type: 'streak',
+    title: 'Consistance',
+    description:
+      'Entraînez-vous 3 fois par semaine pendant 4 semaines consécutives.',
+    icon: '📅',
+    category: 'monthly',
+    target: 4,
+    unit: 'semaines',
+    startDate: '',
+    endDate: '',
+    xpReward: 200,
+    isRepeatable: true,
+    difficulty: 'hard',
+  },
+
+  // 3. Récupération - 1 jour de repos entre entraînements intenses
+  {
+    type: 'training',
+    title: 'Récupération',
+    description:
+      'Respectez 1 jour de repos entre vos entraînements intenses pendant 2 semaines.',
+    icon: '😴',
+    category: 'weekly',
+    target: 2,
+    unit: 'semaines',
+    startDate: '',
+    endDate: '',
+    xpReward: 100,
+    isRepeatable: true,
+    difficulty: 'medium',
+  },
+
+  // 4. Matin Productif - Entraînements avant 10h
+  {
+    type: 'training',
+    title: 'Matin Productif',
+    description: 'Effectuez 5 entraînements avant 10h du matin en 2 semaines.',
+    icon: '🌅',
+    category: 'weekly',
+    target: 5,
+    unit: 'entraînements',
+    startDate: '',
+    endDate: '',
+    xpReward: 120,
+    isRepeatable: true,
+    difficulty: 'medium',
+  },
 ];
 
 // Définitions des achievements

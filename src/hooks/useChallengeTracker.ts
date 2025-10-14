@@ -613,6 +613,151 @@ export function useChallengeTracker() {
         }).catch(console.error);
       }
     }
+
+    // ===== NOUVEAUX CHALLENGES IMPLÉMENTÉS =====
+
+    // 1. Défi Variété - 5 types d'entraînements différents
+    const defiVarieteChallenge = challenges.find(
+      (c) => c.title === 'Défi Variété' && c.status === 'active',
+    );
+    if (defiVarieteChallenge) {
+      const uniqueTypes = new Set(
+        entrainements.map((e) => e.type).filter(Boolean),
+      );
+      const uniqueTypesCount = uniqueTypes.size;
+
+      if (uniqueTypesCount !== defiVarieteChallenge.current) {
+        updateChallenge(defiVarieteChallenge.id, {
+          current: uniqueTypesCount,
+        }).catch(console.error);
+      }
+    }
+
+    // 2. Consistance - Entraînements 3x/semaine pendant 4 semaines
+    const consistanceChallenge = challenges.find(
+      (c) => c.title === 'Consistance' && c.status === 'active',
+    );
+    if (consistanceChallenge) {
+      const { startOfWeek } = getWeekBounds();
+      const fourWeeksAgo = new Date(startOfWeek);
+      fourWeeksAgo.setDate(startOfWeek.getDate() - 21); // 3 semaines en arrière
+
+      let consistentWeeks = 0;
+      for (let weekOffset = 0; weekOffset < 4; weekOffset++) {
+        const weekStart = new Date(fourWeeksAgo);
+        weekStart.setDate(fourWeeksAgo.getDate() + weekOffset * 7);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        const weekTrainings = entrainements.filter((e) => {
+          const trainingDate = new Date(timestampToDateString(e.date));
+          return trainingDate >= weekStart && trainingDate <= weekEnd;
+        });
+
+        if (weekTrainings.length >= 3) {
+          consistentWeeks++;
+        }
+      }
+
+      if (consistentWeeks !== consistanceChallenge.current) {
+        updateChallenge(consistanceChallenge.id, {
+          current: consistentWeeks,
+        }).catch(console.error);
+      }
+    }
+
+    // 3. Récupération - 1 jour de repos entre entraînements intenses
+    const recuperationChallenge = challenges.find(
+      (c) => c.title === 'Récupération' && c.status === 'active',
+    );
+    if (recuperationChallenge) {
+      const { startOfWeek } = getWeekBounds();
+      const twoWeeksAgo = new Date(startOfWeek);
+      twoWeeksAgo.setDate(startOfWeek.getDate() - 7); // 1 semaine en arrière
+
+      let recoveryWeeks = 0;
+      for (let weekOffset = 0; weekOffset < 2; weekOffset++) {
+        const weekStart = new Date(twoWeeksAgo);
+        weekStart.setDate(twoWeeksAgo.getDate() + weekOffset * 7);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+
+        const weekTrainings = entrainements
+          .filter((e) => {
+            const trainingDate = new Date(timestampToDateString(e.date));
+            return trainingDate >= weekStart && trainingDate <= weekEnd;
+          })
+          .sort(
+            (a, b) =>
+              new Date(timestampToDateString(a.date)).getTime() -
+              new Date(timestampToDateString(b.date)).getTime(),
+          );
+
+        // Vérifier qu'il y a au moins 1 jour entre les entraînements intenses
+        let hasRecovery = true;
+        for (let i = 1; i < weekTrainings.length; i++) {
+          const prevDate = new Date(
+            timestampToDateString(weekTrainings[i - 1].date),
+          );
+          const currDate = new Date(
+            timestampToDateString(weekTrainings[i].date),
+          );
+          const daysDiff = Math.floor(
+            (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24),
+          );
+
+          // Si entraînement intense (durée > 45min ou calories > 300)
+          const isIntense =
+            (weekTrainings[i - 1].duree || 0) > 45 ||
+            (weekTrainings[i - 1].calories || 0) > 300;
+          if (isIntense && daysDiff < 1) {
+            hasRecovery = false;
+            break;
+          }
+        }
+
+        if (hasRecovery && weekTrainings.length > 0) {
+          recoveryWeeks++;
+        }
+      }
+
+      if (recoveryWeeks !== recuperationChallenge.current) {
+        updateChallenge(recuperationChallenge.id, {
+          current: recoveryWeeks,
+        }).catch(console.error);
+      }
+    }
+
+    // 4. Matin Productif - Entraînements avant 10h
+    const matinProductifChallenge = challenges.find(
+      (c) => c.title === 'Matin Productif' && c.status === 'active',
+    );
+    if (matinProductifChallenge) {
+      const { startOfWeek } = getWeekBounds();
+      const twoWeeksAgo = new Date(startOfWeek);
+      twoWeeksAgo.setDate(startOfWeek.getDate() - 7); // 1 semaine en arrière
+
+      const morningTrainings = entrainements
+        .filter((e) => {
+          const trainingDate = new Date(timestampToDateString(e.date));
+          return trainingDate >= twoWeeksAgo && trainingDate <= new Date();
+        })
+        .filter((e) => {
+          // Vérifier si l'entraînement était avant 10h
+          // Note: On assume que les entraînements créés avant 10h sont des entraînements matinaux
+          // Utiliser la date de l'entraînement avec une heure par défaut de 9h (matin)
+          const trainingDate = new Date(
+            timestampToDateString(e.date) + 'T09:00:00',
+          );
+          return trainingDate.getHours() < 10;
+        });
+
+      if (morningTrainings.length !== matinProductifChallenge.current) {
+        updateChallenge(matinProductifChallenge.id, {
+          current: morningTrainings.length,
+        }).catch(console.error);
+      }
+    }
   }, [user, journalEntries, mesures, challenges, updateChallenge]);
 
   return {
