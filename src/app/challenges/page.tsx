@@ -121,16 +121,26 @@ export default function ChallengesPage() {
   const handleAddChallenge = async (
     definition: (typeof CHALLENGE_DEFINITIONS)[0],
   ) => {
-    if (!user) return;
+    if (!user) {
+      toast.error('Vous devez être connecté pour ajouter un challenge');
+      return;
+    }
 
-    const challengeData = createChallengeFromDefinition(definition, user.uid);
-    const result = await addChallenge(challengeData);
+    try {
+      const challengeData = createChallengeFromDefinition(definition, user.uid);
+      const result = await addChallenge(challengeData);
 
-    if (result.success) {
-      toast.success(`Challenge "${definition.title}" ajouté !`);
-      setShowAddChallenge(false);
-    } else {
-      toast.error("Erreur lors de l'ajout du challenge");
+      if (result.success) {
+        toast.success(`Challenge "${definition.title}" ajouté avec succès !`);
+        setShowAddChallenge(false);
+      } else {
+        const errorMessage =
+          result.error || "Erreur lors de l'ajout du challenge";
+        toast.error(`Échec de l'ajout : ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error("Erreur inattendue lors de l'ajout du challenge:", error);
+      toast.error('Erreur inattendue. Veuillez réessayer.');
     }
   };
 

@@ -48,11 +48,17 @@ export default function ChallengeCardClickable({
   onPause,
   onResume,
 }: ChallengeCardClickableProps) {
-  // Calculer le pourcentage de progression
-  const progressPercentage =
-    challenge.target && challenge.target > 0
-      ? Math.min((challenge.current / challenge.target) * 100, 100)
-      : 0;
+  // Calculer le pourcentage de progression (protection contre NaN)
+  const progressPercentage = (() => {
+    const current = challenge.current || 0;
+    const target = challenge.target || 0;
+
+    if (target <= 0 || isNaN(current) || isNaN(target)) {
+      return 0;
+    }
+
+    return Math.min(Math.round((current / target) * 100), 100);
+  })();
 
   // Déterminer la couleur basée sur le statut
   const getStatusColor = () => {
@@ -108,6 +114,32 @@ export default function ChallengeCardClickable({
         return 'Expiré';
       default:
         return 'Inconnu';
+    }
+  };
+
+  // Calculer le temps restant pour les challenges actifs
+  const getTimeRemaining = () => {
+    if (challenge.status !== 'active' || !challenge.endDate) {
+      return null;
+    }
+
+    const now = new Date();
+    const endDate = new Date(challenge.endDate);
+    const diffMs = endDate.getTime() - now.getTime();
+
+    if (diffMs <= 0) {
+      return 'Expiré';
+    }
+
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const diffHours = Math.ceil(diffMs / (1000 * 60 * 60));
+
+    if (diffDays > 1) {
+      return `${diffDays}j restant${diffDays > 1 ? 's' : ''}`;
+    } else if (diffHours > 1) {
+      return `${diffHours}h restante${diffHours > 1 ? 's' : ''}`;
+    } else {
+      return 'Dernière heure';
     }
   };
 
@@ -215,6 +247,24 @@ export default function ChallengeCardClickable({
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
+
+            {/* Temps restant pour les challenges actifs */}
+            {getTimeRemaining() && (
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-400">Temps restant</span>
+                <span
+                  className={`font-medium ${
+                    getTimeRemaining()?.includes('Dernière heure')
+                      ? 'text-neon-red'
+                      : getTimeRemaining()?.includes('1j')
+                        ? 'text-neon-yellow'
+                        : 'text-neon-green'
+                  }`}
+                >
+                  {getTimeRemaining()}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Dates et XP */}
