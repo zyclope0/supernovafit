@@ -20,12 +20,8 @@ import {
   CHALLENGE_DEFINITIONS,
   createChallengeFromDefinition,
   filterChallengesByCategory,
-  filterChallengesByDifficulty,
-  filterChallengesByType,
   searchChallenges,
   CHALLENGE_CATEGORIES,
-  CHALLENGE_DIFFICULTIES,
-  CHALLENGE_TYPES,
 } from '@/lib/challenges';
 import AchievementCard from '@/components/ui/AchievementCard';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -59,20 +55,23 @@ export default function ChallengesPage() {
   >('all');
   const [showAddChallenge, setShowAddChallenge] = useState(false);
 
+  // État pour la période (cohérent avec autres pages)
+  const [challengesPeriod, setChallengesPeriod] = useState<
+    'today' | 'week' | 'month'
+  >('week');
+
   // États pour les nouveaux composants industrialisés
   const [selectedChallenge, setSelectedChallenge] = useState<
     (typeof challenges)[0] | null
   >(null);
   const [showChallengeDetail, setShowChallengeDetail] = useState(false);
 
-  // États pour les filtres et recherche
+  // États pour les filtres simplifiés (cohérent avec autres pages)
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Filtrer les challenges disponibles (pour l'ajout)
+  // Filtrer les challenges disponibles (simplifié)
   const availableChallenges = useMemo(() => {
     let filtered = CHALLENGE_DEFINITIONS;
 
@@ -81,23 +80,13 @@ export default function ChallengesPage() {
       filtered = searchChallenges(filtered, searchQuery);
     }
 
-    // Filtre par catégorie
+    // Filtre par catégorie uniquement
     if (selectedCategory !== 'all') {
       filtered = filterChallengesByCategory(filtered, selectedCategory);
     }
 
-    // Filtre par difficulté
-    if (selectedDifficulty !== 'all') {
-      filtered = filterChallengesByDifficulty(filtered, selectedDifficulty);
-    }
-
-    // Filtre par type
-    if (selectedType !== 'all') {
-      filtered = filterChallengesByType(filtered, selectedType);
-    }
-
     return filtered;
-  }, [searchQuery, selectedCategory, selectedDifficulty, selectedType]);
+  }, [searchQuery, selectedCategory]);
 
   // Filtrer les challenges actifs
   const filteredChallenges = challenges.filter((challenge) => {
@@ -228,15 +217,9 @@ export default function ChallengesPage() {
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
-    setSelectedDifficulty('all');
-    setSelectedType('all');
   };
 
-  const hasActiveFilters =
-    searchQuery ||
-    selectedCategory !== 'all' ||
-    selectedDifficulty !== 'all' ||
-    selectedType !== 'all';
+  const hasActiveFilters = searchQuery || selectedCategory !== 'all';
 
   if (challengesLoading || achievementsLoading || progressLoading) {
     return (
@@ -257,6 +240,10 @@ export default function ChallengesPage() {
         <ChallengesProgressHeader
           title="CHALLENGES"
           emoji="🏆"
+          period={challengesPeriod}
+          onPeriodChange={(period) =>
+            setChallengesPeriod(period as 'today' | 'week' | 'month')
+          }
           stats={{
             activeChallenges: challenges.filter((c) => c.status === 'active')
               .length,
@@ -593,49 +580,7 @@ export default function ChallengesPage() {
                       </select>
                     </div>
 
-                    {/* Filtre par difficulté */}
-                    <div>
-                      <label className="block text-sm font-medium text-white/80 mb-2">
-                        Difficulté
-                      </label>
-                      <select
-                        value={selectedDifficulty}
-                        onChange={(e) => setSelectedDifficulty(e.target.value)}
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
-                      >
-                        {CHALLENGE_DIFFICULTIES.map((difficulty) => (
-                          <option
-                            key={difficulty.value}
-                            value={difficulty.value}
-                            className="bg-gray-800"
-                          >
-                            {difficulty.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Filtre par type */}
-                    <div>
-                      <label className="block text-sm font-medium text-white/80 mb-2">
-                        Type
-                      </label>
-                      <select
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-white/40"
-                      >
-                        {CHALLENGE_TYPES.map((type) => (
-                          <option
-                            key={type.value}
-                            value={type.value}
-                            className="bg-gray-800"
-                          >
-                            {type.icon} {type.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {/* Filtres simplifiés - Cohérent avec autres pages */}
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Trophy, Target, Star, Award, TrendingUp } from 'lucide-react';
+import { Trophy, Target, Star, Award } from 'lucide-react';
 
 interface ChallengeStats {
   activeChallenges: number;
@@ -15,12 +15,16 @@ interface ChallengeStats {
 interface ChallengesProgressHeaderProps {
   title: string;
   emoji: string;
+  period: 'today' | 'week' | 'month';
+  onPeriodChange: (period: string) => void;
   stats?: ChallengeStats;
 }
 
 export default function ChallengesProgressHeader({
   title,
   emoji,
+  period,
+  onPeriodChange,
   stats,
 }: ChallengesProgressHeaderProps) {
   // Générer des conseils intelligents basés sur les stats
@@ -154,9 +158,29 @@ export default function ChallengesProgressHeader({
           <span className="text-4xl">{emoji}</span>
           <h1 className="text-2xl font-bold text-white">{title}</h1>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-400">
-          <TrendingUp className="h-4 w-4" />
-          <span>Progression globale</span>
+
+        {/* Sélecteur de période (cohérent avec autres pages) */}
+        <div className="flex items-center gap-2">
+          <div className="flex bg-white/10 rounded-lg p-1">
+            {[
+              { key: 'today', label: "Aujourd'hui", icon: '📅' },
+              { key: 'week', label: 'Semaine', icon: '📊' },
+              { key: 'month', label: 'Mois', icon: '📈' },
+            ].map((p) => (
+              <button
+                key={p.key}
+                onClick={() => onPeriodChange(p.key)}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                  period === p.key
+                    ? 'bg-neon-cyan text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="mr-1">{p.icon}</span>
+                {p.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
