@@ -758,7 +758,14 @@ export function useChallengeTracker() {
         }).catch(console.error);
       }
     }
-  }, [user, journalEntries, mesures, challenges, updateChallenge]);
+  }, [
+    user,
+    journalEntries,
+    mesures,
+    challenges,
+    entrainements,
+    updateChallenge,
+  ]);
 
   return {
     // Retourner des méthodes utilitaires si nécessaire
