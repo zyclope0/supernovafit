@@ -607,7 +607,7 @@ service cloud.firestore {
         request.resource.data.user_id == request.auth.uid &&
         validateFields(request.resource.data,
           ['user_id', 'type', 'title', 'description', 'category', 'status'],
-          ['target', 'current', 'startDate', 'endDate', 'icon', 'created_at', 'completed_at']) &&
+          ['target', 'current', 'startDate', 'endDate', 'icon', 'unit', 'xpReward', 'isRepeatable', 'difficulty', 'created_at', 'completed_at']) &&
         request.resource.data.type is string &&
         request.resource.data.title is string &&
         request.resource.data.description is string &&
@@ -615,6 +615,9 @@ service cloud.firestore {
         request.resource.data.status in ['active', 'completed', 'abandoned'] &&
         (!('target' in request.resource.data) || request.resource.data.target is number) &&
         (!('current' in request.resource.data) || request.resource.data.current is number) &&
+        (!('xpReward' in request.resource.data) || request.resource.data.xpReward is number) &&
+        (!('isRepeatable' in request.resource.data) || request.resource.data.isRepeatable is bool) &&
+        (!('difficulty' in request.resource.data) || request.resource.data.difficulty in ['easy', 'medium', 'hard', 'legendary']) &&
         checkCreateRateLimit();
       
       allow update: if isAuthenticated() && 
