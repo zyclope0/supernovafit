@@ -137,9 +137,14 @@ export default function MultiModeHistoryModalStandard({
             <div className="space-y-3">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
-                  <div key={item.id} onClick={() => handleItemClick(item)}>
+                  <button
+                    key={item.id}
+                    onClick={() => handleItemClick(item)}
+                    className="w-full text-left"
+                    aria-label={`Voir les détails de ${item.id}`}
+                  >
                     {renderItem(item, () => handleItemClick(item))}
-                  </div>
+                  </button>
                 ))
               ) : (
                 <div className="text-center py-8 text-muted-foreground">
@@ -166,9 +171,14 @@ export default function MultiModeHistoryModalStandard({
           <div className="space-y-3">
             {items.length > 0 ? (
               items.map((item) => (
-                <div key={item.id} onClick={() => handleItemClick(item)}>
+                <button
+                  key={item.id}
+                  onClick={() => handleItemClick(item)}
+                  className="w-full text-left"
+                  aria-label={`Voir les détails de ${item.id}`}
+                >
                   {renderItem(item, () => handleItemClick(item))}
-                </div>
+                </button>
               ))
             ) : (
               <div className="text-center py-8 text-muted-foreground">

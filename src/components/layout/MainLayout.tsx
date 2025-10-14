@@ -93,7 +93,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
         <main
           id="main-content"
-          className="h-full overflow-y-auto pb-20 md:pb-0"
+          className="h-full overflow-y-auto pb-32 md:pb-0"
         >
           <div className="container mx-auto px-4 py-8 lg:px-8">
             {/* Breadcrumbs Navigation */}

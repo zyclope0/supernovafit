@@ -177,7 +177,12 @@ const nextConfig = {
     // Désactiver les images non optimisées en production
     unoptimized: false,
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, dev }) => {
+    // Source maps pour debugging production
+    if (!dev) {
+      config.devtool = 'source-map';
+    }
+
     // Exclure les fichiers de test du build de production
     config.module.rules.push({
       test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
