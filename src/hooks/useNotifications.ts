@@ -198,6 +198,7 @@ export function useNotifications(): UseNotificationsReturn {
         unsubscribeRef.current();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isSupported]);
 
   // Charger les paramètres utilisateur
@@ -273,6 +274,7 @@ export function useNotifications(): UseNotificationsReturn {
         data: data,
       });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user],
   );
 
@@ -412,7 +414,8 @@ export function useNotifications(): UseNotificationsReturn {
         throw error;
       }
     },
-    [isSupported, permission, settings, user, addToHistory],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isSupported, permission, settings, user],
   );
 
   // Programmer une notification

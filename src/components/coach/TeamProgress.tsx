@@ -10,7 +10,9 @@ import {
   Award,
   Calendar,
   Activity,
+  Info,
 } from 'lucide-react';
+import FeatureNotImplemented from '@/components/ui/FeatureNotImplemented';
 import {
   formatNumberWithSeparators,
   formatPercentage,
@@ -75,6 +77,14 @@ export default function TeamProgress({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <FeatureNotImplemented
+            title="Progression collective"
+            description="La progression collective est actuellement simulée. Implémentation requise pour les vraies données d'équipe."
+            category="backend"
+            priority="medium"
+            estimatedTime="2-3 jours"
+            icon={<Info className="w-4 h-4" />}
+          />
           <Trophy className="w-5 h-5 text-neon-yellow" />
           <span className="text-sm text-gray-400">Équipe</span>
         </div>

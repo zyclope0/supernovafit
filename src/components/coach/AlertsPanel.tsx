@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { AlertTriangle, Clock, Target, MessageSquare } from 'lucide-react';
+import {
+  AlertTriangle,
+  Clock,
+  Target,
+  MessageSquare,
+  Info,
+} from 'lucide-react';
+import FeatureNotImplemented from '@/components/ui/FeatureNotImplemented';
 
 interface Alert {
   id: string;
@@ -117,6 +124,14 @@ export default function AlertsPanel({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <FeatureNotImplemented
+            title="Système d'alertes automatiques"
+            description="Les alertes sont actuellement simulées. Implémentation requise pour les vraies alertes."
+            category="backend"
+            priority="high"
+            estimatedTime="2-3 jours"
+            icon={<Info className="w-4 h-4" />}
+          />
           <AlertTriangle className="w-5 h-5 text-neon-yellow" />
           <span className="text-sm text-gray-400">Monitoring</span>
         </div>

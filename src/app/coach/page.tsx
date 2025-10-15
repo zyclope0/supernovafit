@@ -6,14 +6,7 @@ import { useCoachAthletes } from '@/hooks/useFirestore';
 import { useCoachAnalytics } from '@/hooks/useCoachAnalytics';
 import { useRouter } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
-import {
-  Users,
-  Plus,
-  Activity,
-  TrendingUp,
-  AlertTriangle,
-  Trophy,
-} from 'lucide-react';
+import { Users, Plus, TrendingUp, AlertTriangle, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import InviteModal from '@/components/ui/InviteModal';
@@ -21,6 +14,9 @@ import AthleteGrid from '@/components/coach/AthleteGrid';
 import AlertsPanel from '@/components/coach/AlertsPanel';
 import PerformanceComparison from '@/components/coach/PerformanceComparison';
 import TeamProgress from '@/components/coach/TeamProgress';
+import ImplementationStatus, {
+  MetricWithStatus,
+} from '@/components/coach/ImplementationStatus';
 
 // interface AthleteWithStats {
 //   id: string
@@ -92,6 +88,34 @@ export default function CoachDashboard() {
           </div>
         </div>
 
+        {/* Statut d'implémentation */}
+        <ImplementationStatus
+          status={{
+            realDataAvailable: true,
+            realDataPercentage: 35,
+            simulatedFeatures: [
+              'Alertes automatiques',
+              'Comparaisons de performance',
+              'Progression collective',
+              'Métriques avancées',
+              'Recommandations IA',
+            ],
+            missingFeatures: [
+              'Système de notifications push',
+              'Intégration calendrier',
+              'Export de rapports',
+              'Chat temps réel',
+              'Analytics avancées',
+            ],
+            recommendations: [
+              "Implémenter les vraies données d'analytics",
+              'Ajouter les notifications push',
+              'Créer un système de rapports',
+              'Intégrer un chat coach-athlète',
+            ],
+          }}
+        />
+
         {/* Navigation par onglets */}
         <div className="flex gap-2 border-b border-white/10">
           <button
@@ -132,59 +156,42 @@ export default function CoachDashboard() {
         {/* Contenu des onglets */}
         {activeTab === 'overview' && (
           <>
-            {/* Statistiques globales */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="glass-effect p-4 rounded-lg border border-white/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Mes Athlètes
-                    </p>
-                    <p className="text-2xl font-bold text-white">
-                      {analyticsData?.teamStats.totalAthletes || 0}
-                    </p>
-                  </div>
-                  <Users className="w-8 h-8 text-neon-purple" />
-                </div>
-              </div>
-
-              <div className="glass-effect p-4 rounded-lg border border-white/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Actifs aujourd&apos;hui
-                    </p>
-                    <p className="text-2xl font-bold text-neon-green">
-                      {analyticsData?.teamStats.activeAthletes || 0}
-                    </p>
-                  </div>
-                  <Activity className="w-8 h-8 text-neon-green" />
-                </div>
-              </div>
-
-              <div className="glass-effect p-4 rounded-lg border border-white/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">XP Total</p>
-                    <p className="text-2xl font-bold text-neon-yellow">
-                      {analyticsData?.teamStats.totalXP.toLocaleString() || 0}
-                    </p>
-                  </div>
-                  <Trophy className="w-8 h-8 text-neon-yellow" />
-                </div>
-              </div>
-
-              <div className="glass-effect p-4 rounded-lg border border-white/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Alertes</p>
-                    <p className="text-2xl font-bold text-neon-red">
-                      {analyticsData?.alerts.length || 0}
-                    </p>
-                  </div>
-                  <AlertTriangle className="w-8 h-8 text-neon-red" />
-                </div>
-              </div>
+            {/* Métriques avec statut d'implémentation */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricWithStatus
+                label="Mes Athlètes"
+                value={analyticsData?.teamStats.totalAthletes || 0}
+                unit=""
+                dataSource="real"
+                category="database"
+                priority="low"
+              />
+              <MetricWithStatus
+                label="Actifs Aujourd'hui"
+                value={analyticsData?.teamStats.activeAthletes || 0}
+                unit=""
+                dataSource="real"
+                category="database"
+                priority="low"
+              />
+              <MetricWithStatus
+                label="XP Total"
+                value={analyticsData?.teamStats.totalXP || 0}
+                unit="XP"
+                dataSource="simulated"
+                category="backend"
+                priority="medium"
+                estimatedTime="1 jour"
+              />
+              <MetricWithStatus
+                label="Alertes Actives"
+                value={analyticsData?.alerts.length || 0}
+                unit=""
+                dataSource="simulated"
+                category="backend"
+                priority="high"
+                estimatedTime="2-3 jours"
+              />
             </div>
 
             {/* Grille des athlètes */}

@@ -7,7 +7,9 @@ import {
   Trophy,
   Target,
   BarChart3,
+  Info,
 } from 'lucide-react';
+import FeatureNotImplemented from '@/components/ui/FeatureNotImplemented';
 import {
   formatNumber,
   formatPercentage,
@@ -145,6 +147,14 @@ export default function PerformanceComparison({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <FeatureNotImplemented
+            title="Comparaisons de performance"
+            description="Les comparaisons sont actuellement simulées. Implémentation requise pour les vraies analyses."
+            category="backend"
+            priority="medium"
+            estimatedTime="3-4 jours"
+            icon={<Info className="w-4 h-4" />}
+          />
           <Trophy className="w-5 h-5 text-neon-yellow" />
           <span className="text-sm text-gray-400">Leaderboard</span>
         </div>
