@@ -294,6 +294,27 @@ export default function Dashboard() {
     return <LandingPage />;
   }
 
+  // Redirection automatique pour les coaches vers leur dashboard
+  if (!loading && user && userProfile?.role === 'coach') {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/coach';
+    }
+    return (
+      <MainLayout>
+        <div className="container mx-auto p-4">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-neon-cyan border-t-transparent mx-auto mb-4"></div>
+              <p className="text-white">
+                Redirection vers le dashboard coach...
+              </p>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
   // Si en cours de chargement, afficher un spinner
   if (loading) {
     return (

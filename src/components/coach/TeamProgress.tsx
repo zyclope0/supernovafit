@@ -11,6 +11,10 @@ import {
   Calendar,
   Activity,
 } from 'lucide-react';
+import {
+  formatNumberWithSeparators,
+  formatPercentage,
+} from '@/lib/numberUtils';
 
 interface TeamStats {
   totalXP: number;
@@ -85,7 +89,7 @@ export default function TeamProgress({
             <span className="text-sm text-gray-400">XP Total</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {stats.totalXP.toLocaleString()}
+            {formatNumberWithSeparators(stats.totalXP, 0)}
           </div>
           <div className="text-xs text-gray-400">Points d&apos;expérience</div>
         </div>
@@ -121,7 +125,7 @@ export default function TeamProgress({
             <span className="text-sm text-gray-400">Calories</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {stats.totalCalories.toLocaleString()}
+            {formatNumberWithSeparators(stats.totalCalories, 0)}
           </div>
           <div className="text-xs text-gray-400">Brûlées aujourd&apos;hui</div>
         </div>
@@ -141,7 +145,7 @@ export default function TeamProgress({
             <span
               className={`px-2 py-1 rounded-full text-xs ${getProgressColor(weeklyProgress)}`}
             >
-              {weeklyProgress.toFixed(0)}%
+              {formatPercentage(weeklyProgress, 0)}
             </span>
           </div>
           <div className="mb-2">
@@ -180,7 +184,7 @@ export default function TeamProgress({
             <span
               className={`px-2 py-1 rounded-full text-xs ${getProgressColor(monthlyProgress)}`}
             >
-              {monthlyProgress.toFixed(0)}%
+              {formatPercentage(monthlyProgress, 0)}
             </span>
           </div>
           <div className="mb-2">
@@ -220,7 +224,7 @@ export default function TeamProgress({
           <span
             className={`px-2 py-1 rounded-full text-xs ${getProgressColor(teamEngagement)}`}
           >
-            {teamEngagement.toFixed(0)}%
+            {formatPercentage(teamEngagement, 0)}
           </span>
         </div>
         <div className="mb-2">
@@ -259,7 +263,7 @@ export default function TeamProgress({
           <span
             className={`px-2 py-1 rounded-full text-xs ${getProgressColor(stats.averageProgress)}`}
           >
-            {stats.averageProgress.toFixed(0)}%
+            {formatPercentage(stats.averageProgress, 0)}
           </span>
         </div>
         <div className="text-sm text-gray-400 mb-2">

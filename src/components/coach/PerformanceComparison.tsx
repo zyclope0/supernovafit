@@ -8,6 +8,13 @@ import {
   Target,
   BarChart3,
 } from 'lucide-react';
+import {
+  formatNumber,
+  formatPercentage,
+  formatCalories,
+  formatProteins,
+  formatPerformanceVariation,
+} from '@/lib/numberUtils';
 
 interface AthletePerformance {
   id: string;
@@ -169,7 +176,7 @@ export default function PerformanceComparison({
             <span className="text-sm text-gray-400">Meilleur</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {maxValue.toFixed(metric.includes('variation') ? 1 : 0)}{' '}
+            {formatNumber(maxValue, metric.includes('variation') ? 1 : 0)}{' '}
             {currentMetric.unit}
           </div>
           <div className="text-xs text-gray-400">
@@ -183,7 +190,7 @@ export default function PerformanceComparison({
             <span className="text-sm text-gray-400">Moyenne</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {avgValue.toFixed(metric.includes('variation') ? 1 : 0)}{' '}
+            {formatNumber(avgValue, metric.includes('variation') ? 1 : 0)}{' '}
             {currentMetric.unit}
           </div>
           <div className="text-xs text-gray-400">Équipe</div>
@@ -195,7 +202,7 @@ export default function PerformanceComparison({
             <span className="text-sm text-gray-400">Plus faible</span>
           </div>
           <div className="text-2xl font-bold text-white">
-            {minValue.toFixed(metric.includes('variation') ? 1 : 0)}{' '}
+            {formatNumber(minValue, metric.includes('variation') ? 1 : 0)}{' '}
             {currentMetric.unit}
           </div>
           <div className="text-xs text-gray-400">
@@ -245,11 +252,14 @@ export default function PerformanceComparison({
                     <div
                       className={`text-xl font-bold ${getPerformanceColor(value, maxValue)}`}
                     >
-                      {value.toFixed(metric.includes('variation') ? 1 : 0)}{' '}
+                      {formatNumber(
+                        value,
+                        metric.includes('variation') ? 1 : 0,
+                      )}{' '}
                       {currentMetric.unit}
                     </div>
                     <div className="text-xs text-gray-400">
-                      {percentage.toFixed(0)}% du meilleur
+                      {formatPercentage(percentage, 0)} du meilleur
                     </div>
                   </div>
 
@@ -277,13 +287,13 @@ export default function PerformanceComparison({
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">Calories/jour</span>
                     <span className="text-white font-medium">
-                      {athlete.stats?.calories_jour || 0} kcal
+                      {formatCalories(athlete.stats?.calories_jour || 0)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">Protéines/jour</span>
                     <span className="text-white font-medium">
-                      {athlete.stats?.proteines_jour || 0}g
+                      {formatProteins(athlete.stats?.proteines_jour || 0)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -301,8 +311,9 @@ export default function PerformanceComparison({
                           : 'text-neon-red'
                       }`}
                     >
-                      {(athlete.stats?.variation_perf || 0) > 0 ? '+' : ''}
-                      {athlete.stats?.variation_perf || 0}%
+                      {formatPerformanceVariation(
+                        athlete.stats?.variation_perf || 0,
+                      )}
                     </span>
                   </div>
                 </div>

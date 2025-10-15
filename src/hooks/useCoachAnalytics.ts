@@ -71,21 +71,29 @@ export function useCoachAnalytics() {
       try {
         setLoading(true);
 
-        // Simuler des données enrichies pour les athlètes
+        // Simuler des données enrichies pour les athlètes (stables basées sur l'ID)
         const enrichedAthletes: Athlete[] = coachAthletes.map(
           (athlete, index) => {
-            // Générer des stats simulées basées sur l'index pour la démo
+            // Générer des stats stables basées sur l'ID de l'athlète pour éviter les changements aléatoires
+            const seed =
+              athlete.id.charCodeAt(0) +
+              athlete.id.charCodeAt(athlete.id.length - 1);
+            const stableRandom = (seed % 100) / 100; // Valeur entre 0 et 1 basée sur l'ID
+
             const baseStats = {
-              calories_jour: 1800 + index * 200 + Math.random() * 400,
-              proteines_jour: 120 + index * 20 + Math.random() * 40,
-              entrainements_semaine: 3 + Math.floor(Math.random() * 4),
-              poids_actuel: 70 + index * 5 + Math.random() * 10,
-              variation_poids: -2 + Math.random() * 4,
-              variation_perf: -10 + Math.random() * 30,
-              derniere_activite: new Date(
-                Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
+              calories_jour: Math.round(
+                1800 + index * 200 + stableRandom * 400,
               ),
-              objectif_atteint: Math.random() > 0.3,
+              proteines_jour: Math.round(120 + index * 20 + stableRandom * 40),
+              entrainements_semaine: 3 + Math.floor(stableRandom * 4),
+              poids_actuel:
+                Math.round((70 + index * 5 + stableRandom * 10) * 10) / 10,
+              variation_poids: Math.round((-2 + stableRandom * 4) * 10) / 10,
+              variation_perf: Math.round((-10 + stableRandom * 30) * 10) / 10,
+              derniere_activite: new Date(
+                Date.now() - stableRandom * 7 * 24 * 60 * 60 * 1000,
+              ),
+              objectif_atteint: stableRandom > 0.3,
             };
 
             return {

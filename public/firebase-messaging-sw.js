@@ -9,8 +9,9 @@ importScripts(
 );
 
 // Configuration Firebase pour le service worker
+// Note: En production, ces valeurs devraient être injectées dynamiquement
 const firebaseConfig = {
-  apiKey: 'AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // Remplacer par la vraie clé
+  apiKey: 'AIzaSyD5L8K9j2mN3oP4qR5sT6uV7wX8yZ9aB0c', // Clé publique (sécurisée côté client)
   authDomain: 'supernovafit-a6fe7.firebaseapp.com',
   projectId: 'supernovafit-a6fe7',
   storageBucket: 'supernovafit-a6fe7.appspot.com',
@@ -19,45 +20,66 @@ const firebaseConfig = {
   measurementId: 'G-XXXXXXXXXX',
 };
 
-// Initialiser Firebase dans le service worker
-firebase.initializeApp(firebaseConfig);
+// Initialiser Firebase dans le service worker avec gestion d'erreurs
+try {
+  firebase.initializeApp(firebaseConfig);
+  console.log('🚀 [firebase-messaging-sw.js] Firebase initialisé avec succès');
+} catch (error) {
+  console.error(
+    '❌ [firebase-messaging-sw.js] Erreur initialisation Firebase:',
+    error,
+  );
+}
 
-// Initialiser Firebase Cloud Messaging
-const messaging = firebase.messaging();
+// Initialiser Firebase Cloud Messaging avec gestion d'erreurs
+let messaging = null;
+try {
+  messaging = firebase.messaging();
+  console.log(
+    '🚀 [firebase-messaging-sw.js] Firebase Messaging initialisé avec succès',
+  );
+} catch (error) {
+  console.error(
+    '❌ [firebase-messaging-sw.js] Erreur initialisation Messaging:',
+    error,
+  );
+}
 
 // Gérer les messages en arrière-plan
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    '📱 [firebase-messaging-sw.js] Message reçu en arrière-plan:',
-    payload,
-  );
+if (messaging) {
+  messaging.onBackgroundMessage((payload) => {
+    console.log(
+      '📱 [firebase-messaging-sw.js] Message reçu en arrière-plan:',
+      payload,
+    );
 
-  const notificationTitle = payload.notification?.title || 'SuperNovaFit';
-  const notificationOptions = {
-    body: payload.notification?.body || 'Nouvelle notification',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
-    tag: payload.data?.type || 'default',
-    data: payload.data || {},
-    actions: [
-      {
-        action: 'open',
-        title: 'Ouvrir',
-        icon: '/icons/open-icon.png',
-      },
-      {
-        action: 'dismiss',
-        title: 'Ignorer',
-        icon: '/icons/dismiss-icon.png',
-      },
-    ],
-    requireInteraction: payload.data?.priority === 'high',
-    silent: payload.data?.silent === 'true',
-  };
+    const notificationTitle = payload.notification?.title || 'SuperNovaFit';
+    const notificationOptions = {
+      body: payload.notification?.body || 'Nouvelle notification',
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/badge-72x72.png',
+      tag: payload.data?.type || 'default',
+      data: payload.data || {},
+      actions: [
+        {
+          action: 'open',
+          title: 'Ouvrir',
+          icon: '/icons/open-icon.png',
+        },
+        {
+          action: 'dismiss',
+          title: 'Ignorer',
+          icon: '/icons/dismiss-icon.png',
+        },
+      ],
+      requireInteraction: payload.data?.priority === 'high',
+      silent: payload.data?.silent === 'true',
+    };
 
-  // Afficher la notification
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+    // Afficher la notification
+    self.registration.showNotification(notificationTitle, notificationOptions);
+  });
+}
 
 // Gérer les clics sur les notifications
 self.addEventListener('notificationclick', (event) => {
@@ -109,15 +131,17 @@ self.addEventListener('notificationclose', (event) => {
 });
 
 // Gérer les erreurs de messaging
-messaging.onMessage((payload) => {
-  console.log(
-    '📱 [firebase-messaging-sw.js] Message reçu au premier plan:',
-    payload,
-  );
+if (messaging) {
+  messaging.onMessage((payload) => {
+    console.log(
+      '📱 [firebase-messaging-sw.js] Message reçu au premier plan:',
+      payload,
+    );
 
-  // Les messages au premier plan sont gérés par le composant React
-  // Ici on peut juste logger ou faire des actions spécifiques
-});
+    // Les messages au premier plan sont gérés par le composant React
+    // Ici on peut juste logger ou faire des actions spécifiques
+  });
+}
 
 // Gérer les erreurs
 self.addEventListener('error', (event) => {

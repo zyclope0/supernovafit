@@ -104,31 +104,71 @@ export function useNotifications(): UseNotificationsReturn {
   // Initialiser Firebase Messaging
   useEffect(() => {
     const initMessaging = async () => {
-      if (!user || !isSupported) return;
+      if (!user || !isSupported) {
+        console.log(
+          '📱 NOTIFICATIONS - Initialisation ignorée (user ou support manquant)',
+        );
+        return;
+      }
 
       try {
         const messagingInstance = await messaging;
-        if (!messagingInstance) return;
+        if (!messagingInstance) {
+          console.warn('📱 NOTIFICATIONS - Instance messaging non disponible');
+          return;
+        }
 
         messagingRef.current = messagingInstance;
+
+        // Vérifier si le service worker est enregistré
+        const registration = await navigator.serviceWorker.getRegistration(
+          '/firebase-messaging-sw.js',
+        );
+        if (!registration) {
+          console.warn('📱 NOTIFICATIONS - Service worker non enregistré');
+          // Essayer d'enregistrer le service worker
+          try {
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            console.log(
+              '📱 NOTIFICATIONS - Service worker enregistré avec succès',
+            );
+          } catch (swError) {
+            console.error(
+              '❌ NOTIFICATIONS - Erreur enregistrement service worker:',
+              swError,
+            );
+            return;
+          }
+        }
 
         // Demander la permission
         const permission = await Notification.requestPermission();
         setPermission(permission);
 
         if (permission === 'granted') {
-          // Obtenir le token FCM
-          const fcmToken = await getToken(messagingInstance, {
-            vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-            serviceWorkerRegistration:
-              await navigator.serviceWorker.getRegistration(
-                '/firebase-messaging-sw.js',
-              ),
-          });
+          // Obtenir le token FCM avec gestion d'erreurs améliorée
+          try {
+            const fcmToken = await getToken(messagingInstance, {
+              vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+              serviceWorkerRegistration:
+                await navigator.serviceWorker.getRegistration(
+                  '/firebase-messaging-sw.js',
+                ),
+            });
 
-          if (fcmToken) {
-            setToken(fcmToken);
-            await saveTokenToFirestore(fcmToken);
+            if (fcmToken) {
+              setToken(fcmToken);
+              await saveTokenToFirestore(fcmToken);
+              console.log('📱 NOTIFICATIONS - Token FCM obtenu et sauvegardé');
+            } else {
+              console.warn('📱 NOTIFICATIONS - Aucun token FCM reçu');
+            }
+          } catch (tokenError) {
+            console.error(
+              '❌ NOTIFICATIONS - Erreur obtention token FCM:',
+              tokenError,
+            );
+            // Ne pas bloquer l'initialisation si le token échoue
           }
 
           // Écouter les messages en premier plan
@@ -141,9 +181,13 @@ export function useNotifications(): UseNotificationsReturn {
           });
 
           unsubscribeRef.current = unsubscribe;
+          console.log('📱 NOTIFICATIONS - Initialisation terminée avec succès');
+        } else {
+          console.log('📱 NOTIFICATIONS - Permission refusée:', permission);
         }
       } catch (error) {
         console.error('❌ NOTIFICATIONS - Erreur initialisation:', error);
+        // Ne pas bloquer l'application si les notifications échouent
       }
     };
 

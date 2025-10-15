@@ -10,6 +10,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { formatCalories, formatPerformanceVariation } from '@/lib/numberUtils';
 
 interface AthleteStats {
   calories_jour: number;
@@ -179,7 +180,7 @@ export default function AthleteGrid({
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-400">Calories/jour</span>
                     <span className="text-xs text-white">
-                      {athlete.stats.calories_jour} kcal
+                      {formatCalories(athlete.stats.calories_jour)}
                     </span>
                   </div>
 
@@ -197,8 +198,9 @@ export default function AthleteGrid({
                     <div className="flex items-center gap-1">
                       {performanceTrend.icon}
                       <span className={`text-xs ${performanceTrend.color}`}>
-                        {athlete.stats.variation_perf > 0 ? '+' : ''}
-                        {athlete.stats.variation_perf}%
+                        {formatPerformanceVariation(
+                          athlete.stats.variation_perf,
+                        )}
                       </span>
                     </div>
                   </div>
