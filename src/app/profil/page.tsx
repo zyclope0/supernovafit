@@ -10,16 +10,23 @@ import {
   Target,
   Activity,
   Calculator,
+  Bell,
 } from 'lucide-react';
 import { calculateTDEE } from '@/lib/userCalculations';
 import type { User as UserProfile } from '@/types';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ProfilProgressHeader from '@/components/profil/ProfilProgressHeader';
 import ProfilCardClickable from '@/components/ui/ProfilCardClickable';
+import NotificationSettings from '@/components/notifications/NotificationSettings';
+import NotificationHistory from '@/components/notifications/NotificationHistory';
+import StandardModal from '@/components/ui/StandardModal';
 
 export default function ProfilPage() {
   const { userProfile } = useAuth();
   const [updatedProfile, setUpdatedProfile] = useState(userProfile);
+  const [notificationSettingsOpen, setNotificationSettingsOpen] =
+    useState(false);
+  const [notificationHistoryOpen, setNotificationHistoryOpen] = useState(false);
 
   const handleProfileUpdate = (profile: UserProfile) => {
     setUpdatedProfile(profile);
@@ -213,7 +220,70 @@ export default function ProfilPage() {
               </div>
             </div>
           )}
+
+          {/* Section Notifications */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Notifications</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => setNotificationSettingsOpen(true)}
+                className="glass-effect p-4 rounded-lg border border-white/10 hover:border-neon-purple/30 transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <Bell className="w-5 h-5 text-neon-purple" />
+                  <div>
+                    <h4 className="text-sm font-medium text-white">
+                      Paramètres
+                    </h4>
+                    <p className="text-xs text-gray-400">
+                      Gérer vos notifications
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setNotificationHistoryOpen(true)}
+                className="glass-effect p-4 rounded-lg border border-white/10 hover:border-neon-purple/30 transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <Bell className="w-5 h-5 text-neon-cyan" />
+                  <div>
+                    <h4 className="text-sm font-medium text-white">
+                      Historique
+                    </h4>
+                    <p className="text-xs text-gray-400">
+                      Voir vos notifications
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* Modals de notifications */}
+        <StandardModal
+          isOpen={notificationSettingsOpen}
+          onClose={() => setNotificationSettingsOpen(false)}
+          title="Paramètres des notifications"
+          maxWidth="2xl"
+        >
+          <NotificationSettings
+            onClose={() => setNotificationSettingsOpen(false)}
+          />
+        </StandardModal>
+
+        <StandardModal
+          isOpen={notificationHistoryOpen}
+          onClose={() => setNotificationHistoryOpen(false)}
+          title="Historique des notifications"
+          maxWidth="2xl"
+        >
+          <NotificationHistory
+            onClose={() => setNotificationHistoryOpen(false)}
+          />
+        </StandardModal>
       </MainLayout>
     </AuthGuard>
   );

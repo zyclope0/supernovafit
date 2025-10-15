@@ -1640,8 +1640,8 @@ type EntrainementAvecCalories = FirestoreEntrainement & {
   calories_brulees?: number;
 };
 
-// Hook spécialisé pour le dashboard coach athlète
-export function useAthleteRealData(athleteId: string) {
+// Hook spécialisé pour le dashboard coach athlète avec pagination
+export function useAthleteRealData(athleteId: string, limit: number = 30) {
   const [athleteData, setAthleteData] = useState<AthleteDashboardData | null>(
     null,
   );
@@ -1669,14 +1669,19 @@ export function useAthleteRealData(athleteId: string) {
 
         const { athlete, repas, entrainements, mesures } = rawData;
 
+        // Optimisation : Limiter les données selon le paramètre limit
+        const limitedRepas = repas.slice(0, limit);
+        const limitedEntrainements = entrainements.slice(0, limit);
+        const limitedMesures = mesures.slice(0, limit);
+
         // Calculer les statistiques réelles
         const today = new Date().toISOString().split('T')[0];
         const weekStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
           .toISOString()
           .split('T')[0];
 
-        // Calories et protéines du jour
-        const todayMeals = repas.filter(
+        // Calories et protéines du jour (avec données limitées)
+        const todayMeals = limitedRepas.filter(
           (r: FirestoreRepas) => timestampToDateString(r.date) === today,
         );
         const calories_jour = todayMeals.reduce(
@@ -1688,14 +1693,14 @@ export function useAthleteRealData(athleteId: string) {
           0,
         );
 
-        // Entraînements de la semaine
-        const entrainements_semaine = entrainements.filter(
+        // Entraînements de la semaine (avec données limitées)
+        const entrainements_semaine = limitedEntrainements.filter(
           (e: FirestoreEntrainement) =>
             e.date && timestampToDateString(e.date) >= weekStart,
         ).length;
 
-        // Poids actuel et variation
-        const mesuresAvecPoids = mesures
+        // Poids actuel et variation (avec données limitées)
+        const mesuresAvecPoids = limitedMesures
           .filter((m: FirestoreMesure) => m.poids && m.date)
           .sort(
             (a: FirestoreMesure, b: FirestoreMesure) =>
@@ -1712,8 +1717,8 @@ export function useAthleteRealData(athleteId: string) {
           variation_poids = ((dernier - avantDernier) / avantDernier) * 100;
         }
 
-        // Calculer la variation de performance (simplifié)
-        const entrainementsMois = entrainements.filter(
+        // Calculer la variation de performance (simplifié, avec données limitées)
+        const entrainementsMois = limitedEntrainements.filter(
           (e: FirestoreEntrainement) => {
             const dateEntrainement = new Date(e.date || '');
             const moisDernier = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -1737,8 +1742,8 @@ export function useAthleteRealData(athleteId: string) {
           }))
           .reverse();
 
-        // Activités récentes (5 dernières)
-        const activites_recentes = entrainements
+        // Activités récentes (5 dernières, avec données limitées)
+        const activites_recentes = limitedEntrainements
           .slice(0, 5)
           .map((e: FirestoreEntrainement) => ({
             date: e.date || '',
@@ -1753,7 +1758,7 @@ export function useAthleteRealData(athleteId: string) {
           const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
             .toISOString()
             .split('T')[0];
-          const repasDuJour = repas.filter(
+          const repasDuJour = limitedRepas.filter(
             (r: FirestoreRepas) => timestampToDateString(r.date) === date,
           );
           const calories = repasDuJour.reduce(
@@ -1805,7 +1810,7 @@ export function useAthleteRealData(athleteId: string) {
     };
 
     fetchAthleteRealData();
-  }, [athleteId, user]);
+  }, [athleteId, user, limit]);
 
   return { athleteData, loading };
 }

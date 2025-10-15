@@ -691,5 +691,111 @@ service cloud.firestore {
         resource.data.user_id == request.auth.uid
         && checkRateLimit();
     }
+
+    // ====================================
+    // NOTIFICATION SETTINGS COLLECTION
+    // ====================================
+    
+    match /notification_settings/{userId} {
+      // Lecture: propriétaire uniquement
+      allow read: if isOwner(userId) && checkRateLimit();
+      
+      // Création: propriétaire uniquement avec validation
+      allow create: if isOwner(userId) && 
+        validateFields(request.resource.data,
+          ['enabled', 'types', 'schedule', 'frequency', 'quietHours'],
+          []) &&
+        request.resource.data.enabled is bool &&
+        request.resource.data.types is map &&
+        request.resource.data.schedule is map &&
+        request.resource.data.frequency is map &&
+        request.resource.data.quietHours is map &&
+        checkCreateRateLimit();
+      
+      // Mise à jour: propriétaire uniquement avec validation
+      allow update: if isOwner(userId) && 
+        validateFields(request.resource.data,
+          ['enabled', 'types', 'schedule', 'frequency', 'quietHours'],
+          []) &&
+        request.resource.data.enabled is bool &&
+        request.resource.data.types is map &&
+        request.resource.data.schedule is map &&
+        request.resource.data.frequency is map &&
+        request.resource.data.quietHours is map &&
+        checkRateLimit();
+      
+      // Pas de suppression
+      allow delete: if false;
+    }
+
+    // ====================================
+    // NOTIFICATION TOKENS COLLECTION
+    // ====================================
+    
+    match /notification_tokens/{userId} {
+      // Lecture: propriétaire uniquement
+      allow read: if isOwner(userId) && checkRateLimit();
+      
+      // Création: propriétaire uniquement avec validation
+      allow create: if isOwner(userId) && 
+        validateFields(request.resource.data,
+          ['token', 'userId', 'deviceInfo', 'createdAt', 'lastUsed', 'isActive'],
+          []) &&
+        request.resource.data.token is string &&
+        request.resource.data.token.size() > 0 &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.deviceInfo is map &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastUsed is timestamp &&
+        request.resource.data.isActive is bool &&
+        checkCreateRateLimit();
+      
+      // Mise à jour: propriétaire uniquement avec validation
+      allow update: if isOwner(userId) && 
+        validateFields(request.resource.data,
+          ['token', 'userId', 'deviceInfo', 'createdAt', 'lastUsed', 'isActive'],
+          []) &&
+        request.resource.data.userId == request.auth.uid &&
+        checkRateLimit();
+      
+      // Suppression: propriétaire uniquement
+      allow delete: if isOwner(userId) && checkRateLimit();
+    }
+
+    // ====================================
+    // NOTIFICATION HISTORY COLLECTION
+    // ====================================
+    
+    match /notification_history/{notificationId} {
+      // Lecture: propriétaire uniquement
+      allow read: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        checkRateLimit();
+      
+      // Création: propriétaire uniquement avec validation
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid &&
+        validateFields(request.resource.data,
+          ['userId', 'type', 'title', 'body', 'sentAt'],
+          ['deliveredAt', 'clickedAt', 'dismissedAt', 'data', 'analytics']) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.type is string &&
+        request.resource.data.title is string &&
+        request.resource.data.body is string &&
+        request.resource.data.sentAt is timestamp &&
+        checkCreateRateLimit();
+      
+      // Mise à jour: propriétaire uniquement (pour marquer comme lue/ignorée)
+      allow update: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.diff(resource.data).changedKeys().hasOnly(['clickedAt', 'dismissedAt']) &&
+        checkRateLimit();
+      
+      // Suppression: propriétaire uniquement
+      allow delete: if isAuthenticated() && 
+        resource.data.userId == request.auth.uid &&
+        checkRateLimit();
+    }
   }
 }

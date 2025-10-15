@@ -9,23 +9,27 @@ import { CoachLayout } from '@/components/layout/CoachLayout';
 import {
   ArrowLeft,
   TrendingUp,
-  TrendingDown,
   Calendar,
   Activity,
   Scale,
   Camera,
+  Zap,
+  Target,
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { timestampToDateString } from '@/lib/dateUtils';
+import CoachAthleteProgressHeader from '@/components/coach/CoachAthleteProgressHeader';
 
-// Dynamic imports pour réduire le bundle initial
+// Dynamic imports optimisés pour réduire le bundle initial
 const DynamicLineChart = dynamic(
   () => import('@/components/charts/DynamicLineChart'),
   {
     ssr: false,
     loading: () => (
-      <div className="h-64 animate-pulse bg-gray-800 rounded-lg" />
+      <div className="h-64 animate-pulse bg-gray-800 rounded-lg flex items-center justify-center">
+        <div className="text-gray-400 text-sm">Chargement graphique...</div>
+      </div>
     ),
   },
 );
@@ -35,10 +39,25 @@ const DynamicBarChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-64 animate-pulse bg-gray-800 rounded-lg" />
+      <div className="h-64 animate-pulse bg-gray-800 rounded-lg flex items-center justify-center">
+        <div className="text-gray-400 text-sm">Chargement graphique...</div>
+      </div>
     ),
   },
 );
+
+// Lazy loading des actions rapides (pour usage futur)
+// const DynamicExportButton = dynamic(
+//   () => import('@/components/ui/ExportButton'),
+//   {
+//     ssr: false,
+//     loading: () => (
+//       <button className="btn-primary opacity-50 cursor-not-allowed" disabled>
+//         Chargement...
+//       </button>
+//     ),
+//   },
+// );
 
 // ✅ Données réelles récupérées via useAthleteRealData
 
@@ -48,11 +67,12 @@ export default function AthleteDetailPage() {
   const params = useParams();
   const athleteId = params.id as string;
 
-  // ✅ Utiliser les vraies données de l'athlète
-  const { athleteData, loading } = useAthleteRealData(athleteId);
+  // ✅ Utiliser les vraies données de l'athlète avec pagination optimisée
+  const { athleteData, loading } = useAthleteRealData(athleteId, 10); // Limite à 10 items pour performance
   const [activeTab, setActiveTab] = useState<
     'overview' | 'nutrition' | 'training' | 'measures'
   >('overview');
+  const [period, setPeriod] = useState<'today' | 'week' | 'month'>('week');
 
   useEffect(() => {
     // Vérifier que l'utilisateur est bien un coach
@@ -81,7 +101,7 @@ export default function AthleteDetailPage() {
     >
       <div className="space-y-6">
         {/* Header avec retour */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link
               href="/coach"
@@ -101,45 +121,62 @@ export default function AthleteDetailPage() {
           <button className="btn-primary">Envoyer un message</button>
         </div>
 
-        {/* Statistiques rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="glass-effect rounded-xl p-4 border border-white/10">
-            <p className="text-sm text-gray-400">Calories/jour</p>
-            <p className="text-2xl font-bold text-white">
-              {athleteData.stats.calories_jour}
-            </p>
-            <p className="text-xs text-neon-green mt-1">Objectif : 2200</p>
-          </div>
-
-          <div className="glass-effect rounded-xl p-4 border border-white/10">
-            <p className="text-sm text-gray-400">Protéines/jour</p>
-            <p className="text-2xl font-bold text-white">
-              {athleteData.stats.proteines_jour}g
-            </p>
-            <p className="text-xs text-neon-cyan mt-1">1.8g/kg</p>
-          </div>
-
-          <div className="glass-effect rounded-xl p-4 border border-white/10">
-            <p className="text-sm text-gray-400">Poids actuel</p>
-            <p className="text-2xl font-bold text-white">
-              {athleteData.stats.poids_actuel} kg
-            </p>
-            <div className="flex items-center gap-1 mt-1">
-              <TrendingDown className="w-3 h-3 text-neon-green" />
-              <p className="text-xs text-neon-green">
-                {athleteData.stats.variation_poids}%
-              </p>
-            </div>
-          </div>
-
-          <div className="glass-effect rounded-xl p-4 border border-white/10">
-            <p className="text-sm text-gray-400">Performances</p>
-            <p className="text-2xl font-bold text-white">
-              +{athleteData.stats.variation_perf}%
-            </p>
-            <p className="text-xs text-neon-pink mt-1">vs mois dernier</p>
-          </div>
-        </div>
+        {/* ProgressHeader standardisé */}
+        <CoachAthleteProgressHeader
+          title="Dashboard Athlète"
+          athleteName={athleteData.nom}
+          period={period}
+          onPeriodChange={(period: string) =>
+            setPeriod(period as 'today' | 'week' | 'month')
+          }
+          items={[
+            {
+              icon: <Zap className="w-4 h-4" />,
+              label: 'Calories/jour',
+              data: {
+                current: athleteData.stats.calories_jour,
+                target: 2200,
+                unit: 'kcal',
+              },
+              color: 'green',
+              trend: athleteData.stats.calories_jour >= 2000 ? 'up' : 'down',
+            },
+            {
+              icon: <Target className="w-4 h-4" />,
+              label: 'Protéines/jour',
+              data: {
+                current: athleteData.stats.proteines_jour,
+                target: 150,
+                unit: 'g',
+              },
+              color: 'cyan',
+              trend: athleteData.stats.proteines_jour >= 120 ? 'up' : 'down',
+            },
+            {
+              icon: <Scale className="w-4 h-4" />,
+              label: 'Poids actuel',
+              data: {
+                current: athleteData.stats.poids_actuel,
+                target: 70,
+                unit: 'kg',
+              },
+              color: 'purple',
+              trend: athleteData.stats.variation_poids < 0 ? 'down' : 'up',
+            },
+            {
+              icon: <Activity className="w-4 h-4" />,
+              label: 'Performance',
+              data: {
+                current: athleteData.stats.variation_perf,
+                target: 20,
+                unit: '%',
+              },
+              color: 'pink',
+              trend: athleteData.stats.variation_perf > 0 ? 'up' : 'down',
+            },
+          ]}
+          advice={`${athleteData.nom} montre une progression ${athleteData.stats.variation_perf > 0 ? 'positive' : 'stable'} cette semaine. ${athleteData.stats.calories_jour < 2000 ? "Recommandation: Augmenter l'apport calorique quotidien." : 'Excellent suivi nutritionnel !'} ${athleteData.stats.proteines_jour < 120 ? 'Penser à optimiser les protéines.' : 'Protéines optimales.'}`}
+        />
 
         {/* Tabs de navigation */}
         <div className="flex gap-1 sm:gap-2 p-1 bg-white/5 rounded-lg overflow-x-auto">
@@ -255,36 +292,48 @@ export default function AthleteDetailPage() {
           </Suspense>
         )}
 
-        {/* Actions rapides */}
+        {/* Actions rapides avec ClickableCard pattern */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button
+          <div
             className="glass-effect rounded-xl p-4 border border-white/10 hover:border-neon-purple/50 
-                           transition-all text-left group"
+                           transition-all text-left group cursor-pointer"
+            onClick={() => {
+              // TODO: Implémenter création programme
+              toast.success('Création de programme - Fonctionnalité à venir');
+            }}
           >
             <Calendar className="w-8 h-8 text-neon-purple mb-2 group-hover:scale-110 transition-transform" />
             <h3 className="text-white font-medium">Créer un programme</h3>
             <p className="text-xs text-gray-400">
               Personnalisé pour cet athlète
             </p>
-          </button>
+          </div>
 
-          <button
+          <div
             className="glass-effect rounded-xl p-4 border border-white/10 hover:border-neon-cyan/50 
-                           transition-all text-left group"
+                           transition-all text-left group cursor-pointer"
+            onClick={() => {
+              // TODO: Implémenter génération rapport
+              toast.success('Génération de rapport - Fonctionnalité à venir');
+            }}
           >
             <TrendingUp className="w-8 h-8 text-neon-cyan mb-2 group-hover:scale-110 transition-transform" />
             <h3 className="text-white font-medium">Générer un rapport</h3>
             <p className="text-xs text-gray-400">Analyse détaillée</p>
-          </button>
+          </div>
 
-          <button
+          <div
             className="glass-effect rounded-xl p-4 border border-white/10 hover:border-neon-green/50 
-                           transition-all text-left group"
+                           transition-all text-left group cursor-pointer"
+            onClick={() => {
+              // TODO: Implémenter vue photos
+              toast.success('Galerie photos - Fonctionnalité à venir');
+            }}
           >
             <Camera className="w-8 h-8 text-neon-green mb-2 group-hover:scale-110 transition-transform" />
             <h3 className="text-white font-medium">Voir les photos</h3>
             <p className="text-xs text-gray-400">Progression visuelle</p>
-          </button>
+          </div>
         </div>
       </div>
     </CoachLayout>

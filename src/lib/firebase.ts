@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { getMessaging, isSupported } from 'firebase/messaging';
 
 // Configuration Firebase - SuperNovaFit
 const firebaseConfig = {
@@ -70,5 +71,18 @@ export const db = isBrowser
 export const storage = isBrowser
   ? getStorage(app)
   : (undefined as unknown as ReturnType<typeof getStorage>);
+
+// Firebase Cloud Messaging - Initialisation conditionnelle
+export const messaging = isBrowser
+  ? (async () => {
+      try {
+        const supported = await isSupported();
+        return supported ? getMessaging(app) : null;
+      } catch (error) {
+        console.warn('Firebase Messaging not supported:', error);
+        return null;
+      }
+    })()
+  : Promise.resolve(null);
 
 export default app;

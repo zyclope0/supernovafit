@@ -3,20 +3,24 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCoachAthletes } from '@/hooks/useFirestore';
+import { useCoachAnalytics } from '@/hooks/useCoachAnalytics';
 import { useRouter } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
 import {
   Users,
   Plus,
-  Search,
   Activity,
-  BarChart3,
-  BookOpen,
-  Scale,
+  TrendingUp,
+  AlertTriangle,
+  Trophy,
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import InviteModal from '@/components/ui/InviteModal';
+import AthleteGrid from '@/components/coach/AthleteGrid';
+import AlertsPanel from '@/components/coach/AlertsPanel';
+import PerformanceComparison from '@/components/coach/PerformanceComparison';
+import TeamProgress from '@/components/coach/TeamProgress';
 
 // interface AthleteWithStats {
 //   id: string
@@ -34,10 +38,20 @@ import InviteModal from '@/components/ui/InviteModal';
 export default function CoachDashboard() {
   const { userProfile } = useAuth();
   const router = useRouter();
-  const { athletes: coachAthletes } = useCoachAthletes();
-  const [searchTerm, setSearchTerm] = useState('');
+  const {} = useCoachAthletes();
+  const { analyticsData, loading: analyticsLoading } = useCoachAnalytics();
   const [loading, setLoading] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'analytics' | 'alerts'
+  >('overview');
+  const [selectedMetric, setSelectedMetric] = useState<
+    | 'calories_jour'
+    | 'proteines_jour'
+    | 'entrainements_semaine'
+    | 'variation_perf'
+    | 'variation_poids'
+  >('variation_perf');
 
   useEffect(() => {
     // Vérifier que l'utilisateur est bien un coach
@@ -50,23 +64,7 @@ export default function CoachDashboard() {
     }
   }, [userProfile, router]);
 
-  // Filtrer les athlètes
-  const filteredAthletes = coachAthletes.filter((athlete) => {
-    const matchesSearch =
-      athlete.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      athlete.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  });
-
-  // Statistiques globales
-  const stats = {
-    totalAthletes: coachAthletes.length,
-    athletesActifs: coachAthletes.length, // Tous actifs pour le moment
-    progressionMoyenne: 0, // À calculer depuis les vraies données
-    tauxReussite: 0, // À calculer depuis les objectifs
-  };
-
-  if (loading) {
+  if (loading || analyticsLoading) {
     return (
       <MainLayout>
         <div className="flex justify-center items-center h-screen">
@@ -79,211 +77,166 @@ export default function CoachDashboard() {
   return (
     <MainLayout>
       <div className="space-y-6">
-        {/* Header */}
+        {/* Header avec navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-              Mes Athlètes
+              Dashboard Coach Analytics
             </h1>
             <p className="text-muted-foreground text-sm sm:text-base">
-              Gérez vos athlètes et suivez leurs progressions
+              Vue consolidée de tous vos athlètes avec alertes automatiques
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Users className="w-8 h-8 text-neon-purple" />
+            <Trophy className="w-8 h-8 text-neon-yellow" />
           </div>
         </div>
 
-        {/* Statistiques globales */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Mes Athlètes</p>
-                <p className="text-2xl font-bold text-white">
-                  {stats.totalAthletes}
-                </p>
-              </div>
-              <Users className="w-8 h-8 text-neon-purple" />
-            </div>
-          </div>
-
-          <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  Actifs cette semaine
-                </p>
-                <p className="text-2xl font-bold text-neon-green">
-                  {
-                    filteredAthletes.filter((a) => {
-                      if (!a.dernier_acces) return false;
-                      const lastAccess = new Date(a.dernier_acces);
-                      const weekAgo = new Date(
-                        Date.now() - 7 * 24 * 60 * 60 * 1000,
-                      );
-                      return lastAccess > weekAgo;
-                    }).length
-                  }
-                </p>
-              </div>
-              <Activity className="w-8 h-8 text-neon-green" />
-            </div>
-          </div>
-
-          <div className="glass-effect p-4 rounded-lg border border-white/10">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Actions</p>
-                <p className="text-2xl font-bold text-neon-cyan">2</p>
-              </div>
-              <Plus className="w-8 h-8 text-neon-cyan" />
-            </div>
-          </div>
+        {/* Navigation par onglets */}
+        <div className="flex gap-2 border-b border-white/10">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'overview'
+                ? 'text-neon-purple border-b-2 border-neon-purple'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <Users className="w-4 h-4 inline mr-2" />
+            Vue d&apos;ensemble
+          </button>
+          <button
+            onClick={() => setActiveTab('analytics')}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'analytics'
+                ? 'text-neon-purple border-b-2 border-neon-purple'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4 inline mr-2" />
+            Analytics
+          </button>
+          <button
+            onClick={() => setActiveTab('alerts')}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === 'alerts'
+                ? 'text-neon-purple border-b-2 border-neon-purple'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <AlertTriangle className="w-4 h-4 inline mr-2" />
+            Alertes ({analyticsData?.alerts.length || 0})
+          </button>
         </div>
 
-        {/* Barre de recherche et filtres */}
-        <div className="glass-effect rounded-xl p-4 border border-white/10">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-                aria-hidden="true"
-              />
-              <label htmlFor="athlete-search" className="sr-only">
-                Rechercher un athlète
-              </label>
-              <input
-                id="athlete-search"
-                type="text"
-                placeholder="Rechercher un athlète..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                aria-label="Rechercher un athlète"
-                role="searchbox"
-                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg 
-                         text-white placeholder-gray-400 focus:outline-none focus:border-neon-purple"
-              />
-            </div>
-            <div className="text-sm text-gray-400">
-              {filteredAthletes.length} athlète
-              {filteredAthletes.length > 1 ? 's' : ''} trouvé
-              {filteredAthletes.length > 1 ? 's' : ''}
-            </div>
-          </div>
-        </div>
-
-        {/* Liste des athlètes */}
-        {filteredAthletes.length === 0 ? (
-          <div className="glass-effect rounded-xl p-12 border border-white/10 text-center">
-            <Users className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Aucun athlète trouvé
-            </h3>
-            <p className="text-gray-400 mb-6">
-              Commencez par inviter des athlètes à rejoindre votre équipe
-            </p>
-            <button
-              onClick={() => setShowInviteModal(true)}
-              className="btn-primary mx-auto"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Inviter un athlète
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAthletes.map((athlete) => (
-              <div
-                key={athlete.id}
-                className="glass-effect rounded-xl p-6 border border-white/10 hover:border-neon-purple/50 
-                         transition-all hover:transform hover:scale-[1.02] cursor-pointer"
-              >
-                <div className="flex justify-between items-start mb-4">
+        {/* Contenu des onglets */}
+        {activeTab === 'overview' && (
+          <>
+            {/* Statistiques globales */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="glass-effect p-4 rounded-lg border border-white/10">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
-                      {athlete.nom || 'Utilisateur'}
-                    </h3>
-                    <p className="text-sm text-gray-400">{athlete.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Mes Athlètes
+                    </p>
+                    <p className="text-2xl font-bold text-white">
+                      {analyticsData?.teamStats.totalAthletes || 0}
+                    </p>
                   </div>
-                  <span className="px-2 py-1 rounded-full text-xs bg-neon-green/20 text-neon-green">
-                    Actif
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Objectif</span>
-                    <span className="text-sm text-white">
-                      {athlete.objectif === 'prise_masse'
-                        ? 'Prise de masse'
-                        : athlete.objectif === 'seche'
-                          ? 'Sèche'
-                          : athlete.objectif === 'performance'
-                            ? 'Performance'
-                            : 'Maintien'}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">
-                      Dernière connexion
-                    </span>
-                    <span className="text-sm text-white">
-                      {athlete.dernier_acces
-                        ? typeof athlete.dernier_acces === 'object' &&
-                          athlete.dernier_acces &&
-                          'seconds' in
-                            (athlete.dernier_acces as { seconds?: number })
-                          ? new Date(
-                              (athlete.dernier_acces as { seconds?: number })
-                                .seconds! * 1000,
-                            ).toLocaleDateString('fr-FR')
-                          : new Date(
-                              athlete.dernier_acces as unknown as
-                                | string
-                                | number
-                                | Date,
-                            ).toLocaleDateString('fr-FR')
-                        : 'Jamais'}
-                    </span>
-                  </div>
-
-                  {/* Actions rapides pour chaque athlète */}
-                  <div className="pt-3 border-t border-white/10 flex gap-2">
-                    <Link
-                      href={`/coach/athlete/${athlete.id}/diete`}
-                      className="flex-1 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
-                      title="Voir la diète"
-                    >
-                      <BarChart3 className="w-4 h-4 text-neon-purple mx-auto" />
-                    </Link>
-                    <Link
-                      href={`/coach/athlete/${athlete.id}/entrainements`}
-                      className="flex-1 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
-                      title="Voir les entraînements"
-                    >
-                      <Activity className="w-4 h-4 text-neon-cyan mx-auto" />
-                    </Link>
-                    <Link
-                      href={`/coach/athlete/${athlete.id}/journal`}
-                      className="flex-1 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
-                      title="Voir le journal"
-                    >
-                      <BookOpen className="w-4 h-4 text-neon-green mx-auto" />
-                    </Link>
-                    <Link
-                      href={`/coach/athlete/${athlete.id}/mesures`}
-                      className="flex-1 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
-                      title="Voir les mesures"
-                    >
-                      <Scale className="w-4 h-4 text-neon-purple mx-auto" />
-                    </Link>
-                  </div>
+                  <Users className="w-8 h-8 text-neon-purple" />
                 </div>
               </div>
-            ))}
+
+              <div className="glass-effect p-4 rounded-lg border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Actifs aujourd&apos;hui
+                    </p>
+                    <p className="text-2xl font-bold text-neon-green">
+                      {analyticsData?.teamStats.activeAthletes || 0}
+                    </p>
+                  </div>
+                  <Activity className="w-8 h-8 text-neon-green" />
+                </div>
+              </div>
+
+              <div className="glass-effect p-4 rounded-lg border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">XP Total</p>
+                    <p className="text-2xl font-bold text-neon-yellow">
+                      {analyticsData?.teamStats.totalXP.toLocaleString() || 0}
+                    </p>
+                  </div>
+                  <Trophy className="w-8 h-8 text-neon-yellow" />
+                </div>
+              </div>
+
+              <div className="glass-effect p-4 rounded-lg border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Alertes</p>
+                    <p className="text-2xl font-bold text-neon-red">
+                      {analyticsData?.alerts.length || 0}
+                    </p>
+                  </div>
+                  <AlertTriangle className="w-8 h-8 text-neon-red" />
+                </div>
+              </div>
+            </div>
+
+            {/* Grille des athlètes */}
+            {analyticsData && (
+              <AthleteGrid
+                athletes={analyticsData.athletes}
+                onAthleteClick={(athlete) => {
+                  console.log('Athlète sélectionné:', athlete);
+                }}
+              />
+            )}
+          </>
+        )}
+
+        {activeTab === 'analytics' && analyticsData && (
+          <div className="space-y-6">
+            {/* Progression collective */}
+            <TeamProgress
+              stats={analyticsData.teamStats}
+              onViewDetails={() => {
+                console.log('Voir rapport complet');
+              }}
+            />
+
+            {/* Comparaison des performances */}
+            <PerformanceComparison
+              athletes={analyticsData.athletes}
+              metric={selectedMetric}
+              onMetricChange={(metric) =>
+                setSelectedMetric(
+                  metric as
+                    | 'calories_jour'
+                    | 'proteines_jour'
+                    | 'entrainements_semaine'
+                    | 'variation_perf'
+                    | 'variation_poids',
+                )
+              }
+            />
           </div>
+        )}
+
+        {activeTab === 'alerts' && analyticsData && (
+          <AlertsPanel
+            alerts={analyticsData.alerts}
+            onAlertClick={(alert) => {
+              console.log('Alerte cliquée:', alert);
+            }}
+            onDismissAlert={(alertId) => {
+              console.log('Alerte ignorée:', alertId);
+            }}
+          />
         )}
 
         {/* Actions rapides */}
