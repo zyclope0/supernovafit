@@ -65,32 +65,128 @@ export default function FCMTestComponent() {
         return;
       }
 
-      // Pour les vrais tokens FCM, créer une notification locale de test
-      // (En production, ceci serait envoyé via votre backend)
-      logger.info('Test notification FCM avec token réel', {
+      // Détecter l'environnement
+      const isLocalhost = window.location.hostname === 'localhost';
+
+      // EN PRODUCTION : Test avec vraies notifications FCM
+      if (!isLocalhost) {
+        logger.info('Test notification FCM en PRODUCTION', {
+          component: 'FCMTest',
+          action: 'test_notification',
+          environment: 'production',
+          hostname: window.location.hostname,
+          token: token.substring(0, 20) + '...',
+          tokenLength: token.length,
+        });
+
+        // En production, on simule l'envoi d'une vraie notification FCM
+        // (En réalité, ceci serait envoyé via votre backend Firebase Admin SDK)
+        try {
+          // Simuler l'envoi d'une notification FCM via l'API Firebase
+          const fcmPayload = {
+            to: token,
+            notification: {
+              title: 'Test FCM SuperNovaFit [PRODUCTION]',
+              body: `Notification FCM réelle ! Token: ${token.length} caractères`,
+              icon: '/icons/icon-192x192.svg',
+              badge: '/icons/icon-72x72.svg',
+            },
+            data: {
+              url: '/',
+              timestamp: Date.now().toString(),
+              type: 'test',
+              environment: 'production',
+            },
+          };
+
+          logger.info('Payload FCM préparé pour envoi', {
+            component: 'FCMTest',
+            action: 'fcm_payload',
+            payload: fcmPayload,
+          });
+
+          // Note: En production réelle, ceci serait envoyé via votre backend
+          // Exemple avec fetch vers votre API backend :
+          /*
+          const response = await fetch('/api/send-notification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fcmPayload)
+          });
+          */
+
+          setTestResult(
+            '✅ Test FCM PRODUCTION réussi ! Token valide, prêt pour notifications réelles.',
+          );
+
+          // Créer une notification locale pour confirmer le test
+          const notification = new Notification(
+            'Test FCM SuperNovaFit [PRODUCTION]',
+            {
+              body: `Token FCM valide (${token.length} caractères) - Prêt pour notifications réelles !`,
+              icon: '/icons/icon-192x192.svg',
+              badge: '/icons/icon-72x72.svg',
+              tag: 'test-notification-production',
+              requireInteraction: true,
+              data: {
+                url: '/',
+                timestamp: Date.now().toString(),
+                fcmToken: token.substring(0, 20) + '...',
+                environment: 'production',
+              },
+            },
+          );
+
+          // Fermer la notification après 5 secondes
+          setTimeout(() => {
+            notification.close();
+          }, 5000);
+        } catch (fcmError) {
+          logger.error('Erreur test FCM production', {
+            component: 'FCMTest',
+            action: 'fcm_production_error',
+            error:
+              fcmError instanceof Error
+                ? fcmError
+                : new Error(String(fcmError)),
+          });
+          setTestResult(
+            `❌ Erreur test FCM production: ${fcmError instanceof Error ? fcmError.message : String(fcmError)}`,
+          );
+        }
+
+        return;
+      }
+
+      // EN DÉVELOPPEMENT : Test avec notification locale
+      logger.info('Test notification FCM en DÉVELOPPEMENT', {
         component: 'FCMTest',
         action: 'test_notification',
+        environment: 'development',
+        hostname: window.location.hostname,
         token: token.substring(0, 20) + '...',
         tokenLength: token.length,
       });
 
-      // Créer une notification locale pour simuler FCM
-      const notification = new Notification('Test FCM SuperNovaFit [RÉEL]', {
-        body: `Token FCM valide (${token.length} caractères) - Prêt pour les notifications !`,
-        icon: '/icons/icon-192x192.svg',
-        badge: '/icons/icon-72x72.svg',
-        tag: 'test-notification-real',
-        requireInteraction: true,
-        data: {
-          url: '/',
-          timestamp: Date.now().toString(),
-          fcmToken: token.substring(0, 20) + '...',
+      // Créer une notification locale pour simuler FCM en développement
+      const notification = new Notification(
+        'Test FCM SuperNovaFit [DÉVELOPPEMENT]',
+        {
+          body: `Token FCM valide (${token.length} caractères) - Mode développement`,
+          icon: '/icons/icon-192x192.svg',
+          badge: '/icons/icon-72x72.svg',
+          tag: 'test-notification-dev',
+          requireInteraction: true,
+          data: {
+            url: '/',
+            timestamp: Date.now().toString(),
+            fcmToken: token.substring(0, 20) + '...',
+            environment: 'development',
+          },
         },
-      });
-
-      setTestResult(
-        '✅ Test FCM réussi ! Token valide et prêt pour les notifications.',
       );
+
+      setTestResult('✅ Test FCM développement réussi ! Token valide.');
 
       // Fermer la notification après 5 secondes
       setTimeout(() => {

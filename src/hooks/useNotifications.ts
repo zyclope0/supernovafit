@@ -259,7 +259,7 @@ export function useNotifications(): UseNotificationsReturn {
                   action: 'fcm_token',
                 });
               } catch (fallbackError) {
-                // Dernière tentative : configuration spéciale pour localhost
+                // Dernière tentative : configuration spéciale pour localhost UNIQUEMENT
                 if (
                   typeof window !== 'undefined' &&
                   window.location.hostname === 'localhost'
@@ -281,6 +281,19 @@ export function useNotifications(): UseNotificationsReturn {
                   });
                   fcmToken = mockToken;
                 } else {
+                  // En production, on ne simule pas de token - on laisse l'erreur
+                  logger.error(
+                    'FCM échoue en production - Pas de simulation de token',
+                    {
+                      action: 'fcm_token',
+                      hostname: window.location.hostname,
+                      environment: 'production',
+                      error:
+                        fallbackError instanceof Error
+                          ? fallbackError
+                          : new Error(String(fallbackError)),
+                    },
+                  );
                   throw fallbackError; // Re-throw l'erreur originale
                 }
               }
