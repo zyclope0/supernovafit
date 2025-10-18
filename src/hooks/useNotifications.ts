@@ -88,13 +88,32 @@ export function useNotifications(): UseNotificationsReturn {
       try {
         const supported =
           'Notification' in window && 'serviceWorker' in navigator;
+
+        logger.info('FCM Support Check', {
+          component: 'notifications',
+          action: 'support_check',
+          supported,
+          hasNotification: 'Notification' in window,
+          hasServiceWorker: 'serviceWorker' in navigator,
+          hostname: window.location.hostname,
+        });
+
         setIsSupported(supported);
 
         if (supported) {
           setPermission(Notification.permission);
+          logger.info('FCM Permission Check', {
+            component: 'notifications',
+            action: 'permission_check',
+            permission: Notification.permission,
+          });
         }
       } catch (error) {
-        console.error('❌ NOTIFICATIONS - Erreur vérification support:', error);
+        logger.error('Erreur vérification support FCM', {
+          component: 'notifications',
+          action: 'support_check_error',
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
         setIsSupported(false);
       }
     };
@@ -105,10 +124,26 @@ export function useNotifications(): UseNotificationsReturn {
   // Initialiser Firebase Messaging
   useEffect(() => {
     const initMessaging = async () => {
+      // Logs de diagnostic
+      logger.info('FCM Initialisation - Vérification des prérequis', {
+        component: 'notifications',
+        action: 'fcm_init_check',
+        user: user ? 'présent' : 'absent',
+        userId: user?.uid || 'N/A',
+        isSupported,
+        permission,
+        hostname:
+          typeof window !== 'undefined' ? window.location.hostname : 'N/A',
+      });
+
       if (!user || !isSupported) {
-        console.log(
-          '📱 NOTIFICATIONS - Initialisation ignorée (user ou support manquant)',
-        );
+        logger.warn('FCM Initialisation ignorée', {
+          component: 'notifications',
+          action: 'fcm_init_ignored',
+          reason: !user ? 'user_manquant' : 'support_manquant',
+          user: user ? 'présent' : 'absent',
+          isSupported,
+        });
         return;
       }
 
