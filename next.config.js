@@ -17,6 +17,7 @@ const withPWA = require('next-pwa')({
     /build-manifest\.json$/,
     /server-reference-manifest\.json$/,
     /react-loadable-manifest\.json$/,
+    /\.js\.map$/, // Exclure les source maps pour éviter les erreurs 404
   ],
   reloadOnOnline: true,
   sw: 'sw.js',
