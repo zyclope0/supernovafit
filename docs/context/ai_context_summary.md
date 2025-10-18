@@ -407,6 +407,8 @@ npx ts-unused-exports     # Exports non utilisés
 - ✅ Monitoring production (Sentry + alertes)
 - ✅ Tests validés (308/308, 100% passent)
 - ✅ Documentation tests standardisée (13 → 7 fichiers)
+- ✅ OPT-14 Logger Custom implémenté (debugging production optimisé)
+- ✅ FCM complètement fonctionnel (clé VAPID réelle + service worker + test intégré)
 
 ---
 

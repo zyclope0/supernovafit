@@ -38,7 +38,7 @@ export default function DetailModal({
       maxWidth={maxWidth}
       height="90vh"
     >
-      <div className="p-6">{children}</div>
+      <div className="-m-6 p-6">{children}</div>
     </StandardModal>
   );
 }

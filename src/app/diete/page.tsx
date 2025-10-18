@@ -18,9 +18,11 @@ import {
 } from '@/hooks/useFirestore';
 import { MealType, Aliment, Macros } from '@/types';
 // formatNumber removed - not used
-import { Trash2 } from 'lucide-react';
+import { Trash2, Upload } from 'lucide-react';
 import { IconButton } from '@/components/ui/IconButton';
 import dynamic from 'next/dynamic';
+import NutritionImporter from '@/components/import/NutritionImporter';
+import { useNutritionImport } from '@/hooks/useNutritionImport';
 // MacrosChart supprimé - remplacé par NutritionAnalytics evidence-based
 // import SwipeableMealCard from '@/components/mobile/SwipeableMealCard' // TODO: À intégrer
 const MenuTypesModal = dynamic(
@@ -96,6 +98,10 @@ export default function DietePage() {
   // États pour les nouveaux composants industrialisés
   const [selectedMeal, setSelectedMeal] = useState<Repas | null>(null);
   const [showMealDetail, setShowMealDetail] = useState(false);
+
+  // États pour l'import nutrition
+  const [showNutritionImporter, setShowNutritionImporter] = useState(false);
+  const { importNutrition } = useNutritionImport();
 
   // Initialiser selectedDate côté client pour éviter hydration mismatch
   useEffect(() => {
@@ -583,6 +589,21 @@ export default function DietePage() {
     }
   };
 
+  // Fonction de gestion de l'import nutrition
+  const handleNutritionImport = async (data: any[]) => {
+    try {
+      const result = await importNutrition(data);
+      if (result.success) {
+        setShowNutritionImporter(false);
+        // Recharger les données des repas
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Erreur import nutrition:', error);
+      toast.error("Erreur lors de l'import des données nutrition");
+    }
+  };
+
   // Raccourcis clavier pour améliorer l'UX
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -930,6 +951,27 @@ export default function DietePage() {
           <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
         </button>
       </div>
+
+      {/* Bouton d'import nutrition */}
+      <div className="fixed bottom-20 right-24 md:bottom-8 md:right-24 z-50">
+        <button
+          onClick={() => setShowNutritionImporter(true)}
+          className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-r from-neon-green to-neon-cyan text-white rounded-full shadow-2xl hover:shadow-neon-green/30 transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+          title="Importer des données nutrition"
+        >
+          <Upload className="w-5 h-5 md:w-6 md:h-6 group-hover:scale-110 transition-transform duration-300" />
+          {/* Ripple effect */}
+          <div className="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+        </button>
+      </div>
+
+      {/* Modal d'import nutrition */}
+      <NutritionImporter
+        isOpen={showNutritionImporter}
+        onClose={() => setShowNutritionImporter(false)}
+        onImport={handleNutritionImport}
+        userId={user?.uid || ''}
+      />
     </MainLayout>
   );
 }

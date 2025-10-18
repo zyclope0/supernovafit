@@ -30,7 +30,7 @@ Sentry.init({
   // Replays for error reproduction
   replaysOnErrorSampleRate: 1.0,
   // This sets the sample rate to be 10%. You may want this to be 100% while in development and sample at a lower rate in production.
-  replaysSessionSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
+  replaysSessionSampleRate: process.env.NODE_ENV === 'development' ? 0.1 : 0.1,
 
   // Error filtering avancé pour SuperNovaFit
   beforeSend(event, hint) {
@@ -97,9 +97,9 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
   ],
   tracesSampler: (samplingContext) => {
-    // Échantillonnage plus élevé pour capter les transactions où Web Vitals seront attachés
+    // Échantillonnage réduit en développement pour éviter les rate limits
     const url = samplingContext?.location?.href || '';
-    if (url.includes('localhost')) return 1.0;
+    if (url.includes('localhost')) return 0.1; // Réduit de 100% à 10%
     return 0.2;
   },
 });

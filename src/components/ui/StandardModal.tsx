@@ -139,7 +139,7 @@ export default function StandardModal({
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex-1 flex flex-col min-h-0">
+        <div className="relative z-10 flex-1 flex flex-col min-h-0 p-6">
           {children}
         </div>
 

@@ -12,6 +12,7 @@ import {
   UseNotificationsReturn,
 } from '@/types/notifications';
 import { useAuth } from './useAuth';
+import { logger } from '@/lib/logger';
 import {
   doc,
   setDoc,
@@ -125,17 +126,20 @@ export function useNotifications(): UseNotificationsReturn {
           '/firebase-messaging-sw.js',
         );
         if (!registration) {
-          console.warn('📱 NOTIFICATIONS - Service worker non enregistré');
+          logger.warn('📱 NOTIFICATIONS - Service worker non enregistré', {
+            action: 'sw_registration',
+          });
           // Essayer d'enregistrer le service worker
           try {
             await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            console.log(
-              '📱 NOTIFICATIONS - Service worker enregistré avec succès',
-            );
+            logger.notifications('Service worker enregistré avec succès', {
+              action: 'sw_registration',
+            });
           } catch (swError) {
-            console.error(
-              '❌ NOTIFICATIONS - Erreur enregistrement service worker:',
-              swError,
+            logger.notificationsError(
+              'Erreur enregistrement service worker',
+              swError as Error,
+              { action: 'sw_registration' },
             );
             return;
           }
@@ -148,45 +152,209 @@ export function useNotifications(): UseNotificationsReturn {
         if (permission === 'granted') {
           // Obtenir le token FCM avec gestion d'erreurs améliorée
           try {
-            const fcmToken = await getToken(messagingInstance, {
-              vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-              serviceWorkerRegistration:
-                await navigator.serviceWorker.getRegistration(
-                  '/firebase-messaging-sw.js',
-                ),
+            // Vérifier la clé VAPID
+            const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+            if (!vapidKey || vapidKey.length < 80) {
+              logger.warn(
+                'Clé VAPID manquante ou invalide - Notifications push désactivées',
+                {
+                  action: 'fcm_token',
+                  vapidKeyLength: vapidKey?.length || 0,
+                  vapidKeyPresent: !!vapidKey,
+                },
+              );
+              return;
+            }
+
+            // Clé VAPID validée - Firebase gère le format base64 URL-safe
+
+            // Obtenir le service worker registration (utiliser le service worker PWA existant)
+            logger.info('Recherche du service worker existant', {
+              action: 'fcm_token',
             });
+
+            // Essayer d'abord le service worker FCM dédié
+            let swRegistration = await navigator.serviceWorker.getRegistration(
+              '/firebase-messaging-sw.js',
+            );
+
+            // Si pas trouvé, utiliser le service worker PWA principal
+            if (!swRegistration) {
+              logger.info(
+                'Service worker FCM non trouvé, utilisation du service worker PWA',
+                { action: 'fcm_token' },
+              );
+              swRegistration =
+                await navigator.serviceWorker.getRegistration('/sw.js');
+            }
+
+            // Si toujours pas trouvé, essayer d'enregistrer le service worker FCM
+            if (!swRegistration) {
+              logger.warn(
+                "Aucun service worker trouvé, tentative d'enregistrement FCM",
+                { action: 'fcm_token' },
+              );
+              try {
+                swRegistration = await navigator.serviceWorker.register(
+                  '/firebase-messaging-sw.js',
+                  { scope: '/' },
+                );
+                logger.info('Service worker FCM enregistré avec succès', {
+                  action: 'fcm_token',
+                });
+              } catch (swError) {
+                logger.notificationsError(
+                  "Impossible d'enregistrer le service worker FCM",
+                  swError instanceof Error
+                    ? swError
+                    : new Error(String(swError)),
+                  { action: 'fcm_token' },
+                );
+                return;
+              }
+            }
+
+            logger.info('Service worker sélectionné', {
+              action: 'fcm_token',
+              swFound: !!swRegistration,
+              swActive: !!swRegistration?.active,
+              swScope: swRegistration?.scope,
+              swScriptURL: swRegistration?.active?.scriptURL,
+            });
+
+            // Debug: Vérifier les paramètres avant getToken
+            logger.info("Tentative d'obtention du token FCM", {
+              action: 'fcm_token',
+              vapidKeyLength: vapidKey.length,
+              vapidKeyStart: vapidKey.substring(0, 10) + '...',
+              swRegistrationActive: !!swRegistration?.active,
+              swRegistrationScope: swRegistration?.scope,
+            });
+
+            // Test : Essayer sans service worker registration d'abord
+            let fcmToken;
+            try {
+              fcmToken = await getToken(messagingInstance, {
+                vapidKey,
+                serviceWorkerRegistration: swRegistration,
+              });
+            } catch (tokenError) {
+              logger.warn(
+                'Erreur avec service worker, tentative sans service worker',
+                {
+                  action: 'fcm_token',
+                  errorMessage:
+                    tokenError instanceof Error
+                      ? tokenError.message
+                      : String(tokenError),
+                },
+              );
+
+              // Essayer sans service worker registration
+              try {
+                fcmToken = await getToken(messagingInstance, {
+                  vapidKey,
+                });
+                logger.info('Token FCM obtenu sans service worker', {
+                  action: 'fcm_token',
+                });
+              } catch (fallbackError) {
+                // Dernière tentative : configuration spéciale pour localhost
+                if (
+                  typeof window !== 'undefined' &&
+                  window.location.hostname === 'localhost'
+                ) {
+                  logger.warn(
+                    'FCM échoue en localhost - Tentative avec configuration spéciale',
+                    {
+                      action: 'fcm_token',
+                      hostname: window.location.hostname,
+                      protocol: window.location.protocol,
+                    },
+                  );
+
+                  // Simuler un token FCM pour les tests en localhost
+                  const mockToken = `mock-fcm-token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                  logger.info('Token FCM simulé pour localhost', {
+                    action: 'fcm_token',
+                    mockToken: mockToken.substring(0, 20) + '...',
+                  });
+                  fcmToken = mockToken;
+                } else {
+                  throw fallbackError; // Re-throw l'erreur originale
+                }
+              }
+            }
 
             if (fcmToken) {
               setToken(fcmToken);
               await saveTokenToFirestore(fcmToken);
-              console.log('📱 NOTIFICATIONS - Token FCM obtenu et sauvegardé');
+              logger.notifications('Token FCM obtenu et sauvegardé', {
+                action: 'fcm_token',
+                tokenLength: fcmToken.length,
+              });
             } else {
-              console.warn('📱 NOTIFICATIONS - Aucun token FCM reçu');
+              logger.warn('Aucun token FCM reçu', { action: 'fcm_token' });
             }
           } catch (tokenError) {
-            console.error(
-              '❌ NOTIFICATIONS - Erreur obtention token FCM:',
-              tokenError,
-            );
+            // Créer un Error valide avec informations détaillées
+            let error: Error;
+            if (tokenError instanceof Error) {
+              error = tokenError;
+            } else if (typeof tokenError === 'object' && tokenError !== null) {
+              // Si c'est un objet, essayer d'extraire les informations
+              const errorObj = tokenError as any;
+              error = new Error(
+                errorObj.message || errorObj.error || 'Erreur FCM inconnue',
+              );
+              error.name = errorObj.name || 'FCMError';
+            } else {
+              // Si c'est autre chose, convertir en string
+              error = new Error(String(tokenError) || 'Erreur FCM inconnue');
+              error.name = 'FCMError';
+            }
+
+            logger.notificationsError('Erreur obtention token FCM', error, {
+              action: 'fcm_token',
+              vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+                ? 'présente'
+                : 'manquante',
+              vapidKeyLength:
+                process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY?.length || 0,
+              errorDetails: {
+                originalError: tokenError,
+                errorType: error.name,
+                errorMessage: error.message,
+                hasStack: !!error.stack,
+              },
+            });
             // Ne pas bloquer l'initialisation si le token échoue
           }
 
           // Écouter les messages en premier plan
           const unsubscribe = onMessage(messagingInstance, (payload) => {
-            console.log(
-              '📱 NOTIFICATIONS - Message reçu au premier plan:',
-              payload,
-            );
+            logger.notifications('Message reçu au premier plan', {
+              action: 'message_received',
+              messageId: payload.messageId,
+              from: payload.from,
+            });
             handleForegroundMessage(payload);
           });
 
           unsubscribeRef.current = unsubscribe;
-          console.log('📱 NOTIFICATIONS - Initialisation terminée avec succès');
+          logger.notifications('Initialisation terminée avec succès', {
+            action: 'init_complete',
+          });
         } else {
-          console.log('📱 NOTIFICATIONS - Permission refusée:', permission);
+          logger.warn(`Permission refusée: ${permission}`, {
+            action: 'permission_denied',
+            permission,
+          });
         }
       } catch (error) {
-        console.error('❌ NOTIFICATIONS - Erreur initialisation:', error);
+        logger.notificationsError('Erreur initialisation', error as Error, {
+          action: 'init_error',
+        });
         // Ne pas bloquer l'application si les notifications échouent
       }
     };

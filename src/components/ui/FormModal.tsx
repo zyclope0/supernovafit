@@ -84,7 +84,7 @@ export default function FormModal({
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 -m-6">
         <form
           onSubmit={onSubmit}
           className="flex-1 flex flex-col p-6 overflow-y-auto"
