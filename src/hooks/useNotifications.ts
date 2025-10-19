@@ -247,15 +247,36 @@ export function useNotifications(): UseNotificationsReturn {
           }
         }
 
+        // Log avant demande de permission
+        console.log('🔔 FCM - Demande permission notifications', {
+          isOpera,
+          currentPermission: Notification.permission,
+        });
+
         // Demander la permission
         const permission = await Notification.requestPermission();
         setPermission(permission);
 
+        console.log('🔔 FCM - Permission obtenue', {
+          permission,
+          isOpera,
+        });
+
         if (permission === 'granted') {
+          console.log('✅ FCM - Permission accordée, début obtention token', {
+            isOpera,
+          });
+
           // Obtenir le token FCM avec gestion d'erreurs améliorée
           try {
             // Vérifier la clé VAPID
             const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+
+            console.log('🔑 FCM - Vérification clé VAPID', {
+              hasVapidKey: !!vapidKey,
+              vapidKeyLength: vapidKey?.length || 0,
+              isOpera,
+            });
             if (!vapidKey || vapidKey.length < 80) {
               logger.warn(
                 'Clé VAPID manquante ou invalide - Notifications push désactivées',
