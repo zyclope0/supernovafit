@@ -89,6 +89,11 @@ export function useNotifications(): UseNotificationsReturn {
         const supported =
           'Notification' in window && 'serviceWorker' in navigator;
 
+        // Détection Opera GX pour diagnostic
+        const userAgent = window.navigator.userAgent;
+        const isOpera =
+          userAgent.includes('OPR') || userAgent.includes('Opera');
+
         logger.info('FCM Support Check', {
           component: 'notifications',
           action: 'support_check',
@@ -96,6 +101,9 @@ export function useNotifications(): UseNotificationsReturn {
           hasNotification: 'Notification' in window,
           hasServiceWorker: 'serviceWorker' in navigator,
           hostname: window.location.hostname,
+          userAgent: userAgent.substring(0, 50) + '...',
+          isOpera,
+          browser: isOpera ? 'Opera/OperaGX' : 'Other',
         });
 
         setIsSupported(supported);
@@ -124,7 +132,11 @@ export function useNotifications(): UseNotificationsReturn {
   // Initialiser Firebase Messaging
   useEffect(() => {
     const initMessaging = async () => {
-      // Logs de diagnostic
+      // Logs de diagnostic avec détection Opera GX
+      const userAgent =
+        typeof window !== 'undefined' ? window.navigator.userAgent : '';
+      const isOpera = userAgent.includes('OPR') || userAgent.includes('Opera');
+
       logger.info('FCM Initialisation - Vérification des prérequis', {
         component: 'notifications',
         action: 'fcm_init_check',
@@ -134,6 +146,9 @@ export function useNotifications(): UseNotificationsReturn {
         permission,
         hostname:
           typeof window !== 'undefined' ? window.location.hostname : 'N/A',
+        userAgent: userAgent.substring(0, 50) + '...',
+        isOpera,
+        browser: isOpera ? 'Opera/OperaGX' : 'Other',
       });
 
       if (!user || !isSupported) {
@@ -266,73 +281,116 @@ export function useNotifications(): UseNotificationsReturn {
               swRegistrationScope: swRegistration?.scope,
             });
 
-            // Test : Essayer sans service worker registration d'abord
+            // Test : Logique spéciale pour Opera GX
             let fcmToken;
-            try {
-              fcmToken = await getToken(messagingInstance, {
-                vapidKey,
-                serviceWorkerRegistration: swRegistration,
-              });
-            } catch (tokenError) {
-              logger.warn(
-                'Erreur avec service worker, tentative sans service worker',
-                {
-                  action: 'fcm_token',
-                  errorMessage:
-                    tokenError instanceof Error
-                      ? tokenError.message
-                      : String(tokenError),
-                },
-              );
+            const userAgent = window.navigator.userAgent;
+            const isOpera =
+              userAgent.includes('OPR') || userAgent.includes('Opera');
 
-              // Essayer sans service worker registration
+            if (isOpera) {
+              // Opera GX : Essayer d'abord sans service worker
+              logger.info('Opera GX détecté - Tentative sans service worker', {
+                action: 'fcm_token',
+                browser: 'Opera/OperaGX',
+              });
+
               try {
                 fcmToken = await getToken(messagingInstance, {
                   vapidKey,
                 });
-                logger.info('Token FCM obtenu sans service worker', {
+                logger.info('Token FCM obtenu sans service worker (Opera GX)', {
                   action: 'fcm_token',
                 });
-              } catch (fallbackError) {
-                // Dernière tentative : configuration spéciale pour localhost UNIQUEMENT
-                if (
-                  typeof window !== 'undefined' &&
-                  window.location.hostname === 'localhost'
-                ) {
-                  logger.warn(
-                    'FCM échoue en localhost - Tentative avec configuration spéciale',
-                    {
-                      action: 'fcm_token',
-                      hostname: window.location.hostname,
-                      protocol: window.location.protocol,
-                    },
-                  );
-
-                  // Simuler un token FCM pour les tests en localhost
-                  const mockToken = `mock-fcm-token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                  logger.info('Token FCM simulé pour localhost', {
+              } catch (operaError) {
+                logger.warn(
+                  'Opera GX - Erreur sans service worker, tentative avec SW',
+                  {
                     action: 'fcm_token',
-                    mockToken: mockToken.substring(0, 20) + '...',
+                    errorMessage:
+                      operaError instanceof Error
+                        ? operaError.message
+                        : String(operaError),
+                  },
+                );
+
+                // Fallback : essayer avec service worker
+                try {
+                  fcmToken = await getToken(messagingInstance, {
+                    vapidKey,
+                    serviceWorkerRegistration: swRegistration,
                   });
-                  fcmToken = mockToken;
-                } else {
-                  // En production, on ne simule pas de token - on laisse l'erreur
-                  logger.error(
-                    'FCM échoue en production - Pas de simulation de token',
-                    {
-                      action: 'fcm_token',
-                      hostname: window.location.hostname,
-                      environment: 'production',
-                      error:
-                        fallbackError instanceof Error
-                          ? fallbackError
-                          : new Error(String(fallbackError)),
-                    },
-                  );
-                  throw fallbackError; // Re-throw l'erreur originale
+                } catch (fallbackError) {
+                  throw fallbackError;
                 }
               }
-            }
+            } else {
+              // Autres navigateurs : logique normale
+              try {
+                fcmToken = await getToken(messagingInstance, {
+                  vapidKey,
+                  serviceWorkerRegistration: swRegistration,
+                });
+              } catch (tokenError) {
+                logger.warn(
+                  'Erreur avec service worker, tentative sans service worker',
+                  {
+                    action: 'fcm_token',
+                    errorMessage:
+                      tokenError instanceof Error
+                        ? tokenError.message
+                        : String(tokenError),
+                  },
+                );
+
+                // Essayer sans service worker registration
+                try {
+                  fcmToken = await getToken(messagingInstance, {
+                    vapidKey,
+                  });
+                  logger.info('Token FCM obtenu sans service worker', {
+                    action: 'fcm_token',
+                  });
+                } catch (fallbackError) {
+                  // Dernière tentative : configuration spéciale pour localhost UNIQUEMENT
+                  if (
+                    typeof window !== 'undefined' &&
+                    window.location.hostname === 'localhost'
+                  ) {
+                    logger.warn(
+                      'FCM échoue en localhost - Tentative avec configuration spéciale',
+                      {
+                        action: 'fcm_token',
+                        hostname: window.location.hostname,
+                        protocol: window.location.protocol,
+                      },
+                    );
+
+                    // Simuler un token FCM pour les tests en localhost
+                    const mockToken = `mock-fcm-token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    logger.info('Token FCM simulé pour localhost', {
+                      action: 'fcm_token',
+                      mockToken: mockToken.substring(0, 20) + '...',
+                    });
+                    fcmToken = mockToken;
+                  } else {
+                    // En production, on ne simule pas de token - on laisse l'erreur
+                    logger.error(
+                      'FCM échoue en production - Pas de simulation de token',
+                      {
+                        action: 'fcm_token',
+                        hostname: window.location.hostname,
+                        environment: 'production',
+                        error:
+                          fallbackError instanceof Error
+                            ? fallbackError
+                            : new Error(String(fallbackError)),
+                      },
+                    );
+                    throw fallbackError; // Re-throw l'erreur originale
+                  }
+                }
+              }
+            } // Fin du bloc else pour les autres navigateurs
 
             if (fcmToken) {
               setToken(fcmToken);
