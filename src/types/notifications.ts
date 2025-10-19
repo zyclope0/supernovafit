@@ -446,6 +446,7 @@ export interface UseNotificationsReturn {
   permission: NotificationPermission;
   token: string | null;
   settings: NotificationSettings;
+  isOperaGXFallback: boolean;
   requestPermission: () => Promise<NotificationPermission>;
   updateSettings: (settings: Partial<NotificationSettings>) => Promise<void>;
   sendNotification: (data: NotificationData) => Promise<void>;

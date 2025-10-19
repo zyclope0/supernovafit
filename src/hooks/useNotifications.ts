@@ -85,6 +85,7 @@ export function useNotifications(): UseNotificationsReturn {
   const [token, setToken] = useState<string | null>(null);
   const [settings, setSettings] =
     useState<NotificationSettings>(DEFAULT_SETTINGS);
+  const [isOperaGXFallback, setIsOperaGXFallback] = useState(false);
   const messagingRef = useRef<unknown>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
@@ -529,9 +530,29 @@ export function useNotifications(): UseNotificationsReturn {
                 }
               }
 
-              // Si toutes les stratégies échouent
+              // Si toutes les stratégies échouent, utiliser le fallback Opera GX
               if (!fcmToken && lastError) {
-                throw lastError;
+                logger.warn(
+                  'Opera GX - Toutes les stratégies FCM échouées, activation du fallback natif',
+                  {
+                    action: 'fcm_fallback',
+                    browser: 'Opera/OperaGX',
+                    errorMessage: lastError.message,
+                  },
+                );
+
+                // Fallback Opera GX : Simuler un token et utiliser les notifications natives
+                fcmToken = `opera-gx-fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                setIsOperaGXFallback(true);
+
+                logger.info(
+                  'Opera GX - Fallback activé avec notifications natives',
+                  {
+                    action: 'fcm_fallback',
+                    browser: 'Opera/OperaGX',
+                    fallbackToken: fcmToken.substring(0, 20) + '...',
+                  },
+                );
               }
             } else {
               // Autres navigateurs : logique normale
@@ -985,6 +1006,7 @@ export function useNotifications(): UseNotificationsReturn {
     permission,
     token,
     settings,
+    isOperaGXFallback,
     requestPermission,
     updateSettings,
     sendNotification,

@@ -5,7 +5,8 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { logger } from '@/lib/logger';
 
 export default function FCMTestComponent() {
-  const { token, isSupported, permission } = useNotifications();
+  const { token, isSupported, permission, isOperaGXFallback } =
+    useNotifications();
   const [testResult, setTestResult] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -15,6 +16,7 @@ export default function FCMTestComponent() {
     hasToken: !!token,
     isSupported,
     permission,
+    isOperaGXFallback,
     userAgent:
       typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
   });
@@ -224,9 +226,13 @@ export default function FCMTestComponent() {
 
   const getStatusText = () => {
     if (token && permission === 'granted') {
-      return token.startsWith('mock-fcm-token-')
-        ? '✅ FCM Simulé (localhost)'
-        : '✅ FCM Actif';
+      if (token.startsWith('mock-fcm-token-')) {
+        return '✅ FCM Simulé (localhost)';
+      }
+      if (token.startsWith('opera-gx-fallback-')) {
+        return '✅ FCM Fallback Opera GX (Notifications natives)';
+      }
+      return '✅ FCM Actif';
     }
     if (permission === 'denied') return '❌ Notifications bloquées';
     if (permission === 'default') return '⚠️ Permission requise';
@@ -267,6 +273,24 @@ export default function FCMTestComponent() {
             {permission === 'granted' ? '✅ Accordée' : `⚠️ ${permission}`}
           </span>
         </div>
+
+        {/* Fallback Opera GX */}
+        {isOperaGXFallback && (
+          <div className="bg-orange-500/20 border border-orange-500/30 p-3 rounded-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-orange-300 font-semibold">
+                🦊 Opera GX Fallback:
+              </span>
+              <span className="text-orange-200">
+                ✅ Notifications natives activées
+              </span>
+            </div>
+            <p className="text-orange-200 text-sm mt-1">
+              FCM n&apos;est pas compatible avec Opera GX. Les notifications
+              utilisent l&apos;API native du navigateur.
+            </p>
+          </div>
+        )}
 
         {/* Diagnostic des permissions */}
         <div className="bg-black/20 p-3 rounded-lg">
