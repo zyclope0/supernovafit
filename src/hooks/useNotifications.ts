@@ -210,10 +210,23 @@ export function useNotifications(): UseNotificationsReturn {
 
         messagingRef.current = messagingInstance;
 
+        // Log de début de recherche service worker
+        console.log('🔍 FCM - Début recherche service worker', {
+          isOpera,
+          hasNavigator: typeof navigator !== 'undefined',
+          hasServiceWorker: typeof navigator?.serviceWorker !== 'undefined',
+        });
+
         // Vérifier si le service worker est enregistré
         const registration = await navigator.serviceWorker.getRegistration(
           '/firebase-messaging-sw.js',
         );
+
+        console.log('🔍 FCM - Service worker recherché', {
+          hasRegistration: !!registration,
+          isOpera,
+        });
+
         if (!registration) {
           logger.warn('📱 NOTIFICATIONS - Service worker non enregistré', {
             action: 'sw_registration',
