@@ -288,40 +288,80 @@ export function useNotifications(): UseNotificationsReturn {
               userAgent.includes('OPR') || userAgent.includes('Opera');
 
             if (isOpera) {
-              // Opera GX : Essayer d'abord sans service worker
-              logger.info('Opera GX détecté - Tentative sans service worker', {
+              // Opera GX : Logique spéciale pour éviter les problèmes de Service Worker
+              logger.info('Opera GX détecté - Logique spéciale activée', {
                 action: 'fcm_token',
                 browser: 'Opera/OperaGX',
               });
 
-              try {
-                fcmToken = await getToken(messagingInstance, {
-                  vapidKey,
-                });
-                logger.info('Token FCM obtenu sans service worker (Opera GX)', {
-                  action: 'fcm_token',
-                });
-              } catch (operaError) {
-                logger.warn(
-                  'Opera GX - Erreur sans service worker, tentative avec SW',
-                  {
-                    action: 'fcm_token',
-                    errorMessage:
-                      operaError instanceof Error
-                        ? operaError.message
-                        : String(operaError),
-                  },
-                );
+              // Opera GX : Essayer plusieurs stratégies
+              const strategies = [
+                // Stratégie 1: Sans service worker
+                { name: 'sans_service_worker', useSW: false },
+                // Stratégie 2: Avec service worker FCM dédié
+                { name: 'avec_sw_fcm', useSW: true, swType: 'fcm' },
+                // Stratégie 3: Avec service worker PWA
+                { name: 'avec_sw_pwa', useSW: true, swType: 'pwa' },
+              ];
 
-                // Fallback : essayer avec service worker
+              let lastError: Error | null = null;
+
+              for (const strategy of strategies) {
                 try {
-                  fcmToken = await getToken(messagingInstance, {
-                    vapidKey,
-                    serviceWorkerRegistration: swRegistration,
+                  logger.info(
+                    `Opera GX - Tentative stratégie: ${strategy.name}`,
+                    {
+                      action: 'fcm_token',
+                      strategy: strategy.name,
+                    },
+                  );
+
+                  if (strategy.useSW) {
+                    // Utiliser le service worker approprié
+                    const swToUse =
+                      strategy.swType === 'fcm'
+                        ? await navigator.serviceWorker.getRegistration(
+                            '/firebase-messaging-sw.js',
+                          )
+                        : await navigator.serviceWorker.getRegistration(
+                            '/sw.js',
+                          );
+
+                    fcmToken = await getToken(messagingInstance, {
+                      vapidKey,
+                      serviceWorkerRegistration: swToUse,
+                    });
+                  } else {
+                    // Sans service worker
+                    fcmToken = await getToken(messagingInstance, {
+                      vapidKey,
+                    });
+                  }
+
+                  logger.info(
+                    `Opera GX - Succès avec stratégie: ${strategy.name}`,
+                    {
+                      action: 'fcm_token',
+                      strategy: strategy.name,
+                    },
+                  );
+                  break; // Succès, sortir de la boucle
+                } catch (strategyError) {
+                  lastError =
+                    strategyError instanceof Error
+                      ? strategyError
+                      : new Error(String(strategyError));
+                  logger.warn(`Opera GX - Échec stratégie: ${strategy.name}`, {
+                    action: 'fcm_token',
+                    strategy: strategy.name,
+                    errorMessage: lastError.message,
                   });
-                } catch (fallbackError) {
-                  throw fallbackError;
                 }
+              }
+
+              // Si toutes les stratégies échouent
+              if (!fcmToken && lastError) {
+                throw lastError;
               }
             } else {
               // Autres navigateurs : logique normale
