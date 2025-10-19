@@ -72,6 +72,14 @@ const DEFAULT_SETTINGS: NotificationSettings = {
 export function useNotifications(): UseNotificationsReturn {
   const { user } = useAuth();
   const [isSupported, setIsSupported] = useState(false);
+
+  // Log de base pour diagnostiquer le chargement du hook
+  console.log('🚀 FCM Hook - useNotifications initialisé', {
+    hasUser: !!user,
+    userId: user?.uid || 'N/A',
+    userAgent:
+      typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
+  });
   const [permission, setPermission] =
     useState<NotificationPermission>('default');
   const [token, setToken] = useState<string | null>(null);
@@ -84,6 +92,13 @@ export function useNotifications(): UseNotificationsReturn {
   useEffect(() => {
     const checkSupport = async () => {
       if (typeof window === 'undefined') return;
+
+      // Log de base pour diagnostiquer Opera GX
+      console.log('🔍 FCM Hook - checkSupport démarré', {
+        userAgent: window.navigator.userAgent,
+        hasWindow: typeof window !== 'undefined',
+        hasNavigator: typeof window.navigator !== 'undefined',
+      });
 
       try {
         const supported =
@@ -132,6 +147,16 @@ export function useNotifications(): UseNotificationsReturn {
   // Initialiser Firebase Messaging
   useEffect(() => {
     const initMessaging = async () => {
+      // Log de base pour diagnostiquer Opera GX
+      console.log('🔥 FCM Hook - initMessaging démarré', {
+        hasUser: !!user,
+        userId: user?.uid || 'N/A',
+        isSupported,
+        permission,
+        userAgent:
+          typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
+      });
+
       // Logs de diagnostic avec détection Opera GX
       const userAgent =
         typeof window !== 'undefined' ? window.navigator.userAgent : '';

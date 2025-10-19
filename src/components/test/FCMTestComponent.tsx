@@ -10,6 +10,15 @@ export default function FCMTestComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
+  // Log de base pour diagnostiquer Opera GX
+  console.log('🧪 FCM Test Component - Rendu', {
+    hasToken: !!token,
+    isSupported,
+    permission,
+    userAgent:
+      typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
+  });
+
   useEffect(() => {
     setIsClient(true);
     logger.info('FCM Test Component monté', {
