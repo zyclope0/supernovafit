@@ -426,10 +426,23 @@ export function useNotifications(): UseNotificationsReturn {
                       },
                     );
 
-                    fcmToken = await getToken(messagingInstance, {
+                    // Opera GX: Ajouter un timeout pour éviter le blocage
+                    const tokenPromise = getToken(messagingInstance, {
                       vapidKey,
                       serviceWorkerRegistration: swToUse,
                     });
+
+                    const timeoutPromise = new Promise((_, reject) => {
+                      setTimeout(
+                        () => reject(new Error('getToken timeout after 10s')),
+                        10000,
+                      );
+                    });
+
+                    fcmToken = (await Promise.race([
+                      tokenPromise,
+                      timeoutPromise,
+                    ])) as string;
 
                     console.log(
                       `🔧 Opera GX - Résultat getToken avec service worker pour ${strategy.name}`,
@@ -450,9 +463,22 @@ export function useNotifications(): UseNotificationsReturn {
                       },
                     );
 
-                    fcmToken = await getToken(messagingInstance, {
+                    // Opera GX: Ajouter un timeout pour éviter le blocage
+                    const tokenPromise = getToken(messagingInstance, {
                       vapidKey,
                     });
+
+                    const timeoutPromise = new Promise((_, reject) => {
+                      setTimeout(
+                        () => reject(new Error('getToken timeout after 10s')),
+                        10000,
+                      );
+                    });
+
+                    fcmToken = (await Promise.race([
+                      tokenPromise,
+                      timeoutPromise,
+                    ])) as string;
 
                     console.log(
                       `🔧 Opera GX - Résultat getToken sans service worker pour ${strategy.name}`,
