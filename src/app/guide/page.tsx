@@ -19,7 +19,6 @@ import {
   Settings,
 } from 'lucide-react';
 import { APP_VERSION } from '@/lib/constants';
-import FCMTestComponent from '@/components/test/FCMTestComponent';
 
 export default function GuidePage() {
   const Section = ({
@@ -724,11 +723,6 @@ export default function GuidePage() {
               </div>
             </div>
           </div>
-        </Section>
-
-        {/* Test FCM */}
-        <Section title="🔔 Test Notifications Push" icon={Zap}>
-          <FCMTestComponent />
         </Section>
       </div>
     </MainLayout>

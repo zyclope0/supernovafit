@@ -16,7 +16,7 @@ Firebase Cloud Messaging (FCM) est maintenant **complètement fonctionnel** sur 
 - ✅ **Service Worker** FCM opérationnel
 - ✅ **Gestion complète** des notifications (avant-plan/arrière-plan)
 - ✅ **Logger robuste** pour debugging avancé
-- ✅ **Composant de test** intégré dans la page Guide
+- ✅ **Fallback Opera GX** avec notifications natives
 - ✅ **Build stable** et déploiement prêt
 
 ---
@@ -351,6 +351,38 @@ git push origin main
 4. **A/B Testing** : Tests de contenu notifications
 5. **Scheduling** : Notifications programmées
 
+### **Fallback Opera GX**
+
+**Problème identifié :** Opera GX a des incompatibilités avec Firebase `getToken()` qui cause des timeouts.
+
+**Solution implémentée :**
+
+- ✅ **Détection Opera GX** : User agent detection automatique
+- ✅ **Stratégies multiples** : 3 tentatives FCM avec timeouts
+- ✅ **Fallback natif** : Notifications via API native du navigateur
+- ✅ **Token simulé** : `opera-gx-fallback-{timestamp}-{random}`
+- ✅ **Interface adaptée** : Statut spécial pour Opera GX
+
+**Code :**
+
+```typescript
+// Détection Opera GX
+const isOpera = userAgent.includes("OPR") || userAgent.includes("Opera");
+
+// Stratégies FCM avec timeout
+const strategies = [
+  { name: "sans_service_worker", useSW: false },
+  { name: "avec_sw_fcm", useSW: true, swType: "fcm" },
+  { name: "avec_sw_pwa", useSW: true, swType: "pwa" },
+];
+
+// Fallback automatique
+if (!fcmToken && lastError) {
+  fcmToken = `opera-gx-fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  setIsOperaGXFallback(true);
+}
+```
+
 ### **Intégrations Possibles**
 
 1. **Backend API** : Endpoint d'envoi notifications
@@ -371,8 +403,7 @@ git push origin main
 ### **Fichiers de Configuration**
 
 - `public/firebase-messaging-sw.js` : Service Worker FCM
-- `src/hooks/useNotifications.ts` : Hook FCM client
-- `src/components/test/FCMTestComponent.tsx` : Composant test
+- `src/hooks/useNotifications.ts` : Hook FCM avec fallback Opera GX
 - `.env.local` : Configuration VAPID
 - `docs/FIREBASE_VAPID_SETUP.md` : Guide configuration
 

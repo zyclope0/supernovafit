@@ -73,13 +73,7 @@ export function useNotifications(): UseNotificationsReturn {
   const { user } = useAuth();
   const [isSupported, setIsSupported] = useState(false);
 
-  // Log de base pour diagnostiquer le chargement du hook
-  console.log('🚀 FCM Hook - useNotifications initialisé', {
-    hasUser: !!user,
-    userId: user?.uid || 'N/A',
-    userAgent:
-      typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
-  });
+  // Hook FCM initialisé
   const [permission, setPermission] =
     useState<NotificationPermission>('default');
   const [token, setToken] = useState<string | null>(null);
@@ -94,12 +88,7 @@ export function useNotifications(): UseNotificationsReturn {
     const checkSupport = async () => {
       if (typeof window === 'undefined') return;
 
-      // Log de base pour diagnostiquer Opera GX
-      console.log('🔍 FCM Hook - checkSupport démarré', {
-        userAgent: window.navigator.userAgent,
-        hasWindow: typeof window !== 'undefined',
-        hasNavigator: typeof window.navigator !== 'undefined',
-      });
+      // Vérification du support des notifications
 
       try {
         const supported =
@@ -149,18 +138,10 @@ export function useNotifications(): UseNotificationsReturn {
   // Initialiser Firebase Messaging
   useEffect(() => {
     const initMessaging = async () => {
-      // Log de base pour diagnostiquer Opera GX
+      // Initialisation FCM
       const userAgent =
         typeof window !== 'undefined' ? window.navigator.userAgent : '';
       const isOpera = userAgent.includes('OPR') || userAgent.includes('Opera');
-
-      console.log('🔥 FCM Hook - initMessaging démarré', {
-        hasUser: !!user,
-        userId: user?.uid || 'N/A',
-        isSupported,
-        permission,
-        userAgent: userAgent || 'N/A',
-      });
 
       logger.info('FCM Initialisation - Vérification des prérequis', {
         component: 'notifications',
@@ -187,14 +168,7 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
-      // Log de continuation pour Opera GX
-      console.log('✅ FCM Prérequis OK - Continuation initialisation', {
-        hasUser: !!user,
-        userId: user?.uid,
-        isSupported,
-        permission,
-        isOpera,
-      });
+      // Prérequis FCM validés
 
       try {
         const messagingInstance = await messaging;
@@ -203,29 +177,18 @@ export function useNotifications(): UseNotificationsReturn {
           return;
         }
 
-        console.log('✅ FCM Instance obtenue - Recherche service worker', {
-          hasMessagingInstance: !!messagingInstance,
-          isOpera,
-        });
+        // Instance FCM obtenue
 
         messagingRef.current = messagingInstance;
 
-        // Log de début de recherche service worker
-        console.log('🔍 FCM - Début recherche service worker', {
-          isOpera,
-          hasNavigator: typeof navigator !== 'undefined',
-          hasServiceWorker: typeof navigator?.serviceWorker !== 'undefined',
-        });
+        // Recherche du service worker
 
         // Vérifier si le service worker est enregistré
         const registration = await navigator.serviceWorker.getRegistration(
           '/firebase-messaging-sw.js',
         );
 
-        console.log('🔍 FCM - Service worker recherché', {
-          hasRegistration: !!registration,
-          isOpera,
-        });
+        // Service worker recherché
 
         if (!registration) {
           logger.warn('📱 NOTIFICATIONS - Service worker non enregistré', {
@@ -247,36 +210,23 @@ export function useNotifications(): UseNotificationsReturn {
           }
         }
 
-        // Log avant demande de permission
-        console.log('🔔 FCM - Demande permission notifications', {
-          isOpera,
-          currentPermission: Notification.permission,
-        });
+        // Demande de permission notifications
 
         // Demander la permission
         const permission = await Notification.requestPermission();
         setPermission(permission);
 
-        console.log('🔔 FCM - Permission obtenue', {
-          permission,
-          isOpera,
-        });
+        // Permission obtenue
 
         if (permission === 'granted') {
-          console.log('✅ FCM - Permission accordée, début obtention token', {
-            isOpera,
-          });
+          // Permission accordée, obtention du token
 
           // Obtenir le token FCM avec gestion d'erreurs améliorée
           try {
             // Vérifier la clé VAPID
             const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
 
-            console.log('🔑 FCM - Vérification clé VAPID', {
-              hasVapidKey: !!vapidKey,
-              vapidKeyLength: vapidKey?.length || 0,
-              isOpera,
-            });
+            // Vérification clé VAPID
             if (!vapidKey || vapidKey.length < 80) {
               logger.warn(
                 'Clé VAPID manquante ou invalide - Notifications push désactivées',
@@ -378,15 +328,7 @@ export function useNotifications(): UseNotificationsReturn {
 
               for (const strategy of strategies) {
                 try {
-                  console.log(
-                    `🎯 Opera GX - Tentative stratégie: ${strategy.name}`,
-                    {
-                      strategy: strategy.name,
-                      useSW: strategy.useSW,
-                      swType: strategy.swType,
-                      isOpera,
-                    },
-                  );
+                  // Tentative stratégie Opera GX
 
                   logger.info(
                     `Opera GX - Tentative stratégie: ${strategy.name}`,
@@ -398,16 +340,7 @@ export function useNotifications(): UseNotificationsReturn {
 
                   if (strategy.useSW) {
                     // Utiliser le service worker approprié
-                    console.log(
-                      `🔧 Opera GX - Recherche service worker pour ${strategy.name}`,
-                      {
-                        swType: strategy.swType,
-                        swPath:
-                          strategy.swType === 'fcm'
-                            ? '/firebase-messaging-sw.js'
-                            : '/sw.js',
-                      },
-                    );
+                    // Recherche service worker Opera GX
 
                     const swToUse =
                       strategy.swType === 'fcm'
@@ -418,14 +351,7 @@ export function useNotifications(): UseNotificationsReturn {
                             '/sw.js',
                           );
 
-                    console.log(
-                      `🔧 Opera GX - Service worker trouvé pour ${strategy.name}`,
-                      {
-                        hasSW: !!swToUse,
-                        swActive: !!swToUse?.active,
-                        swScope: swToUse?.scope,
-                      },
-                    );
+                    // Service worker trouvé Opera GX
 
                     // Opera GX: Ajouter un timeout pour éviter le blocage
                     const tokenPromise = getToken(messagingInstance, {
@@ -445,24 +371,10 @@ export function useNotifications(): UseNotificationsReturn {
                       timeoutPromise,
                     ])) as string;
 
-                    console.log(
-                      `🔧 Opera GX - Résultat getToken avec service worker pour ${strategy.name}`,
-                      {
-                        hasToken: !!fcmToken,
-                        tokenLength: fcmToken?.length || 0,
-                        tokenStart: fcmToken?.substring(0, 20) + '...' || 'N/A',
-                        swType: strategy.swType,
-                      },
-                    );
+                    // Résultat getToken Opera GX avec service worker
                   } else {
                     // Sans service worker
-                    console.log(
-                      `🔧 Opera GX - Appel getToken sans service worker pour ${strategy.name}`,
-                      {
-                        hasMessagingInstance: !!messagingInstance,
-                        hasVapidKey: !!vapidKey,
-                      },
-                    );
+                    // Appel getToken Opera GX sans service worker
 
                     // Opera GX: Ajouter un timeout pour éviter le blocage
                     const tokenPromise = getToken(messagingInstance, {
@@ -481,23 +393,10 @@ export function useNotifications(): UseNotificationsReturn {
                       timeoutPromise,
                     ])) as string;
 
-                    console.log(
-                      `🔧 Opera GX - Résultat getToken sans service worker pour ${strategy.name}`,
-                      {
-                        hasToken: !!fcmToken,
-                        tokenLength: fcmToken?.length || 0,
-                        tokenStart: fcmToken?.substring(0, 20) + '...' || 'N/A',
-                      },
-                    );
+                    // Résultat getToken Opera GX sans service worker
                   }
 
-                  console.log(
-                    `✅ Opera GX - Succès avec stratégie: ${strategy.name}`,
-                    {
-                      strategy: strategy.name,
-                      tokenLength: fcmToken?.length || 0,
-                    },
-                  );
+                  // Succès stratégie Opera GX
 
                   logger.info(
                     `Opera GX - Succès avec stratégie: ${strategy.name}`,
@@ -513,14 +412,7 @@ export function useNotifications(): UseNotificationsReturn {
                       ? strategyError
                       : new Error(String(strategyError));
 
-                  console.log(
-                    `❌ Opera GX - Échec stratégie: ${strategy.name}`,
-                    {
-                      strategy: strategy.name,
-                      errorMessage: lastError.message,
-                      errorName: lastError.name,
-                    },
-                  );
+                  // Échec stratégie Opera GX
 
                   logger.warn(`Opera GX - Échec stratégie: ${strategy.name}`, {
                     action: 'fcm_token',
