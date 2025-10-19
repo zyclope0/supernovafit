@@ -13,6 +13,12 @@ const SENTRY_DSN =
 
 // Configuration simplifiée pour éviter les erreurs de syntaxe au premier chargement
 
+// Détection du navigateur pour ajuster les taux d'échantillonnage
+const isOpera =
+  typeof window !== 'undefined' &&
+  (window.navigator.userAgent.includes('OPR') ||
+    window.navigator.userAgent.includes('Opera'));
+
 Sentry.init({
   dsn: SENTRY_DSN,
 
@@ -30,7 +36,11 @@ Sentry.init({
   // Replays for error reproduction
   replaysOnErrorSampleRate: 1.0,
   // This sets the sample rate to be 10%. You may want this to be 100% while in development and sample at a lower rate in production.
-  replaysSessionSampleRate: process.env.NODE_ENV === 'development' ? 0.1 : 0.1,
+  replaysSessionSampleRate: isOpera
+    ? 0.05
+    : process.env.NODE_ENV === 'development'
+      ? 0.1
+      : 0.1,
 
   // Error filtering avancé pour SuperNovaFit
   beforeSend(event, hint) {
@@ -99,6 +109,14 @@ Sentry.init({
   tracesSampler: (samplingContext) => {
     // Échantillonnage réduit en développement pour éviter les rate limits
     const url = samplingContext?.location?.href || '';
+    const userAgent =
+      typeof window !== 'undefined' ? window.navigator.userAgent : '';
+
+    // Détection Opera GX - taux très réduit pour éviter 429
+    if (userAgent.includes('OPR') || userAgent.includes('Opera')) {
+      return 0.05; // 5% pour Opera/Opera GX
+    }
+
     if (url.includes('localhost')) return 0.1; // Réduit de 100% à 10%
     return 0.2;
   },
