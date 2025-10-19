@@ -381,6 +381,16 @@ export function useNotifications(): UseNotificationsReturn {
 
               for (const strategy of strategies) {
                 try {
+                  console.log(
+                    `🎯 Opera GX - Tentative stratégie: ${strategy.name}`,
+                    {
+                      strategy: strategy.name,
+                      useSW: strategy.useSW,
+                      swType: strategy.swType,
+                      isOpera,
+                    },
+                  );
+
                   logger.info(
                     `Opera GX - Tentative stratégie: ${strategy.name}`,
                     {
@@ -391,6 +401,17 @@ export function useNotifications(): UseNotificationsReturn {
 
                   if (strategy.useSW) {
                     // Utiliser le service worker approprié
+                    console.log(
+                      `🔧 Opera GX - Recherche service worker pour ${strategy.name}`,
+                      {
+                        swType: strategy.swType,
+                        swPath:
+                          strategy.swType === 'fcm'
+                            ? '/firebase-messaging-sw.js'
+                            : '/sw.js',
+                      },
+                    );
+
                     const swToUse =
                       strategy.swType === 'fcm'
                         ? await navigator.serviceWorker.getRegistration(
@@ -400,16 +421,41 @@ export function useNotifications(): UseNotificationsReturn {
                             '/sw.js',
                           );
 
+                    console.log(
+                      `🔧 Opera GX - Service worker trouvé pour ${strategy.name}`,
+                      {
+                        hasSW: !!swToUse,
+                        swActive: !!swToUse?.active,
+                        swScope: swToUse?.scope,
+                      },
+                    );
+
                     fcmToken = await getToken(messagingInstance, {
                       vapidKey,
                       serviceWorkerRegistration: swToUse,
                     });
                   } else {
                     // Sans service worker
+                    console.log(
+                      `🔧 Opera GX - Appel getToken sans service worker pour ${strategy.name}`,
+                      {
+                        hasMessagingInstance: !!messagingInstance,
+                        hasVapidKey: !!vapidKey,
+                      },
+                    );
+
                     fcmToken = await getToken(messagingInstance, {
                       vapidKey,
                     });
                   }
+
+                  console.log(
+                    `✅ Opera GX - Succès avec stratégie: ${strategy.name}`,
+                    {
+                      strategy: strategy.name,
+                      tokenLength: fcmToken?.length || 0,
+                    },
+                  );
 
                   logger.info(
                     `Opera GX - Succès avec stratégie: ${strategy.name}`,
@@ -424,6 +470,16 @@ export function useNotifications(): UseNotificationsReturn {
                     strategyError instanceof Error
                       ? strategyError
                       : new Error(String(strategyError));
+
+                  console.log(
+                    `❌ Opera GX - Échec stratégie: ${strategy.name}`,
+                    {
+                      strategy: strategy.name,
+                      errorMessage: lastError.message,
+                      errorName: lastError.name,
+                    },
+                  );
+
                   logger.warn(`Opera GX - Échec stratégie: ${strategy.name}`, {
                     action: 'fcm_token',
                     strategy: strategy.name,
