@@ -106,6 +106,7 @@ export function useNotifications(): UseNotificationsReturn {
 
         // Détection Opera GX pour diagnostic
         const userAgent = window.navigator.userAgent;
+
         const isOpera =
           userAgent.includes('OPR') || userAgent.includes('Opera');
 
@@ -148,19 +149,17 @@ export function useNotifications(): UseNotificationsReturn {
   useEffect(() => {
     const initMessaging = async () => {
       // Log de base pour diagnostiquer Opera GX
+      const userAgent =
+        typeof window !== 'undefined' ? window.navigator.userAgent : '';
+      const isOpera = userAgent.includes('OPR') || userAgent.includes('Opera');
+
       console.log('🔥 FCM Hook - initMessaging démarré', {
         hasUser: !!user,
         userId: user?.uid || 'N/A',
         isSupported,
         permission,
-        userAgent:
-          typeof window !== 'undefined' ? window.navigator.userAgent : 'N/A',
+        userAgent: userAgent || 'N/A',
       });
-
-      // Logs de diagnostic avec détection Opera GX
-      const userAgent =
-        typeof window !== 'undefined' ? window.navigator.userAgent : '';
-      const isOpera = userAgent.includes('OPR') || userAgent.includes('Opera');
 
       logger.info('FCM Initialisation - Vérification des prérequis', {
         component: 'notifications',
@@ -356,9 +355,6 @@ export function useNotifications(): UseNotificationsReturn {
 
             // Test : Logique spéciale pour Opera GX
             let fcmToken;
-            const userAgent = window.navigator.userAgent;
-            const isOpera =
-              userAgent.includes('OPR') || userAgent.includes('Opera');
 
             if (isOpera) {
               // Opera GX : Logique spéciale pour éviter les problèmes de Service Worker
