@@ -187,12 +187,26 @@ export function useNotifications(): UseNotificationsReturn {
         return;
       }
 
+      // Log de continuation pour Opera GX
+      console.log('✅ FCM Prérequis OK - Continuation initialisation', {
+        hasUser: !!user,
+        userId: user?.uid,
+        isSupported,
+        permission,
+        isOpera,
+      });
+
       try {
         const messagingInstance = await messaging;
         if (!messagingInstance) {
           console.warn('📱 NOTIFICATIONS - Instance messaging non disponible');
           return;
         }
+
+        console.log('✅ FCM Instance obtenue - Recherche service worker', {
+          hasMessagingInstance: !!messagingInstance,
+          isOpera,
+        });
 
         messagingRef.current = messagingInstance;
 
