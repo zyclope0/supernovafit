@@ -430,6 +430,16 @@ export function useNotifications(): UseNotificationsReturn {
                       vapidKey,
                       serviceWorkerRegistration: swToUse,
                     });
+
+                    console.log(
+                      `🔧 Opera GX - Résultat getToken avec service worker pour ${strategy.name}`,
+                      {
+                        hasToken: !!fcmToken,
+                        tokenLength: fcmToken?.length || 0,
+                        tokenStart: fcmToken?.substring(0, 20) + '...' || 'N/A',
+                        swType: strategy.swType,
+                      },
+                    );
                   } else {
                     // Sans service worker
                     console.log(
@@ -443,6 +453,15 @@ export function useNotifications(): UseNotificationsReturn {
                     fcmToken = await getToken(messagingInstance, {
                       vapidKey,
                     });
+
+                    console.log(
+                      `🔧 Opera GX - Résultat getToken sans service worker pour ${strategy.name}`,
+                      {
+                        hasToken: !!fcmToken,
+                        tokenLength: fcmToken?.length || 0,
+                        tokenStart: fcmToken?.substring(0, 20) + '...' || 'N/A',
+                      },
+                    );
                   }
 
                   console.log(
