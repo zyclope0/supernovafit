@@ -720,7 +720,7 @@ export default function DietePage() {
         </CollapsibleCard>
 
         {/* SECTION 3: REPAS DU JOUR (toujours ouvert) */}
-        <div className="glass-effect p-4 rounded-xl border border-white/10 mb-6">
+        <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               🍽️ REPAS DU JOUR
@@ -836,7 +836,7 @@ export default function DietePage() {
 
         {/* Message si non connecté */}
         {!user && (
-          <div className="glass-effect p-6 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
+          <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
             <p className="text-yellow-400">
               Connectez-vous pour enregistrer vos repas et suivre votre
               nutrition !

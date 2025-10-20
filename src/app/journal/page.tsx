@@ -459,7 +459,7 @@ export default function JournalPageOptimized() {
 
         {/* Message si pas connecté */}
         {!user && (
-          <div className="glass-effect p-6 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
+          <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
             <p className="text-yellow-400">
               Connectez-vous pour accéder à votre journal personnel !
             </p>
@@ -523,7 +523,7 @@ export default function JournalPageOptimized() {
                         return (
                           <>
                             {/* Message pour la date sélectionnée */}
-                            <div className="glass-effect p-4 rounded-xl border border-white/10 text-center mb-4">
+                            <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10 text-center mb-4">
                               <div className="text-2xl mb-2">📝</div>
                               <p className="text-sm text-white/70 mb-2">
                                 {selectedDate === today
@@ -591,7 +591,7 @@ export default function JournalPageOptimized() {
               {/* Sidebar droite (SECONDAIRE) */}
               <div className="lg:col-span-1 space-y-4">
                 {/* Navigation rapide */}
-                <div className="glass-effect p-4 rounded-xl border border-white/10">
+                <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10">
                   <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                     ⚡ Navigation rapide
                   </h3>
@@ -621,7 +621,7 @@ export default function JournalPageOptimized() {
                 {objectifsLoading ? (
                   <CardSkeleton />
                 ) : (
-                  <div className="glass-effect p-4 rounded-xl border border-white/10">
+                  <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                         🎯 Objectifs
@@ -737,7 +737,7 @@ export default function JournalPageOptimized() {
 
                 {/* Badges (compact sidebar) */}
                 {!badgesLoading && badges.length > 0 && (
-                  <div className="glass-effect p-4 rounded-xl border border-white/10">
+                  <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                         🏆 Badges
@@ -813,7 +813,7 @@ export default function JournalPageOptimized() {
 
                 {/* Analyse simple (compact) */}
                 {entries.length >= 3 && (
-                  <div className="glass-effect p-4 rounded-xl border border-white/10">
+                  <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10">
                     <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                       📈 Analyse
                     </h3>
@@ -891,7 +891,7 @@ export default function JournalPageOptimized() {
           {/* Message si aucune entrée */}
           {!user ? null : entries.length === 0 ? (
             <div className="lg:col-span-4">
-              <div className="glass-effect p-6 rounded-xl border border-white/10">
+              <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-white/10">
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">📝</div>
                   <h2 className="text-xl font-semibold text-white mb-2">

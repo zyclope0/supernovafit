@@ -279,7 +279,7 @@ export default function ChallengesPage() {
         </div>
 
         {/* Statistiques d'implémentation */}
-        <div className="glass-effect rounded-xl p-4 border border-white/20">
+        <div className="glass-effect rounded-xl p-3 sm:p-4 lg:p-6 border border-white/20">
           <h3 className="text-lg font-semibold text-white mb-3">
             📊 État d&apos;implémentation
           </h3>
@@ -324,7 +324,7 @@ export default function ChallengesPage() {
 
         {/* Message si pas connecté */}
         {!user && (
-          <div className="glass-effect p-6 lg:p-8 rounded-xl border border-white/20 text-center">
+          <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-white/20 text-center">
             <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">
               Challenges & Récompenses
@@ -409,7 +409,7 @@ export default function ChallengesPage() {
 
             {/* Challenges by Category */}
             {Object.keys(challengesByCategory).length === 0 ? (
-              <div className="glass-effect rounded-xl p-4 sm:p-6 lg:p-8 border border-white/20 text-center">
+              <div className="glass-effect rounded-xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center">
                 <Target className="w-16 h-16 text-white/30 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">
                   Aucun challenge
@@ -462,7 +462,7 @@ export default function ChallengesPage() {
         {activeTab === 'achievements' && (
           <div className="space-y-6">
             {Object.keys(achievementsByRarity).length === 0 ? (
-              <div className="glass-effect rounded-xl p-4 sm:p-6 lg:p-8 border border-white/20 text-center">
+              <div className="glass-effect rounded-xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center">
                 <Trophy className="w-16 h-16 text-white/30 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">
                   Aucun achievement
@@ -507,7 +507,7 @@ export default function ChallengesPage() {
         {/* Add Challenge Modal */}
         {showAddChallenge && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="glass-effect rounded-xl p-6 border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="glass-effect rounded-xl p-4 sm:p-6 lg:p-8 border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-white flex-1 min-w-0">
                   Ajouter un challenge

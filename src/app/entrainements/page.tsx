@@ -363,7 +363,7 @@ export default function EntrainementsPage() {
 
         {/* Message si pas connecté */}
         {!user && (
-          <div className="glass-effect p-6 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
+          <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-yellow-500/20 bg-yellow-500/5">
             <p className="text-yellow-400">
               Connectez-vous pour enregistrer vos entraînements et suivre votre
               progression !
@@ -385,7 +385,7 @@ export default function EntrainementsPage() {
 
             <div className="space-y-4">
               {/* Actions rapides */}
-              <div className="glass-effect p-4 rounded-xl border border-white/10">
+              <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                   ⚡ Actions rapides
                 </h3>
@@ -418,7 +418,7 @@ export default function EntrainementsPage() {
               </div>
 
               {/* Stats du jour sélectionné */}
-              <div className="glass-effect p-4 rounded-xl border border-white/10">
+              <div className="glass-effect p-3 sm:p-4 lg:p-6 rounded-xl border border-white/10">
                 <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
                   📊{' '}
                   {selectedDate ===
@@ -549,7 +549,7 @@ export default function EntrainementsPage() {
             defaultOpen={true}
           >
             {loading ? (
-              <div className="glass-effect p-6 rounded-xl border border-white/10">
+              <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-white/10">
                 <div className="animate-pulse">
                   <div className="h-4 bg-white/20 rounded w-3/4 mb-2"></div>
                   <div className="h-4 bg-white/20 rounded w-1/2"></div>
