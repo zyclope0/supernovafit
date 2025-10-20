@@ -733,7 +733,7 @@ export default function DietePage() {
           {/* Actions rapides */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="flex items-center gap-3 flex-wrap">
-              <label className="text-sm text-muted-foreground whitespace-nowrap">
+              <label className="text-sm text-muted-foreground sm:whitespace-nowrap">
                 📅 Date :
               </label>
               <input
@@ -748,13 +748,13 @@ export default function DietePage() {
                 onClick={() =>
                   setSelectedDate(new Date().toISOString().split('T')[0])
                 }
-                className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium whitespace-nowrap"
+                className="px-3 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg text-sm hover:bg-neon-cyan/30 transition-colors font-medium sm:whitespace-nowrap"
               >
                 Aujourd&apos;hui
               </button>
               <button
                 onClick={() => setShowHistorique(true)}
-                className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium whitespace-nowrap"
+                className="px-3 py-2 bg-white/10 text-white rounded-lg text-sm hover:bg-white/20 transition-colors font-medium sm:whitespace-nowrap"
               >
                 📊 Historique
               </button>
@@ -918,7 +918,7 @@ export default function DietePage() {
       <div className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-50">
         {/* Menu de sélection des types de repas */}
         {showMenuTypes && (
-          <div className="absolute bottom-20 right-0 mb-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl p-2 min-w-[200px]">
+          <div className="absolute bottom-20 right-2 mb-2 bg-space-800/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl p-2 min-w-[200px] max-w-[calc(100vw-16px)]">
             <div className="text-xs text-gray-400 mb-2 px-2">
               Choisir le type de repas :
             </div>

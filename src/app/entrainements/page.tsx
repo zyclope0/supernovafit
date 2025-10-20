@@ -760,18 +760,18 @@ function SimpleAllTrainingsList({
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 whitespace-nowrap"
+              className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 sm:whitespace-nowrap"
             >
               Précédent
             </button>
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
+            <span className="text-xs text-muted-foreground sm:whitespace-nowrap">
               {start + 1}–{Math.min(sorted.length, start + pageSize)}
             </span>
           </div>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 whitespace-nowrap"
+            className="px-3 py-1 bg-white/10 text-white rounded disabled:opacity-50 sm:whitespace-nowrap"
           >
             Suivant
           </button>
