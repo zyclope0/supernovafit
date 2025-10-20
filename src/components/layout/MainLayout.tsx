@@ -86,8 +86,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
         >
           {/* Header avec badge Coach/Athlète en haut à droite */}
           {!loading && user && (
-            <div className="absolute top-4 right-4 z-40">
-              <div className="px-3 py-1 bg-white/10 backdrop-blur-sm rounded-lg text-sm text-accessible border border-white/20 shadow-lg">
+            <div className="absolute top-4 right-2 z-40 max-w-[calc(100vw-16px)]">
+              <div className="px-3 py-1 bg-white/10 backdrop-blur-sm rounded-lg text-sm text-accessible border border-white/20 shadow-lg whitespace-nowrap">
                 {isCoach ? 'Coach' : 'Athlète'}
               </div>
             </div>

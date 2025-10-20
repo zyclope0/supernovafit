@@ -339,10 +339,10 @@ export default function EntrainementsPage() {
     <MainLayout>
       <div className="space-y-6">
         {/* Bouton d'action pour les graphiques */}
-        <div className="flex justify-end">
+        <div className="flex justify-end overflow-x-hidden">
           <button
             onClick={() => setShowCharts(!showCharts)}
-            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 text-neon-cyan rounded-lg hover:bg-neon-cyan/30 transition-colors whitespace-nowrap"
           >
             <BarChart3 className="h-4 w-4" />
             {showCharts ? 'Masquer' : 'Graphiques'}
