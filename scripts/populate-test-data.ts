@@ -1,6 +1,6 @@
 /**
  * Script de population de données de test cohérentes
- * Basé sur l'historique réel : 99kg (31.07.2025) -> 89kg (20.10.2025)
+ * Basé sur l'historique réel : 99kg (31.07.2025) -> 89kg (22.10.2025)
  * Régime alimentaire progressif avec changement il y a 3 semaines
  * 3-4 entraînements/semaine (endurance + musculation)
  */
@@ -36,10 +36,10 @@ const db = getFirestore();
 const TEST_USER_ID = 'VBSTkEAy1OWptNJmUbIjFFz62Zg1'; // User test réel
 const COACH_ID = 'QwpCZpdwXURc3pB2m8K51h4S6ff1'; // Coach réel
 
-// Dates clés
-const START_DATE = new Date('2024-07-31'); // 99kg
-const END_DATE = new Date('2024-10-20'); // 89kg
-const DIET_CHANGE_DATE = new Date('2024-09-29'); // Il y a 3 semaines
+// Dates clés (2025 !)
+const START_DATE = new Date('2025-07-31'); // 99kg
+const END_DATE = new Date('2025-10-22'); // 89kg - Inclut aujourd'hui + demain
+const DIET_CHANGE_DATE = new Date('2025-09-29'); // Il y a 3 semaines
 
 // Fonction pour générer une progression linéaire du poids
 function calculateWeight(date: Date): number {
