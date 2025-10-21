@@ -28,8 +28,8 @@ if (!getApps().length) {
 const db = getFirestore();
 
 // ID utilisateur de test (sportif)
-const TEST_USER_ID = 'test-user-id'; // À remplacer par l'ID réel
-const COACH_ID = 'test-coach-id'; // À remplacer par l'ID coach réel
+const TEST_USER_ID = 'VBSTkEAy1OWptNJmUbIjFFz62Zg1'; // User test réel
+const COACH_ID = 'QwpCZpdwXURc3pB2m8K51h4S6ff1'; // Coach réel
 
 // Dates clés
 const START_DATE = new Date('2024-07-31'); // 99kg
