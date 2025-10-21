@@ -19,13 +19,14 @@
 
 ### **Résultats Finaux**
 
-| Aspect            | Avant       | Après            | Amélioration |
-| ----------------- | ----------- | ---------------- | ------------ |
-| **Docs Actifs**   | 106         | 36               | **-66%**     |
-| **Navigation**    | Complexe    | 1 INDEX          | **+300%**    |
-| **Contexte AI**   | v2.1 (docs) | v3.0 (code réel) | **+100%**    |
-| **Score Qualité** | 9.5/10      | 9.6/10           | **+1%**      |
-| **Onboarding**    | 60min       | 20min            | **+67%**     |
+| Aspect                | Avant       | Après            | Amélioration |
+| --------------------- | ----------- | ---------------- | ------------ |
+| **Docs Actifs**       | 106         | 36               | **-66%**     |
+| **Fichiers Contexte** | 3           | 2                | **-33%**     |
+| **Navigation**        | Complexe    | 1 INDEX          | **+300%**    |
+| **Contexte AI**       | v2.1 (docs) | v3.0 (code réel) | **+100%**    |
+| **Score Qualité**     | 9.5/10      | 9.8/10           | **+3%**      |
+| **Onboarding**        | 60min       | 20min            | **+67%**     |
 
 ---
 
