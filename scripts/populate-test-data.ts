@@ -434,8 +434,9 @@ async function populateMesures() {
 
     if (date > END_DATE) break;
 
-    // Format YYYY-MM-DD
-    const dateString = date.toISOString().split('T')[0];
+    // ⚠️ IMPORTANT: Timestamp à 12:00:00 (comme l'app)
+    const dateAt12 = new Date(date);
+    dateAt12.setHours(12, 0, 0, 0);
 
     const poids = calculateWeight(date);
     const imc = calculateIMC(poids, TAILLE);
@@ -446,13 +447,13 @@ async function populateMesures() {
     const mesureRef = db.collection('mesures').doc();
     batch.set(mesureRef, {
       user_id: TEST_USER_ID,
-      date: dateString,
+      date: Timestamp.fromDate(dateAt12), // ✅ Timestamp à 12:00:00
       poids,
       taille: TAILLE,
       imc,
       masse_grasse,
       tour_taille,
-      created_at: Timestamp.fromDate(date),
+      created_at: Timestamp.fromDate(new Date()),
     });
 
     count++;
@@ -479,8 +480,9 @@ async function populateRepas() {
 
     if (date > END_DATE) break;
 
-    // Format YYYY-MM-DD
-    const dateString = date.toISOString().split('T')[0];
+    // ⚠️ IMPORTANT: Timestamp à 12:00:00 (comme l'app)
+    const dateAt12 = new Date(date);
+    dateAt12.setHours(12, 0, 0, 0);
 
     // Choisir le régime approprié
     const diet = date < DIET_CHANGE_DATE ? OLD_DIET : NEW_DIET;
@@ -501,29 +503,49 @@ async function populateRepas() {
         { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
       );
 
+      const now = new Date();
+
       batch.set(repasRef, {
         user_id: TEST_USER_ID,
-        date: dateString,
+        date: Timestamp.fromDate(dateAt12), // ✅ Timestamp à 12:00:00
         repas: mealType,
-        aliments: aliments.map((a, index) => ({
-          id: `${Date.now()}-${count}-${index}`,
-          nom: a.nom,
-          quantite: parseFloat(a.quantite.replace(/[^\d.]/g, '')),
-          unite: a.quantite.match(/[a-zA-Z]+/)?.[0] || 'g',
-          macros: {
-            kcal: a.calories,
-            prot: a.proteines,
-            glucides: a.glucides,
-            lipides: a.lipides,
-          },
-        })),
+        aliments: aliments.map((a, index) => {
+          const quantiteNum = parseFloat(a.quantite.replace(/[^\d.]/g, ''));
+          const unite = a.quantite.match(/[a-zA-Z]+/)?.[0] || 'g';
+
+          // Calcul des macros_base (pour 100g/100ml)
+          const macros_base = {
+            kcal: Math.round((a.calories / quantiteNum) * 100),
+            prot: Math.round((a.proteines / quantiteNum) * 100 * 10) / 10,
+            glucides: Math.round((a.glucides / quantiteNum) * 100 * 10) / 10,
+            lipides: Math.round((a.lipides / quantiteNum) * 100 * 10) / 10,
+          };
+
+          return {
+            id: `${Date.now()}-${count}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+            nom: a.nom,
+            nom_lower: a.nom.toLowerCase(), // ✅ Ajouté
+            quantite: quantiteNum,
+            unite: unite,
+            user_id: TEST_USER_ID, // ✅ Ajouté
+            created_at: Timestamp.fromDate(now), // ✅ Ajouté
+            macros: {
+              kcal: a.calories,
+              prot: a.proteines,
+              glucides: a.glucides,
+              lipides: a.lipides,
+            },
+            macros_base: macros_base, // ✅ Ajouté
+            // openfoodfacts_id: undefined // Pas disponible pour test data
+          };
+        }),
         macros: {
           kcal: Math.round(macros.kcal),
           prot: Math.round(macros.prot * 10) / 10,
           glucides: Math.round(macros.glucides * 10) / 10,
           lipides: Math.round(macros.lipides * 10) / 10,
         },
-        created_at: Timestamp.fromDate(date),
+        created_at: Timestamp.fromDate(now),
       });
 
       count++;
@@ -554,8 +576,9 @@ async function populateEntrainements() {
 
     if (date > END_DATE) break;
 
-    // Format YYYY-MM-DD
-    const dateString = date.toISOString().split('T')[0];
+    // ⚠️ IMPORTANT: Timestamp à 12:00:00 (comme l'app)
+    const dateAt12 = new Date(date);
+    dateAt12.setHours(12, 0, 0, 0);
 
     const week = Math.floor(i / 7);
     if (week !== currentWeek) {
@@ -580,13 +603,13 @@ async function populateEntrainements() {
 
       const trainingData: any = {
         user_id: TEST_USER_ID,
-        date: dateString,
+        date: Timestamp.fromDate(dateAt12), // ✅ Timestamp à 12:00:00
         type: training.type,
         duree: training.duree,
         source: 'manuel',
         calories: training.calories,
         commentaire: `Session ${training.nom} - Bonne performance`,
-        created_at: Timestamp.fromDate(date),
+        created_at: Timestamp.fromDate(new Date()),
       };
 
       // Ajouter distance uniquement pour le cardio
@@ -623,8 +646,9 @@ async function populateJournal() {
 
     if (date > END_DATE) break;
 
-    // Format YYYY-MM-DD
-    const dateString = date.toISOString().split('T')[0];
+    // ⚠️ IMPORTANT: Timestamp à 12:00:00 (comme l'app)
+    const dateAt12 = new Date(date);
+    dateAt12.setHours(12, 0, 0, 0);
 
     const progressRatio = i / totalDays;
 
@@ -635,7 +659,7 @@ async function populateJournal() {
     const journalRef = db.collection('journal').doc();
     await journalRef.set({
       user_id: TEST_USER_ID,
-      date: dateString,
+      date: Timestamp.fromDate(dateAt12), // ✅ Timestamp à 12:00:00
       humeur: Math.min(10, baseHumeur + Math.floor(Math.random() * 2)),
       energie: Math.min(10, baseEnergie + Math.floor(Math.random() * 2)),
       sommeil: 6 + Math.floor(Math.random() * 3),
@@ -652,7 +676,7 @@ async function populateJournal() {
         'Sommeil un peu léger, mais forme OK',
         'Excellente session de sport, je progresse!',
       ][Math.floor(Math.random() * 7)],
-      created_at: Timestamp.fromDate(date),
+      created_at: Timestamp.fromDate(new Date()),
     });
 
     count++;
