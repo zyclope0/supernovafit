@@ -145,13 +145,13 @@ export function Breadcrumbs({
     <nav
       className={cn(
         'flex items-center space-x-1 text-sm',
-        'mb-6 px-1',
+        'mb-6 px-1 overflow-x-hidden max-w-full',
         className,
       )}
       aria-label="Breadcrumb"
     >
       <ol
-        className="flex items-center space-x-1"
+        className="flex items-center space-x-1 flex-nowrap overflow-x-hidden max-w-full"
         itemScope
         itemType="https://schema.org/BreadcrumbList"
       >
@@ -190,7 +190,7 @@ export function Breadcrumbs({
                       aria-hidden="true"
                     />
                   )}
-                  <span className="truncate max-w-[120px] sm:max-w-[200px]">
+                  <span className="truncate max-w-[80px] sm:max-w-[200px]">
                     {item.label}
                   </span>
                 </span>
@@ -214,7 +214,7 @@ export function Breadcrumbs({
                   )}
                   <span
                     itemProp="name"
-                    className="truncate max-w-[100px] sm:max-w-[150px]"
+                    className="truncate max-w-[60px] sm:max-w-[150px]"
                   >
                     {item.label}
                   </span>
