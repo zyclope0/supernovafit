@@ -17,9 +17,9 @@
 
 ### **Intelligence Artificielle**
 
-1. [`docs/context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md) — Contexte optimisé (RECOMMANDÉ)
-2. [`docs/context/ai_context_summary.md`](context/ai_context_summary.md) — Contexte v2.1 (legacy)
-3. [`docs/CONTEXTE_TECHNIQUE_COMPLET.md`](CONTEXTE_TECHNIQUE_COMPLET.md) — Architecture détaillée
+1. [`docs/context/AI_CODING_CONTEXT_EXHAUSTIVE.md`](context/AI_CODING_CONTEXT_EXHAUSTIVE.md) — ⭐ **Contexte exhaustif IA codage** (80%+ projet) - **RECOMMANDÉ**
+2. [`docs/context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md) — Contexte v3.0 (vue d'ensemble)
+3. [`docs/context/ai_context_summary.md`](context/ai_context_summary.md) — Contexte v2.1 (legacy)
 
 ### **Résolution Rapide de Problèmes**
 
@@ -34,12 +34,12 @@
 
 ### **📖 Contexte & Vue d'Ensemble**
 
-| Document                                                                 | Description                               | Dernière MAJ |
-| ------------------------------------------------------------------------ | ----------------------------------------- | ------------ |
-| [`context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md)         | ⭐ **Contexte complet v3.0** (RECOMMANDÉ) | 21 Oct 2025  |
-| [`context/ai_context_summary.md`](context/ai_context_summary.md)         | Contexte AI v2.1 (80% en <5min)           | 01 Oct 2025  |
-| [`CONTEXTE_TECHNIQUE_COMPLET.md`](CONTEXTE_TECHNIQUE_COMPLET.md)         | Architecture technique détaillée          | Sept 2025    |
-| [`context/PROJECT_RECOVERY_GUIDE.md`](context/PROJECT_RECOVERY_GUIDE.md) | Guide récupération contexte perdu         | Août 2025    |
+| Document                                                                                | Description                                    | Dernière MAJ |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------ |
+| [`context/AI_CODING_CONTEXT_EXHAUSTIVE.md`](context/AI_CODING_CONTEXT_EXHAUSTIVE.md) ⭐ | **Contexte exhaustif IA codage** (80%+ projet) | 21 Oct 2025  |
+| [`context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md)                        | Contexte complet v3.0 (vue d'ensemble)         | 21 Oct 2025  |
+| [`context/ai_context_summary.md`](context/ai_context_summary.md)                        | Contexte AI v2.1 (legacy, 80% en <5min)        | 01 Oct 2025  |
+| [`CONTEXTE_TECHNIQUE_COMPLET.md`](CONTEXTE_TECHNIQUE_COMPLET.md)                        | Architecture technique détaillée               | Sept 2025    |
 
 ### **🏗️ Architecture & Design**
 
@@ -208,13 +208,13 @@ Maintenance: Active
 
 ## ⚠️ **DOCUMENTS CRITIQUES (À LIRE EN PRIORITÉ)**
 
-| Rang | Document                                                                                         | Raison                     |
-| ---- | ------------------------------------------------------------------------------------------------ | -------------------------- |
-| 🥇   | [`context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md)                                 | Contexte complet à jour    |
-| 🥈   | [`DATA_POPULATION_FINAL_REPORT.md`](DATA_POPULATION_FINAL_REPORT.md)                             | Structure données CRITIQUE |
-| 🥉   | [`technical/DEPLOYMENT_WORKFLOW_CURRENT.md`](technical/DEPLOYMENT_WORKFLOW_CURRENT.md)           | CI/CD production           |
-| 4️⃣   | [`technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md`](technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md) | Design System              |
-| 5️⃣   | [`FIRESTORE_RULES_DATE_FIX.md`](FIRESTORE_RULES_DATE_FIX.md)                                     | Règles dates flexibles     |
+| Rang | Document                                                                                         | Raison                              |
+| ---- | ------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| 🥇   | [`context/AI_CODING_CONTEXT_EXHAUSTIVE.md`](context/AI_CODING_CONTEXT_EXHAUSTIVE.md)             | **Contexte exhaustif IA codage** ⭐ |
+| 🥈   | [`DATA_POPULATION_FINAL_REPORT.md`](DATA_POPULATION_FINAL_REPORT.md)                             | Structure données CRITIQUE          |
+| 🥉   | [`technical/DEPLOYMENT_WORKFLOW_CURRENT.md`](technical/DEPLOYMENT_WORKFLOW_CURRENT.md)           | CI/CD production                    |
+| 4️⃣   | [`technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md`](technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md) | Design System                       |
+| 5️⃣   | [`context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md)                                 | Contexte v3.0 (vue d'ensemble)      |
 
 ---
 
