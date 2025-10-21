@@ -107,7 +107,7 @@ export default function JournalWellnessHeader({
           </h2>
         </div>
 
-        <div className="flex bg-space-800/50 rounded-lg p-1 backdrop-blur-sm">
+        <div className="hidden sm:flex bg-space-800/50 rounded-lg p-1 backdrop-blur-sm">
           <button
             onClick={() => onPeriodChange('today')}
             className={`px-3 py-1.5 text-sm rounded-md transition-all ${

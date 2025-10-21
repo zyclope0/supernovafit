@@ -52,11 +52,11 @@ export default function GuidePage() {
     <MainLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="glass-effect p-6 rounded-xl border border-white/10 flex items-start justify-between gap-4">
-          <div>
+        <div className="glass-effect p-6 rounded-xl border border-white/10 flex flex-col sm:flex-row items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <BookOpen className="h-6 w-6 text-neon-purple" />
-              <h1 className="text-2xl font-bold neon-text">
+              <BookOpen className="h-6 w-6 text-neon-purple flex-shrink-0" />
+              <h1 className="text-xl sm:text-2xl font-bold neon-text truncate">
                 Guide Complet SuperNovaFit v{APP_VERSION}
               </h1>
             </div>
@@ -65,7 +65,7 @@ export default function GuidePage() {
               Templates rapides, Dashboards adaptatifs
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
             <Link
               href="/nouveautes"
               className="px-3 py-2 rounded-lg bg-neon-cyan/20 text-neon-cyan hover:bg-neon-cyan/30 text-sm"

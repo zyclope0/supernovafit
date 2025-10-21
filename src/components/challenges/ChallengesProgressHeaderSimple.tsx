@@ -160,7 +160,7 @@ export default function ChallengesProgressHeader({
         </div>
 
         {/* Sélecteur de période (cohérent avec autres pages) */}
-        <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-2">
           <div className="flex bg-white/10 rounded-lg p-1">
             {[
               { key: 'today', label: "Aujourd'hui", icon: '📅' },
