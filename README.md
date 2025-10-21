@@ -247,7 +247,7 @@ SuperNovaFit/
 ### **🚀 Démarrage Rapide**
 
 - **📖 INDEX COMPLET** : [`docs/INDEX.md`](docs/INDEX.md) — Point d'entrée unique (RECOMMANDÉ)
-- **🤖 Contexte AI v3.0** : [`docs/context/PROJECT_CONTEXT_V3.md`](docs/context/PROJECT_CONTEXT_V3.md) — Contexte optimisé basé code réel
+- **⭐ Contexte AI Exhaustif** : [`docs/context/AI_CODING_CONTEXT_EXHAUSTIVE.md`](docs/context/AI_CODING_CONTEXT_EXHAUSTIVE.md) — **80%+ du projet** (PRINCIPAL)
 - **📋 Guide Développeur** : [`docs/guides/GUIDE_DEVELOPPEUR.md`](docs/guides/GUIDE_DEVELOPPEUR.md) — Conventions + workflows
 
 ### **🏗️ Architecture & Technique**

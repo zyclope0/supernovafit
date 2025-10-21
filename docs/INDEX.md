@@ -37,8 +37,7 @@
 | Document                                                                                | Description                                    | Dernière MAJ |
 | --------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------ |
 | [`context/AI_CODING_CONTEXT_EXHAUSTIVE.md`](context/AI_CODING_CONTEXT_EXHAUSTIVE.md) ⭐ | **Contexte exhaustif IA codage** (80%+ projet) | 21 Oct 2025  |
-| [`context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md)                        | Contexte complet v3.0 (vue d'ensemble)         | 21 Oct 2025  |
-| [`context/ai_context_summary.md`](context/ai_context_summary.md)                        | Contexte AI v2.1 (legacy, 80% en <5min)        | 01 Oct 2025  |
+| [`context/ai_context_summary.md`](context/ai_context_summary.md)                        | Quick reference v2.2 (40% projet, scan 5min)   | 21 Oct 2025  |
 | [`CONTEXTE_TECHNIQUE_COMPLET.md`](CONTEXTE_TECHNIQUE_COMPLET.md)                        | Architecture technique détaillée               | Sept 2025    |
 
 ### **🏗️ Architecture & Design**
@@ -214,7 +213,7 @@ Maintenance: Active
 | 🥈   | [`DATA_POPULATION_FINAL_REPORT.md`](DATA_POPULATION_FINAL_REPORT.md)                             | Structure données CRITIQUE          |
 | 🥉   | [`technical/DEPLOYMENT_WORKFLOW_CURRENT.md`](technical/DEPLOYMENT_WORKFLOW_CURRENT.md)           | CI/CD production                    |
 | 4️⃣   | [`technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md`](technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md) | Design System                       |
-| 5️⃣   | [`context/PROJECT_CONTEXT_V3.md`](context/PROJECT_CONTEXT_V3.md)                                 | Contexte v3.0 (vue d'ensemble)      |
+| 5️⃣   | [`context/ai_context_summary.md`](context/ai_context_summary.md)                                 | Quick reference (scan rapide)       |
 
 ---
 

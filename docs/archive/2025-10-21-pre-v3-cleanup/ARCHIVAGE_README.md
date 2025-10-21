@@ -8,15 +8,16 @@
 
 ## 📋 **DOCUMENTS ARCHIVÉS**
 
-### **Context (2/4 archivés)**
+### **Context (3/4 archivés)**
 
 - ✅ `ai_contexte.md` → Obsolète (remplacé par PROJECT_CONTEXT_V3.md)
 - ✅ `RECOVERY_CONTEXT.md` → Historique (guide récupération)
+- ✅ `PROJECT_CONTEXT_V3.md` → Redondant (fusionné dans AI_CODING_CONTEXT_EXHAUSTIVE.md)
 
 **Conservés**:
 
-- `PROJECT_CONTEXT_V3.md` ⭐ (principal)
-- `ai_context_summary.md` (legacy v2.1, encore référencé)
+- `AI_CODING_CONTEXT_EXHAUSTIVE.md` ⭐ (principal, 80%+ projet)
+- `ai_context_summary.md` (quick reference v2.2)
 
 ---
 
@@ -166,8 +167,8 @@ Total docs racine: ~50 (réduit de ~106)
 
 ### **Contexte**
 
-3. `context/PROJECT_CONTEXT_V3.md` ⭐
-4. `context/ai_context_summary.md` (legacy v2.1)
+3. `context/AI_CODING_CONTEXT_EXHAUSTIVE.md` ⭐
+4. `context/ai_context_summary.md` (quick reference v2.2)
 
 ### **Architecture**
 

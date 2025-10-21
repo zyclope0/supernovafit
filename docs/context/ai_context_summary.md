@@ -1,9 +1,22 @@
-# 🤖 SUPERNOVAFIT - CONTEXTE AI COMPLET
+# 🤖 SUPERNOVAFIT - CONTEXTE AI QUICK REFERENCE
 
-**Version** : 2.1.0 | **Dernière MAJ** : 01.10.2025 | **Score** : 9.5/10 🏆
+**Version** : 2.2.0 | **Dernière MAJ** : 21.10.2025 | **Score** : 9.6/10 🏆
 
-> **🎯 Objectif** : 80% du contexte technique projet en < 5 minutes de lecture  
-> **📖 Docs détaillées** : [CONTEXTE_TECHNIQUE_COMPLET.md](../CONTEXTE_TECHNIQUE_COMPLET.md)
+> **🎯 Objectif** : Quick reference (40% du projet en < 5 minutes)  
+> **⭐ Contexte PRINCIPAL** : [AI_CODING_CONTEXT_EXHAUSTIVE.md](AI_CODING_CONTEXT_EXHAUSTIVE.md) **(80%+ du projet)**  
+> **📖 Détails techniques** : [CONTEXTE_TECHNIQUE_COMPLET.md](../CONTEXTE_TECHNIQUE_COMPLET.md)
+
+---
+
+## 🚨 **IMPORTANT : USAGE DE CE DOCUMENT**
+
+Ce fichier est une **référence rapide** pour scan initial.  
+**Pour toute modification de code**, utilisez **[AI_CODING_CONTEXT_EXHAUSTIVE.md](AI_CODING_CONTEXT_EXHAUSTIVE.md)** qui contient :
+
+- ✅ **5 règles critiques** avec exemples avant/après
+- ✅ **Conventions complètes** (imports, nommage, structure)
+- ✅ **Pièges courants** + solutions (dates, types, undefined)
+- ✅ **Patterns obligatoires** (Firestore, validation, tests)
 
 ---
 
