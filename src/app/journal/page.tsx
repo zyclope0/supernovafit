@@ -442,7 +442,7 @@ export default function JournalPageOptimized() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 overflow-x-hidden">
         {/* Boutons d'action - Supprimé car redondant avec le FAB */}
 
         {/* Header Bien-être Révolutionnaire (préserve l'esprit Journal) */}

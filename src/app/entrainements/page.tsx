@@ -337,7 +337,7 @@ export default function EntrainementsPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 overflow-x-hidden">
         {/* Bouton d'action pour les graphiques */}
         <div className="flex justify-end overflow-x-hidden">
           <button

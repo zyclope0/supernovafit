@@ -650,7 +650,7 @@ export default function DietePage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 overflow-x-hidden">
         {/* Bouton d'action pour menu-type */}
         <div className="flex justify-end">
           <button
