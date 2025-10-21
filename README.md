@@ -7,7 +7,8 @@
 ![Firebase](https://img.shields.io/badge/Firebase-12.1.0-orange)
 ![PWA](https://img.shields.io/badge/PWA-Ready-purple)
 ![Mobile](https://img.shields.io/badge/Mobile-First-green)
-![Score](https://img.shields.io/badge/Score-9.5%2F10-brightgreen)
+![Score](https://img.shields.io/badge/Score-9.6%2F10-brightgreen)
+![Updated](https://img.shields.io/badge/Updated-Oct%202025-blue)
 
 ## ✨ **Fonctionnalités**
 
@@ -43,7 +44,7 @@
 - **Forms** : React Hook Form + Zod validation
 - **Charts** : Recharts (dynamic imports)
 - **Icons** : Lucide React + Heroicons
-- **Tests** : Vitest + React Testing Library (217 tests, 12.52% coverage)
+- **Tests** : Vitest + React Testing Library + Playwright (308 tests, 100% passants, 4.49% coverage)
 - **Optimisations** : Dynamic imports, next/image (AVIF/WebP), Bundle 110KB, Build 10.3s
 
 ## ⚙️ Démarrage
@@ -241,13 +242,39 @@ SuperNovaFit/
 - ✅ Pagination intelligente (30 items/page)
 - ✅ Husky pre-commit automatique
 
-## 📚 **Documentation**
+## 📚 **Documentation (156 fichiers)**
 
-- **Contexte AI** : [`docs/context/ai_context_summary.md`](docs/context/ai_context_summary.md) — 80% contexte technique
-- **Documentation Technique** : [`docs/CONTEXTE_TECHNIQUE_COMPLET.md`](docs/CONTEXTE_TECHNIQUE_COMPLET.md)
+### **🚀 Démarrage Rapide**
+
+- **📖 INDEX COMPLET** : [`docs/INDEX.md`](docs/INDEX.md) — Point d'entrée unique (RECOMMANDÉ)
+- **🤖 Contexte AI v3.0** : [`docs/context/PROJECT_CONTEXT_V3.md`](docs/context/PROJECT_CONTEXT_V3.md) — Contexte optimisé basé code réel
+- **📋 Guide Développeur** : [`docs/guides/GUIDE_DEVELOPPEUR.md`](docs/guides/GUIDE_DEVELOPPEUR.md) — Conventions + workflows
+
+### **🏗️ Architecture & Technique**
+
+- **Architecture Complète** : [`docs/CONTEXTE_TECHNIQUE_COMPLET.md`](docs/CONTEXTE_TECHNIQUE_COMPLET.md)
 - **Design System** : [`docs/technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md`](docs/technical/UI_UX_INDUSTRIALIZATION_COMPLETE.md)
-- **Audit Complet** : [`archive/2025-09-27/README_CONSOLIDE.md`](archive/2025-09-27/README_CONSOLIDE.md)
-- **Guides Pratiques** : [`docs/guides/`](docs/guides/)
+- **Dashboards (3)** : [`docs/technical/DASHBOARDS_ARCHITECTURE.md`](docs/technical/DASHBOARDS_ARCHITECTURE.md)
+- **CI/CD** : [`docs/technical/DEPLOYMENT_WORKFLOW_CURRENT.md`](docs/technical/DEPLOYMENT_WORKFLOW_CURRENT.md)
+
+### **🗄️ Base de Données (CRITIQUE)**
+
+- **📊 Rapport Final** : [`docs/DATA_POPULATION_FINAL_REPORT.md`](docs/DATA_POPULATION_FINAL_REPORT.md) — Population données test
+- **🍽️ Structure Repas** : [`docs/DATA_FORMAT_FIXES.md`](docs/DATA_FORMAT_FIXES.md) — 4 champs aliments critiques
+- **🏋️ Structure Entraînements** : [`docs/DATA_TRAINING_STRUCTURE_FIX.md`](docs/DATA_TRAINING_STRUCTURE_FIX.md) — 11 champs ajoutés
+- **📅 Dates Firestore** : [`docs/FIRESTORE_RULES_DATE_FIX.md`](docs/FIRESTORE_RULES_DATE_FIX.md) — Timestamp à 12:00:00
+
+### **🧪 Tests & Qualité**
+
+- **Guide Tests** : [`docs/testing/README.md`](docs/testing/README.md) — Point d'entrée tests
+- **Standards** : [`docs/testing/TESTING_STANDARDS.md`](docs/testing/TESTING_STANDARDS.md) — Conventions
+- **Coverage** : [`docs/testing/TEST_COVERAGE_ANALYSIS.md`](docs/testing/TEST_COVERAGE_ANALYSIS.md) — 4.49%
+
+### **📖 Guides Pratiques**
+
+- **Population Données** : [`docs/GUIDE_POPULATION_DONNEES_TEST.md`](docs/GUIDE_POPULATION_DONNEES_TEST.md)
+- **Tests CI/CD** : [`docs/guides/GUIDE_PRATIQUE_TESTING_CICD.md`](docs/guides/GUIDE_PRATIQUE_TESTING_CICD.md)
+- **Users Test** : [`docs/guides/TEST_USERS_SUMMARY.md`](docs/guides/TEST_USERS_SUMMARY.md)
 
 ## 🎯 **Roadmap**
 
@@ -265,6 +292,21 @@ SuperNovaFit/
 
 ---
 
-**SuperNovaFit v2.0.0** © 2025 — Excellence Technique 9.5/10 🏆
+**SuperNovaFit v3.0.0** © 2025 — Excellence Technique 9.6/10 🏆
 
-_Application fitness mobile-first pour athlètes et coaches. Thème néon/space._
+_Application fitness mobile-first pour athlètes et coaches. 227 fichiers source, 156 docs techniques._
+
+---
+
+## 📊 **État Actuel (21 Oct 2025)**
+
+| Aspect            | Métrique                 | Status |
+| ----------------- | ------------------------ | ------ |
+| **Code Source**   | 227 fichiers             | ✅     |
+| **Documentation** | 156 fichiers MD          | ✅     |
+| **Tests**         | 308/308 passants (4.49%) | ✅     |
+| **Build**         | 10.3s / 110KB            | ✅     |
+| **Sécurité**      | 0 vulnérabilité          | ✅     |
+| **Données Test**  | 622 documents (2025)     | ✅     |
+| **CI/CD**         | GitHub Actions OK        | ✅     |
+| **Performance**   | Lighthouse 95+           | ✅     |
