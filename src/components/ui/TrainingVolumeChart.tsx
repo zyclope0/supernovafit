@@ -63,9 +63,11 @@ export default function TrainingVolumeChart({
     const weekEndStr = format(weekEnd, 'yyyy-MM-dd');
 
     // Filtrer les entraînements de cette semaine
-    const weekTrainings = entrainements.filter(
-      (e) => e.date >= weekStartStr && e.date <= weekEndStr,
-    );
+    const weekTrainings = entrainements.filter((e) => {
+      if (!e.date) return false; // ✅ Vérifier date valide
+      const dateStr = timestampToDateString(e.date);
+      return dateStr >= weekStartStr && dateStr <= weekEndStr;
+    });
 
     const totalDuration = weekTrainings.reduce((sum, e) => sum + e.duree, 0);
     const totalCalories = weekTrainings.reduce(

@@ -67,6 +67,9 @@ export default function PerformanceChart({
   // Filtrer et préparer les données selon la métrique
   const performanceData = entrainements
     .filter((e) => {
+      // ✅ Vérifier que la date est valide
+      if (!e.date) return false;
+
       switch (metric) {
         case 'vitesse':
           return e.vitesse_moy && e.vitesse_moy > 0;
@@ -84,8 +87,20 @@ export default function PerformanceChart({
         new Date(timestampToDateString(b.date)).getTime(),
     )
     .map((e) => {
+      const dateStr = timestampToDateString(e.date);
+
+      // ✅ Vérifier que la date convertie est valide
+      const parsedDate = new Date(dateStr);
+      if (isNaN(parsedDate.getTime())) {
+        console.warn('Invalid date after conversion:', {
+          date: e.date,
+          dateStr,
+        });
+        return null; // Retourner null pour filtrer plus tard
+      }
+
       const baseData = {
-        date: timestampToDateString(e.date),
+        date: dateStr,
         type: e.type,
         duree: e.duree,
         fc_moyenne: e.fc_moyenne,
@@ -109,6 +124,7 @@ export default function PerformanceChart({
                 : 0,
       };
     })
+    .filter((d) => d !== null) // ✅ Filtrer les dates invalides
     .filter(
       (d) => d.value != null && typeof d.value === 'number' && d.value > 0,
     );
