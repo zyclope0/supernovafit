@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 import { Mesure } from '@/types';
 import { formatDate } from '@/lib/utils';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { Scale, Ruler, Heart } from 'lucide-react';
 
 interface MesuresChartsProps {
@@ -59,21 +60,37 @@ export default function MesuresCharts({ mesures }: MesuresChartsProps) {
   const chartData = useMemo(() => {
     // Prendre toutes les mesures (pas de filtre temporel pour éviter les problèmes de dates)
     const data = mesures
+      .filter((m) => m.date) // ⚠️ Filtrer mesures sans date
       .slice()
       .reverse() // Du plus ancien au plus récent pour les graphiques
-      .map((mesure) => ({
-        date: mesure.date,
-        poids: mesure.poids || null,
-        imc: mesure.imc || null,
-        masse_grasse: mesure.masse_grasse || null,
-        masse_musculaire: mesure.masse_musculaire || null,
-        tour_taille: mesure.tour_taille || null,
-        tour_hanches: mesure.tour_hanches || null,
-        tour_bras: mesure.tour_bras || null,
-        tour_cuisses: mesure.tour_cuisses || null,
-        tour_cou: mesure.tour_cou || null,
-        tour_poitrine: mesure.tour_poitrine || null,
-      }));
+      .map((mesure) => {
+        // ⚠️ CRITIQUE: Convertir Timestamp → String ISO
+        const dateStr = timestampToDateString(mesure.date);
+
+        // ⚠️ Valider la date convertie
+        if (isNaN(new Date(dateStr).getTime())) {
+          console.warn('Invalid date in MesuresCharts:', {
+            original: mesure.date,
+            converted: dateStr,
+          });
+          return null;
+        }
+
+        return {
+          date: dateStr, // ✅ String ISO (YYYY-MM-DD)
+          poids: mesure.poids || null,
+          imc: mesure.imc || null,
+          masse_grasse: mesure.masse_grasse || null,
+          masse_musculaire: mesure.masse_musculaire || null,
+          tour_taille: mesure.tour_taille || null,
+          tour_hanches: mesure.tour_hanches || null,
+          tour_bras: mesure.tour_bras || null,
+          tour_cuisses: mesure.tour_cuisses || null,
+          tour_cou: mesure.tour_cou || null,
+          tour_poitrine: mesure.tour_poitrine || null,
+        };
+      })
+      .filter((d): d is NonNullable<typeof d> => d !== null); // ⚠️ Filtrer dates invalides
 
     // Calculer domains dynamiques motivationnels pour chaque métrique
     const weights = data.map((d) => d.poids).filter(Boolean) as number[];
