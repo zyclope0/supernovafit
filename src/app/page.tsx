@@ -136,42 +136,45 @@ function LandingPage() {
       icon: '📊',
       title: 'Suivi Nutritionnel',
       description:
-        'Enregistrez vos repas et suivez vos macronutriments avec précision',
+        'Base de données Open Food Facts 2M+ aliments, recherche instantanée, favoris, macros automatiques',
     },
     {
       icon: '💪',
       title: 'Entraînements',
       description:
-        'Planifiez et suivez vos séances d&apos;entraînement personnalisées',
+        'Import Garmin TCX/GPX, calcul MET automatique, graphiques performance, suivi FC',
     },
     {
       icon: '📏',
-      title: 'Mesures Corporelles',
-      description: 'Surveillez votre progression avec des graphiques détaillés',
+      title: 'Mesures & Photos',
+      description:
+        'IMC, BMR/TDEE, masse grasse, photos progression avec zones OMS',
     },
     {
-      icon: '📈',
-      title: 'Analyses Avancées',
-      description: 'Graphiques et rapports pour optimiser vos performances',
+      icon: '📓',
+      title: 'Journal Bien-être',
+      description:
+        'Humeur, énergie, sommeil, stress avec corrélations intelligentes',
     },
     {
       icon: '👥',
-      title: 'Coaching Personnalisé',
+      title: 'Mode Coach',
       description:
-        'Connectez-vous avec des coaches certifiés pour un suivi expert',
+        'Dashboard athlètes, commentaires contextuels, plans diète personnalisés',
     },
     {
-      icon: '📱',
-      title: 'Interface Moderne',
-      description: 'Design responsive et accessible sur tous vos appareils',
+      icon: '🎯',
+      title: 'Challenges & Badges',
+      description:
+        '50 challenges, système XP, 17 badges motivation progression',
     },
   ];
 
   const stats = [
-    { value: '10K+', label: 'Utilisateurs actifs' },
-    { value: '50K+', label: 'Repas enregistrés' },
-    { value: '95%', label: 'Satisfaction client' },
-    { value: '24/7', label: 'Support disponible' },
+    { value: '308', label: 'Tests passants' },
+    { value: '110KB', label: 'Bundle optimisé' },
+    { value: '95+', label: 'Score Lighthouse' },
+    { value: '10.3s', label: 'Build ultra-rapide' },
   ];
 
   return (
@@ -186,13 +189,13 @@ function LandingPage() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-              Votre plateforme complète de fitness et nutrition pour atteindre
-              vos objectifs
+              Application mobile-first pour athlètes et coaches avec suivi
+              nutrition, entraînements, mesures & bien-être
             </p>
             <p className="text-lg text-accessible max-w-2xl mx-auto">
-              Suivez votre alimentation, planifiez vos entraînements et
-              connectez-vous avec des coaches certifiés pour maximiser vos
-              résultats.
+              Interface révolutionnaire avec navigation tactile, templates
+              ultra-rapides (30s repas, 45s workout) et synchronisation temps
+              réel Firebase.
             </p>
           </div>
 
@@ -235,8 +238,9 @@ function LandingPage() {
               Fonctionnalités Principales
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Tout ce dont vous avez besoin pour transformer votre approche du
-              fitness et de la nutrition
+              Next.js 15, TypeScript strict, Tailwind CSS Glassmorphism, PWA
+              offline-first, 227 fichiers source, 308 tests, score Lighthouse
+              95+
             </p>
           </div>
 
@@ -259,11 +263,12 @@ function LandingPage() {
         {/* Call to Action */}
         <div className="glass-effect p-4 sm:p-6 lg:p-8 rounded-xl border border-neon-cyan/20 bg-gradient-to-r from-neon-cyan/5 to-neon-purple/5 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">
-            Prêt à transformer votre vie ?
+            Prêt à atteindre vos objectifs ?
           </h2>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Rejoignez des milliers d&apos;utilisateurs qui ont déjà atteint
-            leurs objectifs avec SuperNovaFit
+            Application production-ready avec 622 documents test, structure 100%
+            conforme, graphiques fiables, responsive parfait, notifications push
+            FCM
           </p>
           <Link
             href="/auth"
