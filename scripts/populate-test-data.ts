@@ -434,6 +434,9 @@ async function populateMesures() {
 
     if (date > END_DATE) break;
 
+    // Format YYYY-MM-DD
+    const dateString = date.toISOString().split('T')[0];
+
     const poids = calculateWeight(date);
     const imc = calculateIMC(poids, TAILLE);
     const progressRatio = i / totalDays;
@@ -443,7 +446,7 @@ async function populateMesures() {
     const mesureRef = db.collection('mesures').doc();
     batch.set(mesureRef, {
       user_id: TEST_USER_ID,
-      date: Timestamp.fromDate(date),
+      date: dateString,
       poids,
       taille: TAILLE,
       imc,
@@ -476,6 +479,9 @@ async function populateRepas() {
 
     if (date > END_DATE) break;
 
+    // Format YYYY-MM-DD
+    const dateString = date.toISOString().split('T')[0];
+
     // Choisir le régime approprié
     const diet = date < DIET_CHANGE_DATE ? OLD_DIET : NEW_DIET;
 
@@ -487,29 +493,33 @@ async function populateRepas() {
 
       const macros = aliments.reduce(
         (acc, aliment) => ({
-          calories: acc.calories + aliment.calories,
-          proteines: acc.proteines + aliment.proteines,
+          kcal: acc.kcal + aliment.calories,
+          prot: acc.prot + aliment.proteines,
           glucides: acc.glucides + aliment.glucides,
           lipides: acc.lipides + aliment.lipides,
         }),
-        { calories: 0, proteines: 0, glucides: 0, lipides: 0 },
+        { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
       );
 
       batch.set(repasRef, {
         user_id: TEST_USER_ID,
-        date: Timestamp.fromDate(date),
+        date: dateString,
         repas: mealType,
-        aliments: aliments.map((a) => ({
+        aliments: aliments.map((a, index) => ({
+          id: `${Date.now()}-${count}-${index}`,
           nom: a.nom,
-          quantite: a.quantite,
-          calories: a.calories,
-          proteines: a.proteines,
-          glucides: a.glucides,
-          lipides: a.lipides,
+          quantite: parseFloat(a.quantite.replace(/[^\d.]/g, '')),
+          unite: a.quantite.match(/[a-zA-Z]+/)?.[0] || 'g',
+          macros: {
+            kcal: a.calories,
+            prot: a.proteines,
+            glucides: a.glucides,
+            lipides: a.lipides,
+          },
         })),
         macros: {
-          calories: Math.round(macros.calories),
-          proteines: Math.round(macros.proteines * 10) / 10,
+          kcal: Math.round(macros.kcal),
+          prot: Math.round(macros.prot * 10) / 10,
           glucides: Math.round(macros.glucides * 10) / 10,
           lipides: Math.round(macros.lipides * 10) / 10,
         },
@@ -544,6 +554,9 @@ async function populateEntrainements() {
 
     if (date > END_DATE) break;
 
+    // Format YYYY-MM-DD
+    const dateString = date.toISOString().split('T')[0];
+
     const week = Math.floor(i / 7);
     if (week !== currentWeek) {
       currentWeek = week;
@@ -567,20 +580,20 @@ async function populateEntrainements() {
 
       const trainingData: any = {
         user_id: TEST_USER_ID,
-        date: Timestamp.fromDate(date),
+        date: dateString,
         type: training.type,
-        nom: training.nom,
         duree: training.duree,
-        intensite: training.intensite,
+        source: 'manuel',
         calories: training.calories,
-        exercices: training.exercices,
-        notes: `Session ${training.nom} - Bonne performance`,
+        commentaire: `Session ${training.nom} - Bonne performance`,
         created_at: Timestamp.fromDate(date),
       };
 
       // Ajouter distance uniquement pour le cardio
       if (training.type === 'Cardio') {
         trainingData.distance = Math.round(training.duree * 0.15 * 10) / 10;
+        trainingData.vitesse_moy =
+          Math.round((trainingData.distance / (training.duree / 60)) * 10) / 10;
       }
 
       await trainRef.set(trainingData);
@@ -610,6 +623,9 @@ async function populateJournal() {
 
     if (date > END_DATE) break;
 
+    // Format YYYY-MM-DD
+    const dateString = date.toISOString().split('T')[0];
+
     const progressRatio = i / totalDays;
 
     // Progression positive : meilleure humeur et énergie au fil du temps
@@ -619,7 +635,7 @@ async function populateJournal() {
     const journalRef = db.collection('journal').doc();
     await journalRef.set({
       user_id: TEST_USER_ID,
-      date: Timestamp.fromDate(date),
+      date: dateString,
       humeur: Math.min(10, baseHumeur + Math.floor(Math.random() * 2)),
       energie: Math.min(10, baseEnergie + Math.floor(Math.random() * 2)),
       sommeil: 6 + Math.floor(Math.random() * 3),
