@@ -9,6 +9,7 @@ dist/
 
 # Archives (obsolete scripts)
 scripts/archive/
+scripts/*.js
 config/archive/
 docs/archive/
 
