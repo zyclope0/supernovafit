@@ -601,22 +601,45 @@ async function populateEntrainements() {
       const training = TRAININGS[Math.floor(Math.random() * TRAININGS.length)];
       const trainRef = db.collection('entrainements').doc();
 
+      const isCardio = training.type === 'Cardio';
+
+      // ✅ Génération de données réalistes
+      const distance = isCardio
+        ? Math.round(training.duree * 0.15 * 10) / 10
+        : undefined;
+      const vitesse_moy = isCardio
+        ? Math.round((distance! / (training.duree / 60)) * 10) / 10
+        : undefined;
+      const fc_min = 80 + Math.floor(Math.random() * 20); // 80-100
+      const fc_max = 160 + Math.floor(Math.random() * 20); // 160-180
+      const fc_moyenne = Math.floor((fc_min + fc_max) / 2);
+
       const trainingData: any = {
         user_id: TEST_USER_ID,
         date: Timestamp.fromDate(dateAt12), // ✅ Timestamp à 12:00:00
-        type: training.type,
+        type: training.type.toLowerCase(), // ✅ "cardio" ou "musculation" en minuscule
         duree: training.duree,
-        source: 'manuel',
         calories: training.calories,
+        source: 'manuel',
         commentaire: `Session ${training.nom} - Bonne performance`,
+        effort_percu: 6 + Math.floor(Math.random() * 3), // 6-8
+        fatigue_avant: 5 + Math.floor(Math.random() * 5), // 5-9
+        fatigue_apres: 6 + Math.floor(Math.random() * 4), // 6-9
+        fc_min,
+        fc_max,
+        fc_moyenne,
         created_at: Timestamp.fromDate(new Date()),
       };
 
-      // Ajouter distance uniquement pour le cardio
-      if (training.type === 'Cardio') {
-        trainingData.distance = Math.round(training.duree * 0.15 * 10) / 10;
-        trainingData.vitesse_moy =
-          Math.round((trainingData.distance / (training.duree / 60)) * 10) / 10;
+      // ✅ Champs spécifiques Cardio
+      if (isCardio) {
+        trainingData.distance = distance;
+        trainingData.vitesse_moy = vitesse_moy;
+        trainingData.cadence_moy = 20 + Math.floor(Math.random() * 10); // 20-30
+        trainingData.elevation_gain = Math.floor(Math.random() * 600); // 0-600m
+      } else {
+        // ✅ Champs spécifiques Musculation
+        trainingData.puissance_moy = 150 + Math.floor(Math.random() * 100); // 150-250W
       }
 
       await trainRef.set(trainingData);
