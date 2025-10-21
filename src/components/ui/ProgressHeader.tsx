@@ -44,7 +44,7 @@ function ProgressItem({ icon, label, data, color }: ProgressItemProps) {
   return (
     <div className="flex items-center gap-4">
       <div
-        className={`flex items-center gap-2 min-w-[120px] text-${color}-400`}
+        className={`flex items-center gap-2 min-w-[80px] sm:min-w-[120px] text-${color}-400`}
       >
         {icon}
         <span className="text-sm font-medium text-white">{label}</span>
@@ -145,23 +145,23 @@ export default function ProgressHeader({
   extraContent, // NEW: Extra content prop
 }: ProgressHeaderProps) {
   return (
-    <div className="glass-effect rounded-xl p-4 border border-white/10">
+    <div className="glass-effect rounded-xl p-3 sm:p-4 lg:p-6 border border-white/10">
       {/* Header avec toggle période */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-neon-orange" />
-          <h2 className="text-lg font-semibold text-white">
+      <div className="flex items-center justify-between mb-4 gap-2 overflow-x-hidden">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <TrendingUp className="h-5 w-5 text-neon-orange flex-shrink-0" />
+          <h2 className="text-base sm:text-lg font-semibold text-white truncate">
             {emoji} {title} {period.toUpperCase()}
           </h2>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           {extraContent} {/* NEW: Render extra content */}
           {showPeriodSelector && ( // NEW: Conditional period selector
             <div className="flex bg-space-800 rounded-lg p-1">
               <button
                 onClick={() => onPeriodChange('today')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md transition-all whitespace-nowrap ${
                   period === 'today'
                     ? 'bg-neon-orange text-white'
                     : 'text-gray-400 hover:text-white'
@@ -173,7 +173,7 @@ export default function ProgressHeader({
               </button>
               <button
                 onClick={() => onPeriodChange('week')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md transition-all whitespace-nowrap ${
                   period === 'week'
                     ? 'bg-neon-orange text-white'
                     : 'text-gray-400 hover:text-white'
@@ -185,7 +185,7 @@ export default function ProgressHeader({
               </button>
               <button
                 onClick={() => onPeriodChange('month')}
-                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md transition-all whitespace-nowrap ${
                   period === 'month'
                     ? 'bg-neon-orange text-white'
                     : 'text-gray-400 hover:text-white'
