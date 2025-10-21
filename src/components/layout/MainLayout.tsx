@@ -97,11 +97,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
             id="main-content"
             className="h-full overflow-y-auto overflow-x-hidden pb-32 md:pb-0"
           >
-            <div className="container mx-auto px-4 py-8 lg:px-8 overflow-x-hidden max-w-full">
+            <div className="container mx-auto px-4 py-8 lg:px-8">
               {/* Breadcrumbs Navigation */}
-              <div className="overflow-x-hidden max-w-full">
-                <Breadcrumbs />
-              </div>
+              <Breadcrumbs />
               {children}
             </div>
           </main>
