@@ -565,7 +565,7 @@ async function populateEntrainements() {
       const training = TRAININGS[Math.floor(Math.random() * TRAININGS.length)];
       const trainRef = db.collection('entrainements').doc();
 
-      await trainRef.set({
+      const trainingData: any = {
         user_id: TEST_USER_ID,
         date: Timestamp.fromDate(date),
         type: training.type,
@@ -573,14 +573,17 @@ async function populateEntrainements() {
         duree: training.duree,
         intensite: training.intensite,
         calories: training.calories,
-        distance:
-          training.type === 'Cardio'
-            ? Math.round(training.duree * 0.15 * 10) / 10
-            : undefined,
         exercices: training.exercices,
         notes: `Session ${training.nom} - Bonne performance`,
         created_at: Timestamp.fromDate(date),
-      });
+      };
+
+      // Ajouter distance uniquement pour le cardio
+      if (training.type === 'Cardio') {
+        trainingData.distance = Math.round(training.duree * 0.15 * 10) / 10;
+      }
+
+      await trainRef.set(trainingData);
 
       weekTrainings++;
       count++;
