@@ -158,7 +158,7 @@ export default function ProgressHeader({
         <div className="flex items-center gap-3 flex-shrink-0">
           {extraContent} {/* NEW: Render extra content */}
           {showPeriodSelector && ( // NEW: Conditional period selector
-            <div className="flex bg-space-800 rounded-lg p-1">
+            <div className="hidden sm:flex bg-space-800 rounded-lg p-1">
               <button
                 onClick={() => onPeriodChange('today')}
                 className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md transition-all whitespace-nowrap ${
