@@ -15,6 +15,7 @@ import {
 import { format, subWeeks, startOfWeek, endOfWeek } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Entrainement } from '@/types';
+import { timestampToDateString } from '@/lib/dateUtils';
 
 interface TrainingVolumeChartProps {
   entrainements: Entrainement[];
