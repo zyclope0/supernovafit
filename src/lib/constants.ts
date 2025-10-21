@@ -1,7 +1,7 @@
 // Application metadata
 export const APP_NAME = 'SuperNovaFit';
-export const APP_VERSION = '2.0.0';
-export const APP_RELEASE_DATE = '2025-01-15';
+export const APP_VERSION = '3.0.0';
+export const APP_RELEASE_DATE = '2025-10-21';
 
 // Niveaux d'activité physique
 export const ACTIVITY_LEVELS = {
