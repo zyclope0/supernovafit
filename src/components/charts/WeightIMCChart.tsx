@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { Mesure } from '@/types';
 import { formatDate } from '@/lib/utils';
+import { timestampToDateString } from '@/lib/dateUtils';
 import { Scale } from 'lucide-react';
 
 interface WeightIMCChartProps {
@@ -50,44 +51,71 @@ export default function WeightIMCChart({
   period = 'week',
 }: WeightIMCChartProps) {
   const chartData = useMemo(() => {
+    // ⚠️ Filtrer mesures valides et convertir dates
+    const mesuresWithValidDates = mesures
+      .filter((m) => m.date) // Filtrer dates nulles
+      .map((m) => {
+        const dateStr = timestampToDateString(m.date);
+        // Valider la date convertie
+        if (isNaN(new Date(dateStr).getTime())) {
+          console.warn('Invalid date in WeightIMCChart:', {
+            original: m.date,
+            converted: dateStr,
+          });
+          return null;
+        }
+        return { ...m, dateStr }; // Ajouter dateStr pour comparaisons
+      })
+      .filter((m): m is NonNullable<typeof m> => m !== null);
+
     // Filtrer les mesures selon la période sélectionnée
-    let filteredMesures = mesures;
+    let filteredMesures = mesuresWithValidDates;
 
     if (period === 'today') {
       // Aujourd'hui : Mesures d'aujourd'hui + quelques points récents pour contexte
       const today = new Date().toISOString().split('T')[0];
-      const todayMesures = mesures.filter((m) => m.date === today);
+      const todayMesures = mesuresWithValidDates.filter(
+        (m) => m.dateStr === today,
+      );
 
       if (todayMesures.length > 0) {
         // Si mesures aujourd'hui, ajouter les 3 derniers jours pour contexte
         const threeDaysAgo = new Date();
         threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-        filteredMesures = mesures.filter(
-          (m) => new Date(m.date) >= threeDaysAgo,
+        const threeDaysAgoStr = threeDaysAgo.toISOString().split('T')[0];
+        filteredMesures = mesuresWithValidDates.filter(
+          (m) => m.dateStr >= threeDaysAgoStr,
         );
       } else {
         // Sinon, prendre les 3 dernières mesures pour contexte
-        filteredMesures = mesures.slice(-3);
+        filteredMesures = mesuresWithValidDates.slice(-3);
       }
     } else if (period === 'week') {
       // Semaine : TOUS les points des 7 derniers jours
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      filteredMesures = mesures.filter((m) => new Date(m.date) >= weekAgo);
+      const weekAgoStr = weekAgo.toISOString().split('T')[0];
+      filteredMesures = mesuresWithValidDates.filter(
+        (m) => m.dateStr >= weekAgoStr,
+      );
 
       // Si pas assez de points, étendre à 14 jours pour contexte
       if (filteredMesures.length < 3) {
         const twoWeeksAgo = new Date();
         twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-        filteredMesures = mesures.filter(
-          (m) => new Date(m.date) >= twoWeeksAgo,
+        const twoWeeksAgoStr = twoWeeksAgo.toISOString().split('T')[0];
+        filteredMesures = mesuresWithValidDates.filter(
+          (m) => m.dateStr >= twoWeeksAgoStr,
         );
       }
     } else if (period === 'month') {
       // Mois : MOIS ENTIER actuel (du 1er à aujourd'hui)
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      filteredMesures = mesures.filter((m) => new Date(m.date) >= startOfMonth);
+      const startOfMonthStr = startOfMonth.toISOString().split('T')[0];
+      filteredMesures = mesuresWithValidDates.filter(
+        (m) => m.dateStr >= startOfMonthStr,
+      );
 
       // Si pas assez de points dans le mois, étendre au mois précédent
       if (filteredMesures.length < 3) {
@@ -96,8 +124,11 @@ export default function WeightIMCChart({
           now.getMonth() - 1,
           1,
         );
-        filteredMesures = mesures.filter(
-          (m) => new Date(m.date) >= startOfLastMonth,
+        const startOfLastMonthStr = startOfLastMonth
+          .toISOString()
+          .split('T')[0];
+        filteredMesures = mesuresWithValidDates.filter(
+          (m) => m.dateStr >= startOfLastMonthStr,
         );
       }
     }
@@ -106,7 +137,7 @@ export default function WeightIMCChart({
       .slice()
       .reverse() // Du plus ancien au plus récent
       .map((mesure) => ({
-        date: mesure.date,
+        date: mesure.dateStr, // ✅ String ISO
         poids: mesure.poids || null,
         imc: mesure.imc || null,
       }));
