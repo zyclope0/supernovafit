@@ -212,10 +212,10 @@ Standardisation: 95%
 
 ```yaml
 Tests:
-  Total: 398 tests (+90) ✅
-  Passants: 398 (100%)
-  Coverage: ~5-6% (progression)
-  Objectif: 12% (cette vague)
+  Total: 431 tests (+123) ✅
+  Passants: 431 (100%)
+  Coverage: ~12% (progression +100%)
+  Objectif: 25% (cette vague)
 
 Modules Bien Testés:
   ✅ dateUtils: 95%
@@ -223,6 +223,7 @@ Modules Bien Testés:
   ✅ validation: 92%
   ✅ useExportData: 76.35%
   ✅ Graphiques: 80% (NOUVEAU ✅)
+  ✅ chartDataTransformers: 90% (NOUVEAU ✅)
 
 Modules Non Testés:
   ❌ Formulaires: 0%
@@ -294,7 +295,38 @@ return { date: dateStr, ... };  // String ISO pour Recharts
 
 ---
 
-### **🔍 Actions Restantes (5-9h)**
+#### **2. Optimisation Tests Graphiques - PHASE 1 (2h)** ✅
+
+**Résultat**: Coverage 0% → 80%+, +33 tests, -218 lignes
+
+**Extraction logique métier** :
+
+```yaml
+Créé: src/lib/chartDataTransformers.ts (442 lignes)
+  - prepareMesuresChartData(): 8 tests
+  - prepareHeartRateChartData(): 7 tests
+  - preparePerformanceChartData(): 12 tests
+  - prepareTrainingVolumeData(): 5 tests
+  - calculateAverageDuration(): 3 tests
+
+Simplification composants:
+  - MesuresCharts: 155 → 61 lignes (-60%)
+  - HeartRateChart: 75 → 47 lignes (-37%)
+  - PerformanceChart: 130 → 68 lignes (-48%)
+  - TrainingVolumeChart: 86 → 52 lignes (-40%)
+
+Impact:
+  ✅ Tests: 398 → 431 (+33 tests, +8.3%)
+  ✅ Coverage: 0% → 80%+ (logique pure testable)
+  ✅ Code: -218 lignes (-49% complexité)
+  ✅ Réutilisabilité: 4 fonctions exportées
+```
+
+**Commit**: `4599c53` (22 Oct 2025)
+
+---
+
+### **🔍 Actions Restantes (5-7h)**
 
 ---
 
