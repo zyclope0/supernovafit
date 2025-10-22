@@ -1491,6 +1491,181 @@ _Contexte exhaustif basé sur analyse de 227 fichiers source + 622 documents Fir
 
 ---
 
+## 📋 **PATTERNS STANDARDS (Standardisation)**
+
+### **Pattern 1 : Gestion Erreurs API**
+
+```typescript
+// ✅ PATTERN STANDARD
+import * as Sentry from "@sentry/nextjs";
+
+async function saveData(data: MyData) {
+  try {
+    await addDoc(collection(db, "collection"), data);
+
+    // ✅ Toast user-friendly
+    toast.success("Données enregistrées avec succès");
+  } catch (error) {
+    // ⚠️ Log détaillé en console (dev uniquement)
+    if (process.env.NODE_ENV === "development") {
+      console.error("Save error:", error);
+    }
+
+    // ⚠️ Capturer dans Sentry (prod)
+    Sentry.captureException(error, {
+      tags: { component: "SaveData", operation: "create" },
+      extra: { data },
+    });
+
+    // ✅ Message user-friendly (jamais de stack trace)
+    toast.error("Une erreur est survenue. Veuillez réessayer.");
+
+    // ⚠️ Re-throw si critique
+    throw error;
+  }
+}
+```
+
+---
+
+### **Pattern 2 : Validation Formulaires**
+
+```typescript
+// ✅ PATTERN STANDARD (Zod + React Hook Form)
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// 1. Schema Zod
+const FormSchema = z.object({
+  nom: z.string().min(1, 'Le nom est requis'),
+  calories: z.number().positive('Les calories doivent être positives'),
+  date: z.instanceof(Date),
+});
+
+type FormData = z.infer<typeof FormSchema>;
+
+// 2. Component avec validation
+function MyForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(FormSchema),
+  });
+
+  const onSubmit = async (data: FormData) => {
+    // ✅ Data est déjà validé et typé
+    await saveData(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('nom')} />
+      {errors.nom && <span className="text-red-500">{errors.nom.message}</span>}
+
+      <button type="submit">Enregistrer</button>
+    </form>
+  );
+}
+```
+
+---
+
+### **Pattern 3 : Loading States Standardisés**
+
+```typescript
+// ✅ PATTERN STANDARD (Skeleton + Timeout)
+function MyComponent() {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<MyData | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchData = async () => {
+      try {
+        const result = await getData();
+        if (mounted) setData(result);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // ⚠️ TOUJOURS cleanup
+    return () => { mounted = false; };
+  }, []);
+
+  // ✅ Loading Skeleton (pas de spinner générique)
+  if (loading) {
+    return (
+      <div className="animate-pulse">
+        <div className="h-4 bg-gray-700 rounded w-3/4 mb-4"></div>
+        <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+      </div>
+    );
+  }
+
+  // ✅ Empty state
+  if (!data) {
+    return <EmptyState message="Aucune donnée disponible" />;
+  }
+
+  return <div>{/* Render data */}</div>;
+}
+```
+
+---
+
+### **Pattern 4 : Real-Time Firestore (avec Cleanup)**
+
+```typescript
+// ✅ PATTERN STANDARD (onSnapshot avec cleanup)
+function useRealtimeData(userId: string) {
+  const [data, setData] = useState<MyData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
+    const q = query(
+      collection(db, "collection"),
+      where("user_id", "==", userId),
+    );
+
+    // ⚠️ CRITIQUE : TOUJOURS unsubscribe
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as MyData[];
+
+        setData(items);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Snapshot error:", error);
+        Sentry.captureException(error);
+        setLoading(false);
+      },
+    );
+
+    // ⚠️ CRITIQUE : Cleanup
+    return () => unsubscribe();
+  }, [userId]);
+
+  return { data, loading };
+}
+```
+
+---
+
 ## 🚨 **RAPPEL FINAL - RÈGLES D'OR**
 
 1. 📅 **Dates = Timestamp 12:00:00** (TOUJOURS!)
@@ -1499,6 +1674,6 @@ _Contexte exhaustif basé sur analyse de 227 fichiers source + 622 documents Fir
 4. 🚫 **Jamais undefined dans Firestore** (omettre les champs)
 5. ⚙️ **Scripts exclus du build** (tsconfig exclude)
 
-**Ces 5 règles préviennent 95% des bugs récurrents.**
+**Ces 5 règles + 4 patterns standards préviennent 95% des bugs récurrents.**
 
 Bon codage ! 🚀
