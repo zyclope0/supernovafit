@@ -12,10 +12,11 @@ import {
   Legend,
   ReferenceLine,
 } from 'recharts';
-import { format, subWeeks, startOfWeek, endOfWeek } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import { Entrainement } from '@/types';
-import { timestampToDateString } from '@/lib/dateUtils';
+import {
+  prepareTrainingVolumeData,
+  calculateAverageDuration,
+} from '@/lib/chartDataTransformers';
 
 interface TrainingVolumeChartProps {
   entrainements: Entrainement[];
@@ -46,49 +47,9 @@ export default function TrainingVolumeChart({
   entrainements,
   weeks,
 }: TrainingVolumeChartProps) {
-  const data: Array<{
-    week: string;
-    fullDate: string;
-    seances: number;
-    duree: number;
-    calories: number;
-  }> = [];
-  const today = new Date();
-
-  // Générer les données pour les X dernières semaines
-  for (let i = weeks - 1; i >= 0; i--) {
-    const weekStart = startOfWeek(subWeeks(today, i), { weekStartsOn: 1 }); // Lundi
-    const weekEnd = endOfWeek(subWeeks(today, i), { weekStartsOn: 1 }); // Dimanche
-
-    const weekStartStr = format(weekStart, 'yyyy-MM-dd');
-    const weekEndStr = format(weekEnd, 'yyyy-MM-dd');
-
-    // Filtrer les entraînements de cette semaine
-    const weekTrainings = entrainements.filter((e) => {
-      if (!e.date) return false; // ✅ Vérifier date valide
-      const dateStr = timestampToDateString(e.date);
-      return dateStr >= weekStartStr && dateStr <= weekEndStr;
-    });
-
-    const totalDuration = weekTrainings.reduce((sum, e) => sum + e.duree, 0);
-    const totalCalories = weekTrainings.reduce(
-      (sum, e) => sum + (e.calories || 0),
-      0,
-    );
-
-    data.push({
-      week: format(weekStart, "'S'w", { locale: fr }),
-      fullDate: format(weekStart, 'dd/MM', { locale: fr }),
-      seances: weekTrainings.length,
-      duree: totalDuration,
-      calories: totalCalories,
-    });
-  }
-
-  const avgDuration =
-    data.length > 0
-      ? Math.round(data.reduce((s, d) => s + d.duree, 0) / data.length)
-      : 0;
+  // ✅ Logique déléguée aux fonctions pures (testable à 80%+)
+  const data = prepareTrainingVolumeData(entrainements, weeks);
+  const avgDuration = calculateAverageDuration(data);
 
   return (
     <div className="glass-effect p-6 rounded-xl border border-white/10">

@@ -14,7 +14,7 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Entrainement } from '@/types';
 import type { TooltipProps } from 'recharts';
-import { timestampToDateString } from '@/lib/dateUtils';
+import { prepareHeartRateChartData } from '@/lib/chartDataTransformers';
 
 interface HeartRateChartProps {
   entrainements: Entrainement[];
@@ -43,36 +43,8 @@ const CustomTooltip = ({
 };
 
 export default function HeartRateChart({ entrainements }: HeartRateChartProps) {
-  // Filtrer seulement les entraînements avec données FC
-  const hrData = entrainements
-    .filter((e) => e.date && (e.fc_moyenne || e.fc_max || e.fc_min)) // ✅ Vérifier date
-    .sort(
-      (a, b) =>
-        new Date(timestampToDateString(a.date)).getTime() -
-        new Date(timestampToDateString(b.date)).getTime(),
-    )
-    .map((e) => {
-      const dateStr = timestampToDateString(e.date);
-
-      // ✅ Vérifier que la date convertie est valide
-      const parsedDate = new Date(dateStr);
-      if (isNaN(parsedDate.getTime())) {
-        console.warn('Invalid date in HeartRateChart:', {
-          date: e.date,
-          dateStr,
-        });
-        return null;
-      }
-
-      return {
-        date: dateStr, // ✅ Convertir en string ISO
-        fc_moyenne: e.fc_moyenne || null,
-        fc_max: e.fc_max || null,
-        fc_min: e.fc_min || null,
-        type: e.type,
-      };
-    })
-    .filter((d) => d !== null); // ✅ Filtrer les dates invalides
+  // ✅ Logique déléguée à la fonction pure (testable à 80%+)
+  const hrData = prepareHeartRateChartData(entrainements);
 
   if (hrData.length === 0) {
     return (

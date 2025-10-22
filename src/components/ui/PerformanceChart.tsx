@@ -13,7 +13,7 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Entrainement } from '@/types';
 import type { TooltipProps } from 'recharts';
-import { timestampToDateString } from '@/lib/dateUtils';
+import { preparePerformanceChartData } from '@/lib/chartDataTransformers';
 
 interface PerformanceChartProps {
   entrainements: Entrainement[];
@@ -64,70 +64,8 @@ export default function PerformanceChart({
   metric,
   title,
 }: PerformanceChartProps) {
-  // Filtrer et préparer les données selon la métrique
-  const performanceData = entrainements
-    .filter((e) => {
-      // ✅ Vérifier que la date est valide
-      if (!e.date) return false;
-
-      switch (metric) {
-        case 'vitesse':
-          return e.vitesse_moy && e.vitesse_moy > 0;
-        case 'calories_per_min':
-          return e.calories && e.calories > 0 && e.duree > 0;
-        case 'distance':
-          return e.distance && e.distance > 0;
-        default:
-          return false;
-      }
-    })
-    .sort(
-      (a, b) =>
-        new Date(timestampToDateString(a.date)).getTime() -
-        new Date(timestampToDateString(b.date)).getTime(),
-    )
-    .map((e) => {
-      const dateStr = timestampToDateString(e.date);
-
-      // ✅ Vérifier que la date convertie est valide
-      const parsedDate = new Date(dateStr);
-      if (isNaN(parsedDate.getTime())) {
-        console.warn('Invalid date after conversion:', {
-          date: e.date,
-          dateStr,
-        });
-        return null; // Retourner null pour filtrer plus tard
-      }
-
-      const baseData = {
-        date: dateStr,
-        type: e.type,
-        duree: e.duree,
-        fc_moyenne: e.fc_moyenne,
-        vitesse: e.vitesse_moy,
-        distance: e.distance,
-        calories_per_min:
-          e.calories && e.duree > 0
-            ? Math.round((e.calories / e.duree) * 10) / 10
-            : null,
-      };
-
-      return {
-        ...baseData,
-        value:
-          metric === 'vitesse'
-            ? e.vitesse_moy
-            : metric === 'calories_per_min'
-              ? baseData.calories_per_min
-              : metric === 'distance'
-                ? e.distance
-                : 0,
-      };
-    })
-    .filter((d) => d !== null) // ✅ Filtrer les dates invalides
-    .filter(
-      (d) => d.value != null && typeof d.value === 'number' && d.value > 0,
-    );
+  // ✅ Logique déléguée à la fonction pure (testable à 80%+)
+  const performanceData = preparePerformanceChartData(entrainements, metric);
 
   if (performanceData.length === 0) {
     const emptyMessages = {

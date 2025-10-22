@@ -15,7 +15,7 @@ import {
 } from 'recharts';
 import { Mesure } from '@/types';
 import { formatDate } from '@/lib/utils';
-import { timestampToDateString } from '@/lib/dateUtils';
+import { prepareMesuresChartData } from '@/lib/chartDataTransformers';
 import { Scale, Ruler, Heart } from 'lucide-react';
 
 interface MesuresChartsProps {
@@ -57,102 +57,8 @@ const CustomTooltip = ({
 };
 
 export default function MesuresCharts({ mesures }: MesuresChartsProps) {
-  const chartData = useMemo(() => {
-    // Prendre toutes les mesures (pas de filtre temporel pour éviter les problèmes de dates)
-    const data = mesures
-      .filter((m) => m.date) // ⚠️ Filtrer mesures sans date
-      .slice()
-      .reverse() // Du plus ancien au plus récent pour les graphiques
-      .map((mesure) => {
-        // ⚠️ CRITIQUE: Convertir Timestamp → String ISO
-        const dateStr = timestampToDateString(mesure.date);
-
-        // ⚠️ Valider la date convertie
-        if (isNaN(new Date(dateStr).getTime())) {
-          console.warn('Invalid date in MesuresCharts:', {
-            original: mesure.date,
-            converted: dateStr,
-          });
-          return null;
-        }
-
-        return {
-          date: dateStr, // ✅ String ISO (YYYY-MM-DD)
-          poids: mesure.poids || null,
-          imc: mesure.imc || null,
-          masse_grasse: mesure.masse_grasse || null,
-          masse_musculaire: mesure.masse_musculaire || null,
-          tour_taille: mesure.tour_taille || null,
-          tour_hanches: mesure.tour_hanches || null,
-          tour_bras: mesure.tour_bras || null,
-          tour_cuisses: mesure.tour_cuisses || null,
-          tour_cou: mesure.tour_cou || null,
-          tour_poitrine: mesure.tour_poitrine || null,
-        };
-      })
-      .filter((d): d is NonNullable<typeof d> => d !== null); // ⚠️ Filtrer dates invalides
-
-    // Calculer domains dynamiques motivationnels pour chaque métrique
-    const weights = data.map((d) => d.poids).filter(Boolean) as number[];
-    const imcs = data.map((d) => d.imc).filter(Boolean) as number[];
-    const masseGrasse = data
-      .map((d) => d.masse_grasse)
-      .filter(Boolean) as number[];
-    const masseMusculaire = data
-      .map((d) => d.masse_musculaire)
-      .filter(Boolean) as number[];
-    const tourTaille = data
-      .map((d) => d.tour_taille)
-      .filter(Boolean) as number[];
-    const tourHanches = data
-      .map((d) => d.tour_hanches)
-      .filter(Boolean) as number[];
-    const tourBras = data.map((d) => d.tour_bras).filter(Boolean) as number[];
-    const tourCuisses = data
-      .map((d) => d.tour_cuisses)
-      .filter(Boolean) as number[];
-
-    // Fonction helper pour calculer domain motivationnel
-    const getMotivationalDomain = (
-      values: number[],
-      isLossGood = true,
-    ): [number, number] => {
-      if (values.length === 0) return [0, 100];
-
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      const range = max - min;
-
-      if (isLossGood) {
-        // Pour poids, tour de taille, etc. : Focus sur les pertes
-        return [
-          Math.max(0, min - Math.max(2, range * 0.3)), // Plus d'espace en bas
-          max + Math.max(1, range * 0.1), // Moins d'espace en haut
-        ];
-      } else {
-        // Pour masse musculaire : Focus sur les gains
-        return [
-          Math.max(0, min - Math.max(1, range * 0.1)), // Moins d'espace en bas
-          max + Math.max(2, range * 0.3), // Plus d'espace en haut
-        ];
-      }
-    };
-
-    const domains = {
-      weight: getMotivationalDomain(weights, true),
-      imc: getMotivationalDomain(imcs, true),
-      composition: [
-        0,
-        Math.max(50, Math.max(...masseGrasse, ...masseMusculaire) + 5),
-      ],
-      mensurations: getMotivationalDomain(
-        [...tourTaille, ...tourHanches, ...tourBras, ...tourCuisses],
-        true,
-      ),
-    };
-
-    return { data, domains };
-  }, [mesures]);
+  // ✅ Logique déléguée à la fonction pure (testable à 80%+)
+  const chartData = useMemo(() => prepareMesuresChartData(mesures), [mesures]);
 
   // IMC data removed - was unused
 
