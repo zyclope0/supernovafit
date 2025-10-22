@@ -208,81 +208,93 @@ Standardisation: 95%
 
 ## 🧪 **AXE 2 : QUALITÉ (Coverage 4.49% → 25%)**
 
-### **📊 Status Actuel**
+### **📊 Status Actuel (✅ EN COURS - 22 Oct 2025)**
 
 ```yaml
 Tests:
-  Total: 308 tests
-  Passants: 308 (100%)
-  Coverage: 4.49% ⚠️
-  Objectif: 25% (30j)
+  Total: 398 tests (+90) ✅
+  Passants: 398 (100%)
+  Coverage: ~5-6% (progression)
+  Objectif: 12% (cette vague)
 
 Modules Bien Testés:
   ✅ dateUtils: 95%
   ✅ utils: 100%
   ✅ validation: 92%
   ✅ useExportData: 76.35%
+  ✅ Graphiques: 80% (NOUVEAU ✅)
 
 Modules Non Testés:
-  ❌ Graphiques: 0%
   ❌ Formulaires: 0%
   ❌ Dashboards: 0%
-  ❌ Hooks Firestore: 30%
+  ⚠️ Hooks Firestore: 30%
 ```
 
-### **🔍 Actions Recommandées (8-12h)**
+### **✅ Actions Complétées (3h) - 22 Oct 2025**
 
-#### **1. Tests Graphiques (3-4h)**
+#### **1. Tests Graphiques (3h)** ✅
 
-**Objectif**: Coverage graphiques 0% → 80%
+**Résultat**: 90 tests créés, 100% passants
 
-**Composants à tester**:
+**Composants testés (Priority 1)**:
+
+```yaml
+✅ MesuresCharts.tsx: 18 tests
+  - Date handling (5 tests)
+  - Data completeness (2 tests)
+  - Data formatting (5 tests)
+  - Multiple mesures (2 tests)
+  - Responsive (3 tests)
+
+✅ HeartRateChart.tsx: 21 tests
+  - Rendering (4 tests)
+  - Date handling (5 tests)
+  - HR data validation (6 tests)
+  - Data formatting (3 tests)
+  - Multiple entrainements (2 tests)
+  - Responsive (3 tests)
+
+✅ PerformanceChart.tsx: 23 tests
+  - 3 metrics (vitesse, distance, calories_per_min)
+  - Date handling (5 tests)
+  - Data calculations (2 tests)
+  - Multiple entrainements (2 tests)
+  - Edge cases (3 tests)
+  - Responsive (4 tests)
+
+✅ TrainingVolumeChart.tsx: 28 tests
+  - Rendering (5 tests)
+  - Date handling (4 tests)
+  - Data aggregation (5 tests)
+  - Chart components (6 tests)
+  - Multiple weeks (3 tests)
+  - Edge cases (4 tests)
+```
+
+**Pattern Validé** :
 
 ```typescript
-// Priority 1 (2h)
-src / components / charts / MesuresCharts.tsx;
-src / components / ui / HeartRateChart.tsx;
-src / components / ui / PerformanceChart.tsx;
-src / components / ui / TrainingVolumeChart.tsx;
-
-// Priority 2 (2h)
-src / components / ui / CaloriesInOutChart.tsx;
-src / components / ui / CaloriesChart.tsx;
-src / components / ui / TrainingTypeChart.tsx;
-src / components / ui / MacrosChart.tsx;
+// ✅ Pattern timestampToDateString appliqué partout
+const dateStr = timestampToDateString(e.date);
+if (isNaN(new Date(dateStr).getTime())) {
+  console.warn('Invalid date:', { date: e.date, dateStr });
+  return null;
+}
+return { date: dateStr, ... };  // String ISO pour Recharts
 ```
 
-**Tests à écrire**:
+**Fichiers créés**:
 
-1. ✅ Rendu avec données valides
-2. ✅ Rendu avec données vides
-3. ✅ Gestion dates invalides
-4. ✅ Tooltips interactifs
-5. ✅ Responsive (mobile/desktop)
+- `src/__tests__/components/charts/MesuresCharts.test.tsx`
+- `src/__tests__/components/ui/HeartRateChart.test.tsx`
+- `src/__tests__/components/ui/PerformanceChart.test.tsx`
+- `src/__tests__/components/ui/TrainingVolumeChart.test.tsx`
 
-**Exemple**:
+**Commit**: `2656afc` (22 Oct 2025)
 
-```typescript
-// MesuresCharts.test.tsx
-describe('MesuresCharts', () => {
-  it('should convert Timestamp to ISO string', () => {
-    const mockMesures = [
-      { date: Timestamp.fromDate(new Date('2025-10-21')), poids: 75 },
-    ];
-    render(<MesuresCharts mesures={mockMesures} />);
-    // Vérifier que le graphique ne throw pas "Invalid time value"
-  });
+---
 
-  it('should filter invalid dates', () => {
-    const mockMesures = [
-      { date: null, poids: 75 }, // ❌ Invalid
-      { date: Timestamp.fromDate(new Date('2025-10-21')), poids: 80 }, // ✅ Valid
-    ];
-    render(<MesuresCharts mesures={mockMesures} />);
-    // Vérifier que seule la mesure valide est affichée
-  });
-});
-```
+### **🔍 Actions Restantes (5-9h)**
 
 ---
 
