@@ -49,6 +49,23 @@ vi.mock('firebase/firestore', () => ({
     return vi.fn();
   }),
   serverTimestamp: vi.fn(() => ({ __type: 'timestamp' })),
+  Timestamp: {
+    fromDate: (date: Date) => ({
+      seconds: Math.floor(date.getTime() / 1000),
+      nanoseconds: (date.getTime() % 1000) * 1000000,
+      toDate: () => date,
+      toMillis: () => date.getTime(),
+    }),
+    now: () => {
+      const date = new Date();
+      return {
+        seconds: Math.floor(date.getTime() / 1000),
+        nanoseconds: (date.getTime() % 1000) * 1000000,
+        toDate: () => date,
+        toMillis: () => date.getTime(),
+      };
+    },
+  },
 }));
 
 vi.mock('firebase/storage', () => ({
