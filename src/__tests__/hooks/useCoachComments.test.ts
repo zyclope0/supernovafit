@@ -93,7 +93,7 @@ describe('useCoachCommentsByModule', () => {
       },
     ];
 
-    mockOnSnapshot.mockImplementation(async (query, successCallback) => {
+    mockOnSnapshot.mockImplementation((query, successCallback) => {
       const snapshot = {
         docs: mockCommentsData.map((data, index) => ({
           id: `comment-${index + 1}`,
@@ -135,7 +135,7 @@ describe('useCoachCommentsByModule', () => {
       },
     ];
 
-    mockOnSnapshot.mockImplementation(async (query, successCallback) => {
+    mockOnSnapshot.mockImplementation((query, successCallback) => {
       const snapshot = {
         docs: mockCommentsData.map((data, index) => ({
           id: `comment-${index + 1}`,
@@ -179,7 +179,7 @@ describe('useCoachCommentsByModule', () => {
       },
     ];
 
-    mockOnSnapshot.mockImplementation(async (query, successCallback) => {
+    mockOnSnapshot.mockImplementation((query, successCallback) => {
       const snapshot = {
         docs: mockCommentsData.map((data, index) => ({
           id: `comment-${index + 1}`,
@@ -222,7 +222,7 @@ describe('useCoachCommentsByModule', () => {
       },
     ];
 
-    mockOnSnapshot.mockImplementation(async (query, successCallback) => {
+    mockOnSnapshot.mockImplementation((query, successCallback) => {
       const snapshot = {
         docs: mockCommentsData.map((data, index) => ({
           id: `comment-${index + 1}`,
