@@ -10,6 +10,7 @@
 ## 🎯 **CLASSIFICATION PAR EFFORT**
 
 ### **Légende Effort**
+
 - 🟢 **Facile** : 1-2h (fonctionnalités simples, données existantes)
 - 🟡 **Moyen** : 3-6h (nécessite ajouts mineurs, intégrations)
 - 🟠 **Difficile** : 8-12h (nécessite nouvelles fonctionnalités majeures)
@@ -36,6 +37,7 @@ XP: 85
 ```
 
 **Effort Détaillé** :
+
 - ✅ **Données disponibles** : Entraînements avec durée, calories, FC
 - ⚠️ **Manque** : Détection automatique HIIT
 - 🔧 **Solution** :
@@ -46,6 +48,7 @@ XP: 85
   5. Migration data existante (optionnel, 1h)
 
 **Impact Frontend** :
+
 - Ajouter bouton "HIIT" dans `TrainingForm.tsx`
 - Ajouter icône ⚡ dans `TrainingCard.tsx`
 
@@ -64,6 +67,7 @@ XP: 40
 ```
 
 **Effort Détaillé** :
+
 - ✅ **Déjà implémenté partiellement** dans `IMPLEMENTED_CHALLENGES`
 - ⚠️ **Manque** : Détection yoga/stretching
 - 🔧 **Solution** : Identique à HIIT (ajouter `training_type: 'yoga'`)
@@ -73,6 +77,7 @@ XP: 40
   4. Tests unitaires (1h)
 
 **Impact Frontend** :
+
 - Ajouter bouton "Yoga/Stretching" 🧘
 
 **Estimation Finale** : **4h** (avec HIIT = 3h car enum partagé)
@@ -90,6 +95,7 @@ XP: 110
 ```
 
 **Effort Détaillé** :
+
 - ⚠️ **Manque** : Catégorisation des sports
 - 🔧 **Solution** :
   1. Ajouter champ `sport_name?: string` optionnel (1h)
@@ -99,6 +105,7 @@ XP: 110
   5. UI: Input autocomplete sports populaires (1h)
 
 **Impact Frontend** :
+
 - Ajouter champ "Sport" avec suggestions (Course, Natation, Cyclisme, etc.)
 
 **Estimation Finale** : **5h**
@@ -116,6 +123,7 @@ XP: 90
 ```
 
 **Effort Détaillé** :
+
 - ✅ **Données disponibles** : `created_at` Timestamp
 - ⚠️ **Manque** : Heure d'entraînement
 - 🔧 **Solution** :
@@ -125,6 +133,7 @@ XP: 90
   4. Tests unitaires (1h)
 
 **Impact Frontend** :
+
 - Ajouter input "Heure de l'entraînement" (optionnel, auto-rempli avec `created_at`)
 
 **Estimation Finale** : **3h**
@@ -142,6 +151,7 @@ XP: 500
 ```
 
 **Effort Détaillé** :
+
 - ⚠️ **Manque** : Tracking connexion quotidienne
 - 🔧 **Solution** :
   1. Créer collection `user_activity` (user_id, date, actions_count) (2h)
@@ -150,6 +160,7 @@ XP: 500
   4. Tests unitaires (1h)
 
 **Impact Frontend** :
+
 - Pas d'UI, tracking automatique en background
 
 **Estimation Finale** : **5h**
@@ -167,12 +178,14 @@ XP: 300
 ```
 
 **Effort Détaillé** :
+
 - 🔧 **Solution** : Identique à "Streak de 30 Jours" mais cible plus courte
   1. Réutiliser même collection `user_activity`
   2. Fonction `calculateAppStreak()` (déjà créée)
   3. Tests unitaires supplémentaires (1h)
 
 **Impact Frontend** :
+
 - Aucun (tracking automatique)
 
 **Estimation Finale** : **4h** (avec Streak 30j = 2h car logique partagée)
@@ -190,6 +203,7 @@ XP: 50
 ```
 
 **Effort Détaillé** :
+
 - ✅ **Données disponibles** : Challenges avec status 'completed'
 - 🔧 **Solution** :
   1. Fonction `countCompletedChallenges(challenges)` (30min)
@@ -198,6 +212,7 @@ XP: 50
   4. Notification spéciale "🎉 Premier challenge complété!" (2h)
 
 **Impact Frontend** :
+
 - Modal spéciale pour le 1er challenge complété
 
 **Estimation Finale** : **4h**
@@ -217,6 +232,7 @@ XP: 70
 ```
 
 **Effort Détaillé** :
+
 - 🔴 **Fonctionnalité majeure manquante** : Tracking hydratation
 - 🔧 **Solution Complète** :
   1. Créer collection `hydratation` (user_id, date, ml_eau) (2h)
@@ -226,6 +242,7 @@ XP: 70
   5. Tests unitaires (2h)
 
 **Impact Frontend** :
+
 - **Nouvelle page** `/hydratation` avec tracker visuel
 - Widget dashboard "💧 Hydratation du jour"
 - Quick action "Boire un verre" (250ml)
@@ -245,12 +262,14 @@ XP: 30
 ```
 
 **Effort Détaillé** :
+
 - 🔧 **Solution** : Réutiliser même système que "Hydratation Parfaite"
   1. Fonction `getTodayHydration(hydratation)` (30min)
   2. Ajouter case dans `useChallengeTracker` (30min)
   3. Tests unitaires (1h)
 
 **Impact Frontend** :
+
 - Aucun (réutilise UI Hydratation Parfaite)
 
 **Estimation Finale** : **8h** (2h seul si Hydratation Parfaite déjà fait)
@@ -268,6 +287,7 @@ XP: 100
 ```
 
 **Effort Détaillé** :
+
 - ⚠️ **Manque** : Tracking fibres dans Open Food Facts
 - 🔧 **Solution** :
   1. Modifier `openfoodfacts.ts` pour extraire `fiber` (2h)
@@ -278,6 +298,7 @@ XP: 100
   6. Tests unitaires (2h)
 
 **Impact Frontend** :
+
 - Affichage "Fibres: 15g" dans cartes repas
 - Widget dashboard "🌾 Fibres du jour"
 
@@ -296,6 +317,7 @@ XP: 85
 ```
 
 **Effort Détaillé** :
+
 - 🔴 **Fonctionnalité complexe** : Détection légumes
 - 🔧 **Solution** :
   1. Créer fonction `isVegetable(aliment)` avec liste légumes (3h)
@@ -305,6 +327,7 @@ XP: 85
   5. Tests unitaires (3h)
 
 **Impact Frontend** :
+
 - Badge visuel sur aliments légumes
 - Compteur "3/5 portions légumes aujourd'hui"
 
@@ -323,6 +346,7 @@ XP: 110
 ```
 
 **Effort Détaillé** :
+
 - ⚠️ **Manque** : Détection sucres ajoutés vs naturels
 - 🔧 **Solution** :
   1. Modifier `openfoodfacts.ts` pour extraire `added_sugars` (3h)
@@ -332,6 +356,7 @@ XP: 110
   5. Tests unitaires (2h)
 
 **Impact Frontend** :
+
 - Badge rouge sur aliments avec sucres ajoutés
 - Filtre "Sans sucres ajoutés" dans recherche
 
@@ -350,6 +375,7 @@ XP: 80
 ```
 
 **Effort Détaillé** :
+
 - 🔴 **Fonctionnalité majeure** : Intégration podomètre
 - 🔧 **Solution** :
   1. Intégration API Pedometer (Web) ou Step Counter (mobile) (4h)
@@ -360,6 +386,7 @@ XP: 80
   6. Tests unitaires (1h)
 
 **Impact Frontend** :
+
 - **Widget "🚶 Pas aujourd'hui: 7,234/10,000"**
 - Graphique évolution pas/semaine
 
@@ -380,6 +407,7 @@ XP: 200
 ```
 
 **Effort Détaillé** :
+
 - 🔴 **Fonctionnalité sociale majeure** : Système conseils P2P
 - 🔧 **Solution Complète** :
   1. Collection `peer_advices` (from_user, to_user, message, module) (3h)
@@ -391,6 +419,7 @@ XP: 200
   7. Tests unitaires (2h)
 
 **Impact Frontend** :
+
 - **Nouvelle section sociale** "/community"
 - Modal "💬 Demander conseil" sur chaque module
 - Badge "Mentor" sur profil
@@ -410,6 +439,7 @@ XP: 75
 ```
 
 **Effort Détaillé** :
+
 - 🔴 **Fonctionnalité sociale** : Système partage
 - 🔧 **Solution** :
   1. Collection `shared_progress` (user_id, type, data, date) (3h)
@@ -420,6 +450,7 @@ XP: 75
   6. Tests unitaires (2h)
 
 **Impact Frontend** :
+
 - Bouton "📱 Partager" sur toutes les stats
 - Prévisualisation partage (image générée)
 
@@ -438,6 +469,7 @@ XP: 150
 ```
 
 **Effort Détaillé** :
+
 - ✅ **Système invitations existe déjà** (`useInvites.ts`)
 - ⚠️ **Manque** : Tracking acceptations
 - 🔧 **Solution** :
@@ -449,6 +481,7 @@ XP: 150
   6. Email notifications (optionnel, 2h)
 
 **Impact Frontend** :
+
 - **Page "/invitations"** avec tracking
 - Widget "🎖️ Invitations: 3/5 acceptées"
 
@@ -467,6 +500,7 @@ XP: 300
 ```
 
 **Effort Détaillé** :
+
 - 🔴 **Système badges complet** : Architecture complexe
 - 🔧 **Solution Complète** :
   1. Collection `user_badges` (user_id, badge_id, unlocked_at) (3h)
@@ -478,6 +512,7 @@ XP: 300
   7. Tests unitaires (3h)
 
 **Impact Frontend** :
+
 - **Page "/badges"** avec galerie complète
 - Modal "🏆 Badge Débloqué!" avec animation
 - Badge display sur profil
@@ -515,6 +550,7 @@ Effort Optimisé avec Synergies: 179 heures (~4.5 semaines)
 ### **Phase 2.3 : Quick Wins Restants (12h)**
 
 Implémenter les 3 challenges "sports variés" ensemble :
+
 1. ✅ Défi HIIT (4h)
 2. ✅ Récupération Active (3h avec HIIT)
 3. ✅ Variété Sportive (5h)
@@ -528,6 +564,7 @@ Implémenter les 3 challenges "sports variés" ensemble :
 ### **Phase 2.4 : Meta-Challenges Faciles (7h)**
 
 Implémenter les challenges "streak app" :
+
 1. ✅ Streak de 30 Jours (5h)
 2. ✅ Consistance Parfaite (2h avec Streak 30j)
 3. ✅ Premier Pas (4h)
@@ -540,6 +577,7 @@ Implémenter les challenges "streak app" :
 ### **Phase 3 : Hydratation (12h)**
 
 Nouvelle fonctionnalité majeure :
+
 1. ✅ Hydratation Parfaite (10h)
 2. ✅ Hydratation Express (2h)
 
@@ -561,4 +599,3 @@ Les 8 derniers challenges (Fibres, Légumes, Mentor, etc.) nécessitent **115h**
 **Dernière MAJ** : 23 Octobre 2025  
 **Auteur** : Équipe Technique SuperNovaFit  
 **Version** : 1.0
-

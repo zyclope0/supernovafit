@@ -22,18 +22,22 @@ Tracking: calculateTrainingStreak(entrainements)
 ```
 
 **Fonction de tracking** :
+
 - `calculateTrainingStreak()` dans `src/lib/challengeTracking/training.ts`
 - Vérifie les entraînements consécutifs avec tolérance 1 jour
 
 **Intégration** :
+
 - ✅ `useChallengeTracker.ts` ligne 86-88
 - ✅ `challengeImplementation.ts` ligne 24
 - ✅ `challenges.ts` ligne 237-250
 
 **Tests** :
+
 - ✅ 23 tests dans `training.test.ts` couvrent la logique
 
 **Impact UX** :
+
 - Notification à 15 jours (50%)
 - Notification à 22 jours (75%)
 - Notification à 28 jours ("Plus que 2 jours!")
@@ -55,18 +59,22 @@ Tracking: calculateWeekTrainingVolume(entrainements) / 1000
 ```
 
 **Fonction de tracking** :
+
 - `calculateWeekTrainingVolume()` dans `src/lib/challengeTracking/training.ts`
 - Calcule series × reps × poids pour tous les exercices de la semaine
 
 **Intégration** :
+
 - ✅ `useChallengeTracker.ts` ligne 92-94
 - ✅ `challengeImplementation.ts` ligne 25
 - ✅ `challenges.ts` ligne 251-264
 
 **Tests** :
+
 - ✅ 23 tests dans `training.test.ts` couvrent le volume
 
 **Impact UX** :
+
 - Affiche progression en milliers (37/50 milliers kg)
 - Notification à 25,000 kg (50%)
 - Notification à 37,500 kg (75%)
@@ -87,18 +95,22 @@ Tracking: max(countWeekWeighIns, calculateWeighInStreak)
 ```
 
 **Fonction de tracking** :
+
 - `countWeekWeighIns()` dans `src/lib/challengeTracking/tracking.ts`
 - `calculateWeighInStreak()` pour streak consécutif
 
 **Intégration** :
+
 - ✅ `useChallengeTracker.ts` ligne 219-220
 - ✅ `challengeImplementation.ts` ligne 32
 - ✅ `challenges.ts` ligne 393-406
 
 **Tests** :
+
 - ✅ 26 tests dans `tracking.test.ts` couvrent la logique
 
 **Impact UX** :
+
 - Encourage tracking quotidien du poids
 - Notification à 5/7 jours ("Plus que 2 jours!")
 
@@ -118,18 +130,22 @@ Tracking: max(countWeekJournalEntries, calculateJournalStreak)
 ```
 
 **Fonction de tracking** :
+
 - `countWeekJournalEntries()` dans `src/lib/challengeTracking/tracking.ts`
 - `calculateJournalStreak()` pour streak consécutif
 
 **Intégration** :
+
 - ✅ `useChallengeTracker.ts` ligne 222-223
 - ✅ `challengeImplementation.ts` ligne 33
 - ✅ `challenges.ts` ligne 407-420
 
 **Tests** :
+
 - ✅ 26 tests dans `tracking.test.ts` couvrent la logique
 
 **Impact UX** :
+
 - Encourage bien-être et réflexion quotidienne
 - Notification à 5/7 jours
 
@@ -149,19 +165,23 @@ Tracking: calculateMonthWeightLoss(mesures)
 ```
 
 **Fonction de tracking** :
+
 - `calculateMonthWeightLoss()` dans `src/lib/challengeTracking/transformations.ts`
 - Calcule poids_initial - poids_final du mois en cours
 
 **Intégration** :
+
 - ✅ `useChallengeTracker.ts` ligne 225-227
 - ✅ `challengeImplementation.ts` ligne 34
 - ✅ `challenges.ts` ligne 623-634 (existait déjà)
 
 **Tests** :
+
 - ✅ 18 tests dans `transformations.test.ts` (nouveau module)
 - ✅ 5 fonctions pures testées isolément
 
 **Impact UX** :
+
 - Motivation transformation physique long-terme
 - Notification à -1kg (50%)
 - Notification à -1.5kg (75%)
@@ -176,27 +196,30 @@ Tracking: calculateMonthWeightLoss(mesures)
 **7 types de notifications** dans `src/lib/notifications/notificationTemplates.ts` :
 
 1. **Challenge Complété** 🎉
+
    ```typescript
-   title: "🎉 Challenge Complété!"
-   body: "[Titre] - +[XP] XP gagnés!"
-   requireInteraction: true
-   vibrate: [200, 100, 200]
+   title: "🎉 Challenge Complété!";
+   body: "[Titre] - +[XP] XP gagnés!";
+   requireInteraction: true;
+   vibrate: [200, 100, 200];
    ```
 
 2. **Progression Importante** 📈
+
    ```typescript
-   title: "📈 [50/75/90]% Complété!"
-   body: "[Titre]: [current]/[target] [unit]"
-   requireInteraction: false
-   vibrate: [100, 50, 100]
+   title: "📈 [50/75/90]% Complété!";
+   body: "[Titre]: [current]/[target] [unit]";
+   requireInteraction: false;
+   vibrate: [100, 50, 100];
    ```
 
 3. **Presque Terminé** 🔥
+
    ```typescript
-   title: "🔥 Plus que [N] [unit]!"
-   body: "[Titre]: [current]/[target] - Continuez!"
-   requireInteraction: false
-   vibrate: [150, 75, 150]
+   title: "🔥 Plus que [N] [unit]!";
+   body: "[Titre]: [current]/[target] - Continuez!";
+   requireInteraction: false;
+   vibrate: [150, 75, 150];
    ```
 
 4. **Nouveau Challenge** ✨
@@ -209,6 +232,7 @@ Tracking: calculateMonthWeightLoss(mesures)
 **Fichier** : `src/lib/notifications/challengeNotifications.ts`
 
 **Fonctions principales** :
+
 - `sendChallengeCompletedNotification(challenge)` - Complétion
 - `sendChallengeProgressNotification(challenge)` - Jalons 50%, 75%, 90%
 - `sendChallengeAlmostDoneNotification(challenge)` - Encouragement (≤3 restants)
@@ -216,11 +240,13 @@ Tracking: calculateMonthWeightLoss(mesures)
 - `areNotificationsAvailable()` - Vérification disponibilité
 
 **Intégration** :
+
 - ✅ `useChallengeTracker.ts` détecte automatiquement les complétions
 - ✅ Notifications envoyées en temps réel
 - ✅ Actions au clic → redirection `/challenges`
 
 **Support** :
+
 - ✅ Browser Notifications API (natif)
 - ✅ Vibration API (mobile)
 - ✅ Fallback gracieux si non supporté
@@ -269,4 +295,3 @@ Voir section suivante pour évaluation effort détaillée par challenge.
 **Dernière MAJ** : 23 Octobre 2025  
 **Auteur** : Équipe Technique SuperNovaFit  
 **Version** : 2.0
-

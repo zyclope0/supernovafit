@@ -19,7 +19,6 @@ export const IMPLEMENTED_CHALLENGES = [
   'Séance Express',
   'Marathon Mensuel',
   'Consistance',
-  'Récupération',
   'Matin Productif',
   'Warrior Streak', // ✨ Phase 2.1
   'Volume Monstre', // ✨ Phase 2.1
@@ -51,7 +50,6 @@ export const UNIMPLEMENTABLE_CHALLENGES = {
 
   // Nécessitent détection automatique des types d'entraînement
   'Défi HIIT': 'Nécessite détection automatique des séances HIIT',
-  'Récupération Active': 'Nécessite détection yoga/stretching',
   'Variété Sportive': 'Nécessite catégorisation automatique des sports',
   'Matin Productif': "Nécessite tracking de l'heure d'entraînement",
 
@@ -73,8 +71,11 @@ export const UNIMPLEMENTABLE_CHALLENGES = {
   'Maître Absolu': 'Nécessite compteur de challenges complétés',
   'Défenseur de la Santé': 'Nécessite système de streak global',
 
-  // Nécessitent tracking de transformation corporelle
-  'Transformation du Mois': "Nécessite analyse de l'évolution corporelle",
+  // Nécessitent tracking de récupération avancée
+  Récupération:
+    'Nécessite analyse des jours de repos entre entraînements intenses',
+  'Récupération Active':
+    'Nécessite détection automatique des séances yoga/stretching',
 
   // Nécessitent système de streak global
   'Streak de 30 Jours': 'Nécessite tracking de connexion quotidienne',
