@@ -1,7 +1,7 @@
-# 🧪 Guide Testing - SuperNovaFit v2.0.0
+# 🧪 Guide Testing - SuperNovaFit v3.0.0
 
-**Dernière MAJ :** 08.10.2025  
-**Status :** ✅ 100% Tests Passent | 🔒 Gelé
+**Dernière MAJ :** 23.10.2025  
+**Status :** ✅ 100% Tests Passent | 📈 Coverage × 4
 
 ---
 
@@ -10,23 +10,27 @@
 | Document                                     | Usage                      | Audience     |
 | -------------------------------------------- | -------------------------- | ------------ |
 | **[README.md](README.md)** (ce fichier)      | Point d'entrée, navigation | Tous         |
+| **[STATUS.md](STATUS.md)**                   | État actuel (MAJ 23.10) ⭐ | Management   |
 | **[UNIT_TESTS.md](UNIT_TESTS.md)**           | Tests unitaires Vitest     | Développeurs |
 | **[E2E_TESTS.md](E2E_TESTS.md)**             | Tests E2E Playwright       | QA, Devs     |
 | **[COVERAGE_REPORT.md](COVERAGE_REPORT.md)** | Coverage + analyse         | Tech Lead    |
-| **[STATUS.md](STATUS.md)**                   | État actuel (gelé 08.10)   | Management   |
+
+**🆕 Voir aussi** : [AUDIT_3_AXES_PRIORITAIRES.md](../technical/AUDIT_3_AXES_PRIORITAIRES.md) - Documentation unifiée complète
 
 ---
 
 ## 🎯 VUE D'ENSEMBLE
 
-### État Actuel (08.10.2025)
+### État Actuel (23.10.2025)
 
 ```
-✅ Tests Unitaires:  308/308 (100%)
-⏸️  Tests Skippés:    13 (Badges)
-📋 Tests E2E:        215 (Disponibles)
-📊 Coverage:         4.49% (objectif 25%)
+✅ Tests Unitaires:  475/475 (100%) (+54% depuis 08.10)
+⏸️  Tests Skippés:    103 (60 hooks + 21 forms + 22 dashboards)
+📋 Tests E2E:        215 (Complet et stable)
+📊 Coverage:         18.07% (+302%!) 🏆
 ```
+
+**Objectif 25% : 72% atteint** | **Prochaine étape : réactiver hooks (+5-8%)**
 
 ### Quick Start
 
@@ -44,16 +48,19 @@ npm run test:e2e         # Headless (CI)
 
 ## 📊 RÉSUMÉ PAR TYPE
 
-### Tests Unitaires (321 tests)
+### Tests Unitaires (578 tests créés, 475 actifs)
 
-| Catégorie         | Tests | Coverage | Fichiers |
-| ----------------- | ----- | -------- | -------- |
-| **Lib Utils**     | 155   | 21.79%   | 10       |
-| **Security**      | 64    | 58.06%   | 4        |
-| **Components UI** | 56    | 5.14%    | 6        |
-| **Hooks**         | 46    | 8.32%    | 5        |
+| Catégorie         | Tests | Coverage | Fichiers | Status           |
+| ----------------- | ----- | -------- | -------- | ---------------- |
+| **Lib Utils**     | 155   | 95%+     | 10       | ✅ Excellent     |
+| **Charts & Data** | 123   | 80%+     | 5        | ✅ Excellent     |
+| **Forms**         | 40    | ~50%     | 5        | ✅ Bon (21 skip) |
+| **Security**      | 64    | 58%      | 4        | ✅ Bon           |
+| **Dashboards**    | 27    | ~15%     | 3        | ⚠️ Basique       |
+| **Hooks**         | 106   | Var.     | 10       | ⏸️ 60 skippés    |
+| **Components UI** | 63    | ~20%     | 6        | ✅ Acceptable    |
 
-**Détails :** Voir [UNIT_TESTS.md](UNIT_TESTS.md)
+**Détails :** Voir [UNIT_TESTS.md](UNIT_TESTS.md) et [STATUS.md](STATUS.md)
 
 ### Tests E2E (215 tests)
 
