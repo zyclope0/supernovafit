@@ -48,3 +48,14 @@ export {
   hasTodayWeighIn,
   hasTodayJournalEntry,
 } from './tracking';
+
+// ========================================
+// Calculs Transformations Corporelles
+// ========================================
+export {
+  calculateMonthWeightLoss,
+  calculateWeightLoss,
+  calculateWeightLossProgress,
+  hasAchievedWeightLossGoal,
+  calculateWeightLossRate,
+} from './transformations';

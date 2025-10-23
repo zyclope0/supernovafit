@@ -19,6 +19,7 @@ import {
   countWeekTrainings,
   calculateWeekTrainingTime,
   calculateTrainingStreak,
+  calculateWeekTrainingVolume,
   filterStrengthTrainings,
   getWeekBounds,
   // Tracking
@@ -26,6 +27,8 @@ import {
   countWeekJournalEntries,
   calculateWeighInStreak,
   calculateJournalStreak,
+  // Transformations
+  calculateMonthWeightLoss,
 } from '@/lib/challengeTracking';
 import { safeValidateUpdateChallenge } from '@/lib/validation/challenges';
 
@@ -60,6 +63,7 @@ export function useChallengeTracker() {
     const weekTrainingsCount = countWeekTrainings(entrainements);
     const weekTrainingTime = calculateWeekTrainingTime(entrainements);
     const trainingStreak = calculateTrainingStreak(entrainements);
+    const weekTrainingVolume = calculateWeekTrainingVolume(entrainements);
     const weekBounds = getWeekBounds();
     const weekStrengthCount = filterStrengthTrainings(
       entrainements,
@@ -84,6 +88,9 @@ export function useChallengeTracker() {
           break;
         case "10h d'Entraînement en un Mois":
           newCurrent = weekTrainingTime;
+          break;
+        case 'Volume Monstre':
+          newCurrent = Math.round(weekTrainingVolume / 1000); // Convertir en milliers de kg
           break;
         default:
           break;
@@ -200,6 +207,7 @@ export function useChallengeTracker() {
     const weighInStreak = calculateWeighInStreak(mesures);
     const weekJournalEntries = countWeekJournalEntries(journalEntries);
     const journalStreak = calculateJournalStreak(journalEntries);
+    const monthWeightLoss = calculateMonthWeightLoss(mesures);
 
     // Mise à jour par titre de challenge
     const updates: Array<{ id: string; title: string; current: number }> = [];
@@ -213,6 +221,9 @@ export function useChallengeTracker() {
           break;
         case 'Journal Quotidien':
           newCurrent = Math.max(weekJournalEntries, journalStreak);
+          break;
+        case 'Transformation du Mois':
+          newCurrent = Math.max(0, monthWeightLoss); // Clamp à 0 si gain
           break;
         default:
           break;

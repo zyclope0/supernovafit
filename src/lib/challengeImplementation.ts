@@ -3,28 +3,35 @@ import { CHALLENGE_DEFINITIONS } from './challenges';
 
 // Challenges déjà implémentés avec tracking automatique
 export const IMPLEMENTED_CHALLENGES = [
+  // Nutrition
   'Repas Complet',
   'Marathon des Protéines',
   'Défi Calories',
+  '7 Jours de Nutrition Parfaite',
+  'Défi Variété',
+  // Training
   'Streak Entraînement',
   'Force Pure',
-  'Journalier Assidu',
-  '7 Jours de Nutrition Parfaite',
   'Marathon du Temps',
   'Explosif',
   'Cardio Intense',
   'Endurance Extrême',
   'Séance Express',
   'Marathon Mensuel',
+  'Consistance',
+  'Récupération',
+  'Matin Productif',
+  'Warrior Streak', // ✨ Phase 2.1
+  'Volume Monstre', // ✨ Phase 2.1
+  // Tracking
+  'Journalier Assidu',
   'Suivi Parfait',
   'Humeur Positive',
   'Énergie Maximale',
   'Sommeil de Qualité',
-  // Nouveaux challenges implémentés
-  'Défi Variété',
-  'Consistance',
-  'Récupération',
-  'Matin Productif',
+  'Pesée Quotidienne', // ✨ Phase 2.1
+  'Journal Quotidien', // ✨ Phase 2.1
+  'Transformation du Mois', // ✨ Phase 2.1
 ];
 
 // Challenges nécessitant des fonctionnalités manquantes

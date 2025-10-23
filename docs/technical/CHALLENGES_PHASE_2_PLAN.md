@@ -11,16 +11,14 @@
 ### **Challenges Implémentés (28/50 - 56%)**
 
 ```yaml
-Nutrition (6):
-  ✅ Repas Complet
+Nutrition (6): ✅ Repas Complet
   ✅ Marathon des Protéines
   ✅ Défi Calories
   ✅ 7 Jours de Nutrition Parfaite
   ✅ Défi Variété
   ✅ Matin Productif
 
-Training (10):
-  ✅ Streak Entraînement
+Training (10): ✅ Streak Entraînement
   ✅ Force Pure
   ✅ Marathon du Temps
   ✅ Explosif
@@ -31,16 +29,14 @@ Training (10):
   ✅ Consistance
   ✅ Récupération
 
-Tracking (6):
-  ✅ Journalier Assidu
+Tracking (6): ✅ Journalier Assidu
   ✅ Suivi Parfait
   ✅ Humeur Positive
   ✅ Énergie Maximale
   ✅ Sommeil de Qualité
   ✅ (Pesée Quotidienne - à vérifier)
 
-Achievements (6):
-  ✅ (À vérifier dans ACHIEVEMENT_DEFINITIONS)
+Achievements (6): ✅ (À vérifier dans ACHIEVEMENT_DEFINITIONS)
 ```
 
 ### **Challenges Implémentables mais NON Trackés (12)**
@@ -245,8 +241,7 @@ Challenges:
   Après: 40/50 (80%)
   Nouveaux: +12 challenges
 
-Notifications:
-  ✅ Push FCM complétion
+Notifications: ✅ Push FCM complétion
   ✅ Push FCM progression
   ✅ Fallback Opera GX
   ✅ Historique notifications
@@ -260,7 +255,7 @@ Code:
   Fichiers créés: 8
   Tests créés: 9
   Lignes ajoutées: ~800 LOC
-  
+
 Durée: 6-8h (vs 10-12h estimé initialement)
 ```
 
@@ -329,6 +324,7 @@ Total: 12 fichiers créés, ~950 LOC, 78 tests
 ## ✅ **CHECKLIST PHASE 2**
 
 ### **2.1 Quick Wins (1h)**
+
 - [ ] Warrior Streak integration
 - [ ] Volume Monstre integration
 - [ ] Pesée Quotidienne integration
@@ -337,6 +333,7 @@ Total: 12 fichiers créés, ~950 LOC, 78 tests
 - [ ] Update `challengeImplementation.ts`
 
 ### **2.2 Notifications (2-3h)**
+
 - [ ] FCM setup + permissions
 - [ ] Challenge notifications logic
 - [ ] Templates notifications
@@ -345,6 +342,7 @@ Total: 12 fichiers créés, ~950 LOC, 78 tests
 - [ ] Tests E2E Playwright
 
 ### **2.3 Challenges Avancés (2h)**
+
 - [ ] detectTrainingType() + tests
 - [ ] countUniqueTrainingTypes() + tests
 - [ ] estimateStepsFromDistance() + tests
@@ -352,11 +350,13 @@ Total: 12 fichiers créés, ~950 LOC, 78 tests
 - [ ] Update `challengeImplementation.ts`
 
 ### **2.4 Meta-Challenges (1h)**
+
 - [ ] meta.ts functions + tests
 - [ ] Integration 3 challenges
 - [ ] Update `challengeImplementation.ts`
 
 ### **Documentation**
+
 - [ ] Update `AUDIT_3_AXES_PRIORITAIRES.md`
 - [ ] Screenshots notifications
 - [ ] Guide utilisateur notifications
@@ -368,6 +368,7 @@ Total: 12 fichiers créés, ~950 LOC, 78 tests
 **Phase 2 complète : 6-8h** (4 sous-phases)
 
 Ou commencer par sous-phase au choix :
+
 - **2.1 Quick Wins** (1h) → Impact immédiat (+5 challenges)
 - **2.2 Notifications** (2-3h) → Impact frontend maximal
 - **2.3 Avancés** (2h) → +4 challenges intelligents
@@ -380,4 +381,3 @@ Ou commencer par sous-phase au choix :
 **SuperNovaFit - Challenges System Phase 2**  
 **Target**: 40/50 challenges (80%) + Notifications temps réel  
 **Durée**: 6-8h | **Impact**: ⭐⭐⭐⭐⭐ Frontend visible
-
