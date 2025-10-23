@@ -244,7 +244,7 @@ export function prepareHeartRateChartData(
           fc_moyenne: e.fc_moyenne ?? null,
           fc_max: e.fc_max ?? null,
           fc_min: e.fc_min ?? null,
-          type: e.type,
+          type: e.type as 'cardio' | 'musculation',
         };
       })
       .filter((d): d is HeartRateChartData => d !== null) // ✅ Filtrer dates invalides
@@ -323,7 +323,7 @@ export function preparePerformanceChartData(
 
         return {
           date: dateStr,
-          type: e.type,
+          type: e.type as 'cardio' | 'musculation',
           duree: e.duree,
           fc_moyenne: e.fc_moyenne,
           vitesse: e.vitesse_moy,
