@@ -30,8 +30,8 @@
 
 ### **🏆 Gamification & Challenges**
 
-- **[CHALLENGES_SYSTEM.md](CHALLENGES_SYSTEM.md)** - Architecture complète du système de challenges (17/42 fonctionnels)
-- **[CHANGELOG_CHALLENGES.md](CHANGELOG_CHALLENGES.md)** - Historique des modifications v2.0.0
+- **[AUDIT_3_AXES_PRIORITAIRES.md](AUDIT_3_AXES_PRIORITAIRES.md)** - **📖 SOURCE DE VÉRITÉ** - Section AXE 3 > PHASE 1 Challenges (186 tests créés)
+- **📦 CHALLENGES_SYSTEM.md** - Archivé (obsolète sept 2025) → Voir [archive/2025-10-challenges/](../archive/2025-10-challenges/)
 
 ### **📱 Interface & UX**
 
@@ -111,7 +111,7 @@
 
 - 🚀 **Démarrage** → [../CONTEXTE_TECHNIQUE_COMPLET.md](../CONTEXTE_TECHNIQUE_COMPLET.md)
 - 🎨 **UI/UX Industrialisation** → [UI_UX_INDUSTRIALIZATION_COMPLETE.md](UI_UX_INDUSTRIALIZATION_COMPLETE.md) **📖 DOCUMENT PRINCIPAL**
-- 🏆 **Challenges** → [CHALLENGES_SYSTEM.md](CHALLENGES_SYSTEM.md)
+- 🏆 **Challenges** → [AUDIT_3_AXES_PRIORITAIRES.md](AUDIT_3_AXES_PRIORITAIRES.md) (Section AXE 3)
 - 📱 **Interface** → [DASHBOARDS_ARCHITECTURE.md](DASHBOARDS_ARCHITECTURE.md)
 
 ### **Pour Product Owners**
