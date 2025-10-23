@@ -9,6 +9,7 @@ import { Timestamp } from 'firebase/firestore';
 vi.mock('@/hooks/useAriaAnnouncer', () => ({
   useAriaAnnouncer: () => ({
     announceValidationError: vi.fn(),
+    announceModalState: vi.fn(),
   }),
 }));
 

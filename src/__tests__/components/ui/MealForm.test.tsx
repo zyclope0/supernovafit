@@ -157,7 +157,7 @@ describe('MealForm', () => {
       />
     );
 
-    const submitButton = screen.getByRole('button', { name: /valider/i });
+    const submitButton = screen.getByRole('button', { name: /enregistrer le repas/i });
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -184,7 +184,7 @@ describe('MealForm', () => {
       />
     );
 
-    const submitButton = screen.getByRole('button', { name: /valider/i });
+    const submitButton = screen.getByRole('button', { name: /enregistrer le repas/i });
     await user.click(submitButton);
 
     // Should show validation error
@@ -265,7 +265,7 @@ describe('MealForm', () => {
       />
     );
 
-    const submitButton = screen.getByRole('button', { name: /valider/i });
+    const submitButton = screen.getByRole('button', { name: /enregistrer le repas/i });
     await user.click(submitButton);
 
     await waitFor(() => {
