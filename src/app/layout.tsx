@@ -6,7 +6,13 @@ import InstallBanner from '@/components/pwa/InstallBanner';
 import VitalsReporterWrapper from '@/components/analytics/VitalsReporterWrapper';
 import '../styles/globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+// ✅ Lighthouse: font-display swap pour éviter FOIT (Flash of Invisible Text)
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
+});
 
 export const metadata: Metadata = {
   title: 'SuperNovaFit - Plateforme Diète & Entraînement',
@@ -47,8 +53,23 @@ export default function RootLayout({
   return (
     <html lang="fr" className="dark">
       <head>
-        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
-        <link rel="preconnect" href="https://images.openfoodfacts.org" />
+        {/* ✅ Lighthouse: Preconnect critical origins */}
+        <link
+          rel="preconnect"
+          href="https://firebasestorage.googleapis.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://images.openfoodfacts.org"
+          crossOrigin="anonymous"
+        />
+        {/* ✅ Lighthouse: DNS prefetch pour API Firestore */}
+        <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+        <link
+          rel="dns-prefetch"
+          href="https://identitytoolkit.googleapis.com"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

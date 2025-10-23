@@ -205,30 +205,49 @@ const nextConfig = {
       tls: false,
     };
 
-    // Optimisations bundle - approche plus conservative
+    // Optimisations bundle - approche agressive pour réduire First Load JS
     if (!isServer) {
       config.optimization = {
         ...config.optimization,
         splitChunks: {
           ...config.optimization.splitChunks,
-          maxInitialRequests: 25,
-          maxAsyncRequests: 25,
+          maxInitialRequests: 30,
+          maxAsyncRequests: 30,
           cacheGroups: {
             ...config.optimization.splitChunks.cacheGroups,
             // Séparer Firebase en chunk dédié
             firebase: {
               test: /[\\/]node_modules[\\/]firebase[\\/]/,
               name: 'firebase',
-              priority: 30,
+              priority: 40,
               chunks: 'all',
               enforce: true,
+              reuseExistingChunk: true,
+            },
+            // ✅ Séparer Recharts (lourd!)
+            recharts: {
+              test: /[\\/]node_modules[\\/]recharts[\\/]/,
+              name: 'recharts',
+              priority: 35,
+              chunks: 'async', // Uniquement pour lazy loading
+              enforce: true,
+              reuseExistingChunk: true,
             },
             // Séparer les gros libs d'export
             export: {
-              test: /[\\/]node_modules[\\/](jspdf|exceljs|recharts)[\\/]/,
+              test: /[\\/]node_modules[\\/](jspdf|exceljs)[\\/]/,
               name: 'export-libs',
-              priority: 25,
+              priority: 30,
               chunks: 'async', // Seulement pour les chunks async
+              reuseExistingChunk: true,
+            },
+            // ✅ Séparer date-fns
+            dateFns: {
+              test: /[\\/]node_modules[\\/]date-fns[\\/]/,
+              name: 'date-fns',
+              priority: 25,
+              chunks: 'all',
+              reuseExistingChunk: true,
             },
           },
         },
@@ -252,7 +271,8 @@ const nextConfig = {
   },
   // Next.js 15: Optimisations build time ciblées
   bundlePagesRouterDependencies: true,
-  transpilePackages: ['recharts', 'date-fns'],
+  // ❌ transpilePackages retiré pour meilleur tree shaking
+  // transpilePackages: ['recharts', 'date-fns'],
 
   // 🎯 Performance Budget - Supprimé car non supporté par Next.js 15
   // Les budgets de performance sont gérés par Sentry et Firebase Analytics
@@ -264,6 +284,7 @@ const nextConfig = {
       'react-hot-toast',
       'date-fns',
       'clsx',
+      'recharts', // ✅ Ajout pour tree shaking automatique Next.js 15
     ],
     // Optimisations webpack légères
     webpackBuildWorker: true,
