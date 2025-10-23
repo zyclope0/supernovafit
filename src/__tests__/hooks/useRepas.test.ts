@@ -6,9 +6,21 @@ import { Timestamp } from 'firebase/firestore';
 import type { Repas } from '@/types';
 
 /**
- * ⚠️ TESTS SKIPPÉS TEMPORAIREMENT
- * Raison: Fuite mémoire mocks Firestore (Memory ID: 6110058)
- * À réactiver après optimisation CI/CD ou objectif coverage 25%
+ * ⚠️ TESTS SKIPPÉS - Fuite mémoire CONFIRMÉE (23.10.2025)
+ * 
+ * Problème: Mocks Firestore complexes (onSnapshot, addDoc, etc.) causent
+ * une fuite mémoire dans Vitest malgré:
+ * - singleFork: true
+ * - maxForks: 1
+ * - clearAllMocks/restoreAllMocks/mockReset dans afterEach
+ * 
+ * Symptôme: "FATAL ERROR: JavaScript heap out of memory" après ~35s
+ * 
+ * Solution temporaire: Tests skippés (pas de coverage hooks)
+ * Solution long terme: Migrer vers @testing-library/react-hooks v9+ ou Jest
+ * 
+ * @see Memory ID: 6110058
+ * @see docs/technical/AUDIT_3_AXES_PRIORITAIRES.md
  */
 
 // Mock Firebase

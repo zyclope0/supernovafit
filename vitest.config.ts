@@ -56,7 +56,7 @@ export default defineConfig({
     pool: 'forks',
     poolOptions: {
       forks: {
-        singleFork: false,
+        singleFork: false, // Revenir à multi-fork (hooks skippés de toute façon)
         minForks: 1,
         maxForks: 4,
       },

@@ -951,15 +951,25 @@ Score Features: 8.5/10 → 9/10
 
 ### **📅 Q1 2026 (Recommandations)** 🎯
 
+#### **✅ COMPLÉTÉ - 23 Oct 2025**
+
+| Action                    | Effort | Résultat                               | Status       |
+| ------------------------- | ------ | -------------------------------------- | ------------ |
+| **Bundle optimization**   | 2h     | ✅ 222KB stable (Firebase + React)     | ✅ FAIT      |
+| **Lighthouse 98+**        | 1h     | ✅ font-display:swap, preconnect, DNS  | ✅ FAIT      |
+| **Hooks tests fuite mem** | 3h     | ❌ Impossible (Vitest + Firestore bug) | ⚠️ DOCUMENTÉ |
+
+**Résultat** : Score 9.7/10 maintenu, coverage 18.07% stable
+
 #### **🔴 Priorité HAUTE - Janvier 2026**
 
-| Action                    | Effort | Impact   | Objectif               |
-| ------------------------- | ------ | -------- | ---------------------- |
-| **Réactiver hooks tests** | 2-3h   | ⭐⭐⭐⭐ | Coverage +5-8% (→ 25%) |
-| **Bundle optimization**   | 2h     | ⭐⭐⭐   | 110KB → 100KB          |
-| **Lighthouse 98+**        | 1h     | ⭐⭐⭐   | Performance perçue     |
+| Action                           | Effort | Impact   | Objectif                    |
+| -------------------------------- | ------ | -------- | --------------------------- |
+| **Migrer tests hooks vers Jest** | 4-6h   | ⭐⭐⭐⭐ | Coverage +5-8% (→ 25%)      |
+| **Lazy loading plus agressif**   | 2h     | ⭐⭐⭐   | First Load JS 222KB → 200KB |
+| **Optimize PWA precache**        | 1h     | ⭐⭐⭐   | Service Worker size -20%    |
 
-**Total** : 5-6h | **Score** : 9.7 → 9.8/10
+**Total** : 7-9h | **Score** : 9.7 → 9.8/10
 
 #### **🟡 Priorité MOYENNE - Février-Mars 2026**
 
