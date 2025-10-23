@@ -31,6 +31,11 @@ import {
   calculateMonthWeightLoss,
 } from '@/lib/challengeTracking';
 import { safeValidateUpdateChallenge } from '@/lib/validation/challenges';
+import {
+  sendChallengeCompletedNotification,
+  sendChallengeProgressNotification,
+  sendChallengeAlmostDoneNotification,
+} from '@/lib/notifications/challengeNotifications';
 
 /**
  * Hook pour automatiser la mise à jour des challenges
@@ -121,9 +126,34 @@ export function useChallengeTracker() {
         return;
       }
 
-      updateChallenge(id, { current }).catch((error) => {
-        console.error(`❌ Erreur mise à jour "${title}":`, error);
-      });
+      // Récupérer challenge complet pour vérifier completion
+      const fullChallenge = challenges.find((c) => c.id === id);
+      if (!fullChallenge) return;
+
+      // Vérifier si challenge vient d'être complété
+      const wasCompleted = fullChallenge.current >= fullChallenge.target;
+      const isNowCompleted = current >= fullChallenge.target;
+      const justCompleted = !wasCompleted && isNowCompleted;
+
+      updateChallenge(id, { current })
+        .then(() => {
+          // 🎉 Envoyer notification si complété
+          if (justCompleted) {
+            sendChallengeCompletedNotification(fullChallenge);
+            console.log(`🎉 Challenge complété: ${title}`);
+          }
+          // 📈 Notification progression (50%, 75%, 90%)
+          else if (isNowCompleted === false) {
+            sendChallengeProgressNotification({ ...fullChallenge, current });
+          }
+          // 🔥 Notification encouragement (presque fini)
+          else if (fullChallenge.target - current <= 3) {
+            sendChallengeAlmostDoneNotification({ ...fullChallenge, current });
+          }
+        })
+        .catch((error) => {
+          console.error(`❌ Erreur mise à jour "${title}":`, error);
+        });
     });
   }, [user, entrainements, challenges, updateChallenge]);
 
