@@ -55,7 +55,7 @@ describe('MealForm', () => {
     );
 
     expect(screen.getByText(/déjeuner/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /valider/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /enregistrer le repas/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /annuler/i })).toBeInTheDocument();
   });
 
@@ -104,7 +104,7 @@ describe('MealForm', () => {
     await user.click(addButton);
 
     // Options should appear
-    const searchButton = screen.getByRole('button', { name: /rechercher dans open food facts/i });
+    const searchButton = screen.getByRole('button', { name: /rechercher open food facts/i });
     await user.click(searchButton);
 
     expect(screen.getByTestId('food-search')).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe('MealForm', () => {
     const addButton = screen.getByRole('button', { name: /ajouter un aliment/i });
     await user.click(addButton);
 
-    const manualButton = screen.getByRole('button', { name: /ajouter manuellement/i });
+    const manualButton = screen.getByRole('button', { name: /saisie manuelle/i });
     await user.click(manualButton);
 
     expect(screen.getByTestId('manual-food-form')).toBeInTheDocument();

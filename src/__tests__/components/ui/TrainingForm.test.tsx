@@ -131,7 +131,7 @@ describe('TrainingForm', () => {
     
     render(<TrainingForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
-    const commentInput = screen.getByPlaceholderText(/comment vous sentez-vous/i);
+    const commentInput = screen.getByPlaceholderText(/comment s'est passé votre entraînement/i);
     await user.type(commentInput, 'Great workout!');
 
     const submitButton = screen.getByRole('button', { name: /enregistrer/i });
@@ -188,7 +188,8 @@ describe('TrainingForm', () => {
 
     // Advanced options should now be visible
     await waitFor(() => {
-      expect(screen.getByLabelText(/fréquence cardiaque moyenne/i)).toBeInTheDocument();
+      expect(screen.getByText(/fréquence cardiaque/i)).toBeInTheDocument();
+      expect(screen.getByText(/min \(bpm\)/i)).toBeInTheDocument();
     });
   });
 

@@ -127,7 +127,7 @@ describe('JournalForm', () => {
     await user.click(notesTab);
 
     // Find textarea and type note
-    const noteTextarea = screen.getByPlaceholderText(/comment s'est passée votre journée/i);
+    const noteTextarea = screen.getByPlaceholderText(/décrivez votre journée/i);
     await user.type(noteTextarea, 'Great day today!');
 
     const submitButton = screen.getByRole('button', { name: /enregistrer/i });
