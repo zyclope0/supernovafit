@@ -11,7 +11,13 @@
 
 import type { Entrainement } from '@/types';
 import { timestampToDateString } from '@/lib/dateUtils';
-import { DateBounds, getTodayBounds, getWeekBounds, isDateInBounds, getDatesInBounds, daysBetween } from './utils';
+import type { DateBounds } from './utils';
+import {
+  getTodayBounds,
+  getWeekBounds,
+  isDateInBounds,
+  daysBetween,
+} from './utils';
 
 /**
  * Calcule le nombre d'entraînements aujourd'hui
@@ -116,7 +122,9 @@ export function calculateWeekTrainingVolume(
   return entrainements
     .filter((training) => {
       const trainingDate = new Date(timestampToDateString(training.date));
-      return isDateInBounds(trainingDate, bounds) && training.type === 'musculation';
+      return (
+        isDateInBounds(trainingDate, bounds) && training.type === 'musculation'
+      );
     })
     .reduce((total, training) => {
       const exerciceVolume = (training.exercices || []).reduce((sum, ex) => {
@@ -241,7 +249,8 @@ export function filterStrengthTrainings(
 ): Entrainement[] {
   return entrainements.filter((training) => {
     const trainingDate = new Date(timestampToDateString(training.date));
-    return isDateInBounds(trainingDate, bounds) && training.type === 'musculation';
+    return (
+      isDateInBounds(trainingDate, bounds) && training.type === 'musculation'
+    );
   });
 }
-

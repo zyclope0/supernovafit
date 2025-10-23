@@ -729,6 +729,7 @@ Status: ✅ EN ROUTE VERS 25%
 **Résultat**: Sécurité maximale avec validation stricte
 
 **Fichiers créés**:
+
 - `src/lib/validation/challenges.ts` (420 lignes)
   - Schemas: Challenge, Achievement, UserProgress
   - Refinements: current ≤ target, dates valides, streaks cohérentes
@@ -745,6 +746,7 @@ Status: ✅ EN ROUTE VERS 25%
 **Résultat**: Fonctions pures timezone-agnostic
 
 **Fichiers créés**:
+
 - `src/lib/challengeTracking/utils.ts` (180 lignes)
   - Fonctions: getWeekBounds, getTodayBounds, getMonthBounds
   - Fonctions: isDateInBounds, daysBetween, getDatesInBounds
@@ -760,6 +762,7 @@ Status: ✅ EN ROUTE VERS 25%
 **Résultat**: Logique métier extraite et testable
 
 **Modules créés (3)**:
+
 1. **Nutrition** (19 tests)
    - countTodayMeals, countPerfectNutritionDays
    - countProteinGoalDays, calculateProteinGoal
@@ -773,6 +776,7 @@ Status: ✅ EN ROUTE VERS 25%
    - hasTodayWeighIn, hasTodayJournalEntry
 
 **Architecture**:
+
 ```
 src/lib/challengeTracking/
 ├── index.ts              # Barrel export
@@ -788,7 +792,8 @@ src/__tests__/lib/challengeTracking/
 └── tracking.test.ts      # 26 tests
 ```
 
-**Impact**: 
+**Impact**:
+
 - ✅ **17 fonctions pures** (0 dépendance React/Firebase)
 - ✅ **101 tests** (100% passing)
 - ✅ **Architecture modulaire** (réutilisable)
@@ -800,6 +805,7 @@ src/__tests__/lib/challengeTracking/
 **Objectif**: Simplifier `useChallengeTracker.ts` (775 lignes → ~200 lignes)
 
 **Plan**:
+
 - Remplacer logique monolithique par appels fonctions pures
 - Ajouter validation Zod avant updateChallenge
 - Simplifier hooks avec nouvelles fonctions

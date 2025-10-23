@@ -11,7 +11,12 @@
 
 import type { Repas, Mesure } from '@/types';
 import { timestampToDateString } from '@/lib/dateUtils';
-import { DateBounds, getTodayBounds, getWeekBounds, isDateInBounds, getDatesInBounds } from './utils';
+import {
+  getTodayBounds,
+  getWeekBounds,
+  isDateInBounds,
+  getDatesInBounds,
+} from './utils';
 
 /**
  * Calcule le nombre de repas aujourd'hui
@@ -27,7 +32,10 @@ import { DateBounds, getTodayBounds, getWeekBounds, isDateInBounds, getDatesInBo
  * const count = countTodayMeals(repas); // 3
  * ```
  */
-export function countTodayMeals(repas: Repas[], referenceDate: Date = new Date()): number {
+export function countTodayMeals(
+  repas: Repas[],
+  referenceDate: Date = new Date(),
+): number {
   const bounds = getTodayBounds(referenceDate);
 
   return repas.filter((meal) => {
@@ -135,7 +143,10 @@ export function countProteinGoalDays(
  * const goal = calculateProteinGoal(mesures); // 120g pour 75kg
  * ```
  */
-export function calculateProteinGoal(mesures: Mesure[], defaultWeight: number = 70): number {
+export function calculateProteinGoal(
+  mesures: Mesure[],
+  defaultWeight: number = 70,
+): number {
   // Trouver la mesure la plus récente avec un poids
   const latestWeight = mesures
     .filter((m) => m.poids && m.poids > 0)
@@ -148,4 +159,3 @@ export function calculateProteinGoal(mesures: Mesure[], defaultWeight: number = 
   const weight = latestWeight?.poids || defaultWeight;
   return Math.round(weight * 1.6); // 1.6g/kg recommandé
 }
-

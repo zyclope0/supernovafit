@@ -48,4 +48,3 @@ export {
   hasTodayWeighIn,
   hasTodayJournalEntry,
 } from './tracking';
-

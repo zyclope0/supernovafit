@@ -11,7 +11,13 @@
 
 import type { Mesure, JournalEntry } from '@/types';
 import { timestampToDateString } from '@/lib/dateUtils';
-import { DateBounds, getTodayBounds, getWeekBounds, isDateInBounds, getDatesInBounds, daysBetween } from './utils';
+import {
+  getTodayBounds,
+  getWeekBounds,
+  isDateInBounds,
+  getDatesInBounds,
+  daysBetween,
+} from './utils';
 
 /**
  * Calcule le nombre de jours avec pesée cette semaine
@@ -40,7 +46,11 @@ export function countWeekWeighIns(
     const dayBounds = getTodayBounds(date);
     const hasWeighIn = mesures.some((mesure) => {
       const mesureDate = new Date(timestampToDateString(mesure.date));
-      return isDateInBounds(mesureDate, dayBounds) && mesure.poids && mesure.poids > 0;
+      return (
+        isDateInBounds(mesureDate, dayBounds) &&
+        mesure.poids &&
+        mesure.poids > 0
+      );
     });
 
     if (hasWeighIn) {
@@ -254,12 +264,17 @@ export function calculateJournalStreak(
  * @param referenceDate - Date de référence (défaut: aujourd'hui)
  * @returns True si pesée aujourd'hui
  */
-export function hasTodayWeighIn(mesures: Mesure[], referenceDate: Date = new Date()): boolean {
+export function hasTodayWeighIn(
+  mesures: Mesure[],
+  referenceDate: Date = new Date(),
+): boolean {
   const bounds = getTodayBounds(referenceDate);
 
   return mesures.some((mesure) => {
     const mesureDate = new Date(timestampToDateString(mesure.date));
-    return isDateInBounds(mesureDate, bounds) && mesure.poids && mesure.poids > 0;
+    return (
+      isDateInBounds(mesureDate, bounds) && mesure.poids && mesure.poids > 0
+    );
   });
 }
 
@@ -281,4 +296,3 @@ export function hasTodayJournalEntry(
     return isDateInBounds(entryDate, bounds);
   });
 }
-
