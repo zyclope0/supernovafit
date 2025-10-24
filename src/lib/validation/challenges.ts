@@ -218,7 +218,7 @@ export const AchievementSchema = z
       .max(100, 'Le nom ne peut pas dépasser 100 caractères')
       // Accepte lettres, chiffres, accents, espaces, ponctuation ET emojis
       .regex(
-        /^[\p{L}\p{N}\p{Emoji}\s\-'!?.,()]+$/u,
+        /^[^<>{}[\]\\|`~!@#$%^&*+=;:"/]+$/,
         'Le nom contient des caractères invalides',
       ),
 
