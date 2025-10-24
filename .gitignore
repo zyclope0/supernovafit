@@ -41,6 +41,7 @@ yarn-error.log*
 .env*.local
 .env
 .env.test
+.env.production
 
 # Firebase Admin Service Account (NEVER COMMIT)
 firebase-service-account.json
