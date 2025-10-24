@@ -217,7 +217,10 @@ export const AchievementSchema = z
       .min(3, 'Le nom doit contenir au moins 3 caractères')
       .max(100, 'Le nom ne peut pas dépasser 100 caractères')
       // Accepte lettres, chiffres, accents, espaces, ponctuation ET emojis
-      .regex(/^[\w\s\-'!?.,()]+$/, 'Le nom contient des caractères invalides'),
+      .regex(
+        /^[\p{L}\p{N}\p{Emoji}\s\-'!?.,()]+$/u,
+        'Le nom contient des caractères invalides',
+      ),
 
     description: z
       .string()

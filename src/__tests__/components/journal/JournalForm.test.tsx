@@ -129,7 +129,17 @@ describe('JournalForm', () => {
 
     // Find textarea and type note
     const noteTextarea = screen.getByPlaceholderText(/décrivez votre journée/i);
-    await user.type(noteTextarea, 'Great day today!');
+    await user.clear(noteTextarea);
+    
+    // Type character by character with small delays to ensure all characters are captured
+    const text = 'Great day today!';
+    for (let i = 0; i < text.length; i++) {
+      await user.type(noteTextarea, text[i]);
+      await new Promise(resolve => setTimeout(resolve, 10)); // Small delay between characters
+    }
+
+    // Verify the text was typed correctly
+    expect(noteTextarea).toHaveValue('Great day today!');
 
     const submitButton = screen.getByRole('button', { name: /enregistrer/i });
     await user.click(submitButton);
@@ -138,6 +148,8 @@ describe('JournalForm', () => {
       expect(mockOnSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
           note: 'Great day today!',
+          activites_annexes: [],
+          photos_libres: [],
         })
       );
     });
