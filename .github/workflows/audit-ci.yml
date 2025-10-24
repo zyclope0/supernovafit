@@ -5,6 +5,14 @@ on:
     branches: ["audit/**"] # Seulement branches audit
   workflow_dispatch: # Déclenchement manuel possible
 
+# 🔒 SECURITY: Explicit permissions following least privilege principle
+permissions:
+  contents: read # Read repository contents
+  actions: read # Read workflow runs
+  checks: write # Write check results
+  pull-requests: read # Read PR information
+  artifacts: write # Upload build artifacts
+
 jobs:
   quality:
     name: Code Quality
