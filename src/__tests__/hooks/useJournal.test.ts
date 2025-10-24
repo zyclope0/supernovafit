@@ -78,7 +78,7 @@ vi.mock('@/lib/dateUtils', () => ({
   }),
 }));
 
-describe.skip('useJournal', () => {
+describe('useJournal', () => {
   const mockUser = { uid: 'test-user-123', email: 'test@example.com' };
   const mockUseAuth = vi.mocked(useAuth);
   

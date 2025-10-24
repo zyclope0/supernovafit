@@ -53,12 +53,13 @@ export default defineConfig({
       },
     },
     // Isolation pour éviter les fuites mémoire
-    pool: 'forks',
+    pool: 'forks', // Revenir à forks mais avec configuration très restrictive
     poolOptions: {
       forks: {
-        singleFork: false, // Revenir à multi-fork (hooks skippés de toute façon)
+        singleFork: true, // Un seul fork pour éviter les fuites mémoire
         minForks: 1,
-        maxForks: 4,
+        maxForks: 1, // Limiter à 1 fork
+        isolate: true, // Isoler complètement les tests
       },
     },
     // Timeout pour tests Firebase

@@ -131,12 +131,8 @@ describe('JournalForm', () => {
     const noteTextarea = screen.getByPlaceholderText(/décrivez votre journée/i);
     await user.clear(noteTextarea);
     
-    // Type character by character with small delays to ensure all characters are captured
-    const text = 'Great day today!';
-    for (let i = 0; i < text.length; i++) {
-      await user.type(noteTextarea, text[i]);
-      await new Promise(resolve => setTimeout(resolve, 10)); // Small delay between characters
-    }
+    // Type the text normally
+    await user.type(noteTextarea, 'Great day today!');
 
     // Verify the text was typed correctly
     expect(noteTextarea).toHaveValue('Great day today!');

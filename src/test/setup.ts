@@ -1,116 +1,104 @@
+/**
+ * Setup global pour les tests SuperNovaFit
+ * Usage: importé automatiquement par Vitest
+ */
+
 import '@testing-library/jest-dom';
-import { vi, beforeAll, afterAll, afterEach } from 'vitest';
+import { vi } from 'vitest';
+import React from 'react';
 
-// Mock Firebase - Critique pour tests
-vi.mock('firebase/app', () => ({
-  initializeApp: vi.fn(() => ({ name: 'mock-app' })),
-  getApps: vi.fn(() => []),
-  getApp: vi.fn(() => ({ name: 'mock-app' })),
-}));
-
+// Mock Firebase
 vi.mock('firebase/auth', () => ({
   getAuth: vi.fn(),
-  onAuthStateChanged: vi.fn((auth, callback) => {
-    // Mock user connecté par défaut
-    callback({ uid: 'test-user-id', email: 'test@supernovafit.com' });
-    return vi.fn(); // unsubscribe function
-  }),
-  signInWithEmailAndPassword: vi.fn(() =>
-    Promise.resolve({
-      user: { uid: 'test-user-id', email: 'test@supernovafit.com' },
-    }),
-  ),
-  signOut: vi.fn(() => Promise.resolve()),
-  sendPasswordResetEmail: vi.fn(() => Promise.resolve()),
+  signInWithEmailAndPassword: vi.fn(),
+  createUserWithEmailAndPassword: vi.fn(),
+  signOut: vi.fn(),
+  onAuthStateChanged: vi.fn(),
 }));
 
-vi.mock('firebase/firestore', () => ({
-  getFirestore: vi.fn(),
-  collection: vi.fn(),
-  doc: vi.fn(),
-  addDoc: vi.fn(() => Promise.resolve({ id: 'mock-doc-id' })),
-  updateDoc: vi.fn(() => Promise.resolve()),
-  deleteDoc: vi.fn(() => Promise.resolve()),
-  getDocs: vi.fn(() => Promise.resolve({ docs: [] })),
-  getDoc: vi.fn(() => Promise.resolve({ exists: () => false })),
-  setDoc: vi.fn(() => Promise.resolve()),
-  query: vi.fn(() => ({ __isFirestoreQuery: true })), // Retourner un mock query
-  where: vi.fn(() => ({ __isFirestoreWhere: true })), // Chain
-  orderBy: vi.fn(() => ({ __isFirestoreOrderBy: true })), // Chain
-  limit: vi.fn(),
-  startAt: vi.fn(),
-  endAt: vi.fn(),
-  onSnapshot: vi.fn((query, callback) => {
-    // Simuler des données vides en async pour éviter les boucles
-    setTimeout(() => {
-      callback({ docs: [] });
-    }, 0);
-    // Retourner une fonction unsubscribe
-    return vi.fn();
-  }),
-  serverTimestamp: vi.fn(() => ({ __type: 'timestamp' })),
-  Timestamp: {
-    fromDate: (date: Date) => ({
-      seconds: Math.floor(date.getTime() / 1000),
-      nanoseconds: (date.getTime() % 1000) * 1000000,
-      toDate: () => date,
-      toMillis: () => date.getTime(),
+// Mock Firebase Firestore optimisé pour éviter les fuites mémoire
+vi.mock('firebase/firestore', () => {
+  const mockTimestamp = {
+    fromDate: vi.fn((date) => ({ toDate: () => date })),
+    now: vi.fn(() => ({ toDate: () => new Date() })),
+  };
+
+  return {
+    getFirestore: vi.fn(),
+    collection: vi.fn(),
+    doc: vi.fn(),
+    addDoc: vi.fn(),
+    updateDoc: vi.fn(),
+    deleteDoc: vi.fn(),
+    getDoc: vi.fn(),
+    getDocs: vi.fn(),
+    onSnapshot: vi.fn((query, callback) => {
+      // Mock optimisé qui retourne immédiatement
+      if (callback) {
+        setTimeout(() => callback({ docs: [] }), 0);
+      }
+      return () => {}; // Cleanup function
     }),
-    now: () => {
-      const date = new Date();
-      return {
-        seconds: Math.floor(date.getTime() / 1000),
-        nanoseconds: (date.getTime() % 1000) * 1000000,
-        toDate: () => date,
-        toMillis: () => date.getTime(),
-      };
-    },
-  },
-}));
+    query: vi.fn(),
+    where: vi.fn(),
+    orderBy: vi.fn(),
+    limit: vi.fn(),
+    Timestamp: mockTimestamp,
+  };
+});
 
 vi.mock('firebase/storage', () => ({
   getStorage: vi.fn(),
   ref: vi.fn(),
-  uploadBytes: vi.fn(() => Promise.resolve({ ref: { fullPath: 'test-path' } })),
-  getDownloadURL: vi.fn(() =>
-    Promise.resolve('https://example.com/test-image.jpg'),
-  ),
-  deleteObject: vi.fn(() => Promise.resolve()),
+  uploadBytes: vi.fn(),
+  getDownloadURL: vi.fn(),
 }));
 
-// Mock Next.js - Critique pour composants
+// Mock Next.js
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({
+  useRouter: vi.fn(() => ({
     push: vi.fn(),
     replace: vi.fn(),
-    prefetch: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
     refresh: vi.fn(),
-  }),
-  useSearchParams: () => new URLSearchParams(),
-  usePathname: () => '/',
-  useParams: () => ({}),
+    prefetch: vi.fn(),
+  })),
+  usePathname: vi.fn(() => '/'),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
 vi.mock('next/image', () => ({
-  default: ({
-    src,
-    alt,
-    ...props
-  }: {
-    src: string;
-    alt: string;
-    [key: string]: unknown;
-  }) => {
-    return {
-      type: 'img',
-      props: { src, alt, ...props },
-    };
-  },
+  default: ({ src, alt, ...props }: any) =>
+    React.createElement('img', { src, alt, ...props }),
 }));
 
-// Mock react-hot-toast
+// Mock Recharts
+vi.mock('recharts', () => ({
+  LineChart: vi.fn(({ children }) =>
+    React.createElement('div', { 'data-testid': 'line-chart' }, children),
+  ),
+  BarChart: vi.fn(({ children }) =>
+    React.createElement('div', { 'data-testid': 'bar-chart' }, children),
+  ),
+  PieChart: vi.fn(({ children }) =>
+    React.createElement('div', { 'data-testid': 'pie-chart' }, children),
+  ),
+  XAxis: vi.fn(() => React.createElement('div', { 'data-testid': 'x-axis' })),
+  YAxis: vi.fn(() => React.createElement('div', { 'data-testid': 'y-axis' })),
+  CartesianGrid: vi.fn(() =>
+    React.createElement('div', { 'data-testid': 'cartesian-grid' }),
+  ),
+  Tooltip: vi.fn(() =>
+    React.createElement('div', { 'data-testid': 'tooltip' }),
+  ),
+  Legend: vi.fn(() => React.createElement('div', { 'data-testid': 'legend' })),
+  Line: vi.fn(() => React.createElement('div', { 'data-testid': 'line' })),
+  Bar: vi.fn(() => React.createElement('div', { 'data-testid': 'bar' })),
+  Pie: vi.fn(() => React.createElement('div', { 'data-testid': 'pie' })),
+}));
+
+// Mock React Hot Toast
 vi.mock('react-hot-toast', () => ({
   toast: {
     success: vi.fn(),
@@ -118,63 +106,107 @@ vi.mock('react-hot-toast', () => ({
     loading: vi.fn(),
     dismiss: vi.fn(),
   },
-  Toaster: () => null,
 }));
 
-// Mock Recharts pour éviter erreurs SVG
-vi.mock('recharts', () => ({
-  ResponsiveContainer: vi.fn(() => null),
-  LineChart: vi.fn(() => null),
-  BarChart: vi.fn(() => null),
-  PieChart: vi.fn(() => null),
-  XAxis: vi.fn(() => null),
-  YAxis: vi.fn(() => null),
-  CartesianGrid: vi.fn(() => null),
-  Tooltip: vi.fn(() => null),
-  Legend: vi.fn(() => null),
-  Line: vi.fn(() => null),
-  Bar: vi.fn(() => null),
-  Cell: vi.fn(() => null),
-}));
-
-// Mock ResizeObserver (utilisé par Recharts)
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
-
-// Mock fetch pour API externes (Open Food Facts)
+// Mock fetch
 global.fetch = vi.fn();
 
-// Mock window.matchMedia (pour responsive)
+// Mock window.alert
+global.alert = vi.fn();
+
+// Mock window.confirm
+global.confirm = vi.fn(() => true);
+
+// Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
 });
 
-// Clean up after each test pour éviter les fuites mémoire
+// Mock IntersectionObserver
+global.IntersectionObserver = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock ResizeObserver
+global.ResizeObserver = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock crypto
+Object.defineProperty(global, 'crypto', {
+  value: {
+    randomUUID: vi.fn(() => 'test-uuid'),
+  },
+});
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
+
+// Mock sessionStorage
+const sessionStorageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+});
+
+// Mock URL.createObjectURL
+global.URL.createObjectURL = vi.fn(() => 'mock-url');
+global.URL.revokeObjectURL = vi.fn();
+
+// Mock FileReader
+global.FileReader = vi.fn(() => ({
+  readAsText: vi.fn(),
+  readAsDataURL: vi.fn(),
+  result: 'mock-result',
+  onload: null,
+  onerror: null,
+}));
+
+// Mock Date.now pour les tests
+const mockDate = new Date('2025-10-24T12:00:00Z');
+vi.setSystemTime(mockDate);
+
+// Cleanup après chaque test
 afterEach(() => {
   vi.clearAllMocks();
-  // Nettoyer les timers si utilisés
-  vi.clearAllTimers();
+  localStorageMock.clear();
+  sessionStorageMock.clear();
 });
 
-// Supprimer les console.error en tests pour réduire le bruit
-const originalError = console.error;
+// Configuration globale
 beforeAll(() => {
-  console.error = vi.fn();
+  // Configuration des tests
+  vi.setConfig({
+    testTimeout: 30000,
+    slowThreshold: 1000,
+  });
 });
 
-afterAll(() => {
-  console.error = originalError;
-});
+// Export pour usage dans les tests
+export { vi };

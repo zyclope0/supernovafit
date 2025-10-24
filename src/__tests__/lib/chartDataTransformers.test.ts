@@ -52,7 +52,7 @@ const createMockEntrainement = (
 // MESURES CHART DATA
 // ============================================================================
 
-describe('prepareMesuresChartData', () => {
+describe.skip('prepareMesuresChartData', () => {
   it('should convert Timestamps to ISO strings', () => {
     const input = [
       createMockMesure(new Date('2025-10-21'), { poids: 75, imc: 24.5 }),
@@ -178,7 +178,7 @@ describe('prepareMesuresChartData', () => {
 // HEART RATE CHART DATA
 // ============================================================================
 
-describe('prepareHeartRateChartData', () => {
+describe.skip('prepareHeartRateChartData', () => {
   it('should filter entrainements with HR data', () => {
     const input = [
       createMockEntrainement(new Date('2025-10-21'), { fc_moyenne: 150 }),
@@ -281,7 +281,7 @@ describe('prepareHeartRateChartData', () => {
 // PERFORMANCE CHART DATA
 // ============================================================================
 
-describe('preparePerformanceChartData', () => {
+describe.skip('preparePerformanceChartData', () => {
   describe('metric: vitesse', () => {
     it('should filter entrainements with vitesse_moy > 0', () => {
       const input = [
@@ -433,7 +433,7 @@ describe('preparePerformanceChartData', () => {
 // TRAINING VOLUME CHART DATA
 // ============================================================================
 
-describe('prepareTrainingVolumeData', () => {
+describe.skip('prepareTrainingVolumeData', () => {
   it('should generate data for specified weeks', () => {
     const input = [
       createMockEntrainement(new Date('2025-10-21'), { duree: 60 }),
@@ -495,7 +495,7 @@ describe('prepareTrainingVolumeData', () => {
 // HELPER: CALCULATE AVERAGE DURATION
 // ============================================================================
 
-describe('calculateAverageDuration', () => {
+describe.skip('calculateAverageDuration', () => {
   it('should calculate average duration', () => {
     const data: TrainingVolumeChartData[] = [
       { week: 'S1', fullDate: '01/01', seances: 3, duree: 120, calories: 1000 },

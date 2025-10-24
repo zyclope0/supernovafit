@@ -4,7 +4,7 @@
 **Version**: 2.0 UNIFIED  
 **Status**: ✅ **475/475 TESTS PASSING (100%) | 18.07% COVERAGE**
 
-> **Source de vérité unique** pour la stratégie de tests de SuperNovaFit. Consolidation de 4 documents + audit + métriques réelles.
+> **Sourc e de vérité unique** pour la stratégie de tests de SuperNovaFit. Consolidation de 4 documents + audit + métriques réelles.
 
 ## 🔗 **NAVIGATION**
 
