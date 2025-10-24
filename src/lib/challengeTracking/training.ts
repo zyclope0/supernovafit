@@ -127,14 +127,20 @@ export function calculateWeekTrainingVolume(
       );
     })
     .reduce((total, training) => {
-      const exerciceVolume = (training.exercices || []).reduce((sum, ex) => {
-        const exVolume = (ex.series || []).reduce((seriesSum, serie) => {
-          const reps = serie.reps || 0;
-          const poids = serie.poids || 0;
-          return seriesSum + reps * poids;
-        }, 0);
-        return sum + exVolume;
-      }, 0);
+      const exerciceVolume = ((training as any).exercices || []).reduce(
+        (sum: number, ex: any) => {
+          const exVolume = (ex.series || []).reduce(
+            (seriesSum: number, serie: any) => {
+              const reps = serie.reps || 0;
+              const poids = serie.poids || 0;
+              return seriesSum + reps * poids;
+            },
+            0,
+          );
+          return sum + exVolume;
+        },
+        0,
+      );
       return total + exerciceVolume;
     }, 0);
 }

@@ -50,7 +50,6 @@ export async function sendChallengeCompletedNotification(
       badge: template.badge,
       tag: template.tag,
       requireInteraction: template.requireInteraction,
-      vibrate: [200, 100, 200], // Vibration pattern
       data: {
         type: 'challenge-completed',
         challengeId: challenge.id,
@@ -115,7 +114,6 @@ export async function sendChallengeProgressNotification(
       badge: template.badge,
       tag: template.tag,
       requireInteraction: template.requireInteraction,
-      vibrate: [100, 50, 100],
       data: {
         type: 'challenge-progress',
         challengeId: challenge.id,
@@ -170,7 +168,6 @@ export async function sendChallengeAlmostDoneNotification(
       badge: template.badge,
       tag: template.tag,
       requireInteraction: template.requireInteraction,
-      vibrate: [150, 75, 150],
       data: {
         type: 'challenge-almost-done',
         challengeId: challenge.id,
