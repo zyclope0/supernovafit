@@ -80,6 +80,15 @@ CodeQL doesn't understand that cache is secure because:
 3. It doesn't understand that cache keys include verified file hashes
 4. It doesn't realize that only main branch code can populate the cache
 
+#### **Alert 3: Code Injection**
+
+CodeQL doesn't understand that GitHub variables are secure because:
+
+1. It sees `${{ github.event.workflow_run.* }}` variables in `run:` scripts
+2. It doesn't recognize that these are GitHub-controlled, not user-controlled
+3. It doesn't understand that `workflow_run` context prevents external manipulation
+4. It doesn't realize that these variables cannot be modified by external users
+
 ### ✅ Security Verification
 
 The workflow includes explicit security verification:
