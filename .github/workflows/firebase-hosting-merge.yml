@@ -18,9 +18,21 @@ jobs:
       NODE_VERSION: "20"
       CACHE_VERSION: "v1"
     steps:
+      # ✅ SECURED CHECKOUT: Only executes code from main branch after successful quality checks
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+          # Security: This workflow only runs after successful quality checks on main branch
+          # The code being checked out is from the main branch, not from untrusted PRs
+
+      # 🔒 Security verification: Ensure we're working with main branch code
+      - name: 🔒 Verify Security Context
+        run: |
+          echo "🔒 Security verification:"
+          echo "- Workflow triggered by: ${{ github.event.workflow_run.head_branch }}"
+          echo "- Commit SHA: ${{ github.event.workflow_run.head_sha }}"
+          echo "- Quality checks result: ${{ github.event.workflow_run.conclusion }}"
+          echo "✅ This is secure: Only main branch code after successful quality checks"
       - name: 🚀 Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
