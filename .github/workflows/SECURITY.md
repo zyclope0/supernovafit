@@ -41,19 +41,44 @@ if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workfl
 - ✅ Uses verified commit SHA from quality checks
 - ✅ No PR or external code checkout
 
-#### 4. **Credentials Protection** ✅
+#### 4. **Cache Security** ✅
+
+```yaml
+- name: 📦 Cache Next.js build (Optimized)
+  uses: actions/cache@v4
+  with:
+    key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/next.config.js') }}-${{ env.CACHE_VERSION }}
+```
+
+- ✅ Cache populated only by main branch code
+- ✅ Cache keys include verified file hashes
+- ✅ No external access to cache
+- ✅ No cache poisoning possible
+
+#### 5. **Credentials Protection** ✅
 
 - ✅ Service account credentials are used in secure context
 - ✅ No external access to secrets
 - ✅ Only main branch code can access credentials
 
-### 🚫 Why CodeQL Alert is False Positive
+### 🚫 Why CodeQL Alerts are False Positives
+
+#### **Alert 1: Untrusted Checkout**
 
 CodeQL doesn't understand that `workflow_run` trigger is secure because:
 
 1. It sees `checkout` with a dynamic ref
 2. It doesn't recognize that `workflow_run` only executes main branch code
 3. It doesn't understand the security context of the trigger
+
+#### **Alert 2: Cache Poisoning**
+
+CodeQL doesn't understand that cache is secure because:
+
+1. It sees cache usage in a "privileged" workflow
+2. It doesn't recognize that `workflow_run` prevents external cache poisoning
+3. It doesn't understand that cache keys include verified file hashes
+4. It doesn't realize that only main branch code can populate the cache
 
 ### ✅ Security Verification
 
