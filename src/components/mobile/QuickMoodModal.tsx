@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Heart, Battery, Moon, Zap, Save } from 'lucide-react';
+import { Timestamp } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { useJournal } from '@/hooks/useFirestore';
 import { useAuth } from '@/hooks/useAuth';
@@ -140,31 +141,10 @@ export default function QuickMoodModal({
 
       const entryData = {
         user_id: user.uid,
-        date: today,
-        humeur: values.humeur as
-          | 1
-          | 2
-          | 3
-          | 4
-          | 5
-          | 6
-          | 7
-          | 8
-          | 9
-          | 10
-          | undefined,
-        energie: values.energie as
-          | 1
-          | 2
-          | 3
-          | 4
-          | 5
-          | 6
-          | 7
-          | 8
-          | 9
-          | 10
-          | undefined,
+        date: Timestamp.fromDate(new Date(today)),
+        humeur: (values.humeur as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) || 5,
+        energie:
+          (values.energie as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) || 5,
         sommeil: values.sommeil as
           | 1
           | 2
@@ -190,8 +170,8 @@ export default function QuickMoodModal({
           | 10
           | undefined,
         note: values.note || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: Timestamp.now(),
+        updated_at: Timestamp.now(),
       };
 
       const result = await addEntry(entryData);

@@ -308,7 +308,9 @@ export default function NutritionImporter({
                 <div className="flex justify-between items-center">
                   <div>
                     <span className="text-neon-cyan font-medium">
-                      {repas.date}
+                      {typeof repas.date === 'string'
+                        ? repas.date
+                        : repas.date.toDate().toLocaleDateString('fr-FR')}
                     </span>
                     <span className="text-white ml-2">{repas.repas}</span>
                   </div>

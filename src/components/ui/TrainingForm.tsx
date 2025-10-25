@@ -284,7 +284,14 @@ export default function TrainingForm({
               <button
                 key={trainingType.value}
                 type="button"
-                onClick={() => setType(trainingType.value)}
+                onClick={() => {
+                  const validType =
+                    trainingType.value === 'cardio' ||
+                    trainingType.value === 'musculation'
+                      ? trainingType.value
+                      : 'cardio';
+                  setType(validType);
+                }}
                 className={`p-3 rounded-lg border transition-all ${
                   type === trainingType.value
                     ? `border-${trainingType.color} bg-${trainingType.color}/20`

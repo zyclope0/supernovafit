@@ -55,8 +55,8 @@ export default function JournalCardClickable({
       Boolean,
     );
     if (scores.length === 0) return null;
-    const average =
-      scores.reduce((sum, score) => sum + (score || 0), 0) / scores.length;
+    const total = scores.reduce((sum, score) => (sum || 0) + (score || 0), 0);
+    const average = total ? total / scores.length : 0;
     return Math.round(average);
   };
 

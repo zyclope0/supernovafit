@@ -86,7 +86,7 @@ export default function JournalEntryClickable({
             </span>
             {entry.meteo && (
               <span className="text-sm text-muted-foreground flex items-center gap-1">
-                {METEO_EMOJI[entry.meteo]}{' '}
+                {METEO_EMOJI[entry.meteo as keyof typeof METEO_EMOJI]}{' '}
                 <span className="capitalize">{entry.meteo}</span>
               </span>
             )}
@@ -141,7 +141,9 @@ export default function JournalEntryClickable({
       <div className="flex flex-wrap gap-2 mb-4">
         {entry.humeur && (
           <div className="flex items-center gap-2 px-3 py-2 bg-neon-green/10 rounded-lg border border-neon-green/20">
-            <span className="text-lg">{EMOJI_LEVELS[entry.humeur]}</span>
+            <span className="text-lg">
+              {EMOJI_LEVELS[entry.humeur as keyof typeof EMOJI_LEVELS]}
+            </span>
             <span className="text-sm text-neon-green font-semibold">
               {entry.humeur}/10
             </span>

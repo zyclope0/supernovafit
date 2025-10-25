@@ -157,6 +157,10 @@ export default function GarminImport({
   };
 
   const updateResultType = (index: number, newType: string) => {
+    // Validation du type
+    const validType =
+      newType === 'cardio' || newType === 'musculation' ? newType : 'cardio';
+
     setResults((prev) =>
       prev.map((result, i) => {
         if (i === index && result.entrainement) {
@@ -165,7 +169,7 @@ export default function GarminImport({
             selectedType: newType,
             entrainement: {
               ...result.entrainement,
-              type: newType,
+              type: validType,
             },
           };
         }
@@ -367,7 +371,11 @@ export default function GarminImport({
                             </p>
                           )}
                           <p className="text-xs text-white/60">
-                            {result.entrainement.date}
+                            {typeof result.entrainement.date === 'string'
+                              ? result.entrainement.date
+                              : result.entrainement.date
+                                  .toDate()
+                                  .toLocaleDateString('fr-FR')}
                           </p>
                         </div>
                       </div>
