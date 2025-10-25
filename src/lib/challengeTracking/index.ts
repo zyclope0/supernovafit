@@ -30,7 +30,6 @@ export {
 export {
   countTodayTrainings,
   countWeekTrainings,
-  calculateWeekTrainingTime,
   calculateWeekTrainingVolume,
   calculateTrainingStreak,
   filterCardioTrainings,
@@ -54,8 +53,78 @@ export {
 // ========================================
 export {
   calculateMonthWeightLoss,
-  calculateWeightLoss,
   calculateWeightLossProgress,
   hasAchievedWeightLossGoal,
   calculateWeightLossRate,
 } from './transformations';
+
+// ========================================
+// Calculs Challenges Avancés (Phase 2.3)
+// ========================================
+export {
+  // Performance Complexe
+  calculateTotalTrainings,
+  calculateTotalMeals,
+  calculateMonthTrainingVolume,
+  calculateLongestActivityStreak,
+  calculateDailyUsageStreak,
+
+  // Nutrition Complexe
+  calculateOptimalMacroDays,
+  calculateUniqueFoodsCount,
+
+  // Transformation
+  calculateWeightLoss,
+  calculateWeightGain,
+
+  // Récupération
+  calculateRecoverySessions,
+
+  // Cardio
+  calculateIntenseCardioSessions,
+  calculateTotalCardioTime,
+
+  // Musculation
+  calculateStrengthSessions,
+  calculateTotalVolume,
+
+  // Bien-être
+  calculatePositiveMoodDays,
+  calculateHighEnergyDays,
+  calculateQualitySleepDays,
+
+  // Gratitude & Méditation
+  calculateGratitudePoints,
+  calculateMeditationTime,
+} from './advanced';
+
+// ========================================
+// Calculs Meta-Challenges (Phase 2.4)
+// ========================================
+export {
+  // Performance Globale
+  calculateUserLevel,
+  calculateCompletedChallenges,
+  calculatePerfectChallenges,
+  calculateUniqueBadges,
+
+  // Transformation Complète
+  calculateTransformationScore,
+  calculateBalanceScore,
+
+  // Consistance
+  calculateDailyConsistencyStreak,
+  calculateMasterStreak,
+
+  // Performance Spécialisée
+  calculateAthleteScore,
+  calculateEnduranceScore,
+
+  // Bien-être Global
+  calculateWellnessScore,
+  calculateZenScore,
+
+  // Développement Personnel
+  calculateEvolutionScore,
+  calculateHealthDefenderScore,
+} from './meta';

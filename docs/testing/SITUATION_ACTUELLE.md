@@ -32,6 +32,8 @@
 - Tests hooks Firestore avec mocks complexes
 - Vitest + Firebase mocks + onSnapshot = fuite mémoire
 - Se produit après ~30s de tests
+- **Mémoire**: 4GB+ utilisée avant crash
+- **Tests affectés**: Tous les tests avec mocks Firestore complexes
 
 **Tests Affectés**:
 

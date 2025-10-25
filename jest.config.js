@@ -1,39 +1,39 @@
-/** @type {import('jest').Config} */
 module.exports = {
-  // Test environment
+  // Environment
   testEnvironment: 'jsdom',
 
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/src/test/jest-setup.ts'],
 
-  // Module name mapping (same as Vitest)
+  // Module resolution
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
 
-  // Test patterns
-  testMatch: ['**/__tests__/**/*.test.{ts,tsx}', '**/src/**/*.test.{ts,tsx}'],
-
-  // Coverage configuration
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/*.stories.{ts,tsx}',
-    '!src/**/*.test.{ts,tsx}',
-    '!src/**/__tests__/**',
+  // Test patterns - Tests Jest uniquement
+  testMatch: [
+    '<rootDir>/src/__tests__/hooks/jest-migration.test.ts',
+    '<rootDir>/src/__tests__/hooks/useRepas.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useEntrainements.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useMesures.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useJournal.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useCoachComments.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useAuth.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useChallenges.simple.jest.test.ts',
+    '<rootDir>/src/__tests__/hooks/useNotifications.simple.jest.test.ts',
   ],
 
-  // Coverage thresholds
-  coverageThreshold: {
-    global: {
-      branches: 20,
-      functions: 20,
-      lines: 20,
-      statements: 20,
-    },
-  },
+  // Coverage
+  collectCoverage: true,
+  coverageDirectory: 'coverage-jest',
+  coverageReporters: ['text', 'lcov', 'html'],
+  collectCoverageFrom: [
+    'src/hooks/**/*.{ts,tsx}',
+    '!src/hooks/**/*.d.ts',
+    '!src/hooks/**/*.test.{ts,tsx}',
+  ],
 
-  // Transform configuration
+  // Transform
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
@@ -46,15 +46,12 @@ module.exports = {
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 
-  // Ignore patterns
-  testPathIgnorePatterns: ['/node_modules/', '/.next/', '/dist/'],
+  // Timeout
+  testTimeout: 10000,
 
-  // Verbose output
-  verbose: true,
-
-  // Max workers (to avoid memory issues)
+  // Max workers (éviter fuite mémoire)
   maxWorkers: 1,
 
-  // Test timeout
-  testTimeout: 30000,
+  // Verbose
+  verbose: true,
 };

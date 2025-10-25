@@ -8,7 +8,7 @@ import {
   useJournal,
   useMesures,
 } from './useFirestore';
-import { useChallenges } from './useChallenges';
+import { useChallenges } from './useChallenges'; // useUserProgress temporarily disabled
 import {
   // Nutrition
   countTodayMeals,
@@ -29,6 +29,41 @@ import {
   calculateJournalStreak,
   // Transformations
   calculateMonthWeightLoss,
+  // Challenges Avancés (Phase 2.3) - Temporarily disabled
+  // calculateTotalTrainings,
+  // calculateTotalMeals,
+  // calculateMonthTrainingVolume,
+  // calculateLongestActivityStreak,
+  // calculateDailyUsageStreak,
+  // calculateOptimalMacroDays,
+  // calculateUniqueFoodsCount,
+  // calculateWeightLoss,
+  // calculateWeightGain,
+  // calculateRecoverySessions,
+  // calculateIntenseCardioSessions,
+  // calculateTotalCardioTime,
+  // calculateStrengthSessions,
+  // calculateTotalVolume,
+  // calculatePositiveMoodDays,
+  // calculateHighEnergyDays,
+  // calculateQualitySleepDays,
+  // calculateGratitudePoints,
+  // calculateMeditationTime,
+  // Meta-Challenges (Phase 2.4) - Temporarily disabled
+  // calculateUserLevel,
+  // calculateCompletedChallenges,
+  // calculatePerfectChallenges,
+  // calculateUniqueBadges,
+  // calculateTransformationScore,
+  // calculateBalanceScore,
+  // calculateDailyConsistencyStreak,
+  // calculateMasterStreak,
+  // calculateAthleteScore,
+  // calculateEnduranceScore,
+  // calculateWellnessScore,
+  // calculateZenScore,
+  // calculateEvolutionScore,
+  // calculateHealthDefenderScore,
 } from '@/lib/challengeTracking';
 import { safeValidateUpdateChallenge } from '@/lib/validation/challenges';
 import {
@@ -54,6 +89,7 @@ export function useChallengeTracker() {
   const { entries: journalEntries } = useJournal();
   const { mesures } = useMesures();
   const { challenges, updateChallenge } = useChallenges();
+  // const { progress } = useUserProgress(); // Temporarily disabled
 
   // ========================================
   // 🏋️ CHALLENGES ENTRAÎNEMENT
@@ -75,6 +111,17 @@ export function useChallengeTracker() {
       weekBounds,
     ).length;
 
+    // Nouvelles métriques avancées (temporairement désactivées pour éviter les erreurs TypeScript)
+    // const totalTrainings = calculateTotalTrainings(entrainements);
+    // const monthTrainingVolume = calculateMonthTrainingVolume(entrainements, new Date());
+    // const longestActivityStreak = calculateLongestActivityStreak(entrainements, repas, journalEntries);
+    // const dailyUsageStreak = calculateDailyUsageStreak(entrainements, repas, journalEntries);
+    // const intenseCardioSessions = calculateIntenseCardioSessions(entrainements, new Date());
+    // const totalCardioTime = calculateTotalCardioTime(entrainements, new Date());
+    // const strengthSessions = calculateStrengthSessions(entrainements, new Date());
+    // const totalVolume = calculateTotalVolume(entrainements, new Date());
+    // const recoverySessions = calculateRecoverySessions(entrainements, new Date());
+
     // Mise à jour par titre de challenge
     const updates: Array<{ id: string; title: string; current: number }> = [];
 
@@ -82,6 +129,7 @@ export function useChallengeTracker() {
       let newCurrent: number | null = null;
 
       switch (challenge.title) {
+        // Challenges existants
         case '5 Workouts par Semaine':
           newCurrent = weekTrainingsCount;
           break;
@@ -97,6 +145,45 @@ export function useChallengeTracker() {
         case 'Volume Monstre':
           newCurrent = Math.round(weekTrainingVolume / 1000); // Convertir en milliers de kg
           break;
+
+        // Nouveaux Challenges Avancés - Performance (temporairement désactivés)
+        // case 'Machine à Entraînement':
+        //   newCurrent = totalTrainings;
+        //   break;
+        // case 'Marathon du Temps':
+        //   newCurrent = Math.round(weekTrainingTime / 60); // Convertir en heures
+        //   break;
+        // case 'Volume Monstre Avancé':
+        //   newCurrent = Math.round(monthTrainingVolume / 1000); // Convertir en milliers de minutes
+        //   break;
+        // case 'Streak Master':
+        //   newCurrent = longestActivityStreak;
+        //   break;
+        // case 'Consistance Parfaite':
+        //   newCurrent = dailyUsageStreak;
+        //   break;
+
+        // Nouveaux Challenges Avancés - Cardio (temporairement désactivés)
+        // case 'Cardio Intense':
+        //   newCurrent = intenseCardioSessions;
+        //   break;
+        // case 'Endurance Extrême':
+        //   newCurrent = Math.round(totalCardioTime / 60); // Convertir en heures
+        //   break;
+
+        // Nouveaux Challenges Avancés - Musculation (temporairement désactivés)
+        // case 'Force Pure Avancée':
+        //   newCurrent = strengthSessions;
+        //   break;
+        // case 'Volume Monstre Musculation':
+        //   newCurrent = Math.round(totalVolume / 1000); // Convertir en milliers de kg
+        //   break;
+
+        // Nouveaux Challenges Avancés - Récupération (temporairement désactivés)
+        // case 'Récupération Active':
+        //   newCurrent = recoverySessions;
+        //   break;
+
         default:
           break;
       }
@@ -172,6 +259,11 @@ export function useChallengeTracker() {
     const proteinGoal = calculateProteinGoal(mesures);
     const proteinGoalDays = countProteinGoalDays(repas, proteinGoal);
 
+    // Nouvelles métriques nutrition avancées (temporairement désactivées)
+    // const totalMeals = calculateTotalMeals(repas);
+    // const optimalMacroDays = calculateOptimalMacroDays(repas, new Date());
+    // const uniqueFoodsCount = calculateUniqueFoodsCount(repas, new Date());
+
     // Mise à jour par titre de challenge
     const updates: Array<{ id: string; title: string; current: number }> = [];
 
@@ -179,6 +271,7 @@ export function useChallengeTracker() {
       let newCurrent: number | null = null;
 
       switch (challenge.title) {
+        // Challenges existants
         case 'Repas Complet':
           newCurrent = todayMealsCount;
           break;
@@ -188,6 +281,18 @@ export function useChallengeTracker() {
         case 'Marathon des Protéines':
           newCurrent = proteinGoalDays;
           break;
+
+        // Nouveaux Challenges Avancés - Nutrition (temporairement désactivés)
+        // case 'Nutritionniste':
+        //   newCurrent = totalMeals;
+        //   break;
+        // case 'Défi Équilibre':
+        //   newCurrent = optimalMacroDays;
+        //   break;
+        // case 'Défi Variété':
+        //   newCurrent = uniqueFoodsCount;
+        //   break;
+
         default:
           break;
       }
@@ -239,6 +344,15 @@ export function useChallengeTracker() {
     const journalStreak = calculateJournalStreak(journalEntries);
     const monthWeightLoss = calculateMonthWeightLoss(mesures);
 
+    // Nouvelles métriques tracking avancées (temporairement désactivées)
+    // const weightLoss = calculateWeightLoss(mesures, new Date());
+    // const weightGain = calculateWeightGain(mesures, new Date());
+    // const positiveMoodDays = calculatePositiveMoodDays(journalEntries, new Date());
+    // const highEnergyDays = calculateHighEnergyDays(journalEntries, new Date());
+    // const qualitySleepDays = calculateQualitySleepDays(journalEntries, new Date());
+    // const gratitudePoints = calculateGratitudePoints(journalEntries, new Date());
+    // const meditationTime = calculateMeditationTime(journalEntries, new Date());
+
     // Mise à jour par titre de challenge
     const updates: Array<{ id: string; title: string; current: number }> = [];
 
@@ -246,6 +360,7 @@ export function useChallengeTracker() {
       let newCurrent: number | null = null;
 
       switch (challenge.title) {
+        // Challenges existants
         case 'Pesée Quotidienne':
           newCurrent = Math.max(weekWeighIns, weighInStreak);
           break;
@@ -255,6 +370,32 @@ export function useChallengeTracker() {
         case 'Transformation du Mois':
           newCurrent = Math.max(0, monthWeightLoss); // Clamp à 0 si gain
           break;
+
+        // Nouveaux Challenges Avancés - Transformation (temporairement désactivés)
+        // case 'Perte de Poids':
+        //   newCurrent = Math.max(0, weightLoss);
+        //   break;
+        // case 'Gain de Masse':
+        //   newCurrent = Math.max(0, weightGain);
+        //   break;
+
+        // Nouveaux Challenges Avancés - Bien-être (temporairement désactivés)
+        // case 'Humeur Positive':
+        //   newCurrent = positiveMoodDays;
+        //   break;
+        // case 'Énergie Maximale':
+        //   newCurrent = highEnergyDays;
+        //   break;
+        // case 'Sommeil de Qualité':
+        //   newCurrent = qualitySleepDays;
+        //   break;
+        // case 'Gratitude':
+        //   newCurrent = gratitudePoints;
+        //   break;
+        // case 'Méditation':
+        //   newCurrent = Math.round(meditationTime / 10); // Convertir en points (10min = 1 point)
+        //   break;
+
         default:
           break;
       }
@@ -289,4 +430,12 @@ export function useChallengeTracker() {
       });
     });
   }, [user, mesures, journalEntries, challenges, updateChallenge]);
+
+  // ========================================
+  // 🏆 META-CHALLENGES (Phase 2.4) - TEMPORAIREMENT DÉSACTIVÉS
+  // ========================================
+  // useEffect(() => {
+  //   // Temporairement désactivé pour éviter les erreurs TypeScript
+  //   // Les meta-challenges seront réactivés une fois les types corrigés
+  // }, [user, entrainements, repas, mesures, journalEntries, challenges, progress, updateChallenge]);
 }

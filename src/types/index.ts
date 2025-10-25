@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 // Types pour l'authentification et les utilisateurs
 export type UserRole = 'sportif' | 'coach';
 
@@ -62,11 +64,14 @@ export type MealType =
 export interface Aliment {
   id: string;
   nom: string;
+  nom_lower: string; // ⚠️ OBLIGATOIRE (search)
   quantite: number;
   unite: string; // g, ml, unité
+  user_id: string; // ⚠️ OBLIGATOIRE
+  created_at: Timestamp; // ⚠️ OBLIGATOIRE
   openfoodfacts_id?: string;
-  macros?: Macros;
-  macros_base?: Macros; // Valeurs pour 100g/100ml (référence)
+  macros: Macros; // ⚠️ OBLIGATOIRE
+  macros_base: Macros; // ⚠️ OBLIGATOIRE (pour 100g/ml)
 }
 
 export interface Macros {
@@ -79,10 +84,11 @@ export interface Macros {
 export interface Repas {
   id: string;
   user_id: string;
-  date: string; // Format YYYY-MM-DD
+  date: Timestamp; // ⚠️ CRITIQUE: Timestamp Firestore!
   repas: MealType;
   aliments: Aliment[];
   macros: Macros;
+  created_at: Timestamp;
 }
 
 // Types pour les entraînements
@@ -91,46 +97,37 @@ export type TrainingSource = 'manuel' | 'garmin' | 'import';
 export interface Entrainement {
   id: string;
   user_id: string;
-  date: string;
-  type: string;
+  date: Timestamp; // ⚠️ CRITIQUE: Timestamp Firestore!
+  type: 'cardio' | 'musculation'; // ⚠️ CRITIQUE: lowercase!
   duree: number; // en minutes
-  commentaire?: string;
+  calories: number;
   source: TrainingSource;
+  commentaire?: string;
 
-  // Données basiques
-  calories?: number;
-
-  // Données cardio style Garmin
-  fc_moyenne?: number; // Fréquence cardiaque moyenne
-  fc_max?: number; // Fréquence cardiaque max
-  fc_min?: number; // Fréquence cardiaque min
-
-  // Distance et vitesse
-  distance?: number; // en km
-  vitesse_moy?: number; // en km/h
-  vitesse_max?: number; // en km/h
-
-  // Données avancées
-  elevation_gain?: number; // dénivelé positif en mètres
-  cadence_moy?: number; // cadence moyenne (course/vélo)
-  puissance_moy?: number; // puissance moyenne en watts (vélo)
-
-  // Zones d'entraînement
-  zone1_time?: number; // temps en zone 1 (minutes)
-  zone2_time?: number; // temps en zone 2 (minutes)
-  zone3_time?: number; // temps en zone 3 (minutes)
-  zone4_time?: number; // temps en zone 4 (minutes)
-  zone5_time?: number; // temps en zone 5 (minutes)
-
-  // Ressenti subjectif
-  effort_percu?: number; // RPE 1-10
+  // Champs universels (TOUS les types)
+  effort_percu?: number; // 1-10
   fatigue_avant?: number; // 1-10
   fatigue_apres?: number; // 1-10
+  fc_min?: number; // BPM
+  fc_max?: number; // BPM
+  fc_moyenne?: number; // BPM
 
-  // Métadonnées import
-  fichier_original?: string; // nom fichier .fit/.gpx
-  device?: string; // appareil utilisé
-  garmin_id?: string; // Identifiant unique Garmin pour éviter doublons
+  // ⚠️ Champs CONDITIONNELS (type === 'cardio')
+  distance?: number; // km
+  vitesse_moy?: number; // km/h
+  cadence_moy?: number; // rpm
+  elevation_gain?: number; // m
+
+  // ⚠️ Champs CONDITIONNELS (type === 'musculation')
+  puissance_moy?: number; // W
+  exercices?: Array<{
+    nom: string;
+    series: number;
+    repetitions: number;
+    poids?: number;
+  }>;
+
+  created_at: Timestamp;
 }
 
 // Types pour les mesures
@@ -182,22 +179,13 @@ export interface PhotoProgression {
 export interface JournalEntry {
   id: string;
   user_id: string;
-  date: string;
+  date: Timestamp; // ⚠️ CRITIQUE: Timestamp Firestore!
+  humeur: number; // 1-10
+  energie: number; // 1-10
+  sommeil?: number; // heures
+  stress?: number; // 1-10
   note?: string;
-  humeur?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  fatigue?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  motivation?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  energie?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  sommeil_duree?: number; // heures
-  sommeil_qualite?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  stress?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-  photos_libres?: string[]; // URLs des photos libres
-  objectifs_accomplis?: string[]; // IDs des objectifs accomplis ce jour
-  badges_obtenus?: string[]; // IDs des badges obtenus
-  meteo?: 'soleil' | 'nuage' | 'pluie' | 'orage' | 'neige';
-  activites_annexes?: string[]; // Activités hors sport (marche, jardinage, etc.)
-  created_at?: Date | string; // Timestamp Firebase
-  updated_at?: Date | string; // Timestamp Firebase
+  created_at: Timestamp;
 }
 
 export interface Badge {

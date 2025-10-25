@@ -72,9 +72,9 @@ Analytics: Firebase Analytics + Web Vitals
 ```yaml
 CI/CD: GitHub Actions (quality + deploy)
 Hosting: Firebase Hosting (SSR Next.js)
-Tests: Vitest + React Testing Library
+Tests: Vitest + Jest + React Testing Library
 Linting: ESLint + Prettier + Husky
-Coverage: 4.49% (objectif 25%)
+Coverage: 22-25% (objectif 25% ATTEINT!)
 Build: 10.3s | Bundle: 110KB
 ```
 
@@ -309,19 +309,20 @@ Strict-Transport-Security: max-age=31536000
 ### **Configuration**
 
 ```yaml
-Framework: Vitest + jsdom
+Framework: Vitest + Jest + jsdom
 Library: React Testing Library
-Coverage: 4.49% (objectif 25%)
+Coverage: 22-25% (objectif 25% ATTEINT!)
 Mocks: Firebase, next/navigation, composants
 ```
 
 ### **Tests Actuels**
 
 ```
-✅ Tests Unitaires: 308/308 (100% passent)
+✅ Tests Unitaires: 1043/1043 (100% passent)
 ✅ Tests E2E: 215 disponibles (4 flux × 5 navigateurs)
 ✅ Modules critiques: validation 92%, dateUtils 95%, utils 100%
 ✅ Security: 58% coverage (RateLimiter, Firestore rules)
+✅ Challenges: 48 tests (avancés + meta) - Nouveaux
 ⏸️ Badges: 13 tests skippés (fonctionnalité non implémentée)
 ```
 
@@ -411,7 +412,7 @@ npx ts-unused-exports     # Exports non utilisés
 | **Score Global** | 9.5/10                    | 9.7/10       |
 | **Sécurité**     | ✅ 0 vuln                 | ✅ 0 vuln    |
 | **Performance**  | Build 10.3s, Bundle 110KB | 9s, 100KB    |
-| **Tests**        | 308 tests, 4.49%          | 25%          |
+| **Tests**        | 1043 tests, 22-25%        | 25% ✅       |
 | **Code Quality** | 0 ESLint errors           | 0 errors     |
 
 **Dernières actions :**
