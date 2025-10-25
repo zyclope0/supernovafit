@@ -28,7 +28,7 @@
           <div class="fl pad1y space-right2">
             <span class="strong">0% </span>
             <span class="quiet">Branches</span>
-            <span class="fraction">0/435</span>
+            <span class="fraction">0/440</span>
           </div>
 
           <div class="fl pad1y space-right2">
@@ -40,7 +40,7 @@
           <div class="fl pad1y space-right2">
             <span class="strong">0% </span>
             <span class="quiet">Lines</span>
-            <span class="fraction">0/922</span>
+            <span class="fraction">0/923</span>
           </div>
         </div>
         <p class="quiet">
@@ -2642,7 +2642,23 @@
 <a name='L2584'></a><a href='#L2584'>2584</a>
 <a name='L2585'></a><a href='#L2585'>2585</a>
 <a name='L2586'></a><a href='#L2586'>2586</a>
-<a name='L2587'></a><a href='#L2587'>2587</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L2587'></a><a href='#L2587'>2587</a>
+<a name='L2588'></a><a href='#L2588'>2588</a>
+<a name='L2589'></a><a href='#L2589'>2589</a>
+<a name='L2590'></a><a href='#L2590'>2590</a>
+<a name='L2591'></a><a href='#L2591'>2591</a>
+<a name='L2592'></a><a href='#L2592'>2592</a>
+<a name='L2593'></a><a href='#L2593'>2593</a>
+<a name='L2594'></a><a href='#L2594'>2594</a>
+<a name='L2595'></a><a href='#L2595'>2595</a>
+<a name='L2596'></a><a href='#L2596'>2596</a>
+<a name='L2597'></a><a href='#L2597'>2597</a>
+<a name='L2598'></a><a href='#L2598'>2598</a>
+<a name='L2599'></a><a href='#L2599'>2599</a>
+<a name='L2600'></a><a href='#L2600'>2600</a>
+<a name='L2601'></a><a href='#L2601'>2601</a>
+<a name='L2602'></a><a href='#L2602'>2602</a>
+<a name='L2603'></a><a href='#L2603'>2603</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3600,6 +3616,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4378,6 +4398,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -4387,9 +4411,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -6185,7 +6217,11 @@ import {
           updated_at: serverTimestamp(),
         }).filter(<span class="fstat-no" title="function not covered" >([</span>key<span class="cstat-no" title="statement not covered" >, v</span>alue<span class="cstat-no" title="statement not covered" >])</span> =&gt; {
           // Ne pas inclure user_id s'il est vide ou undefined
-<span class="cstat-no" title="statement not covered" >          if (key === 'user_id' &amp;&amp; (!value || value === '')) <span class="cstat-no" title="statement not covered" >return false;</span></span>
+<span class="cstat-no" title="statement not covered" >          if (</span>
+            key === 'user_id' &amp;&amp;
+            (!value || (typeof value === 'string' &amp;&amp; value === ''))
+          )
+<span class="cstat-no" title="statement not covered" >            return false;</span>
 <span class="cstat-no" title="statement not covered" >          return value !== undefined;</span>
         }),
       );
@@ -6950,7 +6986,7 @@ type EntrainementAvecCalories = FirestoreEntrainement &amp; {
         // Calculer la variation de performance (simplifié, avec données limitées)
         const <span class="cstat-no" title="statement not covered" >entrainementsMois = limitedEntrainements.filter(</span>
 <span class="fstat-no" title="function not covered" >          (e</span>: FirestoreEntrainement) =&gt; {
-            const dateEntrainement = <span class="cstat-no" title="statement not covered" >new Date(e.date || '');</span>
+            const dateEntrainement = <span class="cstat-no" title="statement not covered" >e.date ? e.date.toDate() : new Date();</span>
             const moisDernier = <span class="cstat-no" title="statement not covered" >new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);</span>
 <span class="cstat-no" title="statement not covered" >            return dateEntrainement &gt;= moisDernier;</span>
           },
@@ -6964,10 +7000,18 @@ type EntrainementAvecCalories = FirestoreEntrainement &amp; {
         const <span class="cstat-no" title="statement not covered" >evolution_poids = mesuresAvecPoids</span>
           .slice(0, 7)
           .map(<span class="fstat-no" title="function not covered" >(m</span>: FirestoreMesure) =&gt; <span class="cstat-no" title="statement not covered" >({</span>
-            date: new Date(m.date || '').toLocaleDateString('fr-FR', {
-              day: '2-digit',
-              month: '2-digit',
-            }),
+            date: m.date
+              ? (typeof m.date === 'string'
+                  ? new Date(m.date)
+                  : (m.date as any).toDate()
+                ).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                })
+              : new Date().toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                }),
             poids: m.poids || 0,
           }))
           .reverse();
@@ -6976,7 +7020,11 @@ type EntrainementAvecCalories = FirestoreEntrainement &amp; {
         const <span class="cstat-no" title="statement not covered" >activites_recentes = limitedEntrainements</span>
           .slice(0, 5)
           .map(<span class="fstat-no" title="function not covered" >(e</span>: FirestoreEntrainement) =&gt; <span class="cstat-no" title="statement not covered" >({</span>
-            date: e.date || '',
+            date: e.date
+              ? typeof e.date === 'string'
+                ? e.date
+                : e.date.toDate().toISOString().split('T')[0]
+              : '',
             type: e.type || 'Entraînement',
             duree: e.duree || 0,
             calories: (e as EntrainementAvecCalories).calories_brulees || 0,
@@ -7828,7 +7876,7 @@ import type { CoachComment } from '@/types';
         rel="noopener noreferrer"
         >istanbul</a
       >
-      at 2025-10-25T08:19:55.377Z
+      at 2025-10-25T23:39:03.759Z
     </div>
     <script src="prettify.js"></script>
     <script>

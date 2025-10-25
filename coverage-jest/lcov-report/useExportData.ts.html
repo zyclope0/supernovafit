@@ -28,7 +28,7 @@
           <div class="fl pad1y space-right2">
             <span class="strong">0% </span>
             <span class="quiet">Branches</span>
-            <span class="fraction">0/84</span>
+            <span class="fraction">0/88</span>
           </div>
 
           <div class="fl pad1y space-right2">
@@ -496,7 +496,9 @@
 <a name='L438'></a><a href='#L438'>438</a>
 <a name='L439'></a><a href='#L439'>439</a>
 <a name='L440'></a><a href='#L440'>440</a>
-<a name='L441'></a><a href='#L441'>441</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -573,11 +575,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1013,12 +1017,14 @@ import type {
         const endDate = <span class="cstat-no" title="statement not covered" >new Date(config.endDate);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        filteredRepas = filteredRepas.filter(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; {</span>
-          const repasDate = <span class="cstat-no" title="statement not covered" >new Date(r.date);</span>
+          const repasDate =
+<span class="cstat-no" title="statement not covered" >            typeof r.date === 'string' ? new Date(r.date) : r.date.toDate();</span>
 <span class="cstat-no" title="statement not covered" >          return repasDate &gt;= startDate &amp;&amp; repasDate &lt;= endDate;</span>
         });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        filteredEntrainements = filteredEntrainements.filter(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; {</span>
-          const entrainementDate = <span class="cstat-no" title="statement not covered" >new Date(e.date);</span>
+          const entrainementDate =
+<span class="cstat-no" title="statement not covered" >            typeof e.date === 'string' ? new Date(e.date) : e.date.toDate();</span>
 <span class="cstat-no" title="statement not covered" >          return entrainementDate &gt;= startDate &amp;&amp; entrainementDate &lt;= endDate;</span>
         });
 &nbsp;
@@ -1390,7 +1396,7 @@ import type {
         rel="noopener noreferrer"
         >istanbul</a
       >
-      at 2025-10-25T08:19:55.242Z
+      at 2025-10-25T23:39:03.648Z
     </div>
     <script src="prettify.js"></script>
     <script>
