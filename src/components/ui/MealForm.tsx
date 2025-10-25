@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { OpenFoodFactsProduct, MealType, Aliment, Macros } from '@/types';
+import { Timestamp } from 'firebase/firestore';
 // calculateMacros import removed - not used
 import { getMealName, generateId } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 import { repasSchema, validateData } from '@/lib/validation';
 import { useFavoris } from '@/hooks/useFirestore';
 import FoodSearch from './FoodSearch';
@@ -37,6 +39,7 @@ export default function MealForm({
   isEditing,
   isSubmitting,
 }: MealFormProps) {
+  const { user } = useAuth();
   const [aliments, setAliments] = useState<Aliment[]>(existingAliments || []);
   const [isAddingFood, setIsAddingFood] = useState(false);
   const [addMode, setAddMode] = useState<
@@ -52,9 +55,12 @@ export default function MealForm({
     const newAliment: Aliment = {
       id: generateId(),
       nom: product.product_name,
+      nom_lower: product.product_name.toLowerCase(),
       quantite: 100, // Par défaut 100g
       unite: 'g',
       openfoodfacts_id: product.code,
+      user_id: user?.uid || '',
+      created_at: Timestamp.now(),
       macros: {
         kcal: product.nutriments.energy_100g,
         prot: product.nutriments.proteins_100g,

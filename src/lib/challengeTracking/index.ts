@@ -65,6 +65,7 @@ export {
   // Performance Complexe
   calculateTotalTrainings,
   calculateTotalMeals,
+  calculateWeekTrainingTime,
   calculateMonthTrainingVolume,
   calculateLongestActivityStreak,
   calculateDailyUsageStreak,

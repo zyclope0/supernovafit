@@ -75,12 +75,14 @@ export function useExportData() {
         const endDate = new Date(config.endDate);
 
         filteredRepas = filteredRepas.filter((r) => {
-          const repasDate = new Date(r.date);
+          const repasDate =
+            typeof r.date === 'string' ? new Date(r.date) : r.date.toDate();
           return repasDate >= startDate && repasDate <= endDate;
         });
 
         filteredEntrainements = filteredEntrainements.filter((e) => {
-          const entrainementDate = new Date(e.date);
+          const entrainementDate =
+            typeof e.date === 'string' ? new Date(e.date) : e.date.toDate();
           return entrainementDate >= startDate && entrainementDate <= endDate;
         });
 

@@ -60,7 +60,7 @@ export async function generateAndDownloadJSON(
 function formatRepasForJSON(repas: Repas[]): Record<string, unknown> {
   return {
     repas: repas.map((repas) => ({
-      date: format(new Date(repas.date), 'yyyy-MM-dd', { locale: fr }),
+      date: format(repas.date.toDate(), 'yyyy-MM-dd', { locale: fr }),
       type: repas.repas,
       aliments: repas.aliments
         .map((a) => `${a.nom} (${a.quantite}${a.unite})`)
@@ -90,7 +90,7 @@ function formatEntrainementsForJSON(
 ): Record<string, unknown> {
   return {
     entrainements: entrainements.map((ent) => ({
-      date: format(new Date(ent.date), 'yyyy-MM-dd', { locale: fr }),
+      date: format(ent.date.toDate(), 'yyyy-MM-dd', { locale: fr }),
       type: ent.type,
       duree: ent.duree,
       calories: ent.calories || 0,

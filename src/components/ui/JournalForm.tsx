@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { JournalEntry } from '@/types';
+import { Timestamp } from 'firebase/firestore';
 import { X, Save, Sun, Cloud, CloudRain, Zap, Snowflake } from 'lucide-react';
 // import toast from 'react-hot-toast' // Not used
 
@@ -122,15 +123,73 @@ export default function JournalForm({
   useEffect(() => {
     if (existingEntry) {
       setFormData({
-        date: existingEntry.date,
+        date:
+          typeof existingEntry.date === 'string'
+            ? existingEntry.date
+            : existingEntry.date.toDate().toISOString().split('T')[0],
         note: existingEntry.note || '',
-        humeur: existingEntry.humeur || 5,
-        energie: existingEntry.energie || 5,
-        stress: existingEntry.stress || 5,
-        motivation: existingEntry.motivation || 5,
+        humeur: (existingEntry.humeur || 5) as
+          | 1
+          | 2
+          | 3
+          | 4
+          | 5
+          | 6
+          | 7
+          | 8
+          | 9
+          | 10,
+        energie: (existingEntry.energie || 5) as
+          | 1
+          | 2
+          | 3
+          | 4
+          | 5
+          | 6
+          | 7
+          | 8
+          | 9
+          | 10,
+        stress: (existingEntry.stress || 5) as
+          | 1
+          | 2
+          | 3
+          | 4
+          | 5
+          | 6
+          | 7
+          | 8
+          | 9
+          | 10,
+        motivation: (existingEntry.motivation || 5) as
+          | 1
+          | 2
+          | 3
+          | 4
+          | 5
+          | 6
+          | 7
+          | 8
+          | 9
+          | 10,
         sommeil_duree: existingEntry.sommeil_duree || 8,
-        sommeil_qualite: existingEntry.sommeil_qualite || 5,
-        meteo: existingEntry.meteo || 'soleil',
+        sommeil_qualite: (existingEntry.sommeil_qualite || 5) as
+          | 1
+          | 2
+          | 3
+          | 4
+          | 5
+          | 6
+          | 7
+          | 8
+          | 9
+          | 10,
+        meteo: (existingEntry.meteo || 'soleil') as
+          | 'soleil'
+          | 'nuage'
+          | 'pluie'
+          | 'orage'
+          | 'neige',
         activites_annexes: existingEntry.activites_annexes || [],
       });
     }
@@ -142,7 +201,10 @@ export default function JournalForm({
     // Préparer les données en filtrant les valeurs par défaut/vides
     const entryData: Omit<JournalEntry, 'id'> = {
       user_id: '', // Sera rempli par le hook
-      date: formData.date,
+      date: Timestamp.fromDate(new Date(formData.date)),
+      humeur: 5,
+      energie: 5,
+      created_at: Timestamp.now(),
     };
 
     // Ajouter seulement les champs modifiés (sauf meteo que l'on persiste toujours)

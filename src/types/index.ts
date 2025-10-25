@@ -115,6 +115,7 @@ export interface Entrainement {
   // ⚠️ Champs CONDITIONNELS (type === 'cardio')
   distance?: number; // km
   vitesse_moy?: number; // km/h
+  vitesse_max?: number; // km/h
   cadence_moy?: number; // rpm
   elevation_gain?: number; // m
 
@@ -126,6 +127,17 @@ export interface Entrainement {
     repetitions: number;
     poids?: number;
   }>;
+
+  // Propriétés étendues pour compatibilité
+  garmin_id?: string; // ID Garmin
+  device?: string; // Appareil utilisé
+  fichier_original?: string; // Nom du fichier original
+  zone1_time?: number; // Temps en zone 1
+  zone2_time?: number; // Temps en zone 2
+  zone3_time?: number; // Temps en zone 3
+  zone4_time?: number; // Temps en zone 4
+  zone5_time?: number; // Temps en zone 5
+  updated_at?: Timestamp;
 
   created_at: Timestamp;
 }
@@ -186,6 +198,17 @@ export interface JournalEntry {
   stress?: number; // 1-10
   note?: string;
   created_at: Timestamp;
+
+  // Propriétés étendues pour compatibilité
+  motivation?: number; // 1-10
+  sommeil_duree?: number; // heures
+  sommeil_qualite?: number; // 1-10
+  meteo?: string; // 'soleil', 'nuage', 'pluie', 'orage', 'neige'
+  activites_annexes?: string[]; // Activités annexes
+  photos_libres?: string[]; // URLs photos
+  fatigue?: number; // 1-10
+  device?: string; // Appareil utilisé
+  updated_at?: Timestamp;
 }
 
 export interface Badge {

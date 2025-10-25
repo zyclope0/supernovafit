@@ -42,9 +42,10 @@ export default function NutritionAnalytics({
     weekStart.setDate(weekStart.getDate() - 6);
     const weekStartStr = weekStart.toISOString().split('T')[0];
 
-    const weekMeals = repas.filter(
-      (r) => r.date >= weekStartStr && r.date <= selectedDate,
-    );
+    const weekMeals = repas.filter((r) => {
+      const mealDate = r.date.toDate().toISOString().split('T')[0];
+      return mealDate >= weekStartStr && mealDate <= selectedDate;
+    });
     const dailyAverages = calculateDailyAverages(weekMeals);
 
     const insights: NutritionInsight[] = [];
@@ -175,12 +176,13 @@ function calculateDailyAverages(weekMeals: Repas[]) {
   } = {};
 
   weekMeals.forEach((meal) => {
-    if (!dailyData[meal.date]) {
-      dailyData[meal.date] = { calories: 0, protein: 0, meals: 0 };
+    const dateKey = meal.date.toDate().toISOString().split('T')[0];
+    if (!dailyData[dateKey]) {
+      dailyData[dateKey] = { calories: 0, protein: 0, meals: 0 };
     }
-    dailyData[meal.date].calories += meal.macros?.kcal || 0;
-    dailyData[meal.date].protein += meal.macros?.prot || 0;
-    dailyData[meal.date].meals += 1;
+    dailyData[dateKey].calories += meal.macros?.kcal || 0;
+    dailyData[dateKey].protein += meal.macros?.prot || 0;
+    dailyData[dateKey].meals += 1;
   });
 
   return Object.values(dailyData);
@@ -243,7 +245,8 @@ function analyzeMealConsistency(weekMeals: Repas[]): NutritionInsight | null {
   const dailyMealCounts: { [date: string]: number } = {};
 
   weekMeals.forEach((meal) => {
-    dailyMealCounts[meal.date] = (dailyMealCounts[meal.date] || 0) + 1;
+    const dateKey = meal.date.toDate().toISOString().split('T')[0];
+    dailyMealCounts[dateKey] = (dailyMealCounts[dateKey] || 0) + 1;
   });
 
   const mealCounts = Object.values(dailyMealCounts);
@@ -295,8 +298,9 @@ function analyzeProteinDistribution(
   const dailyProtein: { [date: string]: number } = {};
 
   weekMeals.forEach((meal) => {
-    dailyProtein[meal.date] =
-      (dailyProtein[meal.date] || 0) + (meal.macros?.prot || 0);
+    const dateKey = meal.date.toDate().toISOString().split('T')[0];
+    dailyProtein[dateKey] =
+      (dailyProtein[dateKey] || 0) + (meal.macros?.prot || 0);
   });
 
   const proteinValues = Object.values(dailyProtein);

@@ -17,6 +17,7 @@ import {
   useEntrainements,
 } from '@/hooks/useFirestore';
 import { MealType, Aliment, Macros } from '@/types';
+import { Timestamp } from 'firebase/firestore';
 // formatNumber removed - not used
 import { Trash2, Upload } from 'lucide-react';
 import { IconButton } from '@/components/ui/IconButton';
@@ -165,10 +166,14 @@ export default function DietePage() {
     const migratedMeal: Repas = {
       id: (mealObj.id as string) || (mealObj._id as string) || '',
       user_id: (mealObj.user_id as string) || (mealObj.userId as string) || '',
-      date:
-        (mealObj.date as string) ||
-        (mealObj.created_at as string)?.split('T')[0] ||
-        '',
+      date: Timestamp.fromDate(
+        new Date(
+          (mealObj.date as string) ||
+            (mealObj.created_at as string)?.split('T')[0] ||
+            new Date().toISOString().split('T')[0],
+        ),
+      ),
+      created_at: Timestamp.now(),
       repas:
         (mealObj.repas as MealType) ||
         (mealObj.mealType as MealType) ||
@@ -194,13 +199,15 @@ export default function DietePage() {
     if (migratedMeal.aliments && migratedMeal.aliments.length > 0) {
       migratedMeal.aliments = migratedMeal.aliments.map((aliment: unknown) => {
         const alimentObj = aliment as Record<string, unknown>;
+        const nom =
+          (alimentObj.nom as string) ||
+          (alimentObj.name as string) ||
+          (alimentObj.food_name as string) ||
+          'Aliment inconnu';
         return {
           id: (alimentObj.id as string) || (alimentObj._id as string) || '',
-          nom:
-            (alimentObj.nom as string) ||
-            (alimentObj.name as string) ||
-            (alimentObj.food_name as string) ||
-            'Aliment inconnu',
+          nom,
+          nom_lower: nom.toLowerCase(),
           quantite:
             (alimentObj.quantite as number) ||
             (alimentObj.quantity as number) ||
@@ -230,6 +237,8 @@ export default function DietePage() {
             lipides:
               (alimentObj.fat as number) || (alimentObj.lipides as number) || 0,
           },
+          user_id: migratedMeal.user_id,
+          created_at: Timestamp.now(),
           macros_base:
             (alimentObj.macros_base as Macros) ||
             (alimentObj.base_macros as Macros) ||
@@ -337,10 +346,11 @@ export default function DietePage() {
     try {
       const repasData = {
         user_id: user.uid,
-        date: selectedDate,
+        date: Timestamp.fromDate(new Date(selectedDate + 'T12:00:00')),
         repas: mealType,
         aliments,
         macros,
+        created_at: Timestamp.now(),
       };
 
       let result;
@@ -434,10 +444,11 @@ export default function DietePage() {
       for (const templateMeal of templateMeals) {
         const repasData = {
           user_id: user.uid,
-          date: selectedDate,
+          date: Timestamp.fromDate(new Date(selectedDate)),
           repas: templateMeal.repas,
           aliments: templateMeal.aliments,
           macros: templateMeal.macros,
+          created_at: Timestamp.now(),
         };
 
         await addRepas(repasData);

@@ -100,7 +100,8 @@ export function calculateLongestActivityStreak(
   const activityDates = new Set<string>();
 
   [...entrainements, ...repas, ...mesures, ...journal].forEach((item) => {
-    const date = item.date.toDate();
+    const date =
+      typeof item.date === 'string' ? new Date(item.date) : item.date.toDate();
     const dateStr = date.toISOString().split('T')[0];
     activityDates.add(dateStr);
   });
@@ -238,10 +239,23 @@ export function calculateWeightLoss(
   const monthBounds = getMonthBounds(monthStart);
   const monthMesures = mesures
     .filter((mesure) => {
-      const mesureDate = mesure.date.toDate();
+      const mesureDate =
+        typeof mesure.date === 'string'
+          ? new Date(mesure.date)
+          : (mesure.date as any).toDate();
       return isDateInBounds(mesureDate, monthBounds);
     })
-    .sort((a, b) => a.date.toDate().getTime() - b.date.toDate().getTime());
+    .sort((a, b) => {
+      const dateA =
+        typeof a.date === 'string'
+          ? new Date(a.date)
+          : (a.date as any).toDate();
+      const dateB =
+        typeof b.date === 'string'
+          ? new Date(b.date)
+          : (b.date as any).toDate();
+      return dateA.getTime() - dateB.getTime();
+    });
 
   if (monthMesures.length < 2) return 0;
 

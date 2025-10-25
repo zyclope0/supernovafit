@@ -4,6 +4,7 @@
  */
 
 import Papa from 'papaparse';
+import { Timestamp } from 'firebase/firestore';
 import type { Repas } from '@/types';
 
 export interface ImportConfig {
@@ -218,14 +219,20 @@ function parseMyFitnessPalRow(
   return {
     id: `import_${Date.now()}_${rowNumber}`,
     user_id: config.userId,
-    date: date.toISOString().split('T')[0],
+    date: Timestamp.fromDate(date),
     repas: meal,
+    created_at: Timestamp.now(),
     aliments: [
       {
         id: `aliment_${Date.now()}_${rowNumber}`,
         nom: food,
+        nom_lower: food.toLowerCase(),
         quantite: 100, // Quantité par défaut
         unite: 'g',
+        user_id: config.userId,
+        created_at: Timestamp.now(),
+        macros: { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
+        macros_base: { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
       },
     ],
     macros: {
@@ -265,14 +272,20 @@ function parseYazioRow(
   return {
     id: `import_${Date.now()}_${rowNumber}`,
     user_id: config.userId,
-    date: date.toISOString().split('T')[0],
+    date: Timestamp.fromDate(date),
     repas: meal,
+    created_at: Timestamp.now(),
     aliments: [
       {
         id: `aliment_${Date.now()}_${rowNumber}`,
         nom: product,
+        nom_lower: product.toLowerCase(),
         quantite: 100, // Quantité par défaut
         unite: 'g',
+        user_id: config.userId,
+        created_at: Timestamp.now(),
+        macros: { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
+        macros_base: { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
       },
     ],
     macros: {
@@ -305,14 +318,20 @@ function parseJSONData(data: any, config: ImportConfig): Repas[] {
     repas.push({
       id: `import_${Date.now()}_${index}`,
       user_id: config.userId,
-      date: date.toISOString().split('T')[0],
+      date: Timestamp.fromDate(date),
       repas: 'dejeuner', // Par défaut
+      created_at: Timestamp.now(),
       aliments: [
         {
           id: `aliment_${Date.now()}_${index}`,
           nom: food.name,
+          nom_lower: food.name.toLowerCase(),
           quantite: food.quantity || 100,
           unite: food.unit || 'g',
+          user_id: config.userId,
+          created_at: Timestamp.now(),
+          macros: { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
+          macros_base: { kcal: 0, prot: 0, glucides: 0, lipides: 0 },
         },
       ],
       macros: {
@@ -505,10 +524,14 @@ function findDuplicateDates(data: Repas[]): string[] {
 
   data.forEach((repas) => {
     if (repas.date) {
-      if (dates.has(repas.date)) {
-        duplicates.add(repas.date);
+      const dateString =
+        typeof repas.date === 'string'
+          ? repas.date
+          : repas.date.toDate().toISOString().split('T')[0];
+      if (dates.has(dateString)) {
+        duplicates.add(dateString);
       } else {
-        dates.add(repas.date);
+        dates.add(dateString);
       }
     }
   });

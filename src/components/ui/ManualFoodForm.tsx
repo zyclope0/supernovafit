@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { Aliment, Macros } from '@/types';
+import { Timestamp } from 'firebase/firestore';
 import { generateId } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 import { X } from 'lucide-react';
 
 interface ManualFoodFormProps {
@@ -14,6 +16,7 @@ export default function ManualFoodForm({
   onSubmit,
   onCancel,
 }: ManualFoodFormProps) {
+  const { user } = useAuth();
   const [nom, setNom] = useState('');
   const [quantite, setQuantite] = useState(100);
   const [unite, setUnite] = useState('g');
@@ -42,8 +45,11 @@ export default function ManualFoodForm({
     const aliment: Aliment = {
       id: generateId(),
       nom: nom.trim(),
+      nom_lower: nom.trim().toLowerCase(),
       quantite,
       unite,
+      user_id: user?.uid || '',
+      created_at: Timestamp.now(),
       macros: macrosCalcules,
       // Stocker les valeurs de base pour 100g
       macros_base: { ...macros },

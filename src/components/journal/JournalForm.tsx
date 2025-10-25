@@ -129,8 +129,11 @@ export default function JournalForm({
     }
 
     const result = await uploadPhoto(file, {
-      date: formData.date,
-      titre: `Journal ${formData.date}`,
+      date:
+        typeof formData.date === 'string'
+          ? formData.date
+          : formData.date.toDate().toISOString().split('T')[0],
+      titre: `Journal ${typeof formData.date === 'string' ? formData.date : formData.date.toDate().toISOString().split('T')[0]}`,
       description: 'Photo ajoutée depuis le journal',
       tags: ['journal'],
     });
@@ -545,7 +548,11 @@ export default function JournalForm({
         </label>
         <input
           type="date"
-          value={formData.date}
+          value={
+            typeof formData.date === 'string'
+              ? formData.date
+              : formData.date.toDate().toISOString().split('T')[0]
+          }
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, date: e.target.value }))
           }

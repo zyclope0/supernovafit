@@ -100,7 +100,7 @@ export function getPeriodDescription(
  */
 function formatRepasForCSV(repas: Repas[]): Record<string, unknown>[] {
   return repas.map((r) => ({
-    Date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+    Date: format(r.date.toDate(), 'dd/MM/yyyy', { locale: fr }),
     Repas: r.repas,
     Aliments: r.aliments.map((a: { nom: string }) => a.nom).join(', '),
     Calories: r.macros.kcal,
@@ -118,7 +118,7 @@ function formatEntrainementsForCSV(
   entrainements: Entrainement[],
 ): Record<string, unknown>[] {
   return entrainements.map((e) => ({
-    Date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+    Date: format(e.date.toDate(), 'dd/MM/yyyy', { locale: fr }),
     Type: e.type,
     Durée: `${e.duree} minutes`,
     Calories: e.calories || 0,
@@ -217,7 +217,7 @@ function formatAllDataForCSV(
   repas.forEach((r) => {
     allData.push({
       Type: 'Repas',
-      Date: format(new Date(r.date), 'dd/MM/yyyy', { locale: fr }),
+      Date: format(r.date.toDate(), 'dd/MM/yyyy', { locale: fr }),
       Détail: r.repas,
       Calories: r.macros.kcal,
       Protéines: r.macros.prot,
@@ -231,7 +231,7 @@ function formatAllDataForCSV(
   entrainements.forEach((e) => {
     allData.push({
       Type: 'Entraînement',
-      Date: format(new Date(e.date), 'dd/MM/yyyy', { locale: fr }),
+      Date: format(e.date.toDate(), 'dd/MM/yyyy', { locale: fr }),
       Détail: e.type,
       Durée: `${e.duree} minutes`,
       Calories: e.calories || 0,

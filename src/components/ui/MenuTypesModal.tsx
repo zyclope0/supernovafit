@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Repas } from '@/types';
-import { collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { Repas, Aliment } from '@/types';
+import { collection, addDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -17,6 +17,26 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import StandardModal from './StandardModal';
+
+// Fonction utilitaire pour créer des aliments complets
+const createAliment = (
+  id: string,
+  nom: string,
+  quantite: number,
+  unite: string,
+  macros: any,
+  userId: string,
+): Aliment => ({
+  id,
+  nom,
+  nom_lower: nom.toLowerCase(),
+  quantite,
+  unite,
+  user_id: userId,
+  created_at: Timestamp.now(),
+  macros,
+  macros_base: macros,
+});
 
 interface MenuTypesModalProps {
   isOpen: boolean;
@@ -65,105 +85,102 @@ export default function MenuTypesModal({
               {
                 id: 'template-1-breakfast',
                 user_id: '',
-                date: '',
+                date: Timestamp.now(),
                 repas: 'petit_dej',
                 aliments: [
-                  {
-                    id: '1',
-                    nom: "Flocons d'avoine",
-                    quantite: 50,
-                    unite: 'g',
-                    macros: { kcal: 180, prot: 6, glucides: 32, lipides: 3 },
-                  },
-                  {
-                    id: '2',
-                    nom: 'Banane',
-                    quantite: 100,
-                    unite: 'g',
-                    macros: { kcal: 89, prot: 1, glucides: 23, lipides: 0.3 },
-                  },
-                  {
-                    id: '3',
-                    nom: 'Lait demi-écrémé',
-                    quantite: 200,
-                    unite: 'ml',
-                    macros: {
-                      kcal: 92,
-                      prot: 6.8,
-                      glucides: 9.6,
-                      lipides: 3.2,
-                    },
-                  },
+                  createAliment(
+                    '1',
+                    "Flocons d'avoine",
+                    50,
+                    'g',
+                    { kcal: 180, prot: 6, glucides: 32, lipides: 3 },
+                    '',
+                  ),
+                  createAliment(
+                    '2',
+                    'Banane',
+                    100,
+                    'g',
+                    { kcal: 89, prot: 1, glucides: 23, lipides: 0.3 },
+                    '',
+                  ),
+                  createAliment(
+                    '3',
+                    'Lait demi-écrémé',
+                    200,
+                    'ml',
+                    { kcal: 92, prot: 6.8, glucides: 9.6, lipides: 3.2 },
+                    '',
+                  ),
                 ],
                 macros: { kcal: 361, prot: 13.8, glucides: 64.6, lipides: 6.5 },
+                created_at: Timestamp.now(),
               },
               {
                 id: 'template-1-lunch',
                 user_id: '',
-                date: '',
+                date: Timestamp.now(),
                 repas: 'dejeuner',
                 aliments: [
-                  {
-                    id: '4',
-                    nom: 'Riz complet cuit',
-                    quantite: 100,
-                    unite: 'g',
-                    macros: {
-                      kcal: 112,
-                      prot: 2.6,
-                      glucides: 22,
-                      lipides: 0.9,
-                    },
-                  },
-                  {
-                    id: '5',
-                    nom: 'Blanc de poulet',
-                    quantite: 120,
-                    unite: 'g',
-                    macros: { kcal: 172, prot: 32, glucides: 0, lipides: 3.6 },
-                  },
-                  {
-                    id: '6',
-                    nom: 'Brocolis',
-                    quantite: 150,
-                    unite: 'g',
-                    macros: { kcal: 51, prot: 4.2, glucides: 10, lipides: 0.6 },
-                  },
+                  createAliment(
+                    '4',
+                    'Riz complet cuit',
+                    100,
+                    'g',
+                    { kcal: 112, prot: 2.6, glucides: 22, lipides: 0.9 },
+                    '',
+                  ),
+                  createAliment(
+                    '5',
+                    'Blanc de poulet',
+                    120,
+                    'g',
+                    { kcal: 172, prot: 32, glucides: 0, lipides: 3.6 },
+                    '',
+                  ),
+                  createAliment(
+                    '6',
+                    'Brocolis',
+                    150,
+                    'g',
+                    { kcal: 51, prot: 4.2, glucides: 10, lipides: 0.6 },
+                    '',
+                  ),
                 ],
                 macros: { kcal: 335, prot: 38.8, glucides: 32, lipides: 5.1 },
+                created_at: Timestamp.now(),
               },
               {
                 id: 'template-1-dinner',
                 user_id: '',
-                date: '',
+                date: Timestamp.now(),
                 repas: 'diner',
+                created_at: Timestamp.now(),
                 aliments: [
-                  {
-                    id: '7',
-                    nom: 'Saumon',
-                    quantite: 100,
-                    unite: 'g',
-                    macros: { kcal: 206, prot: 22, glucides: 0, lipides: 12 },
-                  },
-                  {
-                    id: '8',
-                    nom: 'Quinoa cuit',
-                    quantite: 80,
-                    unite: 'g',
-                    macros: {
-                      kcal: 120,
-                      prot: 4.4,
-                      glucides: 22,
-                      lipides: 1.9,
-                    },
-                  },
-                  {
-                    id: '9',
-                    nom: 'Salade verte',
-                    quantite: 100,
-                    unite: 'g',
-                    macros: { kcal: 15, prot: 1.4, glucides: 3, lipides: 0.2 },
-                  },
+                  createAliment(
+                    '7',
+                    'Saumon',
+                    100,
+                    'g',
+                    { kcal: 206, prot: 22, glucides: 0, lipides: 12 },
+                    '',
+                  ),
+                  createAliment(
+                    '8',
+                    'Quinoa cuit',
+                    80,
+                    'g',
+                    { kcal: 120, prot: 4.4, glucides: 22, lipides: 1.9 },
+                    '',
+                  ),
+                  createAliment(
+                    '9',
+                    'Salade verte',
+                    100,
+                    'g',
+                    { kcal: 15, prot: 1.4, glucides: 3, lipides: 0.2 },
+                    '',
+                  ),
                 ],
                 macros: { kcal: 341, prot: 27.8, glucides: 25, lipides: 14.1 },
               },
@@ -180,93 +197,94 @@ export default function MenuTypesModal({
               {
                 id: 'template-2-breakfast',
                 user_id: '',
-                date: '',
+                date: Timestamp.now(),
                 repas: 'petit_dej',
+                created_at: Timestamp.now(),
                 aliments: [
-                  {
-                    id: '10',
-                    nom: 'Oeufs brouillés',
-                    quantite: 120,
-                    unite: 'g',
-                    macros: { kcal: 188, prot: 15, glucides: 1, lipides: 13 },
-                  },
-                  {
-                    id: '11',
-                    nom: 'Pain complet',
-                    quantite: 60,
-                    unite: 'g',
-                    macros: { kcal: 156, prot: 6, glucides: 28, lipides: 2.4 },
-                  },
-                  {
-                    id: '12',
-                    nom: 'Avocat',
-                    quantite: 50,
-                    unite: 'g',
-                    macros: { kcal: 80, prot: 1, glucides: 4, lipides: 7.5 },
-                  },
+                  createAliment(
+                    '10',
+                    'Oeufs brouillés',
+                    120,
+                    'g',
+                    { kcal: 188, prot: 15, glucides: 1, lipides: 13 },
+                    '',
+                  ),
+                  createAliment(
+                    '11',
+                    'Pain complet',
+                    60,
+                    'g',
+                    { kcal: 156, prot: 6, glucides: 28, lipides: 2.4 },
+                    '',
+                  ),
+                  createAliment(
+                    '12',
+                    'Avocat',
+                    50,
+                    'g',
+                    { kcal: 80, prot: 1, glucides: 4, lipides: 7.5 },
+                    '',
+                  ),
                 ],
                 macros: { kcal: 424, prot: 22, glucides: 33, lipides: 22.9 },
               },
               {
                 id: 'template-2-lunch',
                 user_id: '',
-                date: '',
+                date: Timestamp.now(),
                 repas: 'dejeuner',
+                created_at: Timestamp.now(),
                 aliments: [
-                  {
-                    id: '13',
-                    nom: 'Pâtes complètes cuites',
-                    quantite: 120,
-                    unite: 'g',
-                    macros: { kcal: 131, prot: 5, glucides: 25, lipides: 1.1 },
-                  },
-                  {
-                    id: '14',
-                    nom: 'Thon',
-                    quantite: 100,
-                    unite: 'g',
-                    macros: { kcal: 144, prot: 30, glucides: 0, lipides: 1 },
-                  },
-                  {
-                    id: '15',
-                    nom: 'Tomates cerises',
-                    quantite: 100,
-                    unite: 'g',
-                    macros: {
-                      kcal: 18,
-                      prot: 0.9,
-                      glucides: 3.9,
-                      lipides: 0.2,
-                    },
-                  },
+                  createAliment(
+                    '13',
+                    'Pâtes complètes cuites',
+                    120,
+                    'g',
+                    { kcal: 131, prot: 5, glucides: 25, lipides: 1.1 },
+                    '',
+                  ),
+                  createAliment(
+                    '14',
+                    'Thon',
+                    100,
+                    'g',
+                    { kcal: 144, prot: 30, glucides: 0, lipides: 1 },
+                    '',
+                  ),
+                  createAliment(
+                    '15',
+                    'Tomates cerises',
+                    100,
+                    'g',
+                    { kcal: 18, prot: 0.9, glucides: 3.9, lipides: 0.2 },
+                    '',
+                  ),
                 ],
                 macros: { kcal: 293, prot: 35.9, glucides: 28.9, lipides: 2.3 },
               },
               {
                 id: 'template-2-snack',
                 user_id: '',
-                date: '',
+                date: Timestamp.now(),
                 repas: 'collation_matin',
+                created_at: Timestamp.now(),
                 aliments: [
-                  {
-                    id: '16',
-                    nom: 'Protéine whey',
-                    quantite: 30,
-                    unite: 'g',
-                    macros: { kcal: 113, prot: 24, glucides: 2, lipides: 1 },
-                  },
-                  {
-                    id: '17',
-                    nom: 'Amandes',
-                    quantite: 20,
-                    unite: 'g',
-                    macros: {
-                      kcal: 116,
-                      prot: 4.3,
-                      glucides: 3.7,
-                      lipides: 10,
-                    },
-                  },
+                  createAliment(
+                    '16',
+                    'Protéine whey',
+                    30,
+                    'g',
+                    { kcal: 113, prot: 24, glucides: 2, lipides: 1 },
+                    '',
+                  ),
+                  createAliment(
+                    '17',
+                    'Amandes',
+                    20,
+                    'g',
+                    { kcal: 116, prot: 4.3, glucides: 3.7, lipides: 10 },
+                    '',
+                  ),
                 ],
                 macros: { kcal: 229, prot: 28.3, glucides: 5.7, lipides: 11 },
               },
@@ -347,10 +365,11 @@ export default function MenuTypesModal({
         meals: todayMeals.map((meal) => ({
           id: `${meal.id}-template-${Date.now()}`, // ID unique
           user_id: '', // Sera rempli lors de l'application
-          date: '', // Sera rempli lors de l'application
+          date: Timestamp.now(), // Sera rempli lors de l'application
           repas: meal.repas,
           aliments: meal.aliments,
           macros: meal.macros,
+          created_at: Timestamp.now(),
         })),
         totalCalories: todayTotalCalories,
         createdAt: new Date().toISOString().split('T')[0],

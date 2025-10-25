@@ -17,7 +17,6 @@ import {
   calculateProteinGoal,
   // Training
   countWeekTrainings,
-  calculateWeekTrainingTime,
   calculateTrainingStreak,
   calculateWeekTrainingVolume,
   filterStrengthTrainings,
@@ -29,42 +28,33 @@ import {
   calculateJournalStreak,
   // Transformations
   calculateMonthWeightLoss,
-  // Challenges Avancés (Phase 2.3) - Temporarily disabled
-  // calculateTotalTrainings,
-  // calculateTotalMeals,
-  // calculateMonthTrainingVolume,
-  // calculateLongestActivityStreak,
-  // calculateDailyUsageStreak,
-  // calculateOptimalMacroDays,
-  // calculateUniqueFoodsCount,
-  // calculateWeightLoss,
-  // calculateWeightGain,
-  // calculateRecoverySessions,
-  // calculateIntenseCardioSessions,
-  // calculateTotalCardioTime,
-  // calculateStrengthSessions,
-  // calculateTotalVolume,
-  // calculatePositiveMoodDays,
-  // calculateHighEnergyDays,
-  // calculateQualitySleepDays,
-  // calculateGratitudePoints,
-  // calculateMeditationTime,
-  // Meta-Challenges (Phase 2.4) - Temporarily disabled
-  // calculateUserLevel,
-  // calculateCompletedChallenges,
-  // calculatePerfectChallenges,
-  // calculateUniqueBadges,
-  // calculateTransformationScore,
-  // calculateBalanceScore,
-  // calculateDailyConsistencyStreak,
-  // calculateMasterStreak,
-  // calculateAthleteScore,
-  // calculateEnduranceScore,
-  // calculateWellnessScore,
-  // calculateZenScore,
-  // calculateEvolutionScore,
-  // calculateHealthDefenderScore,
 } from '@/lib/challengeTracking';
+
+// Import calculateWeekTrainingTime from training.ts (correct signature)
+import { calculateWeekTrainingTime } from '@/lib/challengeTracking/training';
+
+// Import challenges avancés (Phase 2.3) - Temporairement désactivé
+// import {
+//   calculateTotalTrainings,
+//   calculateTotalMeals,
+//   calculateMonthTrainingVolume,
+//   calculateLongestActivityStreak,
+//   calculateDailyUsageStreak,
+//   calculateOptimalMacroDays,
+//   calculateUniqueFoodsCount,
+//   calculateWeightLoss,
+//   calculateWeightGain,
+//   calculateRecoverySessions,
+//   calculateIntenseCardioSessions,
+//   calculateTotalCardioTime,
+//   calculateStrengthSessions,
+//   calculateTotalVolume,
+//   calculatePositiveMoodDays,
+//   calculateHighEnergyDays,
+//   calculateQualitySleepDays,
+//   calculateGratitudePoints,
+//   calculateMeditationTime,
+// } from '@/lib/challengeTracking/advanced';
 import { safeValidateUpdateChallenge } from '@/lib/validation/challenges';
 import {
   sendChallengeCompletedNotification,

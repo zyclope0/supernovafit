@@ -4,7 +4,36 @@ import { useState } from 'react';
 import { X, Clock, Star, Plus, Utensils } from 'lucide-react';
 import { MealType, Aliment, Macros } from '@/types';
 import { cn } from '@/lib/utils';
+import { Timestamp } from 'firebase/firestore';
 // import toast from 'react-hot-toast' // TODO: À utiliser pour feedback utilisateur
+
+// Fonction utilitaire pour créer des aliments complets
+const createAliment = (
+  id: string,
+  nom: string,
+  quantite: number,
+  unite: string,
+  macros_base: Macros,
+): Aliment => {
+  const macros: Macros = {
+    kcal: (macros_base.kcal * quantite) / 100,
+    prot: (macros_base.prot * quantite) / 100,
+    glucides: (macros_base.glucides * quantite) / 100,
+    lipides: (macros_base.lipides * quantite) / 100,
+  };
+
+  return {
+    id,
+    nom,
+    nom_lower: nom.toLowerCase(),
+    quantite,
+    unite,
+    user_id: 'system',
+    created_at: Timestamp.now(),
+    macros,
+    macros_base,
+  };
+};
 
 interface QuickMealTemplate {
   id: string;
@@ -34,27 +63,24 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍳',
     mealType: 'petit_dej',
     aliments: [
-      {
-        id: '1',
-        nom: 'Œufs entiers',
-        quantite: 2,
-        unite: 'unités',
-        macros_base: { kcal: 155, prot: 13, glucides: 1.1, lipides: 11 },
-      },
-      {
-        id: '2',
-        nom: "Flocons d'avoine",
-        quantite: 50,
-        unite: 'g',
-        macros_base: { kcal: 389, prot: 17, glucides: 66, lipides: 7 },
-      },
-      {
-        id: '3',
-        nom: 'Banane',
-        quantite: 1,
-        unite: 'unité',
-        macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 },
-      },
+      createAliment('1', 'Œufs entiers', 2, 'unités', {
+        kcal: 155,
+        prot: 13,
+        glucides: 1.1,
+        lipides: 11,
+      }),
+      createAliment('2', "Flocons d'avoine", 50, 'g', {
+        kcal: 389,
+        prot: 17,
+        glucides: 66,
+        lipides: 7,
+      }),
+      createAliment('3', 'Banane', 1, 'unité', {
+        kcal: 89,
+        prot: 1.1,
+        glucides: 23,
+        lipides: 0.3,
+      }),
     ],
     macros: { kcal: 504, prot: 28, glucides: 45, lipides: 18 },
     prepTime: '10 min',
@@ -67,27 +93,24 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🥣',
     mealType: 'petit_dej',
     aliments: [
-      {
-        id: '4',
-        nom: 'Yaourt grec 0%',
-        quantite: 150,
-        unite: 'g',
-        macros_base: { kcal: 59, prot: 10, glucides: 3.6, lipides: 0.4 },
-      },
-      {
-        id: '5',
-        nom: 'Granola maison',
-        quantite: 30,
-        unite: 'g',
-        macros_base: { kcal: 471, prot: 11, glucides: 48, lipides: 26 },
-      },
-      {
-        id: '6',
-        nom: 'Miel',
-        quantite: 15,
-        unite: 'g',
-        macros_base: { kcal: 304, prot: 0.3, glucides: 82, lipides: 0 },
-      },
+      createAliment('4', 'Yaourt grec 0%', 150, 'g', {
+        kcal: 59,
+        prot: 10,
+        glucides: 3.6,
+        lipides: 0.4,
+      }),
+      createAliment('5', 'Granola maison', 30, 'g', {
+        kcal: 471,
+        prot: 11,
+        glucides: 48,
+        lipides: 26,
+      }),
+      createAliment('6', 'Miel', 15, 'g', {
+        kcal: 304,
+        prot: 0.3,
+        glucides: 82,
+        lipides: 0,
+      }),
     ],
     macros: { kcal: 275, prot: 18, glucides: 31, lipides: 8 },
     prepTime: '2 min',
@@ -102,20 +125,18 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🥜',
     mealType: 'collation_matin',
     aliments: [
-      {
-        id: '7',
-        nom: 'Fromage blanc 0%',
-        quantite: 100,
-        unite: 'g',
-        macros_base: { kcal: 47, prot: 8, glucides: 4, lipides: 0.2 },
-      },
-      {
-        id: '8',
-        nom: 'Amandes',
-        quantite: 20,
-        unite: 'g',
-        macros_base: { kcal: 579, prot: 21, glucides: 22, lipides: 50 },
-      },
+      createAliment('7', 'Fromage blanc 0%', 100, 'g', {
+        kcal: 47,
+        prot: 8,
+        glucides: 4,
+        lipides: 0.2,
+      }),
+      createAliment('8', 'Amandes', 20, 'g', {
+        kcal: 579,
+        prot: 21,
+        glucides: 22,
+        lipides: 50,
+      }),
     ],
     macros: { kcal: 163, prot: 12, glucides: 8, lipides: 10 },
     prepTime: '1 min',
@@ -128,20 +149,18 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍎',
     mealType: 'collation_apres_midi',
     aliments: [
-      {
-        id: '9',
-        nom: 'Pomme',
-        quantite: 150,
-        unite: 'g',
-        macros_base: { kcal: 52, prot: 0.3, glucides: 14, lipides: 0.2 },
-      },
-      {
-        id: '10',
-        nom: "Beurre d'amande",
-        quantite: 15,
-        unite: 'g',
-        macros_base: { kcal: 614, prot: 25, glucides: 6, lipides: 56 },
-      },
+      createAliment('9', 'Pomme', 150, 'g', {
+        kcal: 52,
+        prot: 0.3,
+        glucides: 14,
+        lipides: 0.2,
+      }),
+      createAliment('10', "Beurre d'amande", 15, 'g', {
+        kcal: 614,
+        prot: 25,
+        glucides: 6,
+        lipides: 56,
+      }),
     ],
     macros: { kcal: 170, prot: 4, glucides: 22, lipides: 9 },
     prepTime: '1 min',
@@ -156,27 +175,24 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🍗',
     mealType: 'dejeuner',
     aliments: [
-      {
-        id: '11',
-        nom: 'Blanc de poulet',
-        quantite: 150,
-        unite: 'g',
-        macros_base: { kcal: 165, prot: 31, glucides: 0, lipides: 3.6 },
-      },
-      {
-        id: '12',
-        nom: 'Riz complet cuit',
-        quantite: 100,
-        unite: 'g',
-        macros_base: { kcal: 111, prot: 2.6, glucides: 23, lipides: 0.9 },
-      },
-      {
-        id: '13',
-        nom: 'Brocolis',
-        quantite: 100,
-        unite: 'g',
-        macros_base: { kcal: 25, prot: 3, glucides: 4, lipides: 0.4 },
-      },
+      createAliment('11', 'Blanc de poulet', 150, 'g', {
+        kcal: 165,
+        prot: 31,
+        glucides: 0,
+        lipides: 3.6,
+      }),
+      createAliment('12', 'Riz complet cuit', 100, 'g', {
+        kcal: 111,
+        prot: 2.6,
+        glucides: 23,
+        lipides: 0.9,
+      }),
+      createAliment('13', 'Brocolis', 100, 'g', {
+        kcal: 25,
+        prot: 3,
+        glucides: 4,
+        lipides: 0.4,
+      }),
     ],
     macros: { kcal: 384, prot: 50, glucides: 27, lipides: 7 },
     prepTime: '15 min',
@@ -189,27 +205,24 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '🐟',
     mealType: 'diner',
     aliments: [
-      {
-        id: '14',
-        nom: 'Saumon',
-        quantite: 120,
-        unite: 'g',
-        macros_base: { kcal: 208, prot: 25, glucides: 0, lipides: 12 },
-      },
-      {
-        id: '15',
-        nom: 'Quinoa cuit',
-        quantite: 80,
-        unite: 'g',
-        macros_base: { kcal: 120, prot: 4.4, glucides: 22, lipides: 1.9 },
-      },
-      {
-        id: '16',
-        nom: 'Salade verte',
-        quantite: 50,
-        unite: 'g',
-        macros_base: { kcal: 15, prot: 1.4, glucides: 2.9, lipides: 0.2 },
-      },
+      createAliment('14', 'Saumon', 120, 'g', {
+        kcal: 208,
+        prot: 25,
+        glucides: 0,
+        lipides: 12,
+      }),
+      createAliment('15', 'Quinoa cuit', 80, 'g', {
+        kcal: 120,
+        prot: 4.4,
+        glucides: 22,
+        lipides: 1.9,
+      }),
+      createAliment('16', 'Salade verte', 50, 'g', {
+        kcal: 15,
+        prot: 1.4,
+        glucides: 2.9,
+        lipides: 0.2,
+      }),
     ],
     macros: { kcal: 353, prot: 34, glucides: 20, lipides: 16 },
     prepTime: '20 min',
@@ -224,27 +237,24 @@ const QUICK_MEAL_TEMPLATES: QuickMealTemplate[] = [
     emoji: '💪',
     mealType: 'collation_apres_midi',
     aliments: [
-      {
-        id: '17',
-        nom: 'Whey protéine',
-        quantite: 30,
-        unite: 'g',
-        macros_base: { kcal: 380, prot: 80, glucides: 5, lipides: 2 },
-      },
-      {
-        id: '18',
-        nom: 'Banane',
-        quantite: 120,
-        unite: 'g',
-        macros_base: { kcal: 89, prot: 1.1, glucides: 23, lipides: 0.3 },
-      },
-      {
-        id: '19',
-        nom: "Lait d'amande",
-        quantite: 200,
-        unite: 'ml',
-        macros_base: { kcal: 17, prot: 0.6, glucides: 0.3, lipides: 1.1 },
-      },
+      createAliment('17', 'Whey protéine', 30, 'g', {
+        kcal: 380,
+        prot: 80,
+        glucides: 5,
+        lipides: 2,
+      }),
+      createAliment('18', 'Banane', 120, 'g', {
+        kcal: 89,
+        prot: 1.1,
+        glucides: 23,
+        lipides: 0.3,
+      }),
+      createAliment('19', "Lait d'amande", 200, 'ml', {
+        kcal: 17,
+        prot: 0.6,
+        glucides: 0.3,
+        lipides: 1.1,
+      }),
     ],
     macros: { kcal: 255, prot: 26, glucides: 30, lipides: 3 },
     prepTime: '2 min',

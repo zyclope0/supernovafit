@@ -264,7 +264,11 @@ export default function TrainingForm({
           </label>
           <input
             type="date"
-            value={date}
+            value={
+              typeof date === 'string'
+                ? date
+                : date.toDate().toISOString().split('T')[0]
+            }
             onChange={(e) => setDate(e.target.value)}
             className="w-full px-3 py-2 bg-white/10 border border-white/10 rounded-lg text-white focus:outline-none focus:border-neon-cyan"
           />

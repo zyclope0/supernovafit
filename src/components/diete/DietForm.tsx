@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { OpenFoodFactsProduct, MealType, Aliment, Macros } from '@/types';
+import { Timestamp } from 'firebase/firestore';
 import { getMealName, generateId } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 import { repasSchema, validateData } from '@/lib/validation';
 // useFavoris géré par FavoritesFoodList
 import FoodSearch from '../ui/FoodSearch';
@@ -37,6 +39,7 @@ export default function DietForm({
   isEditing,
   isSubmitting,
 }: DietFormProps) {
+  const { user } = useAuth();
   const [aliments, setAliments] = useState<Aliment[]>(existingAliments || []);
   const [activeTab, setActiveTab] = useState<
     'search' | 'manual' | 'favorites' | 'summary'
@@ -66,9 +69,12 @@ export default function DietForm({
     const newAliment: Aliment = {
       id: generateId(),
       nom: product.product_name,
+      nom_lower: product.product_name.toLowerCase(),
       quantite: 100,
       unite: 'g',
       openfoodfacts_id: product.code,
+      user_id: user?.uid || '',
+      created_at: Timestamp.now(),
       macros,
       macros_base: macrosBase,
     };

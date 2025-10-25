@@ -1,4 +1,5 @@
 import xml2js from 'xml2js';
+import { Timestamp } from 'firebase/firestore';
 import { Entrainement } from '@/types';
 
 // Types pour les activités Garmin
@@ -247,8 +248,13 @@ export class GarminParser {
   ): Omit<Entrainement, 'id' | 'created_at'> {
     const result: Omit<Entrainement, 'id' | 'created_at'> = {
       user_id: userId,
-      date: activity.startTime.toISOString().split('T')[0],
-      type: activity.sport,
+      date: Timestamp.fromDate(activity.startTime),
+      type:
+        activity.sport === 'Running' ||
+        activity.sport === 'Cycling' ||
+        activity.sport === 'Swimming'
+          ? 'cardio'
+          : 'musculation',
       duree: Math.round(activity.totalTimeSeconds / 60), // Convertir en minutes
       calories: activity.calories || 0,
       commentaire: `Importé depuis Garmin - ${activity.startTime.toLocaleDateString('fr-FR')}`,

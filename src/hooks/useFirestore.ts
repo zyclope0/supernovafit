@@ -955,7 +955,11 @@ export function useJournal() {
           updated_at: serverTimestamp(),
         }).filter(([key, value]) => {
           // Ne pas inclure user_id s'il est vide ou undefined
-          if (key === 'user_id' && (!value || value === '')) return false;
+          if (
+            key === 'user_id' &&
+            (!value || (typeof value === 'string' && value === ''))
+          )
+            return false;
           return value !== undefined;
         }),
       );
@@ -1720,7 +1724,7 @@ export function useAthleteRealData(athleteId: string, limit: number = 30) {
         // Calculer la variation de performance (simplifié, avec données limitées)
         const entrainementsMois = limitedEntrainements.filter(
           (e: FirestoreEntrainement) => {
-            const dateEntrainement = new Date(e.date || '');
+            const dateEntrainement = e.date ? e.date.toDate() : new Date();
             const moisDernier = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
             return dateEntrainement >= moisDernier;
           },
@@ -1734,10 +1738,18 @@ export function useAthleteRealData(athleteId: string, limit: number = 30) {
         const evolution_poids = mesuresAvecPoids
           .slice(0, 7)
           .map((m: FirestoreMesure) => ({
-            date: new Date(m.date || '').toLocaleDateString('fr-FR', {
-              day: '2-digit',
-              month: '2-digit',
-            }),
+            date: m.date
+              ? (typeof m.date === 'string'
+                  ? new Date(m.date)
+                  : (m.date as any).toDate()
+                ).toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                })
+              : new Date().toLocaleDateString('fr-FR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                }),
             poids: m.poids || 0,
           }))
           .reverse();
@@ -1746,7 +1758,11 @@ export function useAthleteRealData(athleteId: string, limit: number = 30) {
         const activites_recentes = limitedEntrainements
           .slice(0, 5)
           .map((e: FirestoreEntrainement) => ({
-            date: e.date || '',
+            date: e.date
+              ? typeof e.date === 'string'
+                ? e.date
+                : e.date.toDate().toISOString().split('T')[0]
+              : '',
             type: e.type || 'Entraînement',
             duree: e.duree || 0,
             calories: (e as EntrainementAvecCalories).calories_brulees || 0,

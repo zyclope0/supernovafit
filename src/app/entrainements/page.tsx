@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { timestampToDateString, compareDates } from '@/lib/dateUtils';
+import { Timestamp } from 'firebase/firestore';
 import MainLayout from '@/components/layout/MainLayout';
 const TrainingFormModal = dynamic(
   () => import('@/components/ui/TrainingFormModal'),
@@ -233,7 +234,11 @@ export default function EntrainementsPage() {
       if (editingTraining) {
         result = await updateEntrainement(editingTraining.id, trainingData);
       } else {
-        result = await addEntrainement({ ...trainingData, user_id: user.uid });
+        result = await addEntrainement({
+          ...trainingData,
+          user_id: user.uid,
+          created_at: Timestamp.now(),
+        });
       }
 
       if (result.success) {
@@ -264,7 +269,8 @@ export default function EntrainementsPage() {
         <div className="flex flex-col gap-3">
           <p className="text-white font-medium">Supprimer cet entraînement ?</p>
           <p className="text-sm text-gray-300">
-            {training.type} - {training.duree} min ({training.date})
+            {training.type} - {training.duree} min (
+            {training.date.toDate().toLocaleDateString()})
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -506,7 +512,9 @@ export default function EntrainementsPage() {
         {/* Import Garmin */}
         {showGarminImport && user && (
           <GarminImport
-            onImport={addEntrainement}
+            onImport={(entrainement) =>
+              addEntrainement({ ...entrainement, created_at: Timestamp.now() })
+            }
             onClose={() => setShowGarminImport(false)}
             userId={user.uid}
           />
