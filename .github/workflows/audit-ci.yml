@@ -11,7 +11,7 @@ permissions:
   actions: read # Read workflow runs
   checks: write # Write check results
   pull-requests: read # Read PR information
-  artifacts: write # Upload build artifacts
+  # artifacts: write # Not needed - default permission allows artifact upload
 
 jobs:
   quality:
