@@ -109,6 +109,28 @@ jest.mock('react-hot-toast', () => ({
   },
 }));
 
+// Mock Lucide React
+jest.mock('lucide-react', () => {
+  const mockIcon = ({ size, className }: any) =>
+    React.createElement('svg', {
+      'data-testid': 'lucide-icon',
+      width: size || 24,
+      height: size || 24,
+      className,
+    });
+
+  return new Proxy(
+    {},
+    {
+      get: (target, prop) => {
+        if (prop === '__esModule') return true;
+        if (prop === 'default') return mockIcon;
+        return mockIcon;
+      },
+    },
+  );
+});
+
 // Mock fetch
 global.fetch = jest.fn();
 

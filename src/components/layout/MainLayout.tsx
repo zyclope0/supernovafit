@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 // import { usePathname } from 'next/navigation' // TODO: À utiliser si nécessaire
 import Sidebar from './Sidebar';
 import BottomNavigation from '../mobile/BottomNavigation';

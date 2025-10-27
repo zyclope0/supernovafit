@@ -86,3 +86,20 @@ ImportGramin/
 /DOCUMENTATION_*.md
 /STANDARDISATION_*.md
 /RAPPORT_*.md
+/AUDIT_*.md
+/CONSOLIDATION_*.md
+/COMMIT_*.txt
+/COMMIT_*.md
+
+# test coverage reports (generated)
+/coverage-jest/
+/coverage-vitest/
+
+# archived directories (kept locally only)
+/archive/
+/audits/
+
+# temporary root files (development artifacts)
+AUDIT_TESTS_RESUME_RAPIDE.md
+CONSOLIDATION_FINALE_RESUME.md
+COMMIT_MESSAGE.txt
