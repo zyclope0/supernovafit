@@ -122,22 +122,28 @@ npm run lint && npm run typecheck && npm test
 
 ### **Documentation Tests**
 
-| Document                          | Type       | Utilisation                |
-| --------------------------------- | ---------- | -------------------------- |
-| PROCHAINES_ETAPES.md              | Action     | ⭐ Plan immédiat (30 min)  |
-| AUDIT_TESTS_COMPLET_27_10_2025.md | Audit      | 🔍 Analyse exhaustive      |
-| TESTS_COMPLETE.md                 | Référence  | 📋 Source de vérité unique |
-| ARCHITECTURE_HYBRIDE_FINALE.md    | Technique  | 🏗️ Rationale Jest+Vitest   |
-| PLAN_25_COVERAGE_ACADEMIQUE.md    | Plan       | 🎓 Option B (8-10h)        |
-| CONSOLIDATION_FINALE_RESUME.md    | Historique | 📝 Consolidation Oct 2025  |
+| Document                                                                                                 | Type       | Utilisation                |
+| -------------------------------------------------------------------------------------------------------- | ---------- | -------------------------- |
+| [PROCHAINES_ETAPES.md](PROCHAINES_ETAPES.md)                                                             | Action     | ⭐ Plan immédiat (30 min)  |
+| [AUDIT_TESTS_COMPLET_27_10_2025.md](AUDIT_TESTS_COMPLET_27_10_2025.md)                                   | Audit      | 🔍 Analyse exhaustive      |
+| [TESTS_COMPLETE.md](TESTS_COMPLETE.md)                                                                   | Référence  | 📋 Source de vérité unique |
+| [ARCHITECTURE_HYBRIDE_FINALE.md](ARCHITECTURE_HYBRIDE_FINALE.md)                                         | Technique  | 🏗️ Rationale Jest+Vitest   |
+| [PLAN_25_COVERAGE_V2_PRAGMATIQUE.md](PLAN_25_COVERAGE_V2_PRAGMATIQUE.md)                                 | Plan       | 🎯 Plan pragmatique v2     |
+| [PATTERNS_FIREBASE_SAUVEGARDES.md](PATTERNS_FIREBASE_SAUVEGARDES.md)                                     | Patterns   | 💾 Tests récupérés         |
+| [../reports/missions/CONSOLIDATION_FINALE_RESUME.md](../reports/missions/CONSOLIDATION_FINALE_RESUME.md) | Historique | 📝 Consolidation Oct 2025  |
+| [../reports/missions/MISSION_COMPLETE_27_10_2025.md](../reports/missions/MISSION_COMPLETE_27_10_2025.md) | Mission    | 🎉 Mission coverage 22-23% |
 
-### **Documentation Ancienne (Référence)**
+### **Rapports & Missions**
 
-| Document                | Status   | Utilisation              |
-| ----------------------- | -------- | ------------------------ |
-| SITUATION_ACTUELLE.md   | Obsolète | Fuite mémoire (résolu)   |
-| OPTIMIZATION_PLAN.md    | Complété | Plan optimisation (fait) |
-| OPTIMIZATION_RESULTS.md | Complété | Résultats (fait)         |
+| Document                                                                                                 | Status    | Utilisation              |
+| -------------------------------------------------------------------------------------------------------- | --------- | ------------------------ |
+| [../reports/missions/MISSION_COMPLETE_27_10_2025.md](../reports/missions/MISSION_COMPLETE_27_10_2025.md) | ✅ Récent | Mission coverage 22-23%  |
+| [../reports/missions/CONSOLIDATION_FINALE_RESUME.md](../reports/missions/CONSOLIDATION_FINALE_RESUME.md) | ✅ Récent | Consolidation Oct 2025   |
+| [../reports/RANGEMENT_DOCUMENTATION_27_10_2025.md](../reports/RANGEMENT_DOCUMENTATION_27_10_2025.md)     | ✅ Récent | Rangement 211 docs       |
+| [RAPPORT_NETTOYAGE_FINAL.md](RAPPORT_NETTOYAGE_FINAL.md)                                                 | ✅ Récent | Nettoyage 59 fichiers    |
+| SITUATION_ACTUELLE.md                                                                                    | Obsolète  | Fuite mémoire (résolu)   |
+| OPTIMIZATION_PLAN.md                                                                                     | Complété  | Plan optimisation (fait) |
+| OPTIMIZATION_RESULTS.md                                                                                  | Complété  | Résultats (fait)         |
 
 ---
 
