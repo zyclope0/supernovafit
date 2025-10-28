@@ -37,12 +37,15 @@ Index complet de toute la documentation disponible
 
 ### **📈 [Rapports & Missions](./reports/)**
 
+- **[INDEX Rapports](./reports/README.md)** - Navigation rapports
+- **[Release v2.1.0](./reports/RELEASE_V2_1_0_FINAL.md)** - Release notes (Score 10/10) 🏆
+- **[Vérification Finale](./reports/VERIFICATION_FINALE_27_10_2025.md)** - Audit pré-release
+- **[Clôture Projet](./reports/CLOTURE_PROJET_V2_1_0.md)** - Mission accomplie 🎊
 - **[Missions](./reports/missions/)** - Rapports de missions complétées
   - Mission Coverage 27/10/2025 (414 tests, 22-23% coverage)
   - Consolidation finale
 - **[Audits](./reports/audits/)** - Rapports d'audit qualité
-- **[Commits](./reports/commits/)** - Historique des commits importants
-- **Nettoyage & Validation** - Rapports de maintenance
+- **[Nettoyage & Validation](./reports/)** - Rapports de maintenance
 
 ### **🏗️ [Architecture Technique](./technical/)**
 
