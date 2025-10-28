@@ -92,6 +92,7 @@ ImportGramin/
 /COMMIT_*.md
 
 # test coverage reports (generated)
+/coverage/
 /coverage-jest/
 /coverage-vitest/
 
