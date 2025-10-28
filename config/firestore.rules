@@ -31,7 +31,7 @@ service cloud.firestore {
       return validateFields(data,
         ['user_id', 'date', 'repas', 'aliments'],
         ['macros', 'calories', 'notes', 'created_at', 'updated_at']) &&
-        (data.date is timestamp || data.date is string) && // Support timestamp ET string YYYY-MM-DD
+        data.date is timestamp && // STRICTEMENT timestamp uniquement (cohérence données)
         data.repas in ['petit_dej', 'dejeuner', 'diner', 
                       'collation_matin', 'collation_apres_midi', 'collation_soir'] &&
         data.aliments is list &&
@@ -50,7 +50,7 @@ service cloud.firestore {
          'zone1_time', 'zone2_time', 'zone3_time', 'zone4_time', 'zone5_time',
          'effort_percu', 'fatigue_avant', 'fatigue_apres', 'fichier_original', 'device', 'garmin_id',
          'intensite', 'exercices', 'notes', 'created_at', 'updated_at']) &&
-        (data.date is timestamp || data.date is string) && // Support timestamp ET string YYYY-MM-DD
+        data.date is timestamp && // STRICTEMENT timestamp uniquement (cohérence données)
         data.user_id is string &&
         data.type is string &&
         data.duree is number &&
@@ -94,7 +94,7 @@ service cloud.firestore {
         ['poids', 'taille', 'imc', 'masse_grasse', 'masse_musculaire', 'tour_taille', 
          'tour_poitrine', 'tour_hanches', 'tour_bras', 'tour_cuisse', 'tour_cou',
          'commentaire', 'photos', 'created_at', 'updated_at']) &&
-        (data.date is timestamp || data.date is string) && // Support timestamp ET string YYYY-MM-DD
+        data.date is timestamp && // STRICTEMENT timestamp uniquement (cohérence données)
         data.user_id is string &&
         // Validation des champs numériques
         (!('poids' in data) || (data.poids is number && data.poids > 20 && data.poids < 300)) &&
@@ -121,7 +121,7 @@ service cloud.firestore {
         ['note', 'humeur', 'fatigue', 'motivation', 'energie', 'sommeil_duree', 'sommeil_qualite', 'stress', 'sommeil',
          'photos_libres', 'objectifs_accomplis', 'badges_obtenus', 'meteo', 'activites_annexes', 
          'created_at', 'updated_at']) &&
-        (data.date is timestamp || data.date is string) && // Support timestamp ET string YYYY-MM-DD
+        data.date is timestamp && // STRICTEMENT timestamp uniquement (cohérence données)
         data.user_id is string &&
         // Validation des champs numériques (1-10)
         (!('humeur' in data) || (data.humeur is number && data.humeur >= 1 && data.humeur <= 10)) &&
