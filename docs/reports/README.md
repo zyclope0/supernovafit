@@ -8,10 +8,11 @@
 
 ### 🐛 Corrections Post-Release (28 Oct 2025)
 
-| Document                         | Description                              | Date       |
-| -------------------------------- | ---------------------------------------- | ---------- |
-| **BUGFIXES_SECURITY_DATA_CI.md** | Corrections bugs Firestore + CI workflow | 28/10/2025 |
-| **ANALYSE_RACINE_PROJET.md**     | Analyse et nettoyage racine projet       | 27/10/2025 |
+| Document                                      | Description                                   | Date       |
+| --------------------------------------------- | --------------------------------------------- | ---------- |
+| **DEPLOIEMENT_FIRESTORE_RULES_28_10_2025.md** | Déploiement production Firestore Rules v2.1.1 | 28/10/2025 |
+| **BUGFIXES_SECURITY_DATA_CI.md**              | Corrections bugs Firestore + CI workflow      | 28/10/2025 |
+| **ANALYSE_RACINE_PROJET.md**                  | Analyse et nettoyage racine projet            | 27/10/2025 |
 
 ### 🎯 Rapports Release v2.1.0 (27 Oct 2025)
 
