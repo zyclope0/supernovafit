@@ -99,6 +99,8 @@ ImportGramin/
 # archived directories (kept locally only)
 /archive/
 /audits/
+# Exception: Audit 28-10-2025 (à commiter)
+!/audits/audit-2025-10-28/
 
 # temporary root files (development artifacts)
 AUDIT_TESTS_RESUME_RAPIDE.md
