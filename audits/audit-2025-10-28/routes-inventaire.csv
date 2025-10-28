@@ -1,0 +1,27 @@
+Route,Méthode,Handler/Page,Auth Required,Middlewares,Validations,Error Handling,Notes Performance
+/,GET,src/app/page.tsx,Oui (cookie auth_token),Rate limiting API,N/A,ChunkGuard + ErrorBoundary,"Dashboard adaptatif (mobile/desktop), dynamic imports pour modals"
+/auth,GET,src/app/auth/page.tsx,Non,Rate limiting Auth (strict),Email validation (Zod),Firebase Error Handler,Magic link + email/password
+/diete,GET,src/app/diete/page.tsx,Oui,Rate limiting,Firestore Rules (repas),Error boundaries,"Open Food Facts API (2M aliments), pagination 30 items"
+/entrainements,GET,src/app/entrainements/page.tsx,Oui,Rate limiting,Firestore Rules (entrainements),Error boundaries,"Import Garmin TCX/GPX, pagination 30 items"
+/mesures,GET,src/app/mesures/page.tsx,Oui,Rate limiting,Firestore Rules (mesures),Error boundaries,Firebase Storage (photos)
+/journal,GET,src/app/journal/page.tsx,Oui,Rate limiting,Firestore Rules (journal),Error boundaries,Real-time sync avec onSnapshot
+/challenges,GET,src/app/challenges/page.tsx,Oui,Rate limiting,Firestore Rules (challenges),Error boundaries,50 challenges prédéfinis
+/profil,GET,src/app/profil/page.tsx,Oui,Rate limiting,Zod validation profil,Error boundaries,Calculs BMR/TDEE automatiques
+/export,GET,src/app/export/page.tsx,Oui,Rate limiting,N/A,Error boundaries,"Export CSV/PDF, dynamic imports (jspdf, exceljs)"
+/menu,GET,src/app/menu/page.tsx,Non,N/A,N/A,Error boundaries,Navigation principale
+/guide,GET,src/app/guide/page.tsx,Non,N/A,N/A,Error boundaries,Documentation utilisateur
+/nouveautes,GET,src/app/nouveautes/page.tsx,Non,N/A,N/A,Error boundaries,Changelog visible utilisateur
+/create-coach,GET,src/app/create-coach/page.tsx,Non,Rate limiting,Validation code invitation,Error boundaries,Création compte coach via invitation
+/coach,GET,src/app/coach/page.tsx,Oui (requireCoach),Rate limiting,Role = 'coach',Error boundaries,"Dashboard coach, analytics athlètes"
+/coach/all-athletes,GET,src/app/coach/all-athletes/page.tsx,Oui (requireCoach),Rate limiting,Role = 'coach',Error boundaries,Liste complète des athlètes
+/coach/athlete/[id],GET,src/app/coach/athlete/[id]/page.tsx,Oui (requireCoach),Rate limiting,Ownership athlète,Error boundaries,Vue détaillée athlète (métriques)
+/coach/athlete/[id]/diete,GET,src/app/coach/athlete/[id]/diete/page.tsx,Oui (requireCoach),Rate limiting,Ownership athlète,Error boundaries,Suivi nutrition de l'athlète
+/coach/athlete/[id]/entrainements,GET,src/app/coach/athlete/[id]/entrainements/page.tsx,Oui (requireCoach),Rate limiting,Ownership athlète,Error boundaries,Suivi entraînements de l'athlète
+/coach/athlete/[id]/journal,GET,src/app/coach/athlete/[id]/journal/page.tsx,Oui (requireCoach),Rate limiting,Ownership athlète,Error boundaries,Suivi bien-être de l'athlète
+/coach/athlete/[id]/mesures,GET,src/app/coach/athlete/[id]/mesures/page.tsx,Oui (requireCoach),Rate limiting,Ownership athlète,Error boundaries,Suivi mesures corporelles
+/coach/athlete/[id]/plan-diete,GET,src/app/coach/athlete/[id]/plan-diete/page.tsx,Oui (requireCoach),Rate limiting,Ownership athlète,Error boundaries,Création/édition plans diète
+/coach/programmes,GET,src/app/coach/programmes/page.tsx,Oui (requireCoach),Rate limiting,Role = 'coach',Error boundaries,Gestion programmes entraînement
+/coach/rapports,GET,src/app/coach/rapports/page.tsx,Oui (requireCoach),Rate limiting,Role = 'coach',Error boundaries,Rapports d'analyse coach
+/legal/privacy,GET,src/app/legal/privacy/page.tsx,Non,N/A,N/A,Error boundaries,Politique de confidentialité
+/legal/terms,GET,src/app/legal/terms/page.tsx,Non,N/A,N/A,Error boundaries,Conditions d'utilisation
+/legal/cookies,GET,src/app/legal/cookies/page.tsx,Non,N/A,N/A,Error boundaries,Politique cookies
