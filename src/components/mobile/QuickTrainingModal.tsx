@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { X, Timer, Star, Play, Dumbbell, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// import toast from 'react-hot-toast' // TODO: À utiliser pour feedback utilisateur
 
 interface QuickTrainingTemplate {
   id: string;

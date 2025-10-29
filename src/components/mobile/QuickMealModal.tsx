@@ -5,7 +5,6 @@ import { X, Clock, Star, Plus, Utensils } from 'lucide-react';
 import { MealType, Aliment, Macros } from '@/types';
 import { cn } from '@/lib/utils';
 import { Timestamp } from 'firebase/firestore';
-// import toast from 'react-hot-toast' // TODO: À utiliser pour feedback utilisateur
 
 // Fonction utilitaire pour créer des aliments complets
 const createAliment = (

@@ -3,7 +3,6 @@
 import { Edit, Trash2, Copy, Star } from 'lucide-react';
 import SwipeableCard from './SwipeableCard';
 import { MealType, Aliment, Macros } from '@/types';
-// import { cn } from '@/lib/utils' // TODO: À utiliser si nécessaire
 
 interface SwipeableMealCardProps {
   mealName: string;

@@ -1,6 +1,5 @@
 'use client';
 
-// import { useState } from 'react' // TODO: À utiliser si nécessaire
 import { useRouter, usePathname } from 'next/navigation';
 import {
   X,

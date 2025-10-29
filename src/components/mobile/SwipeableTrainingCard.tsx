@@ -4,7 +4,6 @@ import { Edit, Trash2, Copy, Play, Timer } from 'lucide-react';
 import SwipeableCard from './SwipeableCard';
 import { Entrainement } from '@/types';
 import { timestampToDateString } from '@/lib/dateUtils';
-// import { cn } from '@/lib/utils' // TODO: À utiliser si nécessaire
 
 interface SwipeableTrainingCardProps {
   training: Entrainement;

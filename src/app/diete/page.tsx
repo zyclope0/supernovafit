@@ -25,7 +25,6 @@ import dynamic from 'next/dynamic';
 import NutritionImporter from '@/components/import/NutritionImporter';
 import { useNutritionImport } from '@/hooks/useNutritionImport';
 // MacrosChart supprimé - remplacé par NutritionAnalytics evidence-based
-// import SwipeableMealCard from '@/components/mobile/SwipeableMealCard' // TODO: À intégrer
 const MenuTypesModal = dynamic(
   () =>
     import('@/components/ui/modals-bundle').then((mod) => ({
