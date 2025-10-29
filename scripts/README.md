@@ -1,6 +1,8 @@
-# Scripts de Données de Test
+# 🔧 Scripts SuperNovaFit
 
-## 📋 Population des données de test
+## 📋 Scripts Actifs
+
+### Population des données de test
 
 Le script `populate-test-data.ts` crée un historique cohérent et réaliste pour l'utilisateur de test basé sur une transformation réelle :
 
@@ -135,3 +137,16 @@ Vérifier les règles Firestore et les permissions du compte de service.
 
 C'est normal ! La création de ~600 documents prend plusieurs minutes.
 Le script affiche la progression en temps réel.
+
+---
+
+## 📦 Scripts Archivés
+
+Les scripts suivants ont été archivés dans `scripts/archive/` car ils ont rempli leur rôle:
+
+- ✅ `generate-tests.js` - Génération initiale tests (complété)
+- ✅ `standardize-tests.js` - Standardisation tests (complété)
+- ✅ `validate-tests.js` - Validation tests (complété)
+- ✅ `performance-budget.js` - Budget performance (one-shot)
+
+**Note**: Ces scripts sont conservés pour référence historique mais ne sont plus nécessaires au fonctionnement du projet.
