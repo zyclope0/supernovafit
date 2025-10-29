@@ -21,6 +21,8 @@ module.exports = {
     '<rootDir>/src/__tests__/components/ui/FormField.jest.test.tsx',
     '<rootDir>/src/__tests__/components/ui/PageHeader.jest.test.tsx',
     '<rootDir>/src/__tests__/components/ui/Skeletons.jest.test.tsx',
+    // Composants Auth (Phase 2 Audit)
+    '<rootDir>/src/__tests__/components/auth/AuthGuard.jest.test.tsx',
   ],
 
   // Coverage

@@ -11,8 +11,39 @@ import {
   limit,
   getDocs,
   Timestamp,
+  DocumentData,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+
+// Interfaces pour typage strict des données Firestore
+interface RepasData extends DocumentData {
+  user_id: string;
+  date: string;
+  repas: string;
+  macros: {
+    kcal: number;
+    prot: number;
+    glucides: number;
+    lipides: number;
+  };
+  created_at: Timestamp;
+}
+
+interface EntrainementData extends DocumentData {
+  user_id: string;
+  date: string;
+  type: string;
+  duree: number;
+  calories: number;
+  created_at: Timestamp;
+}
+
+interface MesureData extends DocumentData {
+  user_id: string;
+  date: string;
+  poids: number;
+  created_at: Timestamp;
+}
 
 interface RealAthleteStats {
   calories_jour: number;
@@ -115,7 +146,6 @@ export function useCoachRealAnalytics() {
     const generateRealAnalyticsData = async () => {
       try {
         setLoading(true);
-        console.log('🔍 COACH ANALYTICS - Génération des données réelles...');
 
         // Récupérer les vraies données pour chaque athlète
         const enrichedAthletes: RealAthlete[] = await Promise.all(
@@ -148,15 +178,12 @@ export function useCoachRealAnalytics() {
           teamStats: realTeamStats,
         });
 
-        console.log(
-          '✅ COACH ANALYTICS - Données réelles générées avec succès',
-        );
         setLoading(false);
       } catch (error) {
-        console.error(
-          '❌ COACH ANALYTICS - Erreur génération données réelles:',
-          error,
-        );
+        if (process.env.NODE_ENV === 'development') {
+          // eslint-disable-next-line no-console
+          console.error('Coach analytics generation error:', error);
+        }
         setLoading(false);
       }
     };
@@ -195,7 +222,7 @@ async function getRealAthleteStats(
     const mealsSnapshot = await getDocs(mealsQuery);
     const todayMeals = mealsSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as RepasData),
     }));
 
     // Récupérer les repas de la semaine
@@ -208,7 +235,7 @@ async function getRealAthleteStats(
     const weekMealsSnapshot = await getDocs(weekMealsQuery);
     const weekMeals = weekMealsSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as RepasData),
     }));
 
     // Récupérer les entraînements de la semaine
@@ -221,7 +248,7 @@ async function getRealAthleteStats(
     const trainingsSnapshot = await getDocs(trainingsQuery);
     const weekTrainings = trainingsSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as EntrainementData),
     }));
 
     // Récupérer les mesures récentes
@@ -234,33 +261,28 @@ async function getRealAthleteStats(
     const measuresSnapshot = await getDocs(measuresQuery);
     const recentMeasures = measuresSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as MesureData),
     }));
 
     // Calculer les statistiques
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const calories_jour = todayMeals.reduce(
-      (sum, meal) => sum + ((meal as any).macros?.kcal || 0),
+      (sum, meal) => sum + (meal.macros?.kcal || 0),
       0,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const proteines_jour = todayMeals.reduce(
-      (sum, meal) => sum + ((meal as any).macros?.prot || 0),
+      (sum, meal) => sum + (meal.macros?.prot || 0),
       0,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const calories_semaine = weekMeals.reduce(
-      (sum, meal) => sum + ((meal as any).macros?.kcal || 0),
+      (sum, meal) => sum + (meal.macros?.kcal || 0),
       0,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const proteines_semaine = weekMeals.reduce(
-      (sum, meal) => sum + ((meal as any).macros?.prot || 0),
+      (sum, meal) => sum + (meal.macros?.prot || 0),
       0,
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const calories_brulées_semaine = weekTrainings.reduce(
-      (sum, training) => sum + ((training as any).calories || 0),
+      (sum, training) => sum + (training.calories || 0),
       0,
     );
 
@@ -268,27 +290,22 @@ async function getRealAthleteStats(
     let variation_poids = 0;
     let poids_actuel = 0;
     if (recentMeasures.length >= 2) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      poids_actuel = (recentMeasures[0] as any).poids || 0;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const poids_precedent = (recentMeasures[1] as any).poids || 0;
+      poids_actuel = recentMeasures[0].poids || 0;
+      const poids_precedent = recentMeasures[1].poids || 0;
       variation_poids = poids_actuel - poids_precedent;
     } else if (recentMeasures.length === 1) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      poids_actuel = (recentMeasures[0] as any).poids || 0;
+      poids_actuel = recentMeasures[0].poids || 0;
     }
 
     // Calculer la variation de performance (basée sur les entraînements)
     let variation_perf = 0;
     if (weekTrainings.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const totalDuration = weekTrainings.reduce(
-        (sum, training) => sum + ((training as any).duree || 0),
+        (sum, training) => sum + (training.duree || 0),
         0,
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const totalCalories = weekTrainings.reduce(
-        (sum, training) => sum + ((training as any).calories || 0),
+        (sum, training) => sum + (training.calories || 0),
         0,
       );
       // Performance basée sur la durée et les calories brûlées
@@ -298,26 +315,18 @@ async function getRealAthleteStats(
 
     // Déterminer la dernière activité
     const lastMeal = todayMeals.length > 0 ? new Date() : null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lastTraining =
-      weekTrainings.length > 0
-        ? new Date((weekTrainings[0] as any).date)
-        : null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      weekTrainings.length > 0 ? new Date(weekTrainings[0].date) : null;
     const lastMeasure =
-      recentMeasures.length > 0
-        ? new Date((recentMeasures[0] as any).date)
-        : null;
+      recentMeasures.length > 0 ? new Date(recentMeasures[0].date) : null;
 
     const derniere_activite = [lastMeal, lastTraining, lastMeasure]
       .filter(Boolean)
       .sort((a, b) => b!.getTime() - a!.getTime())[0];
 
     // Calculer les jours actifs de la semaine
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uniqueDays = new Set(
-      weekTrainings.map((training) => (training as any).date),
-    ).size;
+    const uniqueDays = new Set(weekTrainings.map((training) => training.date))
+      .size;
     const jours_actifs_semaine = uniqueDays;
 
     return {
@@ -340,10 +349,10 @@ async function getRealAthleteStats(
       dernier_repas: lastMeal || undefined,
     };
   } catch (error) {
-    console.error(
-      '❌ COACH ANALYTICS - Erreur récupération stats athlète:',
-      error,
-    );
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Get athlete stats error:', error);
+    }
     // Retourner des valeurs par défaut en cas d'erreur
     return {
       calories_jour: 0,
@@ -380,7 +389,7 @@ async function getAthleteProgression(athleteId: string): Promise<{
     const measuresSnapshot = await getDocs(measuresQuery);
     const mesures = measuresSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as MesureData),
     }));
 
     // Récupérer les calories des 30 derniers jours
@@ -396,20 +405,17 @@ async function getAthleteProgression(athleteId: string): Promise<{
     const mealsSnapshot = await getDocs(mealsQuery);
     const repas = mealsSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as RepasData),
     }));
 
     // Grouper les calories par jour
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const caloriesParJour = repas.reduce(
-      (acc, repas) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const date = (repas as any).date;
+      (acc, meal) => {
+        const date = meal.date;
         if (!acc[date]) {
           acc[date] = 0;
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        acc[date] += (repas as any).macros?.kcal || 0;
+        acc[date] += meal.macros?.kcal || 0;
         return acc;
       },
       {} as Record<string, number>,
@@ -417,10 +423,8 @@ async function getAthleteProgression(athleteId: string): Promise<{
 
     return {
       poids: mesures.map((mesure) => ({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        date: (mesure as any).date,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        poids: (mesure as any).poids || 0,
+        date: mesure.date,
+        poids: mesure.poids || 0,
       })),
       calories: Object.entries(caloriesParJour).map(([date, calories]) => ({
         date,
@@ -428,10 +432,10 @@ async function getAthleteProgression(athleteId: string): Promise<{
       })),
     };
   } catch (error) {
-    console.error(
-      '❌ COACH ANALYTICS - Erreur récupération progression:',
-      error,
-    );
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Get athlete progression error:', error);
+    }
     return { poids: [], calories: [] };
   }
 }
@@ -507,7 +511,10 @@ async function getAthleteRecentActivity(athleteId: string): Promise<
       .sort((a, b) => b.date.getTime() - a.date.getTime())
       .slice(0, 15);
   } catch (error) {
-    console.error('❌ COACH ANALYTICS - Erreur récupération activité:', error);
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Get athlete recent activity error:', error);
+    }
     return [];
   }
 }
@@ -546,7 +553,10 @@ async function getAthleteCurrentGoals(_athleteId: string): Promise<
       },
     ];
   } catch (error) {
-    console.error('❌ COACH ANALYTICS - Erreur récupération objectifs:', error);
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Get athlete current goals error:', error);
+    }
     return [];
   }
 }
@@ -580,7 +590,9 @@ function generateRealAlerts(athletes: RealAthlete[]): RealAlert[] {
           category: 'activity',
           action: {
             label: 'Envoyer un message',
-            onClick: () => console.log(`Envoyer message à ${athlete.nom}`),
+            onClick: () => {
+              // Action placeholder - to be implemented
+            },
           },
         });
       }
@@ -600,7 +612,9 @@ function generateRealAlerts(athletes: RealAthlete[]): RealAlert[] {
         category: 'nutrition',
         action: {
           label: 'Voir la nutrition',
-          onClick: () => console.log(`Voir nutrition ${athlete.nom}`),
+          onClick: () => {
+            // Action placeholder - to be implemented
+          },
         },
       });
     }
@@ -619,7 +633,9 @@ function generateRealAlerts(athletes: RealAthlete[]): RealAlert[] {
         category: 'training',
         action: {
           label: 'Voir les entraînements',
-          onClick: () => console.log(`Voir entraînements ${athlete.nom}`),
+          onClick: () => {
+            // Action placeholder - to be implemented
+          },
         },
       });
     }
@@ -638,7 +654,9 @@ function generateRealAlerts(athletes: RealAthlete[]): RealAlert[] {
         category: 'measurement',
         action: {
           label: 'Voir les mesures',
-          onClick: () => console.log(`Voir mesures ${athlete.nom}`),
+          onClick: () => {
+            // Action placeholder - to be implemented
+          },
         },
       });
     }

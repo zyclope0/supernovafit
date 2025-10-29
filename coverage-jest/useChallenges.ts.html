@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.56% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/137</span>
+                <span class='fraction'>0/137</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.89% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/114</span>
+                <span class='fraction'>0/114</span>
             </div>
         
             
@@ -395,8 +395,8 @@
 <a name='L330'></a><a href='#L330'>330</a>
 <a name='L331'></a><a href='#L331'>331</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -409,17 +409,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -525,10 +525,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -598,7 +598,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -725,8 +725,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use client';
 &nbsp;
-import { useState, useEffect, useCallback } from 'react';
-import {
+<span class="cstat-no" title="statement not covered" >import { useState, useEffect, useCallback } from 'react';</span>
+<span class="cstat-no" title="statement not covered" >import {</span>
   collection,
   doc,
   addDoc,
@@ -739,14 +739,14 @@ import {
   serverTimestamp,
   onSnapshot,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { useAuth } from './useAuth';
-import { useFirebaseError } from './useFirebaseError';
-import { calculateLevel } from '@/lib/challenges';
+<span class="cstat-no" title="statement not covered" >import { db } from '@/lib/firebase';</span>
+<span class="cstat-no" title="statement not covered" >import { useAuth } from './useAuth';</span>
+<span class="cstat-no" title="statement not covered" >import { useFirebaseError } from './useFirebaseError';</span>
+<span class="cstat-no" title="statement not covered" >import { calculateLevel } from '@/lib/challenges';</span>
 import { Challenge, Achievement, UserProgress } from '@/types';
 &nbsp;
 // Hook pour les challenges
-export function <span class="fstat-no" title="function not covered" >useChallenges(</span>) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >u</span>seChallenges(</span>) {
   const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
   const [challenges<span class="cstat-no" title="statement not covered" >, s</span>etChallenges<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Challenge[]&gt;([]);</span>
   const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true);</span>
@@ -855,7 +855,7 @@ export function <span class="fstat-no" title="function not covered" >useChalleng
 }
 &nbsp;
 // Hook pour les achievements
-export function <span class="fstat-no" title="function not covered" >useAchievements(</span>) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >u</span>seAchievements(</span>) {
   const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
   const [achievements<span class="cstat-no" title="statement not covered" >, s</span>etAchievements<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;Achievement[]&gt;([]);</span>
   const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true);</span>
@@ -928,7 +928,7 @@ export function <span class="fstat-no" title="function not covered" >useAchievem
 }
 &nbsp;
 // Hook pour le progrès utilisateur
-export function <span class="fstat-no" title="function not covered" >useUserProgress(</span>) {
+<span class="cstat-no" title="statement not covered" >export function <span class="fstat-no" title="function not covered" >u</span>seUserProgress(</span>) {
   const { user } = <span class="cstat-no" title="statement not covered" >useAuth();</span>
   const [progress<span class="cstat-no" title="statement not covered" >, s</span>etProgress<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState&lt;UserProgress | null&gt;(null);</span>
   const [loading<span class="cstat-no" title="statement not covered" >, s</span>etLoading<span class="cstat-no" title="statement not covered" >] = <span class="cstat-no" title="statement not covered" >u</span>seState(true);</span>
@@ -1060,7 +1060,7 @@ export function <span class="fstat-no" title="function not covered" >useUserProg
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-28T13:44:12.862Z
+                at 2025-10-29T17:36:56.971Z
             </div>
         <script src="prettify.js"></script>
         <script>

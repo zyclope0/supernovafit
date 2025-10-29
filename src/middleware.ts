@@ -39,14 +39,12 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith(route),
     );
 
-    if (isProtectedRoute) {
+    if (isProtectedRoute && !isTestMode) {
       // Vérifier si l'utilisateur a un token d'authentification
       const hasAuthToken = request.cookies.has('auth_token');
 
-      // DÉSACTIVÉ TEMPORAIREMENT - Cause boucle infinie en production
-      // Le cookie côté client n'est pas fiable en SSR
-      // TODO: Implémenter vérification Firebase Admin côté serveur
-      if (false && !hasAuthToken) {
+      // Protection auth activée avec exception pour tests E2E
+      if (!hasAuthToken) {
         // Rediriger vers /auth avec returnUrl
         const url = request.nextUrl.clone();
         url.pathname = '/auth';
