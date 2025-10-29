@@ -35,7 +35,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
     setQuickWeightModalOpen,
     setQuickMoodModalOpen,
   } = useQuickActions();
-  // const pathname = usePathname() // TODO: À utiliser si nécessaire
   const isCoach = userProfile?.role === 'coach';
 
   // Synchroniser avec l'état de la sidebar
