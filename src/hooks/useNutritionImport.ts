@@ -43,11 +43,13 @@ export function useNutritionImport(): UseNutritionImportReturn {
       setImportResult(null);
 
       try {
-        console.log(
-          '🍎 NUTRITION IMPORT - Début import:',
-          data.length,
-          'repas',
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '🍎 NUTRITION IMPORT - Début import:',
+            data.length,
+            'repas',
+          );
+        }
 
         // Validation des données
         const validData = data.filter((repas) => {
@@ -64,7 +66,12 @@ export function useNutritionImport(): UseNutritionImportReturn {
           throw new Error('Aucune donnée valide à importer');
         }
 
-        console.log('🍎 NUTRITION IMPORT - Données valides:', validData.length);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(
+            '🍎 NUTRITION IMPORT - Données valides:',
+            validData.length,
+          );
+        }
 
         // Batch import pour optimiser les performances
         const batch = writeBatch(db);
@@ -80,9 +87,11 @@ export function useNutritionImport(): UseNutritionImportReturn {
           const batchData = validData.slice(i, i + batchSize);
           const currentBatch = Math.floor(i / batchSize) + 1;
 
-          console.log(
-            `🍎 NUTRITION IMPORT - Traitement lot ${currentBatch}/${totalBatches}`,
-          );
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              `🍎 NUTRITION IMPORT - Traitement lot ${currentBatch}/${totalBatches}`,
+            );
+          }
 
           // Préparer les documents pour ce lot
           batchData.forEach((repas, index) => {
@@ -117,9 +126,11 @@ export function useNutritionImport(): UseNutritionImportReturn {
           // Committer ce lot
           try {
             await batch.commit();
-            console.log(
-              `🍎 NUTRITION IMPORT - Lot ${currentBatch} importé avec succès`,
-            );
+            if (process.env.NODE_ENV === 'development') {
+              console.log(
+                `🍎 NUTRITION IMPORT - Lot ${currentBatch} importé avec succès`,
+              );
+            }
           } catch (error) {
             console.error(
               `🍎 NUTRITION IMPORT - Erreur commit lot ${currentBatch}:`,
@@ -150,11 +161,13 @@ export function useNutritionImport(): UseNutritionImportReturn {
         setImportResult(result);
 
         if (result.success) {
-          console.log(
-            '🍎 NUTRITION IMPORT - Import terminé avec succès:',
-            result.imported,
-            'repas',
-          );
+          if (process.env.NODE_ENV === 'development') {
+            console.log(
+              '🍎 NUTRITION IMPORT - Import terminé avec succès:',
+              result.imported,
+              'repas',
+            );
+          }
           toast.success(`${result.imported} repas importés avec succès !`);
         } else {
           console.warn(

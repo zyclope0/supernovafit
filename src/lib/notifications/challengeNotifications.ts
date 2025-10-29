@@ -64,8 +64,10 @@ export async function sendChallengeCompletedNotification(
       notification.close();
     };
 
-    // Log pour debug
-    console.log('✅ Notification envoyée:', template.title);
+    // Log pour debug (dev-only)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Notification envoyée:', template.title);
+    }
   } catch (error) {
     console.error('❌ Erreur envoi notification:', error);
   }
@@ -127,7 +129,9 @@ export async function sendChallengeProgressNotification(
       notification.close();
     };
 
-    console.log(`✅ Notification progression envoyée: ${closestMilestone}%`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ Notification progression envoyée: ${closestMilestone}%`);
+    }
   } catch (error) {
     console.error('❌ Erreur envoi notification progression:', error);
   }
@@ -181,7 +185,11 @@ export async function sendChallengeAlmostDoneNotification(
       notification.close();
     };
 
-    console.log(`✅ Notification encouragement envoyée: ${remaining} restants`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(
+        `✅ Notification encouragement envoyée: ${remaining} restants`,
+      );
+    }
   } catch (error) {
     console.error('❌ Erreur envoi notification encouragement:', error);
   }
