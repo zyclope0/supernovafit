@@ -5,7 +5,7 @@ Write-Host "=== Creation des 7 GitHub Issues - SuperNovaFit ===" -ForegroundColo
 Write-Host ""
 
 # Configuration - MODIFIER AVEC TON USERNAME/REPO
-$GITHUB_USER = "Zyclope"
+$GITHUB_USER = "zyclope0"
 $GITHUB_REPO = "SuperNovaFit"
 
 Write-Host "Repository: https://github.com/$GITHUB_USER/$GITHUB_REPO" -ForegroundColor Cyan
