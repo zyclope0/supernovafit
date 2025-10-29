@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCoachAthletes } from '@/hooks/useFirestore';
-import { useCoachAnalytics } from '@/hooks/useCoachAnalytics';
+import { useCoachRealAnalytics } from '@/hooks/useCoachRealAnalytics';
 import { useRouter } from 'next/navigation';
 import MainLayout from '@/components/layout/MainLayout';
 import { Users, Plus, TrendingUp, AlertTriangle, Trophy } from 'lucide-react';
@@ -35,7 +35,7 @@ export default function CoachDashboard() {
   const { userProfile } = useAuth();
   const router = useRouter();
   const {} = useCoachAthletes();
-  const { analyticsData, loading: analyticsLoading } = useCoachAnalytics();
+  const { analyticsData, loading: analyticsLoading } = useCoachRealAnalytics();
   const [loading, setLoading] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [activeTab, setActiveTab] = useState<
