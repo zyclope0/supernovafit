@@ -217,7 +217,9 @@ export function useChallengeTracker() {
           // 🎉 Envoyer notification si complété
           if (justCompleted) {
             sendChallengeCompletedNotification(fullChallenge);
-            console.log(`🎉 Challenge complété: ${title}`);
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`🎉 Challenge complété: ${title}`);
+            }
           }
           // 📈 Notification progression (50%, 75%, 90%)
           else if (isNowCompleted === false) {

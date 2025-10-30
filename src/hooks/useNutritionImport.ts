@@ -170,10 +170,12 @@ export function useNutritionImport(): UseNutritionImportReturn {
           }
           toast.success(`${result.imported} repas importés avec succès !`);
         } else {
-          console.warn(
-            '🍎 NUTRITION IMPORT - Import terminé avec erreurs:',
-            result.errors.length,
-          );
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              '🍎 NUTRITION IMPORT - Import terminé avec erreurs:',
+              result.errors.length,
+            );
+          }
           toast.error(`Import terminé avec ${result.errors.length} erreurs`);
         }
 

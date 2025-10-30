@@ -31,12 +31,16 @@ export async function sendChallengeCompletedNotification(
   challenge: Challenge,
 ): Promise<void> {
   if (!('Notification' in window)) {
-    console.warn('Notifications non supportées par ce navigateur');
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Notifications non supportées par ce navigateur');
+    }
     return;
   }
 
   if (Notification.permission !== 'granted') {
-    console.warn('Permission notifications non accordée');
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Permission notifications non accordée');
+    }
     return;
   }
 
@@ -210,7 +214,9 @@ export async function sendChallengeAlmostDoneNotification(
  */
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) {
-    console.warn('Notifications non supportées');
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Notifications non supportées');
+    }
     return false;
   }
 
@@ -219,7 +225,9 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
 
   if (Notification.permission === 'denied') {
-    console.warn("Permission notifications refusée par l'utilisateur");
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("Permission notifications refusée par l'utilisateur");
+    }
     return false;
   }
 

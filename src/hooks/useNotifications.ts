@@ -173,7 +173,11 @@ export function useNotifications(): UseNotificationsReturn {
       try {
         const messagingInstance = await messaging;
         if (!messagingInstance) {
-          console.warn('📱 NOTIFICATIONS - Instance messaging non disponible');
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              '📱 NOTIFICATIONS - Instance messaging non disponible',
+            );
+          }
           return;
         }
 
