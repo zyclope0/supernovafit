@@ -7,6 +7,26 @@ import Papa from 'papaparse';
 import { Timestamp } from 'firebase/firestore';
 import type { Repas } from '@/types';
 
+// Types pour les données d'import brutes
+interface RawCSVRow {
+  [key: string]: string | number | undefined;
+}
+
+interface RawJSONFood {
+  name: string;
+  kcal: number;
+  prot?: number;
+  glucides?: number;
+  lipides?: number;
+  quantite?: number;
+  unite?: string;
+}
+
+interface RawJSONData {
+  date: string;
+  foods: RawJSONFood[];
+}
+
 export interface ImportConfig {
   format: 'myfitnesspal' | 'yazio' | 'cronometer';
   userId: string;
@@ -108,7 +128,10 @@ async function parseJSONFile(
 /**
  * Traite les données CSV selon le format
  */
-function processCSVData(data: any[], config: ImportConfig): ImportPreview {
+function processCSVData(
+  data: RawCSVRow[],
+  config: ImportConfig,
+): ImportPreview {
   const errors: ImportError[] = [];
   const warnings: string[] = [];
   const validRows: Repas[] = [];
@@ -141,13 +164,16 @@ function processCSVData(data: any[], config: ImportConfig): ImportPreview {
 /**
  * Traite les données JSON selon le format
  */
-function processJSONData(data: any, config: ImportConfig): ImportPreview {
+function processJSONData(
+  data: RawJSONData,
+  config: ImportConfig,
+): ImportPreview {
   const errors: ImportError[] = [];
   const warnings: string[] = [];
   const validRows: Repas[] = [];
 
   try {
-    const repasList = parseJSONData(data, config);
+    const repasList = parseJSONDataInternal(data, config);
     validRows.push(...repasList);
   } catch (error) {
     errors.push({
@@ -171,7 +197,7 @@ function processJSONData(data: any, config: ImportConfig): ImportPreview {
  * Parse une ligne CSV selon le format
  */
 function parseCSVRow(
-  row: any,
+  row: RawCSVRow,
   config: ImportConfig,
   rowNumber: number,
 ): Repas | null {
@@ -195,7 +221,7 @@ function parseCSVRow(
  * Parse une ligne MyFitnessPal
  */
 function parseMyFitnessPalRow(
-  row: any,
+  row: RawCSVRow,
   config: ImportConfig,
   rowNumber: number,
 ): Repas {
@@ -248,7 +274,7 @@ function parseMyFitnessPalRow(
  * Parse une ligne Yazio
  */
 function parseYazioRow(
-  row: any,
+  row: RawCSVRow,
   config: ImportConfig,
   rowNumber: number,
 ): Repas {
@@ -300,7 +326,10 @@ function parseYazioRow(
 /**
  * Parse les données JSON Cronometer
  */
-function parseJSONData(data: any, config: ImportConfig): Repas[] {
+function parseJSONDataInternal(
+  data: RawJSONData,
+  config: ImportConfig,
+): Repas[] {
   if (!data.date || !Array.isArray(data.foods)) {
     throw new Error(
       'Format JSON invalide. Attendu: { date: string, foods: array }',
@@ -310,7 +339,7 @@ function parseJSONData(data: any, config: ImportConfig): Repas[] {
   const date = parseDate(data.date, config.dateFormat);
   const repas: Repas[] = [];
 
-  data.foods.forEach((food: any, index: number) => {
+  data.foods.forEach((food: RawJSONFood, index: number) => {
     if (!food.name || !food.kcal) {
       throw new Error(`Aliment ${index + 1}: nom ou calories manquants`);
     }
