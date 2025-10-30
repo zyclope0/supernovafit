@@ -1,6 +1,6 @@
 # 🤖 SUPERNOVAFIT - CONTEXTE AI QUICK REFERENCE
 
-**Version** : 2.5.0 | **Dernière MAJ** : 29.10.2025 | **Score** : 9.5/10
+**Version** : 2.5.1 | **Dernière MAJ** : 30.10.2025 | **Score** : 9.5/10
 
 > **🎯 Objectif** : Quick reference (40% du projet en < 5 minutes)  
 > **⭐ Contexte PRINCIPAL** : [AI_CODING_CONTEXT_EXHAUSTIVE.md](AI_CODING_CONTEXT_EXHAUSTIVE.md) **(80%+ du projet)**  
@@ -318,13 +318,13 @@ Mocks: Firebase, next/navigation, composants
 ### **Tests Actuels**
 
 ```
-✅ Tests Unitaires: 414/414 (100% passent) - 24 fichiers actifs, +53 tests académiques Phases 1-2 ✅
-  - Jest: 163 tests (hooks + composants UI + useExportData 99.31%) - +21 tests académiques
-  - Vitest: 251 tests (validation + challengeTracking + dateUtils 25.8%) - +32 tests académiques
+✅ Tests Unitaires: 191/191 (100% passent) - Architecture Jest+Vitest stable ✅
+  - Jest: 27 tests (AuthGuard 14 tests, useFirestore 10 tests, useExportData.advanced 3 tests)
+  - Vitest: 164 tests (validation + challengeTracking + dateUtils)
 ✅ Tests E2E: 215 disponibles (4 flux × 5 navigateurs)
-✅ Modules critiques testés à 100%: challengeTracking 97.89%, validation 93.18%, hooks avancés 100%/83.57%
-📊 Coverage global: 22-23% (88-92% objectif 25%, qualité académique 9.8/10)
-🎯 Approche: Pragmatique (modules critiques prioritaires) ✅
+✅ Modules critiques testés: AuthGuard 100%, challengeTracking 97.89%, validation 93.18%
+📊 Coverage global: 22-25% (Audit 10/28 implémenté 100%, GitHub Actions ✅)
+🎯 Approche: Pragmatique (composants critiques sécurité + hooks métier) ✅
 ```
 
 ### **Commandes**
@@ -410,20 +410,21 @@ npx ts-unused-exports     # Exports non utilisés
 
 | Métrique         | Valeur                    | Objectif 30j         |
 | ---------------- | ------------------------- | -------------------- |
-| **Score Global** | 10/10 🏆                  | ✅ 10/10 ATTEINT     |
+| **Score Global** | 9.5/10 🏆                 | ✅ 9.5/10 ATTEINT    |
 | **Sécurité**     | ✅ 0 vuln                 | ✅ 0 vuln            |
 | **Performance**  | Build 10.3s, Bundle 110KB | 9s, 100KB            |
-| **Tests**        | 324 tests, 13-14%         | ✅ Modules critiques |
+| **Tests**        | 191 tests, 22-25%         | ✅ Modules critiques |
 | **Code Quality** | 0 ESLint errors           | 0 errors             |
 
-**Dernières actions :**
+**Dernières actions (30.10.2025) :**
 
-- ✅ Audit technique complet (8/8 phases)
-- ✅ Monitoring production (Sentry + alertes)
-- ✅ Tests validés (308/308, 100% passent)
-- ✅ Documentation tests standardisée (13 → 7 fichiers)
-- ✅ OPT-14 Logger Custom implémenté (debugging production optimisé)
-- ✅ FCM complètement fonctionnel (clé VAPID réelle + service worker + test intégré)
+- ✅ Audit 28.10.2025 implémenté 100% (5 phases, 10/10 actions complétées)
+- ✅ Tests AuthGuard sécurité critique (14 tests, 100% coverage)
+- ✅ Tests useFirestore initial (10 tests, 5.2% coverage hook 2600 LOC)
+- ✅ useCoachRealAnalytics production-ready (35→0 any, strict typing)
+- ✅ Middleware Auth réactivé (ligne 49, mode test supporté)
+- ✅ GitHub Actions stabilisées (191/191 tests passent)
+- ✅ Nettoyage projet complet (scripts archivés, .gitignore optimisé)
 
 ---
 
@@ -441,6 +442,6 @@ npx ts-unused-exports     # Exports non utilisés
 
 ---
 
-**SuperNovaFit v2.1.0** © 2025 - Excellence Technique 9.5/10 🏆
+**SuperNovaFit v2.1.1+** © 2025 - Excellence Technique 9.5/10 🏆
 
-_Ce document contient 80% du contexte nécessaire pour développer efficacement sur SuperNovaFit_
+_Ce document contient 40% du contexte projet (quick reference). Voir [AI_CODING_CONTEXT_EXHAUSTIVE.md](AI_CODING_CONTEXT_EXHAUSTIVE.md) pour 80%+ du contexte._

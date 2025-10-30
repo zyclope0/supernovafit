@@ -96,11 +96,12 @@ ImportGramin/
 /coverage-jest/
 /coverage-vitest/
 
-# GitHub issues creation script (keep locally or commit if wanted)
-# create-github-issues.ps1
+# Temporary PowerShell scripts (kept locally only)
+*.ps1
 
-# GitHub issues guide (already committed)
-# GITHUB_ISSUES_TO_CREATE.md
+# Temporary markdown guides (kept locally only)
+GITHUB_ISSUES_*.md
+TODO_*.md
 
 # archived directories (kept locally only)
 /archive/
